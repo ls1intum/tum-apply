@@ -12,7 +12,8 @@
         "creation": "TUMApply - Job Creation",
         "edit": "TUMApply - Job Edit",
         "overview": "TUMApply - Job Overview",
-        "myPositions": "TUMApply - My Positions"
+        "myPositions": "TUMApply - My Positions",
+        "allPositions": "TUMApply - All Positions"
       },
       "application": {
         "creation": "TUMApply - Application Creation",

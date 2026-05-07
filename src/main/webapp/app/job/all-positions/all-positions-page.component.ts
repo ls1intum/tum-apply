@@ -1,0 +1,376 @@
+import { Component, OnInit, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { TableLazyLoadEvent } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { Router } from '@angular/router';
+import { TranslateDirective } from 'app/shared/language';
+import { ToastService } from 'app/service/toast-service';
+import { TranslateModule } from '@ngx-translate/core';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
+import { Sort, SortDirection, SortOption } from 'app/shared/components/atoms/sorting/sorting';
+import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
+import { emptyToUndef } from 'app/core/util/array-util.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
+import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+
+import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
+import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
+import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
+import { AdminCreatedJobDTO, AdminCreatedJobDTOStateEnum } from '../../generated/model/admin-created-job-dto';
+import { JobResourceApi } from '../../generated/api/job-resource-api';
+import { ResearchGroupResourceApi } from '../../generated/api/research-group-resource-api';
+
+/**
+ * Admin-only page listing every job across all research groups, with the same
+ * management actions a professor has on their own jobs (Edit/Delete on DRAFT,
+ * Edit-with-warning/Close on PUBLISHED, none on CLOSED/APPLICANT_FOUND).
+ */
+@Component({
+  selector: 'jhi-all-positions-page',
+  standalone: true,
+  imports: [
+    TagComponent,
+    ButtonComponent,
+    DynamicTableComponent,
+    TranslateDirective,
+    TranslateModule,
+    ConfirmDialog,
+    SearchFilterSortBar,
+    LocalizedDatePipe,
+    MenuComponent,
+    UserAvatarComponent,
+    ButtonModule,
+    FontAwesomeModule,
+  ],
+  templateUrl: './all-positions-page.component.html',
+})
+export class AllPositionsPageComponent implements OnInit {
+  loading = signal(true);
+  jobs = signal<AdminCreatedJobDTO[]>([]);
+  totalRecords = signal<number>(0);
+  page = signal<number>(0);
+  pageSize = signal<number>(10);
+  searchQuery = signal<string>('');
+
+  sortBy = signal<string>('lastModifiedAt');
+  sortDirection = signal<SortDirection>('DESC');
+
+  readonly sortableFields: SortOption[] = [
+    { displayName: 'allPositionsPage.tableColumn.lastModified', fieldName: 'lastModifiedAt', type: 'NUMBER' },
+    { displayName: 'allPositionsPage.tableColumn.job', fieldName: 'title', type: 'TEXT' },
+    { displayName: 'allPositionsPage.tableColumn.status', fieldName: 'state', type: 'TEXT' },
+    { displayName: 'allPositionsPage.tableColumn.startDate', fieldName: 'startDate', type: 'NUMBER' },
+    { displayName: 'allPositionsPage.tableColumn.created', fieldName: 'createdAt', type: 'NUMBER' },
+  ];
+
+  readonly availableStatusOptions: { key: string; label: string }[] = [
+    { key: AdminCreatedJobDTOStateEnum.Draft, label: 'jobState.draft' },
+    { key: AdminCreatedJobDTOStateEnum.Published, label: 'jobState.published' },
+    { key: AdminCreatedJobDTOStateEnum.Closed, label: 'jobState.closed' },
+    { key: AdminCreatedJobDTOStateEnum.ApplicantFound, label: 'jobState.applicantFound' },
+  ];
+
+  readonly stateTextMap = computed<Record<string, string>>(() =>
+    this.availableStatusOptions.reduce<Record<string, string>>((acc, cur) => {
+      acc[cur.key] = cur.label;
+      return acc;
+    }, {}),
+  );
+
+  readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
+  readonly startDateTemplate = viewChild.required<TemplateRef<unknown>>('startDateTemplate');
+  readonly lastModifiedAtTemplate = viewChild.required<TemplateRef<unknown>>('lastModifiedAtTemplate');
+  readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
+  readonly professorTemplate = viewChild.required<TemplateRef<unknown>>('professorTemplate');
+
+  showEditPublishedDialog = signal(false);
+  showDeleteDialog = signal(false);
+  showCloseDialog = signal(false);
+
+  currentJobId = signal<string | undefined>(undefined);
+
+  readonly selectedStatusFilters = signal<string[]>([]);
+  readonly selectedResearchGroupIds = signal<string[]>([]);
+  readonly selectedProfessorIds = signal<string[]>([]);
+
+  readonly researchGroupOptions = signal<{ id: string; name: string }[]>([]);
+  readonly professorOptions = signal<{ id: string; name: string }[]>([]);
+
+  readonly columns = computed<DynamicTableColumn[]>(() => {
+    const tpl = this.actionTemplate();
+    const stateTpl = this.stateTemplate();
+    const startDateTpl = this.startDateTemplate();
+    const lastModifiedAtTpl = this.lastModifiedAtTemplate();
+    const professorTpl = this.professorTemplate();
+
+    return [
+      { field: 'professorName', header: 'allPositionsPage.tableColumn.supervisingProfessor', width: '14rem', template: professorTpl },
+      { field: 'researchGroupName', header: 'allPositionsPage.tableColumn.researchGroup', width: '12rem' },
+      { field: 'title', header: 'allPositionsPage.tableColumn.job', width: '18rem' },
+      { field: 'state', header: 'allPositionsPage.tableColumn.status', width: '10rem', template: stateTpl },
+      { field: 'startDate', header: 'allPositionsPage.tableColumn.startDate', width: '10rem', template: startDateTpl },
+      { field: 'lastModifiedAt', header: 'allPositionsPage.tableColumn.lastModified', width: '10rem', template: lastModifiedAtTpl },
+      { field: 'actions', header: '', width: '5rem', template: tpl },
+    ];
+  });
+
+  readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
+
+  readonly stateSeverityMap = signal<Record<string, 'info' | 'success' | 'contrast' | 'secondary'>>({
+    DRAFT: 'info',
+    PUBLISHED: 'secondary',
+    CLOSED: 'contrast',
+    APPLICANT_FOUND: 'success',
+  });
+
+  // Computed signal that creates a map of job IDs to their menu items
+  readonly jobMenuItems = computed<Map<string, JhiMenuItem[]>>(() => {
+    const menuMap = new Map<string, JhiMenuItem[]>();
+
+    for (const job of this.jobs()) {
+      const items: JhiMenuItem[] = [];
+
+      // Edit action - different behaviour for DRAFT vs PUBLISHED
+      if (job.state === AdminCreatedJobDTOStateEnum.Draft) {
+        items.push({
+          label: 'button.edit',
+          icon: 'pencil',
+          severity: 'primary',
+          command: () => {
+            this.onEditJob(job.jobId);
+          },
+        });
+      } else if (job.state === AdminCreatedJobDTOStateEnum.Published) {
+        items.push({
+          label: 'button.edit',
+          icon: 'pencil',
+          severity: 'primary',
+          command: () => {
+            this.currentJobId.set(job.jobId);
+            this.showEditPublishedDialog.set(true);
+          },
+        });
+      }
+
+      // Delete/Close action - based on state
+      if (job.state === AdminCreatedJobDTOStateEnum.Draft) {
+        items.push({
+          label: 'button.delete',
+          icon: 'trash',
+          severity: 'danger',
+          command: () => {
+            this.currentJobId.set(job.jobId);
+            this.showDeleteDialog.set(true);
+          },
+        });
+      } else if (job.state === AdminCreatedJobDTOStateEnum.Published) {
+        items.push({
+          label: 'button.close',
+          icon: 'xmark',
+          severity: 'danger',
+          command: () => {
+            this.currentJobId.set(job.jobId);
+            this.showCloseDialog.set(true);
+          },
+        });
+      }
+
+      menuMap.set(job.jobId, items);
+    }
+
+    return menuMap;
+  });
+
+  readonly getMenuItems = computed(() => {
+    const menuMap = this.jobMenuItems();
+    return (job: AdminCreatedJobDTO): JhiMenuItem[] => {
+      return menuMap.get(job.jobId) ?? [];
+    };
+  });
+
+  private jobApi = inject(JobResourceApi);
+  private researchGroupApi = inject(ResearchGroupResourceApi);
+  private router = inject(Router);
+  private toastService = inject(ToastService);
+
+  private readonly translationKey: string = 'allPositionsPage';
+
+  /**
+   * Loads filter dropdown sources on init. The first job page load is triggered
+   * by the table's lazy-load event when the template renders.
+   */
+  ngOnInit(): void {
+    void Promise.all([this.loadResearchGroupOptions(), this.loadProfessorOptions()]);
+  }
+
+  loadOnTableEmit(event: TableLazyLoadEvent): void {
+    const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
+    const size = event.rows ?? this.pageSize();
+
+    this.page.set(page);
+    this.pageSize.set(size);
+    void this.loadJobs();
+  }
+
+  onSearchEmit(searchQuery: string): void {
+    const normalizedQuery = searchQuery.trim().replace(/\s+/g, ' ');
+    const currentQuery = this.searchQuery().trim().replace(/\s+/g, ' ');
+
+    if (normalizedQuery !== currentQuery) {
+      this.page.set(0);
+      this.searchQuery.set(normalizedQuery);
+      void this.loadJobs();
+    }
+  }
+
+  onFilterEmit(filterChange: FilterChange): void {
+    if (filterChange.filterId === 'status') {
+      this.page.set(0);
+      this.selectedStatusFilters.set(this.mapTranslationKeysToEnumValues(filterChange.selectedValues));
+      void this.loadJobs();
+    } else if (filterChange.filterId === 'researchGroup') {
+      this.page.set(0);
+      this.selectedResearchGroupIds.set(this.mapNamesToIds(filterChange.selectedValues, this.researchGroupOptions()));
+      void this.loadJobs();
+    } else if (filterChange.filterId === 'professor') {
+      this.page.set(0);
+      this.selectedProfessorIds.set(this.mapNamesToIds(filterChange.selectedValues, this.professorOptions()));
+      void this.loadJobs();
+    }
+  }
+
+  loadOnSortEmit(event: Sort): void {
+    this.page.set(0);
+    this.sortBy.set(event.field);
+    this.sortDirection.set(event.direction);
+    void this.loadJobs();
+  }
+
+  onEditJob(jobId: string): void {
+    if (!jobId) {
+      console.error('Unable to edit job with job id:', jobId);
+    }
+    void this.router.navigate([`/job/edit/${jobId}`]);
+  }
+
+  onViewJob(jobId: string): void {
+    if (!jobId) {
+      console.error('Unable to view job with job id:', jobId);
+    }
+    void this.router.navigate([`/job/detail/${jobId}`]);
+  }
+
+  async onDeleteJob(jobId: string): Promise<void> {
+    try {
+      await firstValueFrom(this.jobApi.deleteJob(jobId));
+      this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteJobSuccess`);
+      await this.loadJobs();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastService.showErrorKey(`${this.translationKey}.toastMessages.deleteJobFailed`, { detail: error.message });
+      }
+    }
+  }
+
+  async onCloseJob(jobId: string): Promise<void> {
+    try {
+      await firstValueFrom(this.jobApi.changeJobState(jobId, AdminCreatedJobDTOStateEnum.Closed));
+      this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.closeJobSuccess`);
+      await this.loadJobs();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastService.showErrorKey(`${this.translationKey}.toastMessages.closeJobFailed`, { detail: error.message });
+      }
+    }
+  }
+
+  onConfirmEdit(): void {
+    const jobId = this.currentJobId();
+    if (jobId !== undefined && jobId !== '') {
+      this.onEditJob(jobId);
+    }
+  }
+
+  async onConfirmDelete(): Promise<void> {
+    const jobId = this.currentJobId();
+    if (jobId !== undefined && jobId !== '') {
+      await this.onDeleteJob(jobId);
+    }
+  }
+
+  async onConfirmClose(): Promise<void> {
+    const jobId = this.currentJobId();
+    if (jobId !== undefined && jobId !== '') {
+      await this.onCloseJob(jobId);
+    }
+  }
+
+  private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
+    const keyMap = new Map(this.availableStatusOptions.map(option => [option.label, option.key]));
+    return translationKeys.map(key => keyMap.get(key) ?? key);
+  }
+
+  private mapNamesToIds(names: string[], options: { id: string; name: string }[]): string[] {
+    const map = new Map(options.map(o => [o.name, o.id]));
+    return names.map(n => map.get(n) ?? n);
+  }
+
+  /**
+   * Loads the research-group options for the filter dropdown using the admin
+   * paged endpoint, since `ResearchGroupDTO` from `getAllResearchGroups` does
+   * not expose a stable id field but `ResearchGroupAdminDTO` does.
+   */
+  private async loadResearchGroupOptions(): Promise<void> {
+    try {
+      const page = await firstValueFrom(this.researchGroupApi.getResearchGroupsForAdmin(1000, 0));
+      const options = (page.content ?? [])
+        .map(rg => ({ id: rg.id ?? '', name: rg.researchGroup ?? '' }))
+        .filter(o => o.id !== '' && o.name !== '');
+      this.researchGroupOptions.set(options);
+    } catch {
+      this.toastService.showErrorKey(`${this.translationKey}.errors.loadFilters`);
+    }
+  }
+
+  private async loadProfessorOptions(): Promise<void> {
+    try {
+      const list = await firstValueFrom(this.researchGroupApi.getAllProfessors());
+      const options = list
+        .map(u => ({
+          id: u.userId ?? '',
+          name: [u.firstName, u.lastName].filter(part => part !== undefined && part !== '').join(' '),
+        }))
+        .filter(o => o.id !== '' && o.name !== '');
+      this.professorOptions.set(options);
+    } catch {
+      this.toastService.showErrorKey(`${this.translationKey}.errors.loadFilters`);
+    }
+  }
+
+  private async loadJobs(): Promise<void> {
+    this.loading.set(true);
+    try {
+      const pageData = await firstValueFrom(
+        this.jobApi.getAllJobs(
+          this.pageSize(),
+          this.page(),
+          emptyToUndef(this.selectedStatusFilters()),
+          emptyToUndef(this.selectedResearchGroupIds()),
+          emptyToUndef(this.selectedProfessorIds()),
+          this.sortBy(),
+          this.sortDirection(),
+          this.searchQuery(),
+        ),
+      );
+      this.jobs.set(pageData.content ?? []);
+      this.totalRecords.set(pageData.totalElements ?? 0);
+    } catch {
+      this.toastService.showErrorKey(`${this.translationKey}.errors.loadJobs`);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+}
