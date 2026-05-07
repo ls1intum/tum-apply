@@ -47,17 +47,31 @@
     @if (user() === undefined) {
       @if (isProfessorPage()) {
         <jhi-button
-          [class]="headerButtonClass"
+          [class]="headerButtonLongClass"
           (click)="redirectToApplicantLandingPage()"
           label="header.applicant"
           severity="primary"
           variant="text"
         />
+        <jhi-button
+          [class]="headerButtonShortClass"
+          (click)="redirectToApplicantLandingPage()"
+          label="header.applicantShort"
+          severity="primary"
+          variant="text"
+        />
       } @else {
         <jhi-button
-          [class]="headerButtonClass"
+          [class]="headerButtonLongClass"
           (click)="redirectToProfessorLandingPage()"
           label="header.professor"
+          severity="primary"
+          variant="text"
+        />
+        <jhi-button
+          [class]="headerButtonShortClass"
+          (click)="redirectToProfessorLandingPage()"
+          label="header.professorShort"
           severity="primary"
           variant="text"
         />
