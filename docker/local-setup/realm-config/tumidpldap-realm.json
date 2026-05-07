@@ -115,6 +115,50 @@
       ]
     },
     {
+      "id": "00000000-0000-0000-0000-000000000107",
+      "username": "employee1",
+      "enabled": true,
+      "email": "employee1@tumapply.local",
+      "emailVerified": true,
+      "firstName": "Emil",
+      "lastName": "Employee",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "employee",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000108",
+      "username": "employee2",
+      "enabled": true,
+      "email": "employee2@tumapply.local",
+      "emailVerified": true,
+      "firstName": "Eva",
+      "lastName": "Employee",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "employee",
+          "temporary": false
+        }
+      ]
+    },
+    {
       "username": "service-account-tumapply-admin-api",
       "enabled": true,
       "emailVerified": true,
