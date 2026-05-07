@@ -535,6 +535,29 @@ class JobResourceTest extends AbstractResourceTest {
         }
     }
 
+    // ===== GET ALL JOBS (ADMIN) =====
+    @Nested
+    class GetAllJobsTests {
+
+        @Test
+        void shouldReturnAllJobsForAdmin() {
+            UUID adminUserId = UUID.randomUUID();
+            PageResponse<AdminCreatedJobDTO> page = api
+                .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
+                .getAndRead("/api/jobs/all", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 200);
+
+            assertThat(page.totalElements()).isEqualTo(2);
+            assertThat(page.content()).hasSize(2);
+        }
+
+        @Test
+        void shouldRejectProfessorOnAdminEndpoint() {
+            api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/jobs/all", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 403);
+        }
+    }
+
     // ===== GET JOB BY ID =====
     @Nested
     class GetJobByIdTests {
