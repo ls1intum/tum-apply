@@ -200,13 +200,6 @@ describe('AllApplicationsPageComponent', () => {
     });
   });
 
-  describe('toBadgeState', () => {
-    it('should pass the admin enum value through unchanged', () => {
-      expect(comp.toBadgeState(AdminApplicationOverviewDTOStateEnum.Saved)).toBe('SAVED');
-      expect(comp.toBadgeState(undefined)).toBeUndefined();
-    });
-  });
-
   describe('actions', () => {
     it('should navigate to the detail page on view', () => {
       const navigateSpy = vi.spyOn(router, 'navigate');

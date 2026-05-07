@@ -384,31 +384,35 @@ public class ApplicationService {
         SortDTO sortDTO,
         String searchQuery
     ) {
-        // 1) Build pageable using the same ColumnMapping as the applicant-scoped getAllApplications.
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.APPLICANT_APPLICATIONS, true);
-        // 2) Map the optional state strings to enum values.
-        List<ApplicationState> enumStates = null;
-        if (adminFilter.states() != null && !adminFilter.states().isEmpty()) {
-            enumStates = adminFilter.states().stream().map(ApplicationState::valueOf).filter(Objects::nonNull).toList();
-        }
-        // 3) Empty filter lists become nulls so the JPQL `IS NULL` short-circuit applies.
-        List<UUID> researchGroupIds = (adminFilter.researchGroupIds() == null || adminFilter.researchGroupIds().isEmpty())
-            ? null
-            : adminFilter.researchGroupIds();
-        List<UUID> supervisingProfessorIds = (adminFilter.supervisingProfessorIds() == null ||
-                adminFilter.supervisingProfessorIds().isEmpty())
-            ? null
-            : adminFilter.supervisingProfessorIds();
-        List<UUID> jobIds = (adminFilter.jobIds() == null || adminFilter.jobIds().isEmpty()) ? null : adminFilter.jobIds();
-        String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
         return applicationRepository.findAllApplicationsForAdmin(
-            enumStates,
-            researchGroupIds,
-            supervisingProfessorIds,
-            jobIds,
-            normalizedSearchQuery,
+            mapStateFilter(adminFilter.states()),
+            nullIfEmpty(adminFilter.researchGroupIds()),
+            nullIfEmpty(adminFilter.supervisingProfessorIds()),
+            nullIfEmpty(adminFilter.jobIds()),
+            StringUtil.normalizeSearchQuery(searchQuery),
             pageable
         );
+    }
+
+    /**
+     * Maps a list of {@link ApplicationState} string values to enum values.
+     * Returns {@code null} when the input is {@code null} or empty so the calling
+     * JPQL query can short-circuit the {@code IS NULL} branch.
+     */
+    private static List<ApplicationState> mapStateFilter(List<String> states) {
+        if (states == null || states.isEmpty()) {
+            return null;
+        }
+        return states.stream().map(ApplicationState::valueOf).filter(Objects::nonNull).toList();
+    }
+
+    /**
+     * Returns {@code null} when the list is {@code null} or empty, otherwise the list itself.
+     * Used to feed empty filters to JPQL queries that compare against {@code :param IS NULL}.
+     */
+    private static <T> List<T> nullIfEmpty(List<T> list) {
+        return (list == null || list.isEmpty()) ? null : list;
     }
 
     /**

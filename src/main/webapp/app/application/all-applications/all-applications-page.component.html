@@ -90,7 +90,7 @@
       </ng-template>
 
       <ng-template #stateTemplate let-row>
-        <jhi-application-state-for-applicants [state]="toBadgeState(row.state)" />
+        <jhi-application-state-for-applicants [state]="$any(row.state)" />
       </ng-template>
 
       <ng-template #createdAtTemplate let-row>

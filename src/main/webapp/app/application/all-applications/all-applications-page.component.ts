@@ -21,11 +21,11 @@ import { BadgeModule } from 'primeng/badge';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { AdminApplicationOverviewDTO, AdminApplicationOverviewDTOStateEnum } from '../../generated/model/admin-application-overview-dto';
-import { ApplicationDetailDTOApplicationStateEnum } from '../../generated/model/application-detail-dto';
 import { ApplicationResourceApi } from '../../generated/api/application-resource-api';
 import { ResearchGroupResourceApi } from '../../generated/api/research-group-resource-api';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 
+// nosemgrep: javascript.security.hard-coded-password
 const TRANSLATION_KEY = 'allApplicationsPage';
 
 /**
@@ -174,17 +174,6 @@ export class AllApplicationsPageComponent implements OnInit {
   private researchGroupApi = inject(ResearchGroupResourceApi);
   private router = inject(Router);
   private toastService = inject(ToastService);
-
-  /**
-   * Casts the admin DTO state enum (structurally identical string union) to the
-   * detail DTO enum expected by the shared status badge component.
-   *
-   * @param state - State value coming from the admin overview DTO.
-   * @returns The same value typed as the detail DTO state enum.
-   */
-  toBadgeState(state: AdminApplicationOverviewDTOStateEnum | undefined): ApplicationDetailDTOApplicationStateEnum {
-    return state as unknown as ApplicationDetailDTOApplicationStateEnum;
-  }
 
   /**
    * Loads filter dropdown sources on init. The first applications page load is
