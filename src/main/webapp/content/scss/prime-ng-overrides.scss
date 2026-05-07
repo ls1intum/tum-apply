@@ -72,6 +72,15 @@ p-step[data-p-active='true'] .p-step-title {
   background: var(--p-background-surface) !important;
 }
 
+.p-accordionheader {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+
+  > .p-accordionheader-toggle-icon {
+    flex-shrink: 0;
+  }
+}
+
 /* Disable all transitions and animations while switching theme */
 .theme-switching *,
 .theme-switching *::before,
