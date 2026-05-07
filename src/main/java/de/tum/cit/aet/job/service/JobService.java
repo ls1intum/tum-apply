@@ -380,12 +380,7 @@ public class JobService {
      * @param searchQuery      search string for supervising professor or job title
      * @return a page of {@link AdminCreatedJobDTO} matching the criteria
      */
-    public Page<AdminCreatedJobDTO> getAllJobs(
-        PageDTO pageDTO,
-        AdminJobsFilterDTO adminFilter,
-        SortDTO sortDTO,
-        String searchQuery
-    ) {
+    public Page<AdminCreatedJobDTO> getAllJobs(PageDTO pageDTO, AdminJobsFilterDTO adminFilter, SortDTO sortDTO, String searchQuery) {
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
         List<JobState> enumStates = null;
         if (adminFilter.states() != null && !adminFilter.states().isEmpty()) {
@@ -395,17 +390,11 @@ public class JobService {
             ? null
             : adminFilter.researchGroupIds();
         List<UUID> supervisingProfessorIds = (adminFilter.supervisingProfessorIds() == null ||
-                adminFilter.supervisingProfessorIds().isEmpty())
+            adminFilter.supervisingProfessorIds().isEmpty())
             ? null
             : adminFilter.supervisingProfessorIds();
         String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
-        return jobRepository.findAllJobsForAdmin(
-            enumStates,
-            researchGroupIds,
-            supervisingProfessorIds,
-            normalizedSearchQuery,
-            pageable
-        );
+        return jobRepository.findAllJobsForAdmin(enumStates, researchGroupIds, supervisingProfessorIds, normalizedSearchQuery, pageable);
     }
 
     private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {

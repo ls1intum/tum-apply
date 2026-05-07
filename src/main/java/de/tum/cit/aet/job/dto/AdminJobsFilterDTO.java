@@ -10,8 +10,4 @@ import java.util.UUID;
  * @param researchGroupIds        optional filter for one or more research-group ids
  * @param supervisingProfessorIds optional filter for one or more supervising-professor user ids
  */
-public record AdminJobsFilterDTO(
-    List<String> states,
-    List<UUID> researchGroupIds,
-    List<UUID> supervisingProfessorIds
-) {}
+public record AdminJobsFilterDTO(List<String> states, List<UUID> researchGroupIds, List<UUID> supervisingProfessorIds) {}

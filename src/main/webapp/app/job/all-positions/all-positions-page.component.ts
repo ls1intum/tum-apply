@@ -23,6 +23,8 @@ import { AdminCreatedJobDTO, AdminCreatedJobDTOStateEnum } from '../../generated
 import { JobResourceApi } from '../../generated/api/job-resource-api';
 import { ResearchGroupResourceApi } from '../../generated/api/research-group-resource-api';
 
+const TRANSLATION_KEY = 'allPositionsPage';
+
 /**
  * Admin-only page listing every job across all research groups, with the same
  * management actions a professor has on their own jobs (Edit/Delete on DRAFT,
@@ -98,6 +100,9 @@ export class AllPositionsPageComponent implements OnInit {
 
   readonly researchGroupOptions = signal<{ id: string; name: string }[]>([]);
   readonly professorOptions = signal<{ id: string; name: string }[]>([]);
+
+  readonly researchGroupOptionLabels = computed(() => this.researchGroupOptions().map(o => o.name));
+  readonly professorOptionLabels = computed(() => this.professorOptions().map(o => o.name));
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const tpl = this.actionTemplate();
@@ -196,8 +201,6 @@ export class AllPositionsPageComponent implements OnInit {
   private router = inject(Router);
   private toastService = inject(ToastService);
 
-  private readonly translationKey: string = 'allPositionsPage';
-
   /**
    * Loads filter dropdown sources on init. The first job page load is triggered
    * by the table's lazy-load event when the template renders.
@@ -266,11 +269,11 @@ export class AllPositionsPageComponent implements OnInit {
   async onDeleteJob(jobId: string): Promise<void> {
     try {
       await firstValueFrom(this.jobApi.deleteJob(jobId));
-      this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteJobSuccess`);
+      this.toastService.showSuccessKey(`${TRANSLATION_KEY}.toastMessages.deleteJobSuccess`);
       await this.loadJobs();
     } catch (error) {
       if (error instanceof Error) {
-        this.toastService.showErrorKey(`${this.translationKey}.toastMessages.deleteJobFailed`, { detail: error.message });
+        this.toastService.showErrorKey(`${TRANSLATION_KEY}.toastMessages.deleteJobFailed`, { detail: error.message });
       }
     }
   }
@@ -278,11 +281,11 @@ export class AllPositionsPageComponent implements OnInit {
   async onCloseJob(jobId: string): Promise<void> {
     try {
       await firstValueFrom(this.jobApi.changeJobState(jobId, AdminCreatedJobDTOStateEnum.Closed));
-      this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.closeJobSuccess`);
+      this.toastService.showSuccessKey(`${TRANSLATION_KEY}.toastMessages.closeJobSuccess`);
       await this.loadJobs();
     } catch (error) {
       if (error instanceof Error) {
-        this.toastService.showErrorKey(`${this.translationKey}.toastMessages.closeJobFailed`, { detail: error.message });
+        this.toastService.showErrorKey(`${TRANSLATION_KEY}.toastMessages.closeJobFailed`, { detail: error.message });
       }
     }
   }
@@ -331,7 +334,7 @@ export class AllPositionsPageComponent implements OnInit {
         .filter(o => o.id !== '' && o.name !== '');
       this.researchGroupOptions.set(options);
     } catch {
-      this.toastService.showErrorKey(`${this.translationKey}.errors.loadFilters`);
+      this.toastService.showErrorKey(`${TRANSLATION_KEY}.errors.loadFilters`);
     }
   }
 
@@ -346,7 +349,7 @@ export class AllPositionsPageComponent implements OnInit {
         .filter(o => o.id !== '' && o.name !== '');
       this.professorOptions.set(options);
     } catch {
-      this.toastService.showErrorKey(`${this.translationKey}.errors.loadFilters`);
+      this.toastService.showErrorKey(`${TRANSLATION_KEY}.errors.loadFilters`);
     }
   }
 
@@ -368,7 +371,7 @@ export class AllPositionsPageComponent implements OnInit {
       this.jobs.set(pageData.content ?? []);
       this.totalRecords.set(pageData.totalElements ?? 0);
     } catch {
-      this.toastService.showErrorKey(`${this.translationKey}.errors.loadJobs`);
+      this.toastService.showErrorKey(`${TRANSLATION_KEY}.errors.loadJobs`);
     } finally {
       this.loading.set(false);
     }

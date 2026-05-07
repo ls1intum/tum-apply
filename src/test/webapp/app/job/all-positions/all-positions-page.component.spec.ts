@@ -237,10 +237,7 @@ describe('AllPositionsPageComponent', () => {
     it('should map status translation keys to enum values and reload', () => {
       const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
       component.onFilterEmit({ filterId: 'status', selectedValues: ['jobState.draft', 'jobState.published'] });
-      expect(component.selectedStatusFilters()).toEqual([
-        AdminCreatedJobDTOStateEnum.Draft,
-        AdminCreatedJobDTOStateEnum.Published,
-      ]);
+      expect(component.selectedStatusFilters()).toEqual([AdminCreatedJobDTOStateEnum.Draft, AdminCreatedJobDTOStateEnum.Published]);
       expect(loadSpy).toHaveBeenCalled();
     });
 
@@ -333,9 +330,7 @@ describe('AllPositionsPageComponent', () => {
     });
 
     it('should default jobs and totalRecords when API returns undefined values', async () => {
-      mockJobApi.getAllJobs.mockReturnValueOnce(
-        of<PageAdminCreatedJobDTO>({ content: undefined, totalElements: undefined }),
-      );
+      mockJobApi.getAllJobs.mockReturnValueOnce(of<PageAdminCreatedJobDTO>({ content: undefined, totalElements: undefined }));
       await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
       expect(component.jobs()).toEqual([]);
       expect(component.totalRecords()).toBe(0);
@@ -457,9 +452,7 @@ describe('AllPositionsPageComponent', () => {
     });
 
     it('should omit menu items for applicant-found jobs', () => {
-      component.jobs.set([
-        { jobId: '4', state: AdminCreatedJobDTOStateEnum.ApplicantFound, title: 'Found' } as AdminCreatedJobDTO,
-      ]);
+      component.jobs.set([{ jobId: '4', state: AdminCreatedJobDTOStateEnum.ApplicantFound, title: 'Found' } as AdminCreatedJobDTO]);
       expect(component.jobMenuItems().get('4') ?? []).toEqual([]);
     });
 
