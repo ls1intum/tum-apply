@@ -1,0 +1,33 @@
+from pathlib import Path
+
+def combine_sql_from_parent():
+  # 1) Locate where this script is currently saved
+  script_path = Path(__file__).resolve()
+
+  # 2) Set the source directory to the parent folder
+  parent_dir = script_path.parent.parent
+
+  # 3) Define the output file name (saved in the same folder as the script)
+  output_file = script_path.parent / "tumapply-testdata-combined.sql"
+
+  print(f"Searching for SQL files in: {parent_dir}")
+
+  # 4) Find all .sql files in the parent directory
+  sql_files = sorted(list(parent_dir.glob("*.sql")))
+
+  if not sql_files:
+    print("No SQL files found in the parent directory.")
+    return
+
+  with open(output_file, 'w', encoding='utf-8') as outfile:
+    for file_path in sql_files:
+      with open(file_path, 'r', encoding='utf-8') as infile:
+        outfile.write(infile.read())
+
+      # Add spacing and a terminator to ensure clean separation
+      outfile.write("\n\n")
+
+  print(f"Done! Combined {len(sql_files)} files into: {output_file.name}")
+
+if __name__ == "__main__":
+  combine_sql_from_parent()
