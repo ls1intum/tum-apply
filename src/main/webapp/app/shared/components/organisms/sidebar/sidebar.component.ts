@@ -151,7 +151,7 @@ export class SidebarComponent {
           title: 'sidebar.users.users',
           buttons: [
             { icon: 'users', text: 'sidebar.users.manageusers', link: '/manage-users' },
-            { icon: 'file', text: 'sidebar.users.file', link: '/applications' },
+            { icon: 'file', text: 'sidebar.users.applications', link: '/applications' },
           ],
         },
         {
