@@ -40,3 +40,4 @@ def combine_sql_from_parent():
 
 if __name__ == "__main__":
     combine_sql_from_parent()
+
