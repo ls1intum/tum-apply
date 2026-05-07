@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -35,6 +36,7 @@ public class MultiRealmJwtDecoder implements JwtDecoder {
      * @param tumLoginRealm name of the TUM IDP/LDAP realm
      * @param externalLoginRealm name of the external login realm
      */
+    @Autowired
     public MultiRealmJwtDecoder(
         @Value("${keycloak.url}") String keycloakUrl,
         @Value("${keycloak.tum-login-realm}") String tumLoginRealm,
