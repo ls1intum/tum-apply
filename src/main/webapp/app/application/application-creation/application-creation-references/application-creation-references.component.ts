@@ -12,7 +12,7 @@ import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ReferenceRequestResourceApi } from 'app/generated/api/reference-request-resource-api';
 import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
-import {SelectComponent} from "app/shared/components/atoms/select/select.component";
+import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
 
 const TITLE_OPTIONS: ReadonlyArray<string> = ['Prof. Dr.', 'Prof.', 'Dr.'];
 

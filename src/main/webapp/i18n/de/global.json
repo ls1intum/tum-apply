@@ -471,7 +471,7 @@
         "title": "Titel",
         "firstName": "Vorname",
         "lastName": "Nachname",
-        "email": "Geschäftliche E-Mail"
+        "email": "E-Mail"
       },
       "button": {
         "add": "Hinzufügen",

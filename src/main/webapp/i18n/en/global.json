@@ -471,7 +471,7 @@
         "title": "Title",
         "firstName": "First Name",
         "lastName": "Last Name",
-        "email": "Business Email"
+        "email": "Email"
       },
       "button": {
         "add": "Add",
