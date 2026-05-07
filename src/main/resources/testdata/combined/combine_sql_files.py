@@ -38,6 +38,6 @@ def combine_sql_from_parent():
 
     print(f"Done! Combined {len(sql_files)} files into: {output_file.name}")
 
+
 if __name__ == "__main__":
     combine_sql_from_parent()
-
