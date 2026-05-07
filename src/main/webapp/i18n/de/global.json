@@ -461,7 +461,7 @@
     },
     "applicationReferences": {
       "description": "Trage hier die Personen ein, die ein Empfehlungsschreiben für dich verfassen sollen. Sobald du deine Bewerbung absendest, erhalten sie automatisch einen sicheren Link per E-Mail – ein Konto ist nicht erforderlich.",
-      "requiredCount": "Benötigt: {{ count }} · Hinzugefügt: ",
+      "requiredCount": "Benötigt: {count} · Hinzugefügt: ",
       "empty": "Noch keine Referenzgeber hinzugefügt.",
       "section": {
         "required": "Benötigte Referenzgeber",
