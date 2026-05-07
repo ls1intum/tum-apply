@@ -41,7 +41,13 @@ export default class MainComponent {
       dayjs.locale(langChangeEvent.lang);
       this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
     });
-    afterNextRender(() => this.onboardingOrchestratorService.hookToAuth(this.loggedIn));
+    afterNextRender(() => {
+      this.onboardingOrchestratorService.hookToAuth(this.loggedIn);
+      // Collapse the sidebar by default on small viewports so it doesn't cover the page on phones
+      if (typeof window !== 'undefined' && window.innerWidth < 640 && !this.localStorageService.sidebarCollapsed()) {
+        this.localStorageService.sidebarCollapsed.set(true);
+      }
+    });
   }
 
   onActivate(): void {
