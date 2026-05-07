@@ -6,7 +6,9 @@
     jhiTranslate="professorLandingPage.workflow.headline"
   ></h2>
   <div class="flex flex-col items-center max-md:gap-6">
-    <div class="flex justify-center gap-10 max-lg:flex-wrap max-lg:px-6 max-lg:gap-8 max-md:flex-col max-md:px-0 max-md:gap-4 max-md:w-full">
+    <div
+      class="flex justify-center gap-10 max-lg:flex-wrap max-lg:px-6 max-lg:gap-8 max-md:flex-col max-md:px-0 max-md:gap-4 max-md:w-full"
+    >
       @for (step of steps; track step.title) {
         <jhi-workflow-step [icon]="step.icon" [title]="step.title | translate" [description]="step.description | translate" />
       }

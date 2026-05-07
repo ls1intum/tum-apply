@@ -10,9 +10,10 @@
   >
     <div class="filter-trigger">
       @if (!hasSelectedItems()) {
-        <span class="trigger-placeholder mr-4 max-md:mr-2 max-md:flex-1 max-md:overflow-hidden max-md:text-ellipsis max-md:whitespace-nowrap">{{
-          displayFilterLabel()
-        }}</span>
+        <span
+          class="trigger-placeholder mr-4 max-md:mr-2 max-md:flex-1 max-md:overflow-hidden max-md:text-ellipsis max-md:whitespace-nowrap"
+          >{{ displayFilterLabel() }}</span
+        >
       } @else if (showChipsCounterOnly()) {
         <span class="trigger-summary mr-4 max-md:mr-2 max-md:flex-1 max-md:overflow-hidden max-md:text-ellipsis max-md:whitespace-nowrap">{{
           getSummaryLabel()
@@ -31,11 +32,7 @@
         </div>
       }
     </div>
-    <fa-icon
-      class="filter-icon transition-transform max-md:flex-shrink-0"
-      [class.rotate-180]="isOpen()"
-      [icon]="['fas', 'chevron-down']"
-    />
+    <fa-icon class="filter-icon transition-transform max-md:flex-shrink-0" [class.rotate-180]="isOpen()" [icon]="['fas', 'chevron-down']" />
   </div>
 
   @if (isOpen()) {
