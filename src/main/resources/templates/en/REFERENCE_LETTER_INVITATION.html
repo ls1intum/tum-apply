@@ -1,10 +1,9 @@
-<p>Dear ${REFEREE_FIRST_NAME!} ${REFEREE_LAST_NAME!},</p>
+<p>Dear <#if REFEREE_NAME_TITLE??>${REFEREE_NAME_TITLE} </#if>${REFEREE_FIRST_NAME!} ${REFEREE_LAST_NAME!},</p>
 
 <p><strong>${APPLICANT_FIRST_NAME!} ${APPLICANT_LAST_NAME!}</strong> is applying for the position
   <strong>${JOB_TITLE!}</strong> at ${RESEARCH_GROUP_NAME!} and has named you as a reference.</p>
 
-<p>Please use the secure link below to upload your recommendation letter as a PDF.
-  You do not need a TUMApply account &mdash; the link contains everything required.</p>
+<p>Please use the link below to upload your recommendation letter as a PDF.
 
 <@ui.ctaButton href=(REFERENCE_LINK!'') label="Upload Recommendation" />
 

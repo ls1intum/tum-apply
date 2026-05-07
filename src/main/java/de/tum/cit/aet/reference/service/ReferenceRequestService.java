@@ -185,6 +185,7 @@ public class ReferenceRequestService {
         String deadline = entry.getTokenExpiresAt() != null ? entry.getTokenExpiresAt().toLocalDate().format(DEADLINE_FORMATTER) : "";
 
         ReferenceLetterInvitationContextDTO ctx = new ReferenceLetterInvitationContextDTO(
+            entry.getTitle(),
             entry.getFirstName(),
             entry.getLastName(),
             application.getApplicantFirstName(),

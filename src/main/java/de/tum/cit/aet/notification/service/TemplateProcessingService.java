@@ -295,6 +295,7 @@ public class TemplateProcessingService {
      * @param ctx       the invitation context for the external referee
      */
     private void addReferenceLetterInvitationContextData(Map<String, Object> dataModel, ReferenceLetterInvitationContextDTO ctx) {
+        dataModel.put(TemplateVariable.REFEREE_NAME_TITLE.getValue(), ctx.refereeNameTitle());
         dataModel.put(TemplateVariable.REFEREE_FIRST_NAME.getValue(), ctx.refereeFirstName());
         dataModel.put(TemplateVariable.REFEREE_LAST_NAME.getValue(), ctx.refereeLastName());
         dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), ctx.applicantFirstName());

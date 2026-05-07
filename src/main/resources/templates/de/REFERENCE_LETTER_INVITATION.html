@@ -1,10 +1,9 @@
-<p>Sehr geehrte/r ${REFEREE_FIRST_NAME!} ${REFEREE_LAST_NAME!},</p>
+<p>Sehr geehrte/r <#if REFEREE_NAME_TITLE??>${REFEREE_NAME_TITLE} </#if>${REFEREE_FIRST_NAME!} ${REFEREE_LAST_NAME!},</p>
 
 <p><strong>${APPLICANT_FIRST_NAME!} ${APPLICANT_LAST_NAME!}</strong> bewirbt sich auf die Position
   <strong>${JOB_TITLE!}</strong> bei ${RESEARCH_GROUP_NAME!} und hat Sie als Referenzgeber angegeben.</p>
 
-<p>Über den folgenden sicheren Link können Sie Ihr Empfehlungsschreiben als PDF hochladen.
-  Sie benötigen kein TUMApply-Konto &ndash; der Link enthält alles Notwendige.</p>
+<p>Über den folgenden Link können Sie Ihr Empfehlungsschreiben als PDF hochladen.
 
 <@ui.ctaButton href=(REFERENCE_LINK!'') label="Empfehlung hochladen" />
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * Context for the {@code REFERENCE_LETTER_INVITATION} email sent to an external referee.
  *
+ * @param refereeNameTitle        the referee's name title (e.g. "Prof.") or null if none
  * @param refereeFirstName        the referee's first name
  * @param refereeLastName         the referee's last name
  * @param applicantFirstName      the applicant who requested the letter
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ReferenceLetterInvitationContextDTO(
+    String refereeNameTitle,
     String refereeFirstName,
     String refereeLastName,
     String applicantFirstName,
