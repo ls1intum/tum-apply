@@ -47,7 +47,7 @@ export default class MainComponent {
       // Collapse the sidebar by default on small viewports so it doesn't cover the page on phones
       if (
         typeof window !== 'undefined' &&
-        window.matchMedia(BREAKPOINT_QUERIES.onlyMobile).matches &&
+        window.matchMedia(BREAKPOINT_QUERIES.belowTailwindSm).matches &&
         !this.localStorageService.sidebarCollapsed()
       ) {
         this.localStorageService.sidebarCollapsed.set(true);
