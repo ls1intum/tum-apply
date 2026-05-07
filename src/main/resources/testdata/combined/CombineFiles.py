@@ -13,7 +13,13 @@ def combine_sql_from_parent():
   print(f"Searching for SQL files in: {parent_dir}")
 
   # 4) Find all .sql files in the parent directory
-  sql_files = sorted(list(parent_dir.glob("*.sql")))
+  all_sql_files = parent_dir.glob("*.sql")
+
+  # 5) Filter out the drop tables file and sort the results
+  sql_files = sorted([
+    f for f in all_sql_files
+    if f.name != "00_drop_all_tables.sql"
+  ])
 
   if not sql_files:
     print("No SQL files found in the parent directory.")
