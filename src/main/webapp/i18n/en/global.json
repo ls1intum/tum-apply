@@ -320,7 +320,7 @@
     "application_detail": {
       "headline": "Application for ",
       "applicant": {
-        "header": "Application for '{jobTitle}'",
+        "header": "Application for {jobTitle}",
         "title_prefix": "Application for"
       },
       "position_overview": "Position Overview",
@@ -412,8 +412,7 @@
         "masterGrade": "Final Master Grade"
       },
       "helperText": {
-        "scale": "Scale: ",
-        "gradingScale": "{upperLimit} (best) to {lowerLimit} (pass)",
+        "gradingScale": "Scale: {upperLimit} (best) to {lowerLimit} (pass)",
         "changeScale": "Change Scale"
       },
       "warnText": "Unusual format, please check your entry",

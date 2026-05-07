@@ -19,7 +19,6 @@ export class DynamicTableColumn {
   standalone: true,
   imports: [CommonModule, TableModule, ButtonModule, TranslateDirective, ProgressSpinnerComponent],
   templateUrl: './dynamic-table.component.html',
-  styleUrls: ['./dynamic-table.component.scss'],
 })
 export class DynamicTableComponent {
   loading = input<boolean>(false);

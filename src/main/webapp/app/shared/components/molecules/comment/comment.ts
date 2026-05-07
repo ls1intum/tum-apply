@@ -11,7 +11,6 @@ import { ConfirmDialog } from '../../atoms/confirm-dialog/confirm-dialog';
   selector: 'jhi-comment',
   imports: [ButtonComponent, TextareaModule, TimeAgoPipe, ConfirmDialog],
   templateUrl: './comment.html',
-  styleUrl: './comment.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class Comment {

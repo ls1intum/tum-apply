@@ -1,22 +1,11 @@
-import {
-  Component,
-  DestroyRef,
-  ElementRef,
-  Signal,
-  TemplateRef,
-  afterNextRender,
-  computed,
-  inject,
-  input,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, Signal, TemplateRef, computed, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateDirective } from 'app/shared/language';
+import { StickyFooterShellComponent } from 'app/shared/components/molecules/sticky-footer-shell/sticky-footer-shell.component';
 
 import { Button } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../button-group/button-group.component';
@@ -41,9 +30,16 @@ export type StepData = {
 
 @Component({
   selector: 'jhi-progress-stepper',
-  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateDirective, TooltipModule],
+  imports: [
+    CommonModule,
+    StepperModule,
+    ButtonGroupComponent,
+    TranslateModule,
+    TranslateDirective,
+    TooltipModule,
+    StickyFooterShellComponent,
+  ],
   templateUrl: './progress-stepper.component.html',
-  styleUrl: './progress-stepper.component.scss',
   standalone: true,
 })
 export class ProgressStepperComponent {
@@ -51,11 +47,6 @@ export class ProgressStepperComponent {
   steps = input<StepData[]>([]);
 
   shouldTranslate = input<boolean | undefined>(undefined);
-
-  /** Tracks whether the sticky footer is at the actual bottom of the page */
-  isAtBottom = signal<boolean>(false);
-
-  bottomSentinel = viewChild<ElementRef<HTMLDivElement>>('bottomSentinel');
 
   buttonGroupPrev: Signal<ButtonGroupData> = computed(() =>
     this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupPrev, 'prev', this.currentStep()),
@@ -72,29 +63,8 @@ export class ProgressStepperComponent {
     return this.steps().map(step => ((step.shouldTranslate ?? false) ? this.translateService.instant(step.name) : step.name));
   });
 
-  private destroyRef = inject(DestroyRef);
   private translateService = inject(TranslateService);
   private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
-
-  constructor() {
-    afterNextRender(() => {
-      const sentinel = this.bottomSentinel()?.nativeElement;
-      if (sentinel) {
-        const observer = new IntersectionObserver(
-          entries => {
-            // When sentinel is visible, sticky bottom is at actual bottom
-            this.isAtBottom.set(entries[0].isIntersecting);
-          },
-          { threshold: 0 },
-        );
-        observer.observe(sentinel);
-        this.destroyRef.onDestroy(() => {
-          observer.disconnect();
-        });
-      }
-    });
-  }
-
   goToStep(index: number): void {
     if (index > 0 && index <= this.steps().length) {
       this.currentStep.set(index);
