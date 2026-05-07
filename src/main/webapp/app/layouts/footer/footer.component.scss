@@ -48,17 +48,8 @@
 
 @media (max-width: 600px) {
   .footer {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
     font-size: 0.75rem;
     padding: 0.5rem;
-    text-align: center;
-  }
-
-  .footer .legal-section {
-    margin-left: 0;
-    padding-right: 0;
   }
 
   .logo-section,
