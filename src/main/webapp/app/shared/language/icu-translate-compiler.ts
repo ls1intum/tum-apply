@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  InterpolatableTranslation,
-  InterpolatableTranslationObject,
-  TranslateCompiler,
-  TranslationObject,
-} from '@ngx-translate/core';
+import { InterpolatableTranslation, InterpolatableTranslationObject, TranslateCompiler, TranslationObject } from '@ngx-translate/core';
 import { IntlMessageFormat } from 'intl-messageformat';
 
 /**
@@ -38,7 +33,7 @@ export class IcuTranslateCompiler extends TranslateCompiler {
     const key = `${lang}::${value}`;
     let renderer = this.cache.get(key);
     if (!renderer) {
-      const mf = new IntlMessageFormat(value, lang);
+      const mf = new IntlMessageFormat(value, lang, undefined, { ignoreTag: true });
       renderer = (params): string => String(mf.format(params ?? {}));
       this.cache.set(key, renderer);
     }
