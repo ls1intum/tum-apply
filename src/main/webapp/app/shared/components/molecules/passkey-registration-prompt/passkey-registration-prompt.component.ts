@@ -7,6 +7,10 @@ import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import { TranslateDirective } from 'app/shared/language';
 
+/**
+ * Post-login dialog that invites a signed-in user to register a passkey for faster future sign-ins. Honours an
+ * opt-out preference so the prompt is only shown once per user unless they ask to be reminded again.
+ */
 @Component({
   selector: 'jhi-passkey-registration-prompt',
   standalone: true,

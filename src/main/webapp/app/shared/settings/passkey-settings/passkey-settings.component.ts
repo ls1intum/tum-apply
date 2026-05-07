@@ -15,6 +15,10 @@ interface PasskeySettingsItem {
   removing: boolean;
 }
 
+/**
+ * Settings panel that lets the signed-in user list, create, and remove their passkeys. Loads existing credentials on
+ * init and surfaces success / error feedback through the toast service so failures don't fail silently.
+ */
 @Component({
   selector: 'jhi-passkey-settings',
   standalone: true,

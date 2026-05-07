@@ -33,10 +33,7 @@ function stubWebAuthn(credentials: { create?: ReturnType<typeof vi.fn>; get?: Re
   vi.stubGlobal('PublicKeyCredential', MockPublicKeyCredential);
   vi.stubGlobal('AuthenticatorAssertionResponse', MockAuthenticatorAssertionResponse);
   vi.stubGlobal('AuthenticatorAttestationResponse', MockAuthenticatorAttestationResponse);
-  vi.stubGlobal('navigator', {
-    ...navigator,
-    credentials,
-  });
+  vi.stubGlobal('navigator', Object.assign({}, navigator, { credentials }));
 }
 
 type PasskeyManagerDependencies = ConstructorParameters<typeof KeycloakPasskeyManager>[0];

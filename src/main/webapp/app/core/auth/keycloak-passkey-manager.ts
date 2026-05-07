@@ -37,6 +37,11 @@ interface PasskeyManagerDependencies {
   refreshKeycloakSessionFromBrowser: () => Promise<void>;
 }
 
+/**
+ * Drives the passkey lifecycle against Keycloak (login, registration, listing, removal) by orchestrating WebAuthn calls
+ * with the credential challenge / verify endpoints. Framework-agnostic: collaborates with the surrounding service via
+ * the injected {@link PasskeyManagerDependencies} contract instead of accessing Angular state directly.
+ */
 export class KeycloakPasskeyManager {
   constructor(private readonly deps: PasskeyManagerDependencies) {
     this.deps = deps;
