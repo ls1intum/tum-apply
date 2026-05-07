@@ -77,6 +77,19 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     List<UUID> findUserIdsByResearchGroupId(@Param("researchGroupId") UUID researchGroupId);
 
     /**
+     * Returns the user ids of every user that holds the PROFESSOR role in any research group.
+     *
+     * @return list of professor user ids across all research groups
+     */
+    @Query(
+        """
+            SELECT DISTINCT rgr.user.userId FROM UserResearchGroupRole rgr
+            WHERE rgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+        """
+    )
+    List<UUID> findAllProfessorUserIds();
+
+    /**
      * Finds users by their IDs with eagerly loaded research group roles and research group.
      * If a currentUserId is provided (non-null), the result will order that user first
      * and then the rest alphabetically by first and last name. If currentUserId is null,
