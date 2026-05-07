@@ -53,9 +53,10 @@
                   <jhi-confirm-dialog
                     #removePasskeyDialog
                     [showOpenButton]="false"
-                    [label]="'button.remove' | translate"
-                    [header]="'settings.passkeys.removeConfirm.header' | translate"
-                    [message]="'settings.passkeys.removeConfirm.message' | translate: { name: passkey.label }"
+                    label="button.remove"
+                    header="settings.passkeys.removeConfirm.header"
+                    message="settings.passkeys.removeConfirm.message"
+                    [messageParams]="{ name: passkey.label }"
                     confirmIcon="trash"
                     severity="danger"
                     [disabled]="passkey.removeDisabled"

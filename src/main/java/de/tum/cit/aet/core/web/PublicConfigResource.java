@@ -1,7 +1,6 @@
 package de.tum.cit.aet.core.web;
 
-import java.util.HashMap;
-import java.util.Map;
+import de.tum.cit.aet.core.dto.PublicConfigDTO;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,26 +19,24 @@ public class PublicConfigResource {
     /**
      * Get public configuration details such as Keycloak settings and OTP parameters.
      *
-     * @return A map containing Keycloak and OTP configuration details.
+     * @return a DTO containing Keycloak and OTP configuration details
      */
     @GetMapping("/config")
-    public Map<String, Object> config() {
-        Map<String, Object> response = new HashMap<>();
+    public PublicConfigDTO config() {
+        PublicConfigDTO.KeycloakConfig keycloak = new PublicConfigDTO.KeycloakConfig(
+            env.getProperty("keycloak.url"),
+            env.getProperty("keycloak.tum-login-realm"),
+            env.getProperty("keycloak.external-login-realm"),
+            env.getProperty("keycloak.client-id"),
+            env.getProperty("keycloak.relying-party-id", "")
+        );
 
-        Map<String, Object> keycloak = new HashMap<>();
-        keycloak.put("url", env.getProperty("keycloak.url"));
-        keycloak.put("tumLoginRealm", env.getProperty("keycloak.tum-login-realm"));
-        keycloak.put("externalLoginRealm", env.getProperty("keycloak.external-login-realm"));
-        keycloak.put("clientId", env.getProperty("keycloak.client-id"));
-        keycloak.put("relyingPartyId", env.getProperty("keycloak.relying-party-id", ""));
-        response.put("keycloak", keycloak);
+        PublicConfigDTO.OtpConfig otp = new PublicConfigDTO.OtpConfig(
+            env.getProperty("security.otp.length", Integer.class),
+            env.getProperty("security.otp.ttl-seconds", Integer.class),
+            env.getProperty("security.otp.resend-cooldown-seconds", Integer.class)
+        );
 
-        Map<String, Object> otp = new HashMap<>();
-        otp.put("length", env.getProperty("security.otp.length", Integer.class));
-        otp.put("ttlSeconds", env.getProperty("security.otp.ttl-seconds", Integer.class));
-        otp.put("resendCooldownSeconds", env.getProperty("security.otp.resend-cooldown-seconds", Integer.class));
-        response.put("otp", otp);
-
-        return response;
+        return new PublicConfigDTO(keycloak, otp);
     }
 }

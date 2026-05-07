@@ -1,5 +1,4 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
@@ -19,7 +18,7 @@ interface PasskeySettingsItem {
 @Component({
   selector: 'jhi-passkey-settings',
   standalone: true,
-  imports: [ButtonComponent, ConfirmDialog, TranslateDirective, TranslateModule],
+  imports: [ButtonComponent, ConfirmDialog, TranslateDirective],
   templateUrl: './passkey-settings.component.html',
 })
 export class PasskeySettingsComponent {

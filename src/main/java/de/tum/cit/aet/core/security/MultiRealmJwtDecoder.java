@@ -25,6 +25,13 @@ public class MultiRealmJwtDecoder implements JwtDecoder {
     private final Function<String, JwtDecoder> decoderFactory;
     private final ConcurrentMap<String, JwtDecoder> decoders = new ConcurrentHashMap<>();
 
+    /**
+     * Creates a decoder that trusts JWTs issued by the given Keycloak realms.
+     *
+     * @param keycloakUrl base URL of the Keycloak instance
+     * @param tumLoginRealm name of the TUM IDP/LDAP realm
+     * @param externalLoginRealm name of the external login realm
+     */
     public MultiRealmJwtDecoder(String keycloakUrl, String tumLoginRealm, String externalLoginRealm) {
         this(keycloakUrl, tumLoginRealm, externalLoginRealm, JwtDecoders::fromIssuerLocation);
     }
