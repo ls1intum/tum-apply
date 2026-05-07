@@ -8,7 +8,6 @@ import { injectTranslator } from 'app/shared/util/translate-signal.util';
   selector: 'jhi-tag',
   imports: [Tag, FontAwesomeModule, TooltipModule],
   templateUrl: './tag.component.html',
-  styleUrl: './tag.component.scss',
   standalone: true,
 })
 export class TagComponent {

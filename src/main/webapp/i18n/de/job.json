@@ -265,8 +265,18 @@
       "title": "Übersicht",
       "complianceBanner": {
         "complianceCheckOngoing": "<b>Laufende Compliance-Prüfung:</b> Deine Stelle wird auf die Einhaltung rechtlicher Standards und universitärer Vorgaben geprüft. Dies kann einen Moment dauern.",
-        "critical": "<b>Handlungsbedarf:</b> Bitte <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">überprüfe</a> {criticalCount} {criticalCount, plural, =1 {erkannten kritischen AGG-Verstoß} other {erkannte kritische AGG-Verstöße}}{othersCount, plural, =0 {} other { und {othersCount} {othersCount, plural, =1 {weiteres Problem} other {weitere Probleme}}}}, um Compliance sicherzustellen.",
-        "warning": "<b>Verbesserungsbedarf:</b> Bitte <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">überprüfe</a> {othersCount} {othersCount, plural, =1 {festgestelltes Compliance-Problem} other {festgestellte Compliance-Probleme}}.",
+        "critical": {
+          "oneAlone": "<b>Handlungsbedarf:</b> Bitte <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">überprüfe</a> {criticalCount} erkannten kritischen AGG-Verstoß, um Compliance sicherzustellen.",
+          "otherAlone": "<b>Handlungsbedarf:</b> Bitte <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">überprüfe</a> {criticalCount} erkannte kritische AGG-Verstöße, um Compliance sicherzustellen.",
+          "oneWithOneOther": "<b>Handlungsbedarf:</b> Bitte <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">überprüfe</a> {criticalCount} erkannten kritischen AGG-Verstoß und {othersCount} weiteres Problem, um Compliance sicherzustellen.",
+          "oneWithOtherOthers": "<b>Handlungsbedarf:</b> Bitte <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">überprüfe</a> {criticalCount} erkannten kritischen AGG-Verstoß und {othersCount} weitere Probleme, um Compliance sicherzustellen.",
+          "otherWithOneOther": "<b>Handlungsbedarf:</b> Bitte <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">überprüfe</a> {criticalCount} erkannte kritische AGG-Verstöße und {othersCount} weiteres Problem, um Compliance sicherzustellen.",
+          "otherWithOtherOthers": "<b>Handlungsbedarf:</b> Bitte <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">überprüfe</a> {criticalCount} erkannte kritische AGG-Verstöße und {othersCount} weitere Probleme, um Compliance sicherzustellen."
+        },
+        "warning": {
+          "one": "<b>Verbesserungsbedarf:</b> Bitte <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">überprüfe</a> {othersCount} festgestelltes Compliance-Problem.",
+          "other": "<b>Verbesserungsbedarf:</b> Bitte <a tabindex=\"0\" class=\"underline cursor-pointer stepper-link\">überprüfe</a> {othersCount} festgestellte Compliance-Probleme."
+        },
         "default": "Bitte überprüfe deine Eingaben, bevor du die Doktorandenstelle veröffentlichst."
       }
     },

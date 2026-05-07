@@ -24,7 +24,6 @@ export interface TabItem {
   selector: 'jhi-tab-view',
   imports: [CommonModule, Tabs, TabList, Tab, TabPanels, TabPanel, TranslateDirective, FontAwesomeModule],
   templateUrl: './tab-view.component.html',
-  styleUrl: './tab-view.component.scss',
 })
 export class TabViewComponent {
   // Inputs

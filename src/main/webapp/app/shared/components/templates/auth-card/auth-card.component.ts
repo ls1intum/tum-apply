@@ -11,7 +11,6 @@ import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator
   standalone: true,
   imports: [DividerModule, Login, Registration, ButtonComponent],
   templateUrl: './auth-card.component.html',
-  styleUrls: ['./auth-card.component.scss'],
 })
 export class AuthCardComponent {
   readonly authOrchestrator = inject(AuthOrchestratorService);

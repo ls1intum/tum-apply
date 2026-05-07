@@ -320,7 +320,7 @@
     "application_detail": {
       "headline": "Bewerbung für ",
       "applicant": {
-        "header": "Bewerbung für '{jobTitle}'",
+        "header": "Bewerbung für {jobTitle}",
         "title_prefix": "Bewerbung für"
       },
       "position_overview": "Stellenübersicht",
@@ -411,8 +411,7 @@
         "masterGrade": "Master-Abschlussnote"
       },
       "helperText": {
-        "scale": "Skala: ",
-        "gradingScale": "{upperLimit} (beste) bis {lowerLimit} (bestanden)",
+        "gradingScale": "Skala: {upperLimit} (beste) bis {lowerLimit} (bestanden)",
         "changeScale": "Skala ändern"
       },
       "warnText": "Ungewöhnliches Format, bitte überprüfe die Eingabe",
@@ -482,6 +481,7 @@
         "rejected": "Abgelehnt",
         "withdrawn": "Zurückgezogen",
         "closed": "Geschlossen",
+        "closedDraft": "Geschlossener Entwurf",
         "inReview": "In Prüfung",
         "interview": "Interview"
       },

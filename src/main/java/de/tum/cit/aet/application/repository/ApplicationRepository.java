@@ -184,7 +184,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             UPDATE Application a
             SET a.state =
                 CASE
-                    WHEN a.state = 'SAVED' THEN 'JOB_CLOSED'
+                    WHEN a.state = 'SAVED' THEN 'JOB_CLOSED_DRAFT'
                     WHEN a.state IN ('SENT', 'IN_REVIEW', 'INTERVIEW') AND :targetState = 'CLOSED' THEN 'JOB_CLOSED'
                     WHEN a.state IN ('SENT', 'IN_REVIEW', 'INTERVIEW') AND :targetState = 'APPLICANT_FOUND' THEN 'REJECTED'
                     ELSE a.state

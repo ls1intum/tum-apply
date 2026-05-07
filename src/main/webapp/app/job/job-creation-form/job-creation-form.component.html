@@ -472,11 +472,7 @@
           <jhi-message
             [severity]="hasCriticalCompliance() ? 'error' : 'warn'"
             classStyling="py-1"
-            [message]="
-              hasCriticalCompliance()
-                ? 'jobCreationForm.reviewPageSection.complianceBanner.critical'
-                : 'jobCreationForm.reviewPageSection.complianceBanner.warning'
-            "
+            [message]="complianceBannerKey()"
             [translationParams]="{
               criticalCount: complianceCriticalCount(),
               othersCount: complianceCount() - complianceCriticalCount(),
@@ -498,12 +494,7 @@
 
   <!-- Saving State Panel -->
   <ng-template #savingStatePanel>
-    <div [className]="savingBadgeCalculatedClass()">
-      <fa-icon [icon]="['fas', 'save']" />
-      <span class="font-bold ml-2">
-        {{ 'entity.applicationSteps.status.' + savingState() | translate }}
-      </span>
-    </div>
+    <jhi-saving-badge [state]="autoSave.state()" />
   </ng-template>
 
   <!-- AI Info Dialog -->

@@ -1,7 +1,7 @@
-<div class="faq-container">
-  <h2 class="title" jhiTranslate="professorLandingPage.faq.headline"></h2>
-  <p class="subtitle" jhiTranslate="professorLandingPage.faq.subheadline"></p>
-  <div class="sub-subtitle-container">
+<div class="flex flex-col items-center justify-center gap-5 self-stretch py-[6.25rem] px-[3.125rem]">
+  <h2 class="text-[2rem] font-bold" jhiTranslate="professorLandingPage.faq.headline"></h2>
+  <p class="text-xl font-semibold" jhiTranslate="professorLandingPage.faq.subheadline"></p>
+  <div class="flex items-center gap-2">
     <a class="sub-subtitle-link" href="https://ls1intum.github.io/tum-apply" target="_blank">
       <span jhiTranslate="professorLandingPage.faq.sub-subheadline"></span>
       <fa-icon [icon]="faArrowUpRightFromSquare" class="external-icon" size="xs" />
@@ -14,7 +14,7 @@
           <p-accordion-header class="font-semibold">{{ tab.title | translate }}</p-accordion-header>
           <p-accordion-content>
             <div class="pt-2 leading-relaxed" [innerHTML]="tab.content | translate"></div>
-            <div class="registration-button">
+            <div class="flex justify-center mt-4">
               @if (tab.value === 'registration') {
                 <jhi-button (click)="openRegistrationForm()" [shouldTranslate]="true" [label]="translationKey + '.registration.button'" />
               }

@@ -40,7 +40,6 @@ import { JobResourceApi } from '../../generated/api/job-resource-api';
     FontAwesomeModule,
   ],
   templateUrl: './my-positions-page.component.html',
-  styleUrl: './my-positions-page.component.scss',
 })
 export class MyPositionsPageComponent {
   loading = signal(true);

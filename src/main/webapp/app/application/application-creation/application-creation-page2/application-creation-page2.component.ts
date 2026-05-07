@@ -54,7 +54,6 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   selector: 'jhi-application-creation-page2',
   standalone: true,
   templateUrl: './application-creation-page2.component.html',
-  styleUrl: './application-creation-page2.component.scss',
   imports: [DegreeDocumentSectionComponent, ReactiveFormsModule, TranslateDirective],
 })
 export default class ApplicationCreationPage2Component {
@@ -101,15 +100,13 @@ export default class ApplicationCreationPage2Component {
   lastBachelorGrade = signal<string>('');
   lastMasterGrade = signal<string>('');
 
-  helperTextBachelorGrade = computed(() => {
-    this.currentLang();
-    return getGradeHelperText(this.translateService, this.bachelorGradeLimits());
-  });
+  helperTextBachelorGrade = computed(() => getGradeHelperText(this.bachelorGradeLimits()));
+  helperTextBachelorGradeKey = computed(() => this.helperTextBachelorGrade()?.key ?? '');
+  helperTextBachelorGradeParams = computed(() => this.helperTextBachelorGrade()?.params ?? {});
 
-  helperTextMasterGrade = computed(() => {
-    this.currentLang();
-    return getGradeHelperText(this.translateService, this.masterGradeLimits());
-  });
+  helperTextMasterGrade = computed(() => getGradeHelperText(this.masterGradeLimits()));
+  helperTextMasterGradeKey = computed(() => this.helperTextMasterGrade()?.key ?? '');
+  helperTextMasterGradeParams = computed(() => this.helperTextMasterGrade()?.params ?? {});
 
   warningTextBachelorGrade = computed(() => {
     this.currentLang();

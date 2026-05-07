@@ -1,5 +1,5 @@
 <p-tag
-  [class]="'custom-tag ' + neutralOverrideClass()"
+  [class]="'w-fit ' + neutralOverrideClass()"
   [severity]="severity()"
   [rounded]="round()"
   [pTooltip]="displayTooltipText()"
@@ -11,12 +11,12 @@
   [style.text-align]="'center'"
 >
   @if (icon() && !iconRight()) {
-    <fa-icon [icon]="iconProp()" class="icon left" />
+    <fa-icon [icon]="iconProp()" class="icon pr-[0.2rem]" />
   }
 
   <span class="text">{{ displayText() }}</span>
 
   @if (icon() && iconRight()) {
-    <fa-icon [icon]="iconProp()" class="icon right" />
+    <fa-icon [icon]="iconProp()" class="icon pl-[0.2rem]" />
   }
 </p-tag>
