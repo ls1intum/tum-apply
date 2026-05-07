@@ -39,8 +39,8 @@ describe('IcuTranslateCompiler', () => {
         greeting: 'Hi {name}',
         leafNumber: 42,
       },
-    };
-    const compiled = compiler.compileTranslations(tree, 'en') as {
+    } as unknown as Parameters<IcuTranslateCompiler['compileTranslations']>[0];
+    const compiled = compiler.compileTranslations(tree, 'en') as unknown as {
       title: string;
       nested: { greeting: (p: Record<string, unknown>) => string; leafNumber: number };
     };
