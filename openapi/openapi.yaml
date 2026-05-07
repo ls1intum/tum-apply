@@ -3640,7 +3640,7 @@ components:
         referenceRequestId: {type: string, format: uuid}
         status:
           type: string
-          enum: [REQUESTED, OPENED, SUBMITTED, WITHDRAWN, EXPIRED]
+          enum: [REQUESTED, SUBMITTED, EXPIRED]
         title: {type: string}
     RejectDTO:
       type: object
