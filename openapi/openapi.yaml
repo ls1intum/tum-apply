@@ -3269,6 +3269,7 @@ components:
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
         professorName: {type: string}
+        referenceLettersRequired: {type: integer, format: int32}
         relativeTimeEnglish: {type: string}
         relativeTimeGerman: {type: string}
         startDate: {type: string, format: date}

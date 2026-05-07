@@ -432,7 +432,9 @@ export default class ApplicationCreationFormComponent {
         if (application.job.title && application.job.title.trim().length > 0) {
           this.title.set(application.job.title);
         }
-        await this.loadReferenceLetterConfig(application.job.jobId);
+        const required = application.job.referenceLettersRequired ?? 0;
+        this.referenceLettersRequired.set(required);
+        this.referencesValid.set(required === 0);
 
         this.applicationState.set(application.applicationState);
         this.useLocalStorage.set(false);
@@ -505,24 +507,6 @@ export default class ApplicationCreationFormComponent {
     });
 
     return application;
-  }
-
-  /**
-   * Loads the job's reference-letter configuration so the form can decide whether to show the
-   * references step. Failures are non-fatal: the step simply stays hidden.
-   *
-   * @param jobId the job whose configuration should be fetched
-   */
-  private async loadReferenceLetterConfig(jobId: string): Promise<void> {
-    try {
-      const jobDetails = await firstValueFrom(this.jobApi.getJobDetails(jobId));
-      const required = jobDetails.referenceLettersRequired ?? 0;
-      this.referenceLettersRequired.set(required);
-      // Pre-mark valid when no referees are needed so the step never blocks the submit gate.
-      this.referencesValid.set(required === 0);
-    } catch {
-      // Non-fatal: leave the references step hidden if we cannot fetch job details
-    }
   }
 
   /** Save callback invoked by the {@link AutoSaveController} when its debounce timer fires. */
