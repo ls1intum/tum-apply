@@ -11,7 +11,7 @@ import { ApplicationDetailDTO } from '../../../../generated/model/application-de
   selector: 'jhi-application-detail-card',
   imports: [FontAwesomeModule, NgTemplateOutlet, TranslateDirective],
   templateUrl: './application-detail-card.component.html',
-  styleUrl: './application-detail-card.component.scss',
+  host: { class: 'overflow-y-hidden' },
 })
 export class ApplicationDetailCardComponent {
   application = input.required<ApplicationDetailDTO>();

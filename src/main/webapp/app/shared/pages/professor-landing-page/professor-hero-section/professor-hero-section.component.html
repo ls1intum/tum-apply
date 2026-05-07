@@ -1,4 +1,4 @@
-<div class="hero-wrap">
+<div class="relative">
   <p-carousel
     styleClass="hero-carousel"
     [autoplayInterval]="8000"
@@ -8,14 +8,22 @@
     [value]="imagesWithBackgroundClass"
   >
     <ng-template #item let-image>
-      <div [class]="image.backgroundClass" class="hero-container h-[29rem]"></div>
+      <div [class]="image.backgroundClass" class="relative flex items-center justify-center h-[29rem]">
+        <div class="absolute inset-0 bg-base-black opacity-50 z-[1] pointer-events-none"></div>
+      </div>
     </ng-template>
   </p-carousel>
 
   <div class="hero-overlay flex flex-col items-center justify-center py-12">
-    <div class="hero-content flex flex-col items-center gap-10 md:gap-8 lg:gap-10 w-full max-w-[75rem] px-4">
-      <h1 class="title" jhiTranslate="professorLandingPage.hero.headline"></h1>
-      <p class="subtitle" jhiTranslate="professorLandingPage.hero.subline"></p>
+    <div class="relative z-[2] flex flex-col items-center gap-10 md:gap-8 lg:gap-10 w-full max-w-[75rem] px-4">
+      <h1
+        class="text-text-on-primary text-center text-[2rem] md:text-[2.5rem] lg:text-5xl font-bold"
+        jhiTranslate="professorLandingPage.hero.headline"
+      ></h1>
+      <p
+        class="text-text-on-primary text-center text-[1.125rem] md:text-[1.25rem] lg:text-2xl font-semibold"
+        jhiTranslate="professorLandingPage.hero.subline"
+      ></p>
       <div class="pointer-events-auto">
         <jhi-button (click)="navigateToGetStarted()" label="professorLandingPage.hero.button" severity="primary" />
       </div>

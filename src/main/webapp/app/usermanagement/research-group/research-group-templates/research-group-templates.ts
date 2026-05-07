@@ -19,7 +19,6 @@ import { AccountService } from '../../../core/auth/account.service';
   selector: 'jhi-research-group-templates',
   imports: [DynamicTableComponent, ButtonComponent, TranslateDirective, TranslateModule, ConfirmDialog],
   templateUrl: './research-group-templates.html',
-  styleUrl: './research-group-templates.scss',
 })
 export class ResearchGroupTemplates {
   protected readonly emailTemplateApi = inject(EmailTemplateResourceApi);

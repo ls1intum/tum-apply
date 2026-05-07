@@ -17,7 +17,7 @@
     }
 
     <div
-      class="input-wrapper"
+      class="input-wrapper flex flex-col overflow-hidden min-h-[12.5rem] resize-y"
       [class.error]="isEmpty()"
       contenteditable="false"
       (focusin)="onFocus()"
@@ -30,7 +30,7 @@
       [style.height]="height()"
     >
       <quill-editor
-        class="custom-quill-editor"
+        class="custom-quill-editor flex flex-col flex-1 min-h-0"
         (onFocus)="onFocus()"
         (onBlur)="onBlur()"
         [ngModel]="editorValue()"
@@ -62,8 +62,10 @@
             <span class="ql-formats ml-auto !flex items-center gap-2 flex-shrink-0 max-w-full">
               @if (codingDisplay(); as coding) {
                 <span
-                  class="px-3 py-1 rounded text-xs break-words"
-                  [class]="analysisResult()?.coding === 'non-inclusive-coded' ? 'gender-badge-warn' : 'gender-badge-secondary'"
+                  class="px-3 py-1 rounded text-xs break-words text-text-primary"
+                  [class]="
+                    analysisResult()?.coding === 'non-inclusive-coded' ? 'bg-[var(--p-warn-hover-color-outlined)]' : 'bg-secondary-hover-outlined'
+                  "
                 >
                   {{ coding }}
                 </span>
@@ -86,10 +88,10 @@
         </div>
       </quill-editor>
     </div>
-    <div class="editor-footer">
-      <div class="error-text">
+    <div class="editor-footer flex justify-between min-h-8">
+      <div class="error-text flex flex-col">
         @if (helperText(); as helperText) {
-          <span class="helper-text">{{ displayHelperText() }}</span>
+          <span class="helper-text text-[0.8rem] text-text-primary">{{ displayHelperText() }}</span>
         }
         @if (isEmpty() || isOverCharLimit()) {
           {{ errorMessage() }}

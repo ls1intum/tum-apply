@@ -1,55 +1,6 @@
-.editor-footer {
-  display: flex;
-  justify-content: space-between;
-  min-height: 2rem;
-
-  .char-counter-warning {
-    color: var(--p-warn-color);
-  }
-
-  .char-counter-danger {
-    color: var(--p-danger-color);
-  }
-
-  .helper-text {
-    font-size: 0.8rem;
-    color: var(--p-text-primary);
-  }
-
-  .error-text {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-.input-wrapper {
-  display: flex;
-  resize: vertical;
-  flex-direction: column;
-  overflow: hidden;
-  min-height: 12.5rem;
-}
-
-.custom-quill-editor {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-}
-
 .ql-toolbar.ql-snow {
   position: relative;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-}
-
-.gender-badge-warn {
-  background-color: var(--p-warn-hover-color-outlined);
-  color: var(--p-text-primary);
-}
-
-.gender-badge-secondary {
-  background-color: var(--p-secondary-hover-color-outlined);
-  color: var(--p-text-primary);
 }

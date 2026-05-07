@@ -1,20 +1,22 @@
-<div class="footer">
-  <div class="logo-section">
-    <span class="app-name" jhiTranslate="footer.tumApply"></span>
-    <div class="footer-links">
+<div
+  class="flex items-center bg-background-footer py-4 border-t border-[0.07rem] border-divider-default text-[0.9rem] max-[600px]:py-2 max-[600px]:px-2 max-[600px]:text-[0.75rem]"
+>
+  <div class="flex items-center pl-4 pr-2 max-[600px]:px-2">
+    <span class="text-start font-semibold pr-2" jhiTranslate="footer.tumApply"></span>
+    <div class="inline-flex cursor-pointer hover:underline">
       <a [href]="'https://github.com/ls1intum/tum-apply/releases'" target="_blank" rel="noopener"> {{ version }} </a>
     </div>
   </div>
 
-  <div class="rights-section">
+  <div class="flex gap-[0.3rem] max-[600px]:px-2">
     <span class="copyright" jhiTranslate="footer.rightsText"></span>
   </div>
 
-  <div class="legal-section">
+  <div class="flex ml-auto pr-4 gap-[0.3rem] max-[600px]:px-2">
     <p
       (click)="navigateToImprint()"
       (keydown.enter)="navigateToImprint()"
-      class="footer-links"
+      class="inline-flex cursor-pointer text-primary hover:underline"
       jhiTranslate="footer.imprint"
       tabindex="0"
       role="button"
@@ -23,7 +25,7 @@
     <p
       (click)="navigateToPrivacy()"
       (keydown.enter)="navigateToPrivacy()"
-      class="footer-links"
+      class="inline-flex cursor-pointer text-primary hover:underline"
       jhiTranslate="footer.privacy"
       tabindex="0"
       role="button"
@@ -32,7 +34,7 @@
     <p
       (click)="navigateToAboutUs()"
       (keydown.enter)="navigateToAboutUs()"
-      class="footer-links"
+      class="inline-flex cursor-pointer text-primary hover:underline"
       jhiTranslate="footer.about-us"
       tabindex="0"
       role="button"

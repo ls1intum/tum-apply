@@ -1,5 +1,5 @@
 <jhi-confirm-dialog
-  class="confirm-dialog"
+  class="hidden"
   header="jobCreationForm.confirmDialog.header"
   message="jobCreationForm.confirmDialog.message"
   label="button.publish"
@@ -41,8 +41,11 @@
 
   <!-- Step 1: Basic Information -->
   <ng-template #panel1>
-    <div class="panel1-layout lg:!gap-x-6" [class.panel1-layout-with-sidebar]="aiToggleSignal()">
-      <div class="panel1-main w-full min-w-0 transition-[margin-inline] duration-300 ease-in-out lg:mx-auto">
+    <div
+      class="lg:px-[clamp(1rem,3vw,2.5rem)] lg:!gap-x-6"
+      [ngClass]="aiToggleSignal() ? 'lg:grid lg:gap-x-3 lg:pe-0 lg:grid-cols-[minmax(0,1fr)_1px_18rem]' : ''"
+    >
+      <div class="w-full min-w-0 transition-[margin-inline] duration-300 ease-in-out lg:mx-auto lg:pr-2">
         <form [formGroup]="basicInfoForm" class="mx-auto w-full max-w-4xl px-4 sm:px-5 md:px-6 lg:px-8 lg:pr-5 xl:px-10">
           <div class="grid items-start gap-4">
             <div>
@@ -195,7 +198,7 @@
 
       @if (aiToggleSignal()) {
         <!--AI Assistant sidebar-->
-        <div class="panel1-divider hidden lg:block" aria-hidden="true"></div>
+        <div class="hidden lg:block lg:h-full lg:bg-divider-default" aria-hidden="true"></div>
         <aside
           class="flex flex-col mx-auto mt-4 w-full max-w-[52rem] overflow-hidden bg-background-default lg:sticky lg:top-0 lg:mx-0 lg:mt-0 lg:w-full lg:max-w-full lg:self-start"
         >

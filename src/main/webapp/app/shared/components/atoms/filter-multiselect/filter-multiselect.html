@@ -1,6 +1,6 @@
-<div class="filter-multiselect" [class.open]="isOpen()">
+<div class="filter-multiselect relative inline-block w-full" [class.open]="isOpen()">
   <div
-    class="filter-button"
+    class="filter-button flex items-center justify-between px-3 py-1.5 border-[0.1rem] border-border-default bg-background-default rounded-md cursor-pointer transition-all text-text-secondary text-[length:var(--p-select-sm-font-size)] hover:border-[var(--p-neutral-hover-color-outlined)]"
     role="button"
     tabindex="0"
     [attr.aria-expanded]="isOpen()"
@@ -10,9 +10,13 @@
   >
     <div class="filter-trigger">
       @if (!hasSelectedItems()) {
-        <span class="trigger-placeholder">{{ displayFilterLabel() }}</span>
+        <span class="trigger-placeholder mr-4 max-md:mr-2 max-md:flex-1 max-md:overflow-hidden max-md:text-ellipsis max-md:whitespace-nowrap">{{
+          displayFilterLabel()
+        }}</span>
       } @else if (showChipsCounterOnly()) {
-        <span class="trigger-summary">{{ getSummaryLabel() }}</span>
+        <span class="trigger-summary mr-4 max-md:mr-2 max-md:flex-1 max-md:overflow-hidden max-md:text-ellipsis max-md:whitespace-nowrap">{{
+          getSummaryLabel()
+        }}</span>
       } @else {
         <div class="chip-row">
           @for (option of selectedOptions(); track option.value) {
@@ -27,16 +31,23 @@
         </div>
       }
     </div>
-    <fa-icon class="filter-icon" [icon]="['fas', 'chevron-down']" [class.rotated]="isOpen()" />
+    <fa-icon
+      class="filter-icon transition-transform max-md:flex-shrink-0"
+      [class.rotate-180]="isOpen()"
+      [icon]="['fas', 'chevron-down']"
+    />
   </div>
 
   @if (isOpen()) {
-    <div class="filter-dropdown" [class.align-right]="dropdownAlignment() === 'right'">
-      <div class="panel-header">
+    <div
+      class="filter-dropdown absolute z-[3] flex flex-col bg-background-default border-[0.1rem] border-border-default rounded-sm mt-1 max-h-[20rem] min-w-max max-w-[calc(100vw-2rem)] w-full text-[length:var(--p-select-sm-font-size)] max-md:left-0 max-md:right-0"
+      [ngClass]="dropdownAlignment() === 'right' ? 'align-right max-md:!left-auto max-md:!right-0' : ''"
+    >
+      <div class="panel-header flex flex-row pt-[0.6rem] pb-[0.4rem] px-3">
         <fa-icon class="filter-icon text-primary" [icon]="['fas', 'search']" />
         <input
           type="text"
-          class="search-input"
+          class="search-input w-full pl-3 outline-none shadow-none placeholder:text-text-tertiary"
           [placeholder]="displaySearchPlaceholder()"
           [value]="searchTerm()"
           (input)="onSearchChange($event)"
@@ -46,31 +57,35 @@
       <!-- Divider between search bar and listed options -->
       <p-divider />
 
-      <div class="options-container">
+      <div class="options-container flex-1 overflow-y-auto">
         <div class="options-list">
           <!-- List all selected options -->
           @if (hasSelectedItems()) {
-            <div class="selected-header-row">
+            <div class="selected-header-row flex items-center">
               <p-divider align="left">
-                <span class="divider-text"> {{ displaySelectedHeader() }} ({{ selectedOptions().length }}) </span>
+                <span class="divider-text text-xs text-text-primary"> {{ displaySelectedHeader() }} ({{ selectedOptions().length }}) </span>
               </p-divider>
 
               <p-divider align="right">
-                <button type="button" class="divider-text clear-button" (click)="clearAll(); $event.stopPropagation()">
+                <button
+                  type="button"
+                  class="divider-text clear-button text-xs cursor-pointer text-primary whitespace-nowrap hover:underline"
+                  (click)="clearAll(); $event.stopPropagation()"
+                >
                   {{ displayClearAllLabel() }}
                 </button>
               </p-divider>
             </div>
             @for (option of selectedOptions(); track option.value; let i = $index) {
               <div
-                class="option-item selected"
+                class="option-item selected flex items-center m-1 p-2 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
                 tabindex="0"
                 role="button"
                 (click)="toggleOption(option.value)"
                 (keydown.enter)="toggleOption(option.value)"
               >
                 <p-checkbox [binary]="true" [ngModel]="true" [disabled]="true" />
-                <span class="option-label">{{ option.label }}</span>
+                <span class="option-label flex-1 pl-2 break-words hyphens-auto whitespace-normal">{{ option.label }}</span>
               </div>
             }
           }
@@ -84,22 +99,22 @@
           @if (hasUnselectedItems()) {
             @for (option of unselectedOptions(); track option.value; let i = $index) {
               <div
-                class="option-item"
+                class="option-item flex items-center m-1 p-2 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
+                [class.bg-primary-hover-outlined]="focusedIndexOptionList() === i"
                 tabindex="0"
                 role="button"
                 (click)="toggleOption(option.value)"
                 (keydown.enter)="toggleOption(option.value)"
-                [class.focused]="focusedIndexOptionList() === i"
               >
                 <p-checkbox [binary]="true" [ngModel]="false" [disabled]="true" />
-                <span class="option-label">{{ option.label }}</span>
+                <span class="option-label flex-1 pl-2 break-words hyphens-auto whitespace-normal">{{ option.label }}</span>
               </div>
             }
           }
 
           <!-- Display that no results were found-->
           @if (!filteredOptions().length) {
-            <div class="no-results">
+            <div class="no-results flex items-center justify-center p-2">
               <span>{{ displayNoResultsLabel() }}</span>
             </div>
           }

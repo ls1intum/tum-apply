@@ -12,7 +12,6 @@ import { ApplicationDocumentIdsDTO } from '../../../../generated/model/applicati
   selector: 'jhi-document-group',
   imports: [TranslateDirective, DocumentViewerComponent],
   templateUrl: './document-group.component.html',
-  styleUrl: './document-group.component.scss',
   standalone: true,
 })
 export default class DocumentGroupComponent {

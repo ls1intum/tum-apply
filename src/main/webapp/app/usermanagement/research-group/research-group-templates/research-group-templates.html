@@ -1,4 +1,4 @@
-<div class="page-container">
+<div class="flex flex-col">
   <div class="header-container">
     <div class="page-header">
       <h1>
@@ -10,7 +10,7 @@
     <jhi-button label="researchGroup.emailTemplates.newTemplate" icon="plus" [shouldTranslate]="true" (click)="navigateToCreate()" />
   </div>
 
-  <div class="table-wrapper">
+  <div class="flex flex-col w-full self-center">
     <jhi-dynamic-table
       [columns]="columns()"
       [data]="tableData()"
