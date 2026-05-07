@@ -12,8 +12,9 @@ import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ReferenceRequestResourceApi } from 'app/generated/api/reference-request-resource-api';
 import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
+import {SelectComponent} from "app/shared/components/atoms/select/select.component";
 
-const TITLE_OPTIONS: ReadonlyArray<string> = ['Prof. Dr.', 'Prof.', 'Dr.', 'Mr.', 'Ms.', 'Mx.'];
+const TITLE_OPTIONS: ReadonlyArray<string> = ['Prof. Dr.', 'Prof.', 'Dr.'];
 
 const TOAST_PREFIX = 'entity.applicationReferences';
 
@@ -36,6 +37,7 @@ const TOAST_PREFIX = 'entity.applicationReferences';
     SelectModule,
     ButtonComponent,
     StringInputComponent,
+    SelectComponent,
   ],
   templateUrl: './application-creation-references.component.html',
   styleUrl: './application-creation-references.component.scss',
@@ -49,7 +51,7 @@ export default class ApplicationCreationReferencesComponent {
   references = signal<ReferenceRequestDTO[]>([]);
   loading = signal<boolean>(false);
 
-  readonly titleOptions = TITLE_OPTIONS.map(value => ({ label: value, value }));
+  readonly titleOptions = TITLE_OPTIONS.map(value => ({ name: value, value: value }));
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly toastService = inject(ToastService);

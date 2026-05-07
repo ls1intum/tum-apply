@@ -40,18 +40,11 @@
 <form [formGroup]="addForm" class="flex flex-col gap-3" (ngSubmit)="onAdd()">
   <div class="grid gap-3 grid-cols-1 sm:grid-cols-4">
     <div class="sm:col-span-1">
-      <label class="custom-label" for="referenceTitle" jhiTranslate="entity.applicationReferences.label.title"></label>
-      <p-select
-        inputId="referenceTitle"
-        formControlName="title"
-        [options]="titleOptions"
-        optionLabel="label"
-        optionValue="value"
+      <jhi-select
+        label="entity.applicationReferences.label.title"
+        [items]="titleOptions"
         [showClear]="true"
-        styleClass="w-full"
-        appendTo="body"
-        placeholder="-"
-      />
+      ></jhi-select>
     </div>
 
     <div class="sm:col-span-1">
