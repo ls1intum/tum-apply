@@ -106,7 +106,7 @@ export class HeaderComponent {
   });
 
   readonly headerButtonClass =
-    'inline-flex [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-md';
+    'inline-flex [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-2 sm:[&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-md';
 
   profileMenu = viewChild<MenuComponent>('profileMenu');
   isProfileMenuOpen = signal(false);
