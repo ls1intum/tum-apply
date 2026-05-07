@@ -66,7 +66,12 @@ class MultiRealmJwtDecoderTest {
     @Test
     void decodeShouldRejectUntrustedIssuer() {
         String token = jwtWithIssuer("http://malicious.example/realms/evil");
-        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(KEYCLOAK_URL, TUM_REALM, EXTERNAL_REALM, issuer -> rawToken -> sampleJwt("x"));
+        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(
+            KEYCLOAK_URL,
+            TUM_REALM,
+            EXTERNAL_REALM,
+            issuer -> rawToken -> sampleJwt("x")
+        );
 
         assertThatThrownBy(() -> decoder.decode(token))
             .isInstanceOf(BadJwtException.class)
@@ -75,7 +80,12 @@ class MultiRealmJwtDecoderTest {
 
     @Test
     void decodeShouldRejectMalformedToken() {
-        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(KEYCLOAK_URL, TUM_REALM, EXTERNAL_REALM, issuer -> rawToken -> sampleJwt("x"));
+        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(
+            KEYCLOAK_URL,
+            TUM_REALM,
+            EXTERNAL_REALM,
+            issuer -> rawToken -> sampleJwt("x")
+        );
 
         assertThatThrownBy(() -> decoder.decode("not-a-jwt"))
             .isInstanceOf(BadJwtException.class)
@@ -85,7 +95,12 @@ class MultiRealmJwtDecoderTest {
     @Test
     void decodeShouldRejectTokenWithoutIssuer() {
         String token = jwtWithoutIssuer();
-        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(KEYCLOAK_URL, TUM_REALM, EXTERNAL_REALM, issuer -> rawToken -> sampleJwt("x"));
+        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(
+            KEYCLOAK_URL,
+            TUM_REALM,
+            EXTERNAL_REALM,
+            issuer -> rawToken -> sampleJwt("x")
+        );
 
         assertThatThrownBy(() -> decoder.decode(token))
             .isInstanceOf(BadJwtException.class)

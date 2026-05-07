@@ -64,9 +64,10 @@ module.exports = async browser => {
       { email: username, password },
     );
 
-    if (!loginResult.ok) throw new Error(
-      `Failed to authenticate Lighthouse user via /api/auth/login (status ${loginResult.status}). Body: ${loginResult.body}`,
-    );
+    if (!loginResult.ok)
+      throw new Error(
+        `Failed to authenticate Lighthouse user via /api/auth/login (status ${loginResult.status}). Body: ${loginResult.body}`,
+      );
   }
 
   // 4. Confirm that a protected page now loads inside the authenticated app.
