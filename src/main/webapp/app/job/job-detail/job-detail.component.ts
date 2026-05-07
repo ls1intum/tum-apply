@@ -87,7 +87,6 @@ export interface JobDetails {
     InfoBoxComponent,
   ],
   templateUrl: './job-detail.component.html',
-  styleUrl: './job-detail.component.scss',
 })
 export class JobDetailComponent {
   readonly dropDownOptions = DropDownOptions;

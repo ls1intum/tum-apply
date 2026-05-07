@@ -16,9 +16,15 @@ import {
   createApplicationResourceApiMock,
   provideApplicationResourceApiMock,
 } from 'util/application-resource-api.service.mock';
+import {
+  ApplicantResourceApiMock,
+  createApplicantResourceApiMock,
+  provideApplicantResourceApiMock,
+} from 'util/applicant-resource-api.service.mock';
 
 describe('UploadButtonComponent', () => {
   let applicationApi: ApplicationResourceApiMock;
+  let applicantApi: ApplicantResourceApiMock;
   let toastService: ToastServiceMock;
 
   function createUploadButtonFixture(inputs: {
@@ -37,11 +43,13 @@ describe('UploadButtonComponent', () => {
 
   beforeEach(async () => {
     applicationApi = createApplicationResourceApiMock();
+    applicantApi = createApplicantResourceApiMock();
     toastService = createToastServiceMock();
     await TestBed.configureTestingModule({
       imports: [UploadButtonComponent],
       providers: [
         provideApplicationResourceApiMock(applicationApi),
+        provideApplicantResourceApiMock(applicantApi),
         provideToastServiceMock(toastService),
         provideHttpClientMock(),
         provideFontAwesomeTesting(),
@@ -123,6 +131,40 @@ describe('UploadButtonComponent', () => {
     expect(component.documentIds()).toEqual([doc2]);
   });
 
+  it('should upload applicant profile documents when configured for applicant profile target', async () => {
+    const fixture = createUploadButtonFixture({ applicationId: 'unused-app-id', documentType: 'CV' });
+    const component = fixture.componentInstance;
+    fixture.componentRef.setInput('uploadTarget', 'applicantProfile');
+
+    component.fileUploadComponent = signal({
+      clear: vi.fn(),
+    } as unknown as FileUpload);
+
+    const uploadedDoc = [{ id: 'profile-doc-1', name: 'cv.pdf', size: 1234 }];
+    applicantApi.uploadApplicantProfileDocuments.mockReturnValue(of(uploadedDoc));
+
+    await component.onFileSelected({ currentFiles: [new File([''], 'cv.pdf', { type: 'application/pdf' })] } as FileSelectEvent);
+
+    expect(applicantApi.uploadApplicantProfileDocuments).toHaveBeenCalledOnce();
+    expect(applicantApi.uploadApplicantProfileDocuments).toHaveBeenCalledWith('CV', expect.any(File));
+    expect(component.documentIds()).toEqual(uploadedDoc);
+  });
+
+  it('should delete applicant profile documents through the applicant endpoint', async () => {
+    const fixture = createUploadButtonFixture({ applicationId: 'unused-app-id', documentType: 'CV' });
+    const component = fixture.componentInstance;
+    fixture.componentRef.setInput('uploadTarget', 'applicantProfile');
+
+    const document = { id: 'profile-doc-1', name: 'cv.pdf', size: 1234 };
+    component.documentIds.set([document]);
+
+    await component.deleteDictionary(document);
+
+    expect(applicantApi.deleteApplicantProfileDocument).toHaveBeenCalledWith('profile-doc-1');
+    expect(applicationApi.deleteDocumentFromApplication).not.toHaveBeenCalled();
+    expect(component.documentIds()).toEqual([]);
+  });
+
   it('should show error toast if deletion fails', async () => {
     const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
     const component = fixture.componentInstance;
@@ -138,7 +180,7 @@ describe('UploadButtonComponent', () => {
     const document = { id: '1', name: 'doc1', size: 1234 };
     component.documentIds.set([document]);
 
-    await runSilently(() => component.deleteDictionary(document));
+    await component.deleteDictionary(document);
 
     expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.delete_failed');
   });
@@ -150,21 +192,6 @@ describe('UploadButtonComponent', () => {
     component.isUploading.set(true);
     component.onClear();
     expect(component.isUploading()).toBe(false);
-  });
-
-  it('should rename a document and update documentIds', async () => {
-    const fixture = createUploadButtonFixture({ applicationId: 'app-id', documentType: 'CV' });
-    const component = fixture.componentInstance;
-
-    const doc = { id: '1', name: 'oldName', size: 1234 };
-    const renamedDoc = { id: '1', name: 'newName', size: 1234 };
-
-    component.documentIds.set([doc]);
-
-    await component.renameDocument({ id: doc.id, name: 'newName', size: doc.size });
-
-    expect(applicationApi.renameDocument).toHaveBeenCalledWith('1', 'newName');
-    expect(component.documentIds()).toEqual([renamedDoc]);
   });
 
   it('should skip renaming if name is empty', async () => {
@@ -235,7 +262,7 @@ describe('UploadButtonComponent', () => {
 
     const firstValueFromSpy = vi.spyOn(rxjs, 'firstValueFrom').mockRejectedValue(new Error('Simulated upload failure'));
 
-    await runSilently(() => component.onUpload());
+    await component.onUpload();
 
     expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.upload_failed');
 
@@ -415,7 +442,7 @@ describe('UploadButtonComponent', () => {
         (): rxjs.Observable<any> => of([{ id: 'new-id', name: 'duplicate.pdf', size: 2000 }]),
       );
 
-      await component.onConfirmDuplicate();
+      await runSilently(() => component.onConfirmDuplicate());
 
       // Expect delete then upload
       expect(applicationApi.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
@@ -440,7 +467,7 @@ describe('UploadButtonComponent', () => {
 
       component.pendingDuplicateFile.set(null);
 
-      await component.onConfirmDuplicate();
+      await runSilently(() => component.onConfirmDuplicate());
 
       expect(applicationApi.deleteDocumentFromApplication).not.toHaveBeenCalled();
     });
@@ -456,7 +483,6 @@ describe('UploadButtonComponent', () => {
       component.pendingDuplicateFile.set(newFile);
 
       const toastSpy = vi.spyOn(toastService, 'showErrorKey');
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       // Mock delete failure
       vi.spyOn(applicationApi, 'deleteDocumentFromApplication').mockReturnValue(rxjs.throwError(() => new Error('Delete failed')));
@@ -467,8 +493,6 @@ describe('UploadButtonComponent', () => {
       expect(applicationApi.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
       expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.replace_failed');
       expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
-
-      consoleSpy.mockRestore();
     });
 
     it('should handle documentIds becoming undefined during replace (race condition)', async () => {

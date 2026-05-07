@@ -12,7 +12,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 import './config/dayjs';
-import { MissingTranslationHandler, provideTranslateService } from '@ngx-translate/core';
+import { MissingTranslationHandler, TranslateCompiler, provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
@@ -23,8 +23,6 @@ import { MessageService } from 'primeng/api';
 import { PublicConfigResourceApi } from 'app/generated/api/public-config-resource-api';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { initializeAppConfig } from 'app/core/config/runtime-config.loader';
-import { TranslateCompiler } from '@ngx-translate/core';
-import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 
 import { TUMApplyPreset } from '../content/theming/tumapplypreset';
 
@@ -38,6 +36,7 @@ import { AuthInterceptor } from './core/interceptor/auth.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
 import { AuthFacadeService } from './core/auth/auth-facade.service';
+import { IcuTranslateCompiler } from './shared/language/icu-translate-compiler';
 import { PrimengTranslationService } from './shared/language/primeng-translation.service';
 
 /**
@@ -91,7 +90,7 @@ export const appConfig: ApplicationConfig = {
     }),
     {
       provide: TranslateCompiler,
-      useClass: TranslateMessageFormatCompiler,
+      useClass: IcuTranslateCompiler,
     },
     provideHttpClient(withInterceptorsFromDi()),
     Title,

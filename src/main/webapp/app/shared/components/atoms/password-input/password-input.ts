@@ -18,7 +18,6 @@ import { BaseInputDirective } from '../base-input/base-input.component';
     },
   ],
   templateUrl: './password-input.html',
-  styleUrl: './password-input.scss',
   standalone: true,
 })
 export class PasswordInputComponent extends BaseInputDirective<string> {

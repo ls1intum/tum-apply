@@ -8,6 +8,5 @@ import TranslateDirective from '../../../shared/language/translate.directive';
   standalone: true,
   imports: [JobCardListComponent, TranslateDirective],
   templateUrl: './job-overview-page.component.html',
-  styleUrls: ['./job-overview-page.component.scss'],
 })
 export class JobOverviewPageComponent {}

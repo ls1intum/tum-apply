@@ -11,7 +11,6 @@ import TranslateDirective from '../../../language/translate.directive';
   standalone: true,
   imports: [AccordionModule, TranslateModule, TranslateDirective, FontAwesomeModule],
   templateUrl: './faq-section.component.html',
-  styleUrl: './faq-section.component.scss',
 })
 export class FaqSectionComponent {
   tabs = [

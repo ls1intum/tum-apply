@@ -1,5 +1,5 @@
 <jhi-confirm-dialog
-  class="confirm-dialog"
+  class="hidden"
   header="entity.applicationSteps.confirmDialog.header"
   message="entity.applicationSteps.confirmDialog.message"
   label="button.send"
@@ -110,10 +110,7 @@
 </ng-template>
 
 <ng-template #saving_state_panel>
-  <div [className]="savingBadgeCalculatedClass()">
-    <fa-icon icon="save" />
-    <span class="font-bold" [jhiTranslate]="'entity.applicationSteps.status.' + savingState()"></span>
-  </div>
+  <jhi-saving-badge [state]="autoSave.state()" />
 </ng-template>
 
 <div class="page-container">
