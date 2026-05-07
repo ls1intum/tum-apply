@@ -7,7 +7,6 @@ import java.util.UUID;
 
 /**
  * Read model exposed to the applicant in the application creation form.
- * Never carries the token or its hash.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ReferenceRequestDTO(
@@ -20,7 +19,7 @@ public record ReferenceRequestDTO(
 ) {
     /**
      * @param entity the persisted reference request
-     * @return a DTO mirroring the entity, omitting any token fields
+     * @return a DTO mirroring the entity
      */
     public static ReferenceRequestDTO fromEntity(ReferenceRequest entity) {
         return new ReferenceRequestDTO(

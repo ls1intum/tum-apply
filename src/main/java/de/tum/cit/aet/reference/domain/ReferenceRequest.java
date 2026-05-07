@@ -11,7 +11,6 @@ import lombok.Setter;
 
 /**
  * A request the applicant sends to an external referee asking them to upload a recommendation letter.
- * The token (BCrypt hash stored here) is sent in the invitation mail and never persisted in plain text.
  */
 @Getter
 @Setter

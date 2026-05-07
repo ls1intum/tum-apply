@@ -11,8 +11,6 @@ package de.tum.cit.aet.reference.constants;
  */
 public enum ReferenceRequestStatus {
     REQUESTED,
-    OPENED,
     SUBMITTED,
-    WITHDRAWN,
     EXPIRED,
 }
