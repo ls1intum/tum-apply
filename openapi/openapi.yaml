@@ -2038,9 +2038,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema:
-                type: object
-                additionalProperties: {}
+              schema: {$ref: '#/components/schemas/PublicConfigDTO'}
   /api/research-groups:
     get:
       tags: [research-group-resource]
@@ -3404,6 +3402,14 @@ components:
         labels:
           type: object
           additionalProperties: {type: string}
+    KeycloakConfig:
+      type: object
+      properties:
+        clientId: {type: string}
+        externalLoginRealm: {type: string}
+        relyingPartyId: {type: string}
+        tumLoginRealm: {type: string}
+        url: {type: string}
     KeycloakUserDTO:
       type: object
       properties:
@@ -3433,6 +3439,12 @@ components:
           type: string
           enum: [LOGIN, REGISTER]
       required: [code, email, purpose]
+    OtpConfig:
+      type: object
+      properties:
+        length: {type: integer, format: int32}
+        resendCooldownSeconds: {type: integer, format: int32}
+        ttlSeconds: {type: integer, format: int32}
     PageApplicationOverviewDTO:
       type: object
       properties:
@@ -3558,6 +3570,11 @@ components:
         lastName: {type: string}
         researchGroupName: {type: string}
         researchGroupWebsite: {type: string}
+    PublicConfigDTO:
+      type: object
+      properties:
+        keycloak: {$ref: '#/components/schemas/KeycloakConfig'}
+        otp: {$ref: '#/components/schemas/OtpConfig'}
     RatingDTO:
       type: object
       properties:
