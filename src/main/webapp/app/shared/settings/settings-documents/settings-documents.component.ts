@@ -100,15 +100,13 @@ export class SettingsDocumentsComponent {
   savingState = computed<SavingState>(() => this.autoSave.state());
   hasChanges = computed(() => this.hasFormChanges());
 
-  helperTextBachelorGrade = computed(() => {
-    this.currentLang();
-    return getGradeHelperText(this.translateService, this.bachelorGradeLimits());
-  });
+  helperTextBachelorGrade = computed(() => getGradeHelperText(this.bachelorGradeLimits()));
+  helperTextBachelorGradeKey = computed(() => this.helperTextBachelorGrade()?.key ?? '');
+  helperTextBachelorGradeParams = computed(() => this.helperTextBachelorGrade()?.params ?? {});
 
-  helperTextMasterGrade = computed(() => {
-    this.currentLang();
-    return getGradeHelperText(this.translateService, this.masterGradeLimits());
-  });
+  helperTextMasterGrade = computed(() => getGradeHelperText(this.masterGradeLimits()));
+  helperTextMasterGradeKey = computed(() => this.helperTextMasterGrade()?.key ?? '');
+  helperTextMasterGradeParams = computed(() => this.helperTextMasterGrade()?.params ?? {});
 
   warningTextBachelorGrade = computed(() => {
     this.currentLang();

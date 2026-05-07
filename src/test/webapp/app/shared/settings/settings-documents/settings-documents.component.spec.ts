@@ -131,8 +131,14 @@ describe('SettingsDocumentsComponent', () => {
       expect(component.referenceDocuments()?.[0]?.id).toBe('reference-doc-1');
       expect(component.bachelorGradeLimits()).toEqual({ upperLimit: '1.0', lowerLimit: '4.0', isPercentage: false });
       expect(component.masterGradeLimits()).toEqual({ upperLimit: '1.0', lowerLimit: '4.0', isPercentage: false });
-      expect(component.helperTextBachelorGrade()).toContain('entity.applicationPage2.helperText.scale');
-      expect(component.helperTextMasterGrade()).toContain('entity.applicationPage2.helperText.scale');
+      expect(component.helperTextBachelorGrade()).toEqual({
+        key: 'entity.applicationPage2.helperText.gradingScale',
+        params: { upperLimit: '1.0', lowerLimit: '4.0' },
+      });
+      expect(component.helperTextMasterGrade()).toEqual({
+        key: 'entity.applicationPage2.helperText.gradingScale',
+        params: { upperLimit: '1.0', lowerLimit: '4.0' },
+      });
     });
 
     it('should show an error toast when loading document settings fails', async () => {

@@ -10,7 +10,6 @@ import { BaseInputDirective } from '../base-input/base-input.component';
 @Component({
   selector: 'jhi-string-input',
   templateUrl: './string-input.component.html',
-  styleUrls: ['./string-input.component.scss'],
   standalone: true,
   providers: [
     {

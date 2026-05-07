@@ -40,7 +40,6 @@ export type StepData = {
     StickyFooterShellComponent,
   ],
   templateUrl: './progress-stepper.component.html',
-  styleUrl: './progress-stepper.component.scss',
   standalone: true,
 })
 export class ProgressStepperComponent {

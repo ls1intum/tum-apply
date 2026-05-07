@@ -49,7 +49,6 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
     EditorComponent,
   ],
   templateUrl: './application-creation-page3.component.html',
-  styleUrl: './application-creation-page3.component.scss',
   standalone: true,
 })
 export default class ApplicationCreationPage3Component {

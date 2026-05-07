@@ -69,7 +69,6 @@ const applyflow = 'entity.toast.applyFlow';
     SavingBadgeComponent,
   ],
   templateUrl: './application-creation-form.component.html',
-  styleUrl: './application-creation-form.component.scss',
   providers: [DialogService],
   standalone: true,
 })
