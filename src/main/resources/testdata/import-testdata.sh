@@ -98,7 +98,9 @@ fi
 
 # Find and run only SQL files under testdata folder (and subfolders)
 # Find and run all SQL files except the reset script
-find "$SQL_PATH" -type f -name "*.sql" ! -name "00_drop_all_tables.sql" | sort | while IFS= read -r file; do
+# The combined/ subfolder holds a single concatenated dump for one-shot execution
+# on deployed environments — skip it locally so we don't double-run every statement.
+find "$SQL_PATH" -type f -name "*.sql" ! -name "00_drop_all_tables.sql" ! -path "*/combined/*" | sort | while IFS= read -r file; do
   echo "Attempting to run: $file"
   mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASS" "$DB_NAME" < "$file"
 

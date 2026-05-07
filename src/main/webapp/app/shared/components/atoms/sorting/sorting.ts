@@ -1,5 +1,4 @@
-import { Component, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, ViewEncapsulation, computed, effect, input, output, signal } from '@angular/core';
 import { InputGroupModule } from 'primeng/inputgroup';
 
 import { SelectComponent, SelectOption } from '../select/select.component';
@@ -22,7 +21,6 @@ export type SortDirection = 'ASC' | 'DESC';
   selector: 'jhi-sorting',
   imports: [SelectComponent, ButtonComponent, InputGroupModule],
   templateUrl: './sorting.html',
-  styleUrl: './sorting.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class Sorting {
@@ -48,8 +46,6 @@ export class Sorting {
     const cur = this.currentOption();
     return { name: cur.displayName, value: cur.fieldName };
   });
-
-  private translateService = inject(TranslateService);
 
   private readonly syncSortStateEffect = effect(() => {
     const fields = this.sortableFields();
@@ -82,13 +78,9 @@ export class Sorting {
     const asc = this.isAsc();
 
     if (type === 'NUMBER') {
-      return asc
-        ? this.translateService.instant('entity.sorting.ascending.number')
-        : this.translateService.instant('entity.sorting.descending.number');
+      return asc ? 'entity.sorting.ascending.number' : 'entity.sorting.descending.number';
     } else {
-      return asc
-        ? this.translateService.instant('entity.sorting.ascending.text')
-        : this.translateService.instant('entity.sorting.descending.text');
+      return asc ? 'entity.sorting.ascending.text' : 'entity.sorting.descending.text';
     }
   }
 

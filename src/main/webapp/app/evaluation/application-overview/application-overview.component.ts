@@ -34,7 +34,6 @@ import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicat
     UserAvatarComponent,
   ],
   templateUrl: './application-overview.component.html',
-  styleUrls: ['./application-overview.component.scss'],
 })
 export class ApplicationOverviewComponent {
   loading = signal(true);

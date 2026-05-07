@@ -7,7 +7,6 @@ import TranslateDirective from '../../language/translate.directive';
   standalone: true,
   imports: [TranslateDirective],
   templateUrl: './about-us-page.component.html',
-  styleUrl: './about-us-page.component.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class AboutUsPageComponent {}

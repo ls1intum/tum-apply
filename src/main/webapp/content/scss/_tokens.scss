@@ -65,6 +65,16 @@
   --color-negative-active: var(--p-danger-active-color);
   --color-negative-disabled: var(--p-danger-disabled-color);
 
+  // Accent Semantic Colors (TUM accent / contrast palette)
+  --color-accent-DEFAULT: var(--p-accent-color);
+  --color-accent-default: var(--p-accent-color);
+  --color-accent-hover: var(--p-accent-hover-color);
+  --color-accent-active: var(--p-accent-active-color);
+
+  // Base / neutral anchors
+  --color-base-black: var(--p-base-black);
+  --color-base-white: var(--p-base-white);
+
   // Background Semantic Colors
   --color-background-default: var(--p-background-default);
   --color-background-disabled: var(--p-background-disabled);

@@ -13,7 +13,6 @@ import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator
   standalone: true,
   imports: [ButtonGroupComponent],
   templateUrl: './auth-idp-buttons.html',
-  styleUrl: './auth-idp-buttons.scss',
 })
 export class AuthIdpButtons {
   authFacadeService = inject(AuthFacadeService);

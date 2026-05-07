@@ -16,7 +16,6 @@ import TranslateDirective from '../../../language/translate.directive';
   selector: 'jhi-professor-faq-section',
   imports: [AccordionModule, TranslateModule, TranslateDirective, FontAwesomeModule, ButtonComponent],
   templateUrl: './professor-faq-section.component.html',
-  styleUrl: './professor-faq-section.component.scss',
 })
 export class ProfessorFaqSectionComponent {
   readonly translationKey = 'professorLandingPage.faq.questions';
