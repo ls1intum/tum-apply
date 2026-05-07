@@ -363,7 +363,7 @@ jobs:
               /interviews/overview
 
           - role: 'Applicant'
-            username: 'external@uni.de'
+            username: 'applicant2@tumapply.local'
             password: 'applicant'
             auth_method: 'server'
             keycloak_realm: 'external-login'

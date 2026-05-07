@@ -199,6 +199,37 @@
       ]
     },
     {
+      "clientId": "tumapply-server-client",
+      "name": "TUMApply Server Service",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "serviceAccountsEnabled": false,
+      "standardFlowEnabled": true,
+      "frontchannelLogout": true,
+      "directAccessGrantsEnabled": true,
+      "attributes": {
+        "access.token.lifespan": "300",
+        "refresh.token.lifespan": "1800"
+      },
+      "redirectUris": [],
+      "webOrigins": [],
+      "secret": "tumapply-server-secret",
+      "protocolMappers": [
+        {
+          "name": "service-account-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "tumapply-server-client",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
       "clientId": "tumapply-admin-api",
       "name": "TUMApply Admin API",
       "enabled": true,

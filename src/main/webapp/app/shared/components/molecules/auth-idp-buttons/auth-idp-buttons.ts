@@ -33,17 +33,6 @@ export class AuthIdpButtons {
     fullWidth: true,
     buttons: [
       {
-        label: this.onlyIcons() ? undefined : 'TUM',
-        icon: 'tum',
-        severity: 'primary',
-        variant: this.onlyIcons() ? 'text' : 'outlined',
-        disabled: false,
-        fullWidth: true,
-        onClick: () => {
-          void this.authFacadeService.loginWithProvider(IdpProvider.TUM, this.redirectUri(), this.isRegistration());
-        },
-      },
-      {
         label: this.onlyIcons() ? undefined : 'Apple',
         icon: 'apple',
         severity: 'primary',

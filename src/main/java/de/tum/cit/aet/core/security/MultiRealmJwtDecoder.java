@@ -8,21 +8,17 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtException;
-import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Decodes JWTs from multiple trusted Keycloak issuers by selecting the matching decoder from the token's {@code iss}
  * claim before validating the token.
  */
-@Component
 public class MultiRealmJwtDecoder implements JwtDecoder {
 
     private final Set<String> trustedIssuers;
@@ -36,12 +32,7 @@ public class MultiRealmJwtDecoder implements JwtDecoder {
      * @param tumLoginRealm name of the TUM IDP/LDAP realm
      * @param externalLoginRealm name of the external login realm
      */
-    @Autowired
-    public MultiRealmJwtDecoder(
-        @Value("${keycloak.url}") String keycloakUrl,
-        @Value("${keycloak.tum-login-realm}") String tumLoginRealm,
-        @Value("${keycloak.external-login-realm}") String externalLoginRealm
-    ) {
+    public MultiRealmJwtDecoder(String keycloakUrl, String tumLoginRealm, String externalLoginRealm) {
         this(keycloakUrl, tumLoginRealm, externalLoginRealm, JwtDecoders::fromIssuerLocation);
     }
 
