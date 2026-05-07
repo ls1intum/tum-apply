@@ -46,35 +46,43 @@
 
     @if (user() === undefined) {
       @if (isProfessorPage()) {
-        <jhi-button
-          [class]="headerButtonLongClass"
-          (click)="redirectToApplicantLandingPage()"
-          label="header.applicant"
-          severity="primary"
-          variant="text"
-        />
-        <jhi-button
-          [class]="headerButtonShortClass"
-          (click)="redirectToApplicantLandingPage()"
-          label="header.applicantShort"
-          severity="primary"
-          variant="text"
-        />
+        <span class="hidden sm:inline-flex">
+          <jhi-button
+            [class]="headerButtonClass"
+            (click)="redirectToApplicantLandingPage()"
+            label="header.applicant"
+            severity="primary"
+            variant="text"
+          />
+        </span>
+        <span class="inline-flex sm:hidden">
+          <jhi-button
+            [class]="headerButtonClass"
+            (click)="redirectToApplicantLandingPage()"
+            label="header.applicantShort"
+            severity="primary"
+            variant="text"
+          />
+        </span>
       } @else {
-        <jhi-button
-          [class]="headerButtonLongClass"
-          (click)="redirectToProfessorLandingPage()"
-          label="header.professor"
-          severity="primary"
-          variant="text"
-        />
-        <jhi-button
-          [class]="headerButtonShortClass"
-          (click)="redirectToProfessorLandingPage()"
-          label="header.professorShort"
-          severity="primary"
-          variant="text"
-        />
+        <span class="hidden sm:inline-flex">
+          <jhi-button
+            [class]="headerButtonClass"
+            (click)="redirectToProfessorLandingPage()"
+            label="header.professor"
+            severity="primary"
+            variant="text"
+          />
+        </span>
+        <span class="inline-flex sm:hidden">
+          <jhi-button
+            [class]="headerButtonClass"
+            (click)="redirectToProfessorLandingPage()"
+            label="header.professorShort"
+            severity="primary"
+            variant="text"
+          />
+        </span>
       }
 
       <div class="h-4 mx-0.5 w-px bg-primary-default self-center"></div>

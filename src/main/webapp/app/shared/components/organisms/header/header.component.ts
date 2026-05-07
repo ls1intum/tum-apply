@@ -107,8 +107,6 @@ export class HeaderComponent {
 
   readonly headerButtonClass =
     'inline-flex [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-md';
-  readonly headerButtonLongClass = `hidden sm:inline-flex ${this.headerButtonClass}`;
-  readonly headerButtonShortClass = `inline-flex sm:hidden ${this.headerButtonClass}`;
 
   profileMenu = viewChild<MenuComponent>('profileMenu');
   isProfileMenuOpen = signal(false);
