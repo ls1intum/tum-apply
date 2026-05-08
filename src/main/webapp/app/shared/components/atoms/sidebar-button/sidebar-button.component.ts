@@ -10,7 +10,6 @@ import { TooltipModule } from 'primeng/tooltip';
   selector: 'jhi-sidebar-button',
   imports: [FontAwesomeModule, TooltipModule],
   templateUrl: './sidebar-button.component.html',
-  styleUrl: './sidebar-button.component.scss',
 })
 export class SidebarButtonComponent {
   icon = input<string | undefined>(undefined);

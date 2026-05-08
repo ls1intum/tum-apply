@@ -23,9 +23,9 @@ describe('VoiceCardComponent', () => {
     fixture.detectChanges();
 
     const imgEl = nativeElement.querySelector('img');
-    const nameEl = nativeElement.querySelector('.name');
-    const fieldEl = nativeElement.querySelector('.field');
-    const quoteEl = nativeElement.querySelector('.quote');
+    const detailRows = Array.from(nativeElement.querySelectorAll('img + div > div'));
+    const [nameEl, fieldEl] = detailRows;
+    const quoteEl = nativeElement.querySelector('p');
 
     expect(imgEl).not.toBeNull();
     expect(imgEl!.getAttribute('src')).toBe('/assets/jane.webp');
