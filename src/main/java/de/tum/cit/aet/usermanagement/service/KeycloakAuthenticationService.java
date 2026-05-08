@@ -208,6 +208,13 @@ public class KeycloakAuthenticationService {
         return getResponseFromToken(tokenResponse);
     }
 
+    /**
+     * Creates a DTO containing the necessary information to perform passkey-related actions on the client side,
+     * such as registering a new passkey.
+     *
+     * @param jwt the user's current access token as a JWT
+     * @return DTO with realm, client ID, token value and expiry for passkey actions
+     */
     public PasskeyActionTokenDTO createPasskeyActionToken(Jwt jwt) {
         return new PasskeyActionTokenDTO(
             getRealmFromJwt(jwt),
@@ -217,6 +224,12 @@ public class KeycloakAuthenticationService {
         );
     }
 
+    /**
+     * Lists the user's credentials from Keycloak and filters them to return only passkey-related credentials.
+     *
+     * @param jwt the user's current access token as a JWT
+     * @return a map containing the list of passkey credentials
+     */
     public Object listPasskeys(Jwt jwt) {
         List<CredentialRepresentation> credentials = keycloakUserService
             .getCredentials(jwt.getSubject(), jwt.getIssuer())
@@ -226,6 +239,12 @@ public class KeycloakAuthenticationService {
         return Map.of("credentials", credentials);
     }
 
+    /**
+     * Removes a passkey credential from the user's account in Keycloak.
+     *
+     * @param jwt          the user's current access token as a JWT
+     * @param credentialId the ID of the credential to remove
+     */
     public void removePasskey(Jwt jwt, String credentialId) {
         keycloakUserService.removeCredential(jwt.getSubject(), jwt.getIssuer(), credentialId);
     }
