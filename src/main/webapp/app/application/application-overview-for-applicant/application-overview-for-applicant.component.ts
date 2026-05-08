@@ -36,7 +36,6 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
     MenuComponent,
   ],
   templateUrl: './application-overview-for-applicant.component.html',
-  styleUrl: './application-overview-for-applicant.component.scss',
 })
 
 /**

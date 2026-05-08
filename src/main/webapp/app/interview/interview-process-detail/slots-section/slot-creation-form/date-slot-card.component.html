@@ -89,9 +89,9 @@
                   [class.border-negative-default]="range.type === 'single' && allConflicts().has(range.id + '_' + slotIndex)"
                 >
                   <!-- Row 1: Time + Break inputs -->
-                  <div class="flex flex-wrap gap-4 mb-3 items-end">
+                  <div class="flex flex-nowrap gap-4 mb-3 items-end">
                     <!-- START + END TIME group -->
-                    <div class="flex gap-1">
+                    <div class="flex gap-1 shrink-0">
                       <!-- START TIME -->
                       <div class="flex flex-col gap-1 w-24">
                         <label [for]="'start-' + range.id" class="text-xs text-text-primary">
@@ -120,7 +120,7 @@
 
                     <!-- Location Input (Single Slot: same row) -->
                     @if (range.type === 'single') {
-                      <div class="flex flex-col gap-1 flex-1 min-w-[12rem]">
+                      <div class="flex flex-col gap-1 flex-1 min-w-0">
                         <label [for]="'location-' + range.id" class="text-xs text-text-primary">
                           {{ 'interview.slots.create.location' | translate }}
                         </label>

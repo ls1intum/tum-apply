@@ -7,7 +7,6 @@ import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
   selector: 'jhi-application-state-for-applicants',
   imports: [TagComponent],
   templateUrl: './application-state-for-applicants.component.html',
-  styleUrl: './application-state-for-applicants.component.scss',
 })
 export class ApplicationStateForApplicantsComponent {
   readonly AppState = ApplicationDetailDTOApplicationStateEnum;

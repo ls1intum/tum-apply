@@ -27,7 +27,6 @@ export type ButtonGroupData = {
   selector: 'jhi-button-group',
   imports: [ButtonComponent],
   templateUrl: './button-group.component.html',
-  styleUrl: './button-group.component.scss',
   standalone: true,
 })
 export default class ButtonGroupComponent {
