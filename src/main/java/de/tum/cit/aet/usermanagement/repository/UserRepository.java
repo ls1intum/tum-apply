@@ -249,4 +249,61 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         """
     )
     List<UUID> findInactiveNonAdminUserIdsForWarning(@Param("warningDate") LocalDateTime warningDate);
+
+    /**
+     * Finds users for the admin "Manage Users" listing. Optional filters for role
+     * and research-group; search matches firstName, lastName, email, or universityId.
+     *
+     * @param roles            optional list of roles to include (matches if user has at least one of these)
+     * @param researchGroupIds optional list of research-group ids to include (matches via the user's roles)
+     * @param searchQuery      optional search string
+     * @param pageable         pagination configuration
+     * @return a page of matching users as {@link de.tum.cit.aet.usermanagement.dto.AdminUserOverviewDTO}
+     */
+    @Query(
+        """
+          SELECT new de.tum.cit.aet.usermanagement.dto.AdminUserOverviewDTO(
+            u.userId,
+            u.firstName,
+            u.lastName,
+            u.email,
+            u.avatar,
+            u.universityId,
+            CASE
+              WHEN EXISTS (SELECT 1 FROM UserResearchGroupRole rp WHERE rp.user.userId = u.userId AND rp.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN)
+                THEN de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
+              WHEN EXISTS (SELECT 1 FROM UserResearchGroupRole rp WHERE rp.user.userId = u.userId AND rp.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR)
+                THEN de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+              WHEN EXISTS (SELECT 1 FROM UserResearchGroupRole rp WHERE rp.user.userId = u.userId AND rp.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
+                THEN de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE
+              WHEN EXISTS (SELECT 1 FROM UserResearchGroupRole rp WHERE rp.user.userId = u.userId AND rp.role = de.tum.cit.aet.usermanagement.constants.UserRole.APPLICANT)
+                THEN de.tum.cit.aet.usermanagement.constants.UserRole.APPLICANT
+              ELSE NULL
+            END,
+            u.researchGroup.researchGroupId,
+            u.researchGroup.name,
+            u.lastActivityAt
+          )
+          FROM User u
+          WHERE
+            (:roles IS NULL OR EXISTS (
+              SELECT 1 FROM UserResearchGroupRole r WHERE r.user.userId = u.userId AND r.role IN :roles
+            ))
+            AND (:researchGroupIds IS NULL OR EXISTS (
+              SELECT 1 FROM UserResearchGroupRole r WHERE r.user.userId = u.userId AND r.researchGroup.researchGroupId IN :researchGroupIds
+            ))
+            AND (:searchQuery IS NULL OR
+              u.firstName LIKE CONCAT('%', :searchQuery, '%') OR
+              u.lastName LIKE CONCAT('%', :searchQuery, '%') OR
+              u.email LIKE CONCAT('%', :searchQuery, '%') OR
+              u.universityId LIKE CONCAT('%', :searchQuery, '%')
+            )
+        """
+    )
+    Page<de.tum.cit.aet.usermanagement.dto.AdminUserOverviewDTO> findAllUsersForAdmin(
+        @Param("roles") List<de.tum.cit.aet.usermanagement.constants.UserRole> roles,
+        @Param("researchGroupIds") List<UUID> researchGroupIds,
+        @Param("searchQuery") String searchQuery,
+        Pageable pageable
+    );
 }
