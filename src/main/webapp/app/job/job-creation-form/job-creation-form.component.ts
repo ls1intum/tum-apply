@@ -307,6 +307,11 @@ export class JobCreationFormComponent {
   /** When set, only issues of this category are highlighted in the editor. (undefined = all categories shown) */
   readonly activeComplianceFilter = signal<string | undefined>(undefined);
 
+  /** Dismiss hides the marker, but keeps the issue in score/count. */
+  readonly dismissedComplianceHighlights = signal<ComplianceIssue[]>([]);
+
+  readonly isCompliancePopoverHovered = signal(false);
+
   /** Returns the explanation of a compliance issue whose text appears in the job title, if any. */
   readonly titleComplianceError = computed(() => {
     const title = (this.basicInfoForm.get('title')?.value ?? '').toLowerCase();
@@ -857,8 +862,11 @@ export class JobCreationFormComponent {
    * @param lang The current language of the editor content
    */
   private applyHighlights(compliance: ComplianceIssue[] | undefined, lang: string): void {
+    const dismissedIssues = this.dismissedComplianceHighlights();
     const highlights = (compliance ?? []).flatMap(issue =>
-      issue.text && issue.category && (!issue.language || issue.language === lang) ? [{ text: issue.text, category: issue.category }] : [],
+      issue.text && issue.category && (!issue.language || issue.language === lang) && !dismissedIssues.includes(issue)
+        ? [{ text: issue.text, category: issue.category }]
+        : [],
     );
     this.jobDescriptionEditor()?.highlightTexts(highlights);
   }
@@ -869,7 +877,11 @@ export class JobCreationFormComponent {
    */
   onHighlightHovered(event: { text: string; x: number; y: number } | undefined): void {
     if (!event) {
-      this.activePopoverIssue.set(undefined);
+      setTimeout(() => {
+        if (!this.isCompliancePopoverHovered()) {
+          this.activePopoverIssue.set(undefined);
+        }
+      }, 120);
       return;
     }
     const lang = this.currentDescriptionLanguage();
@@ -877,6 +889,42 @@ export class JobCreationFormComponent {
     this.activePopoverIssue.set(match);
     this.popoverX.set(Math.min(event.x, window.innerWidth - this.POPOVER_WIDTH));
     this.popoverY.set(event.y);
+  }
+
+  onPopoverHovered(isHovered: boolean): void {
+    this.isCompliancePopoverHovered.set(isHovered);
+    if (!isHovered) {
+      this.closeCompliancePopover();
+    }
+  }
+
+  onComplianceSuggestionAccepted(issue: ComplianceIssue): void {
+    const applied = this.jobDescriptionEditor()?.applyComplianceSuggestion(issue) ?? false;
+    if (!applied) return;
+
+    this.complianceIssues.update(issues => issues.filter(currentIssue => currentIssue !== issue));
+    this.closeCompliancePopover();
+    this.refreshComplianceHighlights();
+  }
+
+  onComplianceIssueDismissed(issue: ComplianceIssue): void {
+    this.dismissedComplianceHighlights.update(issues => issues.concat(issue));
+    this.closeCompliancePopover();
+    this.refreshComplianceHighlights();
+  }
+
+  private refreshComplianceHighlights(): void {
+    const lang = this.currentDescriptionLanguage();
+    const category = this.activeComplianceFilter();
+    const visibleIssues = category
+      ? this.complianceIssues().filter(currentIssue => currentIssue.category === category)
+      : this.complianceIssues();
+    this.applyHighlights(visibleIssues, lang);
+  }
+
+  private closeCompliancePopover(): void {
+    this.activePopoverIssue.set(undefined);
+    this.isCompliancePopoverHovered.set(false);
   }
 
   /**

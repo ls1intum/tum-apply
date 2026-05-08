@@ -17,7 +17,12 @@ import { InfoIconComponent } from 'app/shared/components/atoms/info-icon/info-ic
 import { ChangeDetectorRef } from '@angular/core';
 import { viewChild } from '@angular/core';
 import { TranslateDirective } from 'app/shared/language';
-import { ComplianceIssueCategoryEnum, ComplianceIssueCategoryEnumValues } from 'app/generated/model/compliance-issue';
+import {
+  ComplianceIssue,
+  ComplianceIssueActionEnum,
+  ComplianceIssueCategoryEnum,
+  ComplianceIssueCategoryEnumValues,
+} from 'app/generated/model/compliance-issue';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -382,6 +387,31 @@ export class EditorComponent extends BaseInputDirective<string> {
       }
     }
   }
+
+  public applyComplianceSuggestion({ action, text, suggestion }: ComplianceIssue) {
+    const editor = this.quillEditorComponent()?.quillEditor;
+    if (!editor) return;
+
+    const newText = suggestion?.trim() || '';
+    const oldText = text?.trim() || '';
+
+    // 1. ADD: Text einfach ans Ende anhängen
+    if (action === ComplianceIssueActionEnum.Add) {
+      editor.insertText(editor.getLength(), '\n' + newText);
+      return;
+    }
+
+    // 2. REPLACE & REMOVE: Text suchen und austauschen/löschen
+    const index = editor.getText().toLowerCase().indexOf(oldText.toLowerCase());
+    
+    if (index !== -1) {
+      editor.deleteText(index, oldText.length); // Alten Text immer löschen
+      
+      if (action === ComplianceIssueActionEnum.Replace) {
+        editor.insertText(index, newText);      // Neuen Text einfügen (nur bei Replace)
+      }
+    }
+}
 
   /**
    * Sends the text and position of a highlighted item
