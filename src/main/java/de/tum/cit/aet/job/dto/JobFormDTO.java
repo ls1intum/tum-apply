@@ -47,6 +47,13 @@ public record JobFormDTO(
         if (job == null) {
             throw new EntityNotFoundException("Cannot convert non-existent Job entity to JobFormDTO");
         }
+        return getFromEntity(job, job.getComplianceIssues(), job.getBiasedIssues());
+    }
+
+    public static JobFormDTO getFromEntity(Job job, List<ComplianceIssue> complianceIssues, List<BiasedIssues> biasedIssues) {
+        if (job == null) {
+            throw new EntityNotFoundException("Cannot convert non-existent Job entity to JobFormDTO");
+        }
 
         return new JobFormDTO(
             job.getJobId(),
@@ -67,8 +74,8 @@ public record JobFormDTO(
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getSuitableForDisabled(),
             job.getGenderBiasScore(),
-            job.getComplianceIssues(),
-            job.getBiasedIssues()
+            complianceIssues,
+            biasedIssues
         );
     }
 }

@@ -304,6 +304,12 @@ export class JobCreationFormComponent {
   /** List of detected biased issues to update the UI and editor highlights */
   readonly biasedIssues = signal<BiasedIssues[]>([]);
 
+  /** Gender decoder issues for the currently visible description language only. */
+  readonly currentBiasedIssues = computed(() => {
+    const lang = this.currentDescriptionLanguage();
+    return this.biasedIssues().filter(issue => !issue.language || issue.language === lang);
+  });
+
   /** The compliance issue currently shown in the popover (undefined = none is hovered). */
   readonly activePopoverIssue = signal<ComplianceIssue | undefined>(undefined);
 
@@ -633,12 +639,13 @@ export class JobCreationFormComponent {
     const currentLang = this.currentDescriptionLanguage();
     if (newLang === currentLang) return;
 
-    // If a save is pending, flush it immediately so we don't lose text.
-    // syncCurrentEditorIntoLanguageSignals copies the editor HTML into the
-    // language signal, but the languageChangeEffect below sets the form
-    // value with emitEvent:false — so the autosave effect won't re-trigger.
-    void this.autoSave.flush();
+    const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
+    const previousDescription = currentLang === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE();
 
+    this.syncCurrentEditorIntoLanguageSignals();
+    if (description !== previousDescription) {
+      void this.autoSave.flush();
+    }
     this.currentDescriptionLanguage.set(newLang);
   }
 
@@ -1591,15 +1598,17 @@ export class JobCreationFormComponent {
       //    of translation after both languages are available — avoids duplicate
       //    analysis calls that cause score flash issues.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
+        const text = description.trim();
+        const shouldAnalyze = text !== '' && text !== this.lastAnalyzedText[currentLang] && !this.isAnalyzing();
+
         // highlighting before translation
-        await firstValueFrom(this.genderBiasApi.analyzeHtmlContent({ text: description, language: currentLang }))
-          .then(issues => this.biasedIssues.set(issues))
-          .catch(() => undefined);
-        void Promise.all([
-          this.analyzeAndUpdateScore(currentLang),
-          // fire and forget
-          this.translateAndStoreOtherLanguage(currentLang, description),
-        ]);
+        if (shouldAnalyze) {
+          await firstValueFrom(this.genderBiasApi.analyzeHtmlContent({ text: description, language: currentLang }))
+            .then(issues => this.biasedIssues.set(issues))
+            .catch(() => undefined);
+
+          void Promise.all([this.analyzeAndUpdateScore(currentLang), this.translateAndStoreOtherLanguage(currentLang, description)]);
+        }
       }
       return true;
     } catch {

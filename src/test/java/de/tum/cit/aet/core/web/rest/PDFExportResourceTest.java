@@ -427,6 +427,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 null,
                 true,
                 null,
+                null,
                 null
             );
             Map<String, String> labels = createCompleteLabelsMap();
@@ -493,6 +494,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 JobState.DRAFT,
                 null,
                 true,
+                null,
                 null,
                 null
             );

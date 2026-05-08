@@ -12,7 +12,6 @@
 export interface BiasedIssues {
     readonly coding?: string;
     readonly language?: string;
-    readonly originalText?: string;
     readonly type?: BiasedIssuesTypeEnum;
     readonly word?: string;
 }

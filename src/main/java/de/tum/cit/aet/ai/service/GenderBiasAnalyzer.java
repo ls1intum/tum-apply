@@ -24,7 +24,7 @@ public class GenderBiasAnalyzer {
      */
     public AnalysisResult analyze(String text, String language) {
         if (text == null || text.trim().isEmpty()) {
-            return new AnalysisResult(text, Collections.emptyList(), Collections.emptyList(), 0, 0, "empty", language);
+            return new AnalysisResult(Collections.emptyList(), Collections.emptyList(), 0, 0, "empty", language);
         }
 
         // Get word lists for language (fallback to English)
@@ -46,7 +46,7 @@ public class GenderBiasAnalyzer {
         int inclusiveCount = inclusiveWords.size();
         String coding = assessCoding(nonInclusiveCount, inclusiveCount);
 
-        return new AnalysisResult(text, nonInclusiveWords, inclusiveWords, nonInclusiveCount, inclusiveCount, coding, language);
+        return new AnalysisResult(nonInclusiveWords, inclusiveWords, nonInclusiveCount, inclusiveCount, coding, language);
     }
 
     /**
@@ -119,7 +119,6 @@ public class GenderBiasAnalyzer {
      * Analysis result container
      */
     public record AnalysisResult(
-        String originalText,
         List<String> nonInclusiveWords,
         List<String> inclusiveWords,
         int nonInclusiveCount,

@@ -16,7 +16,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BiasedIssues {
 
-    private String originalText;
     private String coding;
     private String language;
     private String word;

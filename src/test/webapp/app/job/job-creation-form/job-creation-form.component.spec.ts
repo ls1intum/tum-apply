@@ -19,6 +19,7 @@ import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ImageDTOImageTypeEnum } from 'app/generated/model/image-dto';
 import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageDTO } from 'app/generated/model/image-dto';
+import { BiasedIssues } from 'app/generated/model/biased-issues';
 import * as DropdownOptions from 'app/job/dropdown-options';
 import { unescapeJsonString } from 'app/shared/util/util';
 
@@ -196,6 +197,21 @@ describe('JobCreationFormComponent', () => {
 
     it('should set userId from loaded user', () => {
       expect(component.userId()).toBe('u1');
+    });
+
+    it('should expose gender decoder issues only for the selected description language', () => {
+      const issues: BiasedIssues[] = [
+        { language: 'en', word: 'leader', coding: 'non-inclusive-coded', type: 'NON_INCLUSIVE' },
+        { language: 'de', word: 'durchsetzungsfähig', coding: 'non-inclusive-coded', type: 'NON_INCLUSIVE' },
+        { word: 'legacy', coding: 'neutral', type: 'INCLUSIVE' },
+      ];
+      component.biasedIssues.set(issues);
+
+      component.currentDescriptionLanguage.set('en');
+      expect(component.currentBiasedIssues().map(issue => issue.word)).toEqual(['leader', 'legacy']);
+
+      component.currentDescriptionLanguage.set('de');
+      expect(component.currentBiasedIssues().map(issue => issue.word)).toEqual(['durchsetzungsfähig', 'legacy']);
     });
 
     it('should initialize in create mode and populate form', async () => {

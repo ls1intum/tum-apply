@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.ai.constants.ComplianceAction;
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
+import de.tum.cit.aet.ai.constants.GenderCategory;
 import de.tum.cit.aet.ai.domain.BiasedIssues;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import java.util.List;
@@ -85,31 +86,31 @@ class ComplianceScoreServiceTest {
 
         @Test
         void shouldCalculateCombinedGenderScoreWhenBothAnalysesArePresent() {
-            BiasedIssues original = new BiasedIssues("text", List.of(new BiasedIssues("team", "inclusive")), "inclusive-coded", "en");
-            BiasedIssues translated = new BiasedIssues(
-                "text",
-                List.of(new BiasedIssues("leader", "non-inclusive"), new BiasedIssues("supportive", "inclusive")),
-                "neutral",
-                "de"
+            List<BiasedIssues> original = List.of(issue("inclusive-coded", "en", "team", GenderCategory.INCLUSIVE));
+            List<BiasedIssues> translated = List.of(
+                issue("neutral", "de", "leader", GenderCategory.NON_INCLUSIVE),
+                issue("neutral", "de", "supportive", GenderCategory.INCLUSIVE)
             );
 
-            int score = complianceScoreService.calculateGenderScore(original, translated);
+            int score = complianceScoreService.calculateGenderScore(original, translated, "text");
 
             assertThat(score).isEqualTo(86);
         }
 
         @Test
         void shouldCalculateSingleLanguageGenderScoreWhenTranslatedAnalysisIsMissing() {
-            BiasedIssues original = new BiasedIssues(
-                "text",
-                List.of(new BiasedIssues("leader", "non-inclusive"), new BiasedIssues("supportive", "inclusive")),
-                "neutral",
-                "en"
+            List<BiasedIssues> original = List.of(
+                issue("neutral", "en", "leader", GenderCategory.NON_INCLUSIVE),
+                issue("neutral", "en", "supportive", GenderCategory.INCLUSIVE)
             );
 
-            int score = complianceScoreService.calculateGenderScore(original, null);
+            int score = complianceScoreService.calculateGenderScore(original, null, "text");
 
             assertThat(score).isEqualTo(71);
+        }
+
+        private BiasedIssues issue(String coding, String language, String word, GenderCategory type) {
+            return new BiasedIssues(coding, language, word, type);
         }
     }
 }

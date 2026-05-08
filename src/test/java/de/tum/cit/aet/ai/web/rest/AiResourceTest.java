@@ -157,6 +157,7 @@ class AiResourceTest extends AbstractResourceTest {
             null,
             true,
             null,
+            null,
             null
         );
     }

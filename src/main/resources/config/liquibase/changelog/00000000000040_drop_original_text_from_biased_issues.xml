@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="040_drop_original_text_from_biased_issues" author="melissa">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="job_biased_issues" columnName="original_text"/>
+    </preConditions>
+    <dropColumn tableName="job_biased_issues" columnName="original_text"/>
+  </changeSet>
+
+</databaseChangeLog>

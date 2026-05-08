@@ -2865,7 +2865,6 @@ components:
       properties:
         coding: {type: string}
         language: {type: string}
-        originalText: {type: string}
         type:
           type: string
           enum: [NON_INCLUSIVE, INCLUSIVE]
