@@ -236,6 +236,41 @@ public class KeycloakUserService {
     }
 
     /**
+     * Fetches a user from Keycloak by their UUID.
+     *
+     * @param userId the Keycloak user UUID
+     * @return the Keycloak user as a {@link KeycloakUserDTO}, or empty if no such user exists
+     */
+    public Optional<KeycloakUserDTO> findKeycloakUserById(UUID userId) {
+        try {
+            UserRepresentation rep = keycloak.realm(realm).users().get(userId.toString()).toRepresentation();
+            if (rep == null) {
+                return Optional.empty();
+            }
+            String universityId = null;
+            Map<String, List<String>> attributes = rep.getAttributes();
+            if (attributes != null) {
+                List<String> ldapIds = attributes.get("LDAP_ID");
+                if (ldapIds != null && !ldapIds.isEmpty()) {
+                    universityId = ldapIds.getFirst();
+                }
+            }
+            return Optional.of(
+                new KeycloakUserDTO(
+                    UUID.fromString(rep.getId()),
+                    rep.getUsername(),
+                    rep.getFirstName(),
+                    rep.getLastName(),
+                    rep.getEmail(),
+                    universityId
+                )
+            );
+        } catch (jakarta.ws.rs.NotFoundException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
      * Ensures a user exists in Keycloak for the given email (creates one if missing).
      * <p>
      * The created user is initialized with enabled=true and emailVerified=true.
@@ -269,6 +304,47 @@ public class KeycloakUserService {
                 throw new IllegalStateException("Keycloak user create failed: status=" + resp.getStatus());
             }
         });
+    }
+
+    /**
+     * Creates a Keycloak user with the given identity fields and sets the initial password.
+     * If a user with the same email already exists, the existing Keycloak user id is returned
+     * and the password is updated. Used by the admin "Manage Users" create flow.
+     *
+     * @param email     the user's email (also used as the Keycloak username)
+     * @param firstName the user's given name
+     * @param lastName  the user's family name
+     * @param password  the initial password (must be non-blank)
+     * @return the Keycloak user UUID
+     * @throws IllegalStateException if Keycloak user creation fails
+     */
+    public UUID createUserWithPassword(String email, String firstName, String lastName, String password) {
+        String normalizedEmail = StringUtil.normalize(email, true);
+        String keycloakUserId = findUserIdByEmail(normalizedEmail).orElseGet(() -> {
+            UserRepresentation newUser = new UserRepresentation();
+            newUser.setUsername(normalizedEmail);
+            newUser.setEmail(normalizedEmail);
+            newUser.setFirstName(StringUtil.normalize(firstName, false));
+            newUser.setLastName(StringUtil.normalize(lastName, false));
+            newUser.setEnabled(true);
+            newUser.setEmailVerified(true);
+
+            try (Response resp = keycloak.realm(realm).users().create(newUser)) {
+                if (resp.getStatus() == 201 && resp.getLocation() != null) {
+                    String path = resp.getLocation().getPath();
+                    return path.substring(path.lastIndexOf('/') + 1);
+                }
+                if (resp.getStatus() == 409) {
+                    return findUserIdByEmail(normalizedEmail).orElseThrow();
+                }
+                throw new IllegalStateException("Keycloak user create failed: status=" + resp.getStatus());
+            }
+        });
+        boolean passwordSet = setPassword(keycloakUserId, password);
+        if (!passwordSet) {
+            throw new IllegalStateException("Keycloak password set failed for userId=" + keycloakUserId);
+        }
+        return UUID.fromString(keycloakUserId);
     }
 
     /**
@@ -307,5 +383,18 @@ public class KeycloakUserService {
      */
     public void logout(String userId) {
         keycloak.realm(realm).users().get(userId).logout();
+    }
+
+    /**
+     * Deletes a user from Keycloak. Idempotent — returns silently if the user does not exist.
+     *
+     * @param userId the Keycloak user UUID
+     */
+    public void deleteUser(UUID userId) {
+        try {
+            keycloak.realm(realm).users().get(userId.toString()).remove();
+        } catch (jakarta.ws.rs.NotFoundException e) {
+            // 1) Idempotent delete: a missing Keycloak user is fine — local DB cleanup still proceeds.
+        }
     }
 }
