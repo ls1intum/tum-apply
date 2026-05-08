@@ -280,11 +280,12 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
                 THEN de.tum.cit.aet.usermanagement.constants.UserRole.APPLICANT
               ELSE NULL
             END,
-            u.researchGroup.researchGroupId,
-            u.researchGroup.name,
+            rg.researchGroupId,
+            rg.name,
             u.lastActivityAt
           )
           FROM User u
+          LEFT JOIN u.researchGroup rg
           WHERE
             (:roles IS NULL OR EXISTS (
               SELECT 1 FROM UserResearchGroupRole r WHERE r.user.userId = u.userId AND r.role IN :roles
