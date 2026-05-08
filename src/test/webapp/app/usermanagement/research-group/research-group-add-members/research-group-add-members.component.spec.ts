@@ -465,6 +465,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
         keycloakUsers: [mockUser1, mockUser2],
         researchGroupId: 'research-group-1',
+        role: 'EMPLOYEE',
       });
       expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledTimes(1);
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersSuccess');
@@ -482,6 +483,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
         keycloakUsers: [mockUser1],
         researchGroupId: 'research-group-1',
+        role: 'EMPLOYEE',
       });
       expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledTimes(1);
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersFailed');
@@ -500,6 +502,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
         keycloakUsers: [mockUser1],
         researchGroupId: 'research-group-1',
+        role: 'EMPLOYEE',
       });
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersFailed');
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
@@ -520,6 +523,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
         keycloakUsers: [mockUser1],
         researchGroupId: 'research-group-1',
+        role: 'EMPLOYEE',
       });
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersFailedAlreadyMember');
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
@@ -539,6 +543,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
         keycloakUsers: [mockUser1],
         researchGroupId: 'research-group-1',
+        role: 'EMPLOYEE',
       });
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersFailedInvalidUniversityId');
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
@@ -554,8 +559,26 @@ describe('ResearchGroupAddMembersComponent', () => {
       expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
         keycloakUsers: [mockUser1],
         researchGroupId: undefined,
+        role: 'EMPLOYEE',
       });
       expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Role Selection', () => {
+    it('should default the role to EMPLOYEE', () => {
+      expect(component.selectedRole()).toBe('EMPLOYEE');
+    });
+
+    it('should pass the selected role through to the add-members API call', async () => {
+      component.toggleUserSelection(mockUser1);
+      component.toggleUserSelection(mockUser2);
+      component.selectedRole.set('PROFESSOR');
+      mockResearchGroupService.addMembersToResearchGroup.mockReturnValue(of(void 0));
+
+      await component.onAddMembers();
+
+      expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith(expect.objectContaining({ role: 'PROFESSOR' }));
     });
   });
 
