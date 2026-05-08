@@ -65,7 +65,6 @@ const CAROUSEL_SIZE = 7;
     TooltipModule,
   ],
   templateUrl: './application-detail.component.html',
-  styleUrl: './application-detail.component.scss',
 })
 export class ApplicationDetailComponent {
   readonly interviewRating = signal<number | undefined>(undefined);

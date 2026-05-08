@@ -9,7 +9,6 @@ import { DocumentCacheService } from 'app/service/document-cache.service';
   selector: 'jhi-document-viewer',
   imports: [],
   templateUrl: './document-viewer.component.html',
-  styleUrl: './document-viewer.component.scss',
   standalone: true,
 })
 export class DocumentViewerComponent {

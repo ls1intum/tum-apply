@@ -24,7 +24,7 @@ describe('InformationCardComponent', () => {
     fixture.componentRef.setInput('link', 'https://example.com');
     fixture.detectChanges();
 
-    const anchor = nativeElement.querySelector('a.card');
+    const anchor = nativeElement.querySelector('a');
     const img = nativeElement.querySelector('img');
     const text = nativeElement.querySelector('div');
     const icon = nativeElement.querySelector('fa-icon');
