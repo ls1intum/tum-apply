@@ -5,6 +5,7 @@ import { environment } from 'app/environments/environment';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
 
+import { AccountService } from './account.service';
 import { PasskeyCredentialSummary } from './models/auth.model';
 import {
   KeycloakRealmKind,
@@ -48,12 +49,12 @@ export class KeycloakAuthenticationService {
   private static readonly PENDING_REALM_STORAGE_SLOT = 'authPendingKeycloakRealm';
 
   readonly config = inject(ApplicationConfigService);
+  private readonly accountService = inject(AccountService);
   private readonly toastService = inject(ToastService);
   private readonly translate = inject(TranslateService);
   private readonly translationKey = 'auth.common.toast';
 
   private keycloak: Keycloak | undefined;
-  private activeRealmKind: KeycloakRealmKind | undefined;
   private refreshIntervalId: ReturnType<typeof setInterval> | undefined;
   private refreshInFlight: Promise<void> | undefined;
   private windowListenersActive = false;
@@ -100,7 +101,7 @@ export class KeycloakAuthenticationService {
    * Returns whether the current authenticated Keycloak session supports passkey management.
    */
   canManagePasskeys(): boolean {
-    return this.isLoggedIn() && this.activeRealmKind === KeycloakRealmKind.Tum;
+    return this.accountService.signedIn();
   }
 
   // --------------------------- Login ----------------------------
@@ -155,10 +156,12 @@ export class KeycloakAuthenticationService {
 
   /**
    * Performs a login flow using WebAuthn passkeys.
+   * @param realmKind Target Keycloak realm for passkey authentication.
    * @param redirectUri Optional post-login redirect URI reserved for future use.
    */
-  async loginWithPasskey(redirectUri?: string): Promise<void> {
-    await this.getPasskeyManager().loginWithPasskey();
+  async loginWithPasskey(realmKind: KeycloakRealmKind, redirectUri?: string): Promise<void> {
+    await this.getPasskeyManager().loginWithPasskey(realmKind);
+    await this.refreshKeycloakSessionFromBrowser(realmKind);
     this.redirectAfterPasskeyLogin(redirectUri);
   }
 
@@ -309,12 +312,10 @@ export class KeycloakAuthenticationService {
       externalRealmName: this.config.keycloak.externalLoginRealm,
       clientId: this.config.keycloak.clientId,
       relyingPartyId: this.config.keycloak.relyingPartyId,
-      ensureFreshToken: () => this.ensureFreshToken(),
       getToken: () => this.keycloak?.token,
       getTokenParsed: () => (this.keycloak?.tokenParsed ?? {}) as Record<string, unknown>,
       canManagePasskeys: () => this.canManagePasskeys(),
-      requireActiveRealmKind: () => this.requireActiveRealmKind(),
-      refreshKeycloakSessionFromBrowser: () => this.refreshKeycloakSessionFromBrowser(),
+      getPasskeyUserIdentity: () => this.getPasskeyUserIdentity(),
     });
     return this.passkeyManager;
   }
@@ -331,7 +332,7 @@ export class KeycloakAuthenticationService {
         return false;
       });
       if (authenticated) {
-        this.activateKeycloakClient(keycloak, realmKind);
+        this.activateKeycloakClient(keycloak);
         return true;
       }
     }
@@ -382,18 +383,17 @@ export class KeycloakAuthenticationService {
   }
 
   /**
-   * Re-initializes the TUM realm client after passkey auth so browser session cookies
+   * Re-initializes the target realm client after passkey auth so browser session cookies
    * are converted into usable Keycloak tokens in the SPA.
    */
-  private async refreshKeycloakSessionFromBrowser(): Promise<void> {
+  private async refreshKeycloakSessionFromBrowser(realmKind: KeycloakRealmKind): Promise<void> {
     this.stopTokenRefreshScheduler();
-    const realmKind = KeycloakRealmKind.Tum;
     const keycloak = this.createKeycloakClient(realmKind);
     const authenticated = await this.initializeKeycloak(keycloak);
     if (!authenticated) {
       throw new Error('No session after passkey auth');
     }
-    this.activateKeycloakClient(keycloak, realmKind);
+    this.activateKeycloakClient(keycloak);
   }
 
   /**
@@ -438,24 +438,27 @@ export class KeycloakAuthenticationService {
   }
 
   /** Marks the given Keycloak client/realm as active and clears pending realm marker. */
-  private activateKeycloakClient(keycloak: Keycloak, realmKind: KeycloakRealmKind): void {
+  private activateKeycloakClient(keycloak: Keycloak): void {
     this.keycloak = keycloak;
-    this.activeRealmKind = realmKind;
     clearPendingRealm(KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT);
-  }
-
-  /** Returns the active realm kind or throws if no active Keycloak session exists. */
-  private requireActiveRealmKind(): KeycloakRealmKind {
-    if (this.activeRealmKind === undefined) {
-      throw new Error('No active Keycloak realm');
-    }
-    return this.activeRealmKind;
   }
 
   /** Clears active client/realm state and removes pending realm marker. */
   private clearActiveRealm(): void {
     this.keycloak = undefined;
-    this.activeRealmKind = undefined;
     clearPendingRealm(KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT);
+  }
+
+  private getPasskeyUserIdentity(): { id: string; username: string; displayName: string } | undefined {
+    const user = this.accountService.user();
+    if (user === undefined) {
+      return undefined;
+    }
+
+    return {
+      id: user.id,
+      username: user.email || user.id,
+      displayName: user.name || user.email || user.id,
+    };
   }
 }

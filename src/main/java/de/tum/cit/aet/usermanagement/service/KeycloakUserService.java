@@ -307,6 +307,37 @@ public class KeycloakUserService {
     }
 
     /**
+     * Lists Keycloak credentials for the user in the realm that issued the current token.
+     *
+     * @param userId the Keycloak user ID
+     * @param issuer the token issuer used to select the realm
+     * @return credentials registered for the user, or an empty list when the user cannot be resolved
+     */
+    public List<CredentialRepresentation> getCredentials(String userId, URL issuer) {
+        if (userId == null || userId.isBlank()) {
+            return List.of();
+        }
+        RealmAdminContext adminContext = resolveAdminContext(issuer);
+        List<CredentialRepresentation> credentials = adminContext.keycloak().realm(adminContext.realm()).users().get(userId).credentials();
+        return credentials != null ? credentials : List.of();
+    }
+
+    /**
+     * Removes one Keycloak credential for the user in the realm that issued the current token.
+     *
+     * @param userId       the Keycloak user ID
+     * @param issuer       the token issuer used to select the realm
+     * @param credentialId the Keycloak credential ID to remove
+     */
+    public void removeCredential(String userId, URL issuer, String credentialId) {
+        if (userId == null || userId.isBlank() || credentialId == null || credentialId.isBlank()) {
+            return;
+        }
+        RealmAdminContext adminContext = resolveAdminContext(issuer);
+        adminContext.keycloak().realm(adminContext.realm()).users().get(userId).removeCredential(credentialId);
+    }
+
+    /**
      * Invalidates all active sessions of the specified user via backchannel logout.
      *
      * @param userId the Keycloak user ID; must not be {@code null}

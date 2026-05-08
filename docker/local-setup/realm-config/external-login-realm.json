@@ -93,7 +93,7 @@
         "refresh.token.lifespan": "1800"
       },
       "redirectUris": [],
-      "webOrigins": [],
+      "webOrigins": ["http://localhost:4200"],
       "secret": "tumapply-server-secret",
       "protocolMappers": [
         {

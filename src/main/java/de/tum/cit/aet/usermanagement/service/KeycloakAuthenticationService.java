@@ -4,13 +4,16 @@ import de.tum.cit.aet.core.exception.UnauthorizedException;
 import de.tum.cit.aet.core.service.JwtService;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
+import de.tum.cit.aet.usermanagement.dto.auth.PasskeyActionTokenDTO;
 import io.netty.channel.ChannelOption;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.Configuration;
 import org.keycloak.representations.AccessTokenResponse;
+import org.keycloak.representations.idm.CredentialRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -36,11 +39,11 @@ public class KeycloakAuthenticationService {
     private static final String GRANT_TYPE_REFRESH = "refresh_token";
 
     private final AuthzClient externalRealmAuthzClient;
-    private final AuthzClient tumRealmAuthzClient;
 
     private final String keycloakUrl;
     private final String realm;
     private final String tumLoginRealm;
+    private final String browserClientId;
     private final String clientId;
     private final String clientSecret;
 
@@ -49,27 +52,27 @@ public class KeycloakAuthenticationService {
 
     private final WebClient webClient;
     private final JwtService jwtService;
+    private final KeycloakUserService keycloakUserService;
 
     public KeycloakAuthenticationService(
         @Value("${keycloak.url}") String keycloakUrl,
         @Value("${keycloak.external-login-realm}") String realm,
         @Value("${keycloak.tum-login-realm}") String tumLoginRealm,
+        @Value("${keycloak.client-id}") String browserClientId,
         @Value("${keycloak.server.client-id}") String clientId,
         @Value("${keycloak.server.client-secret}") String clientSecret,
         @Value("${keycloak.admin.external.client-id}") String adminClientId,
         @Value("${keycloak.admin.external.client-secret}") String adminClientSecret,
-        JwtService jwtService
+        JwtService jwtService,
+        KeycloakUserService keycloakUserService
     ) {
         this.externalRealmAuthzClient = AuthzClient.create(
             new Configuration(keycloakUrl, realm, clientId, Map.of("secret", clientSecret), null)
         );
-        this.tumRealmAuthzClient = AuthzClient.create(
-            new Configuration(keycloakUrl, tumLoginRealm, clientId, Map.of("secret", clientSecret), null)
-        );
-
         this.keycloakUrl = keycloakUrl;
         this.realm = realm;
         this.tumLoginRealm = tumLoginRealm;
+        this.browserClientId = browserClientId;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
 
@@ -82,29 +85,24 @@ public class KeycloakAuthenticationService {
 
         this.webClient = WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
         this.jwtService = jwtService;
+        this.keycloakUserService = keycloakUserService;
     }
 
     /**
      * Authenticates an end user with email (username) and password using the OIDC password grant via
-     * Keycloak's Authorization Client. Tries the external login realm first and falls back to the TUM realm so
-     * that test users in either realm can sign in via the email/password form.
+     * Keycloak's Authorization Client in the external-login realm.
      *
      * @param email    user's email (username)
      * @param password user's password
      * @return DTO with access token, optional refresh token and lifetimes
-     * @throws UnauthorizedException if authentication fails in both realms or the response is invalid
+     * @throws UnauthorizedException if authentication fails or the response is invalid
      */
     public AuthResponseDTO loginWithCredentials(String email, String password) {
         try {
             AccessTokenResponse token = externalRealmAuthzClient.obtainAccessToken(email, password);
             return getResponseFromToken(token);
         } catch (Exception externalFailure) {
-            try {
-                AccessTokenResponse token = tumRealmAuthzClient.obtainAccessToken(email, password);
-                return getResponseFromToken(token);
-            } catch (Exception tumFailure) {
-                throw new UnauthorizedException("Invalid username or password", tumFailure);
-            }
+            throw new UnauthorizedException("Invalid username or password", externalFailure);
         }
     }
 
@@ -210,6 +208,28 @@ public class KeycloakAuthenticationService {
         return getResponseFromToken(tokenResponse);
     }
 
+    public PasskeyActionTokenDTO createPasskeyActionToken(Jwt jwt) {
+        return new PasskeyActionTokenDTO(
+            getRealmFromJwt(jwt),
+            getPasskeyClientId(jwt),
+            jwt.getTokenValue(),
+            jwtService.secondsUntilExpiry(jwt)
+        );
+    }
+
+    public Object listPasskeys(Jwt jwt) {
+        List<CredentialRepresentation> credentials = keycloakUserService
+            .getCredentials(jwt.getSubject(), jwt.getIssuer())
+            .stream()
+            .filter(this::isPasskeyCredential)
+            .toList();
+        return Map.of("credentials", credentials);
+    }
+
+    public void removePasskey(Jwt jwt, String credentialId) {
+        keycloakUserService.removeCredential(jwt.getSubject(), jwt.getIssuer(), credentialId);
+    }
+
     // ===== Helpers =====
 
     /**
@@ -282,6 +302,29 @@ public class KeycloakAuthenticationService {
     private String endpointUrl(String realm, OidcEndpoint endpoint) {
         String endpointPath = (endpoint == OidcEndpoint.TOKEN) ? "token" : "logout";
         return keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/" + endpointPath;
+    }
+
+    private String getRealmFromJwt(Jwt jwt) {
+        String issuer = jwt.getIssuer() != null ? jwt.getIssuer().toString() : "";
+        if (realmIssuer(tumLoginRealm).equals(issuer)) {
+            return tumLoginRealm;
+        }
+        return realm;
+    }
+
+    private String realmIssuer(String realmName) {
+        String baseUrl = keycloakUrl.endsWith("/") ? keycloakUrl.substring(0, keycloakUrl.length() - 1) : keycloakUrl;
+        return baseUrl + "/realms/" + realmName;
+    }
+
+    private String getPasskeyClientId(Jwt jwt) {
+        String authorizedParty = jwtService.getAuthorizedParty(jwt);
+        return StringUtil.isBlank(authorizedParty) ? browserClientId : authorizedParty;
+    }
+
+    private boolean isPasskeyCredential(CredentialRepresentation credential) {
+        String type = credential.getType();
+        return "webauthn-passwordless".equalsIgnoreCase(type) || "webauthn".equalsIgnoreCase(type);
     }
 
     /**

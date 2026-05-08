@@ -9,6 +9,7 @@ import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthSessionInfoDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.LoginRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
+import de.tum.cit.aet.usermanagement.dto.auth.PasskeyActionTokenDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
 import de.tum.cit.aet.usermanagement.service.OtpFlowService;
 import jakarta.servlet.http.Cookie;
@@ -17,6 +18,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -140,5 +146,24 @@ public class AuthenticationResource {
         HttpServletResponse response
     ) {
         return otpFlowService.otpComplete(body, HttpUtils.getClientIp(request), response);
+    }
+
+    @Authenticated
+    @GetMapping("/passkeys/action-token")
+    public PasskeyActionTokenDTO createPasskeyActionToken(@AuthenticationPrincipal Jwt jwt) {
+        return keycloakAuthenticationService.createPasskeyActionToken(jwt);
+    }
+
+    @Authenticated
+    @GetMapping("/passkeys")
+    public Object listPasskeys(@AuthenticationPrincipal Jwt jwt) {
+        return keycloakAuthenticationService.listPasskeys(jwt);
+    }
+
+    @Authenticated
+    @DeleteMapping("/passkeys/{credentialId}")
+    public ResponseEntity<Void> removePasskey(@AuthenticationPrincipal Jwt jwt, @PathVariable String credentialId) {
+        keycloakAuthenticationService.removePasskey(jwt, credentialId);
+        return ResponseEntity.noContent().build();
     }
 }

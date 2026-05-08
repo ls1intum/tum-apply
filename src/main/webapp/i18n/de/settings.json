@@ -112,14 +112,14 @@
     },
     "passkeys": {
       "header": "Passkeys",
-      "description": "Erstelle und verwalte die Passkeys, die mit deinem Konto verknüpft sind. Diese Passkeys kannst du in allen AET-Apps verwenden.",
+      "description": "Erstelle und verwalte die Passkeys, die mit diesem TUMApply-Konto verknüpft sind.",
       "actions": {
         "create": "Passkey erstellen"
       },
       "createdAt": "Erstellt am {{date}}",
       "empty": {
         "title": "Noch keine Passkeys",
-        "description": "Erstelle einen Passkey, um dich in AET-Apps schneller und sicherer anzumelden."
+        "description": "Erstelle einen Passkey, um dich schneller und sicherer bei diesem TUMApply-Konto anzumelden."
       },
       "error": {
         "title": "Passkeys konnten nicht geladen werden",
@@ -127,7 +127,7 @@
       },
       "unavailable": {
         "title": "Passkey-Verwaltung nicht verfügbar",
-        "description": "Melde dich mit TUM SSO an, um Passkeys für dieses Konto zu erstellen, anzusehen oder zu entfernen."
+        "description": "Melde dich an, um Passkeys für dieses Konto zu erstellen, anzusehen oder zu entfernen."
       },
       "removeConfirm": {
         "header": "Passkey entfernen?",

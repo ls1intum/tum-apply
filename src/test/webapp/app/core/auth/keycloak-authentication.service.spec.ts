@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { IdpProvider, KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
+import { KeycloakRealmKind } from 'app/core/auth/keycloak-authentication.utils';
 import { createKeycloakMock, KeycloakMock, provideKeycloakMock } from 'util/keycloak.mock';
 import {
   ApplicationConfigServiceMock,
@@ -36,7 +37,6 @@ describe('KeycloakAuthenticationService', () => {
     });
     service = TestBed.inject(KeycloakAuthenticationService);
     service['keycloak'] = keycloakInstance as unknown as (typeof service)['keycloak'];
-    service['activeRealmKind'] = 'tum' as unknown as (typeof service)['activeRealmKind'];
   });
 
   afterEach(() => {
@@ -327,11 +327,13 @@ describe('KeycloakAuthenticationService', () => {
     it('should delegate passkey login and redirect', async () => {
       const passkeyManager = { loginWithPasskey: vi.fn().mockResolvedValue(undefined) } as any;
       vi.spyOn(service as any, 'getPasskeyManager').mockReturnValue(passkeyManager);
+      const refreshSpy = vi.spyOn(service as any, 'refreshKeycloakSessionFromBrowser').mockResolvedValue(undefined);
       const redirectSpy = vi.spyOn(service as any, 'redirectAfterPasskeyLogin').mockImplementation(() => {});
 
-      await service.loginWithPasskey('/after-login');
+      await service.loginWithPasskey(KeycloakRealmKind.External, '/after-login');
 
-      expect(passkeyManager.loginWithPasskey).toHaveBeenCalledOnce();
+      expect(passkeyManager.loginWithPasskey).toHaveBeenCalledWith(KeycloakRealmKind.External);
+      expect(refreshSpy).toHaveBeenCalledWith(KeycloakRealmKind.External);
       expect(redirectSpy).toHaveBeenCalledWith('/after-login');
     });
 

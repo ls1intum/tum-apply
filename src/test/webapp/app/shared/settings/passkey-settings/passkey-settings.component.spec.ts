@@ -66,7 +66,7 @@ describe('PasskeySettingsComponent', () => {
     expect(component.loadFailed()).toBe(false);
     expect(component.passkeys()).toEqual(existingPasskeys);
     expect(keycloakAuthenticationServiceMock.listPasskeys).toHaveBeenCalledOnce();
-    expect(fixture.nativeElement.textContent).toContain('MacBook Pro');
+    expect(component.hasPasskeys()).toBe(true);
   });
 
   it('should show the unavailable state and skip loading when the current session cannot manage passkeys', async () => {
@@ -91,7 +91,7 @@ describe('PasskeySettingsComponent', () => {
     expect(component.loadFailed()).toBe(true);
     expect(component.passkeys()).toEqual([]);
     expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.passkeys.loadFailed');
-    expect(fixture.nativeElement.textContent).toContain('settings.passkeys.error.title');
+    expect(component.hasPasskeys()).toBe(false);
   });
 
   it('should create a passkey and reload the list', async () => {

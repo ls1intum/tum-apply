@@ -112,14 +112,14 @@
     },
     "passkeys": {
       "header": "Passkeys",
-      "description": "Create and manage the passkeys linked to your account. These passkeys can be used across all AET apps.",
+      "description": "Create and manage the passkeys linked to this TUMApply account.",
       "actions": {
         "create": "Create passkey"
       },
       "createdAt": "Created {{date}}",
       "empty": {
         "title": "No passkeys yet",
-        "description": "Create a passkey to sign in faster and more securely across AET apps."
+        "description": "Create a passkey to sign in faster and more securely to this TUMApply account."
       },
       "error": {
         "title": "Could not load passkeys",
@@ -127,7 +127,7 @@
       },
       "unavailable": {
         "title": "Passkey management unavailable",
-        "description": "Sign in with TUM SSO to create, view, or remove passkeys for this account."
+        "description": "Sign in to create, view, or remove passkeys for this account."
       },
       "removeConfirm": {
         "header": "Remove passkey?",

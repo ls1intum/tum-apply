@@ -16,6 +16,13 @@ interface PasskeyChallengeResponse {
   error?: string;
 }
 
+interface PasskeyActionTokenResponse {
+  realm?: string;
+  clientId?: string;
+  accessToken?: string;
+  expiresIn?: number;
+}
+
 /**
  * Runtime dependencies required by {@link KeycloakPasskeyManager}.
  *
@@ -29,12 +36,10 @@ interface PasskeyManagerDependencies {
   externalRealmName: string;
   clientId: string;
   relyingPartyId: string;
-  ensureFreshToken: () => Promise<void>;
   getToken: () => string | undefined;
   getTokenParsed: () => Record<string, unknown>;
   canManagePasskeys: () => boolean;
-  requireActiveRealmKind: () => KeycloakRealmKind;
-  refreshKeycloakSessionFromBrowser: () => Promise<void>;
+  getPasskeyUserIdentity: () => { id: string; username: string; displayName: string } | undefined;
 }
 
 /**
@@ -48,7 +53,7 @@ export class KeycloakPasskeyManager {
   }
 
   /**
-   * Performs passkey login against the TUM realm.
+   * Performs passkey login against the provided realm.
    *
    * Flow:
    * 1) Request challenge from Keycloak custom passkey endpoint
@@ -59,10 +64,10 @@ export class KeycloakPasskeyManager {
    * @throws Error if WebAuthn is unsupported, assertion is incomplete,
    * or Keycloak challenge/authenticate endpoints fail.
    */
-  async loginWithPasskey(): Promise<void> {
+  async loginWithPasskey(realmKind: KeycloakRealmKind): Promise<void> {
     this.assertPasskeySupport();
-    persistPendingRealm(this.deps.pendingRealmStorageKey, KeycloakRealmKind.Tum);
-    const challenge = await this.getPasskeyChallenge(KeycloakRealmKind.Tum);
+    persistPendingRealm(this.deps.pendingRealmStorageKey, realmKind);
+    const challenge = await this.getPasskeyChallenge(realmKind);
     const publicKey: PublicKeyCredentialRequestOptions = {
       challenge: this.fromBase64Url(challenge.challenge),
       userVerification: 'required',
@@ -86,7 +91,7 @@ export class KeycloakPasskeyManager {
       throw new Error('Passkey did not return a user handle');
     }
 
-    const authenticateResponse = await fetch(this.getPasskeyEndpoint('authenticate', KeycloakRealmKind.Tum), {
+    const authenticateResponse = await fetch(this.getPasskeyEndpoint('authenticate', realmKind), {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -107,15 +112,12 @@ export class KeycloakPasskeyManager {
       const authenticatePayload = (await authenticateResponse.json().catch(() => ({}))) as { error?: string };
       throw new Error(getErrorMessage(authenticatePayload.error, `Passkey auth failed: ${authenticateResponse.status}`));
     }
-
-    await this.deps.refreshKeycloakSessionFromBrowser();
   }
 
   /**
    * Registers a new passkey for the currently authenticated Keycloak user.
    *
-   * Requires an active TUM session and valid user claims (`sub`,
-   * `preferred_username`/`email`).
+   * Requires a valid authenticated app session and user identity claims.
    *
    * @throws Error if identity claims are missing/invalid, WebAuthn fails,
    * or Keycloak save endpoint rejects the registration.
@@ -124,11 +126,11 @@ export class KeycloakPasskeyManager {
     this.assertPasskeySupport();
     this.assertPasskeyManagementAvailable();
 
-    const token = await this.getAuthenticatedToken();
     const claims = this.deps.getTokenParsed();
-    const userId = getFirstNonEmptyString([claims.sub]) ?? '';
-    const username = getFirstNonEmptyString([claims.preferred_username, claims.email, userId]) ?? '';
-    const displayName = getFirstNonEmptyString([claims.name, username]) ?? username;
+    const fallbackIdentity = this.deps.getPasskeyUserIdentity();
+    const userId = getFirstNonEmptyString([claims.sub, fallbackIdentity?.id]) ?? '';
+    const username = getFirstNonEmptyString([claims.preferred_username, claims.email, fallbackIdentity?.username, userId]) ?? '';
+    const displayName = getFirstNonEmptyString([claims.name, fallbackIdentity?.displayName, username]) ?? username;
 
     if (userId === '' || username === '') {
       throw new Error('Missing user identity claims for passkey registration');
@@ -139,8 +141,8 @@ export class KeycloakPasskeyManager {
       throw new Error('User id is too long for WebAuthn user.id');
     }
 
-    const realmKind = this.deps.requireActiveRealmKind();
-    const challenge = await this.getPasskeyChallenge(realmKind);
+    const actionToken = await this.getPasskeyActionToken();
+    const challenge = await this.getDirectPasskeyChallenge(actionToken);
     const credential =
       (await navigator.credentials.create({
         publicKey: {
@@ -162,12 +164,12 @@ export class KeycloakPasskeyManager {
       throw new Error('Incomplete passkey registration credential');
     }
 
-    const saveResponse = await fetch(this.getPasskeyEndpoint('save', realmKind), {
+    const saveResponse = await fetch(this.getPasskeyEndpointForRealmName(actionToken.realm, actionToken.clientId, 'save'), {
       method: 'POST',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${actionToken.accessToken}`,
       },
       body: JSON.stringify({
         credentialId: this.toBase64Url(credential.rawId),
@@ -192,12 +194,11 @@ export class KeycloakPasskeyManager {
    */
   async listPasskeys(): Promise<PasskeyCredentialSummary[]> {
     this.assertPasskeyManagementAvailable();
-    const token = await this.getAuthenticatedToken();
-    const realmKind = this.deps.requireActiveRealmKind();
-    const response = await fetch(this.getAccountCredentialsEndpoint(realmKind), {
+    const response = await fetch('/api/auth/passkeys', {
+      credentials: 'include',
       headers: {
         Accept: 'application/json',
-        Authorization: `Bearer ${token}`,
+        ...this.getOptionalAuthorizationHeader(),
       },
     });
     const payload = (await response.json().catch(() => ({}))) as
@@ -236,13 +237,12 @@ export class KeycloakPasskeyManager {
    */
   async removePasskey(id: string): Promise<void> {
     this.assertPasskeyManagementAvailable();
-    const token = await this.getAuthenticatedToken();
-    const realmKind = this.deps.requireActiveRealmKind();
-    const response = await fetch(`${this.getAccountCredentialsEndpoint(realmKind)}/${encodeURIComponent(id)}`, {
+    const response = await fetch(`/api/auth/passkeys/${encodeURIComponent(id)}`, {
       method: 'DELETE',
+      credentials: 'include',
       headers: {
         Accept: 'application/json',
-        Authorization: `Bearer ${token}`,
+        ...this.getOptionalAuthorizationHeader(),
       },
     });
     const payload = (await response.json().catch(() => ({}))) as { error?: string };
@@ -274,18 +274,51 @@ export class KeycloakPasskeyManager {
     };
   }
 
-  /**
-   * Ensures there is a fresh bearer token and returns it.
-   *
-   * @throws Error when no usable token exists.
-   */
-  private async getAuthenticatedToken(): Promise<string> {
-    await this.deps.ensureFreshToken();
-    const token = this.deps.getToken();
-    if (token === undefined || token.trim() === '') {
-      throw new Error('Keycloak user is not authenticated');
+  private async getPasskeyActionToken(): Promise<Required<Pick<PasskeyActionTokenResponse, 'realm' | 'clientId' | 'accessToken'>>> {
+    const response = await fetch('/api/auth/passkeys/action-token', {
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        ...this.getOptionalAuthorizationHeader(),
+      },
+    });
+    const payload = (await response.json().catch(() => ({}))) as PasskeyActionTokenResponse & { error?: string };
+
+    if (
+      !response.ok ||
+      typeof payload.realm !== 'string' ||
+      payload.realm.trim() === '' ||
+      typeof payload.clientId !== 'string' ||
+      payload.clientId.trim() === '' ||
+      typeof payload.accessToken !== 'string' ||
+      payload.accessToken.trim() === ''
+    ) {
+      throw new Error(getErrorMessage(payload.error, `Failed to create passkey action token: ${response.status}`));
     }
-    return token;
+
+    return {
+      realm: payload.realm,
+      clientId: payload.clientId,
+      accessToken: payload.accessToken,
+    };
+  }
+
+  private async getDirectPasskeyChallenge(
+    actionToken: Required<Pick<PasskeyActionTokenResponse, 'realm' | 'clientId' | 'accessToken'>>,
+  ): Promise<Required<Pick<PasskeyChallengeResponse, 'challenge'>> & PasskeyChallengeResponse> {
+    const response = await fetch(this.getPasskeyEndpointForRealmName(actionToken.realm, actionToken.clientId, 'challenge'), {
+      credentials: 'include',
+    });
+    const payload = (await response.json().catch(() => ({}))) as PasskeyChallengeResponse;
+
+    if (!response.ok || typeof payload.challenge !== 'string' || payload.challenge.trim() === '') {
+      throw new Error(getErrorMessage(payload.error, `Failed to create passkey challenge: ${response.status}`));
+    }
+
+    return {
+      challenge: payload.challenge,
+      error: payload.error,
+    };
   }
 
   /** Ensures the runtime environment supports WebAuthn APIs. */
@@ -298,7 +331,7 @@ export class KeycloakPasskeyManager {
   /** Ensures passkey management operations are allowed for the current session. */
   private assertPasskeyManagementAvailable(): void {
     if (!this.deps.canManagePasskeys()) {
-      throw new Error('Passkeys can only be managed for TUM Keycloak sessions');
+      throw new Error('Passkeys can only be managed for authenticated Keycloak sessions');
     }
   }
 
@@ -344,11 +377,6 @@ export class KeycloakPasskeyManager {
     return Uint8Array.from(atob(padded), character => character.charCodeAt(0)).buffer;
   }
 
-  /** Builds the account credentials endpoint URL for the given realm. */
-  private getAccountCredentialsEndpoint(realmKind: KeycloakRealmKind): string {
-    return getRealmEndpoint(this.deps.keycloakUrl, this.getRealmName(realmKind), 'account/credentials');
-  }
-
   /** Returns configured RP ID, falling back to current hostname. */
   private getRelyingPartyId(): string {
     const relyingPartyId = this.deps.relyingPartyId;
@@ -357,15 +385,23 @@ export class KeycloakPasskeyManager {
 
   /** Builds a passkey custom-endpoint URL for the given realm and operation path. */
   private getPasskeyEndpoint(path: string, realmKind: KeycloakRealmKind): string {
-    return getRealmEndpoint(
-      this.deps.keycloakUrl,
-      this.getRealmName(realmKind),
-      `passkey/${encodeURIComponent(this.deps.clientId)}/${path}`,
-    );
+    return this.getPasskeyEndpointForRealmName(this.getRealmName(realmKind), this.deps.clientId, path);
+  }
+
+  private getPasskeyEndpointForRealmName(realmName: string, clientId: string, path: string): string {
+    return getRealmEndpoint(this.deps.keycloakUrl, realmName, `passkey/${encodeURIComponent(clientId)}/${path}`);
   }
 
   /** Resolves realm name from realm kind. */
   private getRealmName(realmKind: KeycloakRealmKind): string {
     return realmKind === KeycloakRealmKind.Tum ? this.deps.tumRealmName : this.deps.externalRealmName;
+  }
+
+  private getOptionalAuthorizationHeader(): Record<string, string> {
+    const token = this.deps.getToken();
+    if (token === undefined || token.trim() === '') {
+      return {};
+    }
+    return { Authorization: `Bearer ${token}` };
   }
 }

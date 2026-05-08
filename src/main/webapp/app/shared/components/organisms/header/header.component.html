@@ -89,6 +89,15 @@
 
       <jhi-button
         [class]="headerButtonClass"
+        (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
+        label="auth.passkey.buttons.passkey"
+        icon="lock"
+        severity="primary"
+        variant="text"
+      />
+
+      <jhi-button
+        [class]="headerButtonClass"
         (click)="login()"
         label="header.login"
         severity="primary"

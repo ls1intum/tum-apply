@@ -60,12 +60,10 @@ describe('KeycloakPasskeyManager', () => {
       externalRealmName: 'external-login',
       clientId: 'mock-client',
       relyingPartyId: '',
-      ensureFreshToken: vi.fn().mockResolvedValue(undefined),
       getToken: vi.fn().mockReturnValue('mock-token'),
       getTokenParsed: vi.fn(() => tokenParsed),
       canManagePasskeys: vi.fn().mockReturnValue(true),
-      requireActiveRealmKind: vi.fn().mockReturnValue(KeycloakRealmKind.Tum),
-      refreshKeycloakSessionFromBrowser: vi.fn().mockResolvedValue(undefined),
+      getPasskeyUserIdentity: vi.fn().mockReturnValue({ id: 'mock-subject', username: 'mock-user', displayName: 'Mock User' }),
     };
 
     manager = new KeycloakPasskeyManager(deps);
@@ -98,7 +96,7 @@ describe('KeycloakPasskeyManager', () => {
         status: 204,
       });
 
-    await manager.loginWithPasskey();
+    await manager.loginWithPasskey(KeycloakRealmKind.Tum);
 
     const credentialRequest = credentialsGet.mock.calls[0][0] as CredentialRequestOptions;
     expect(credentialRequest.publicKey?.userVerification).toBe('required');
@@ -121,7 +119,6 @@ describe('KeycloakPasskeyManager', () => {
       signature: 'CQ',
       challenge: 'AQID',
     });
-    expect(deps.refreshKeycloakSessionFromBrowser).toHaveBeenCalledOnce();
   });
 
   it('should reject passkey authentication when the assertion has no user handle', async () => {
@@ -137,9 +134,38 @@ describe('KeycloakPasskeyManager', () => {
       json: vi.fn().mockResolvedValue({ challenge: 'AQID' }),
     });
 
-    await expect(manager.loginWithPasskey()).rejects.toThrow('Passkey did not return a user handle');
+    await expect(manager.loginWithPasskey(KeycloakRealmKind.Tum)).rejects.toThrow('Passkey did not return a user handle');
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('should authenticate against external realm when requested', async () => {
+    const credentialsGet = vi
+      .fn()
+      .mockResolvedValue(
+        new MockPublicKeyCredential(
+          buffer(4, 5, 6),
+          new MockAuthenticatorAssertionResponse(buffer(7), buffer(8), buffer(9), buffer(10, 11)),
+        ),
+      );
+    stubWebAuthn({ get: credentialsGet });
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: vi.fn().mockResolvedValue({ challenge: 'AQID' }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+      });
+
+    await manager.loginWithPasskey(KeycloakRealmKind.External);
+
+    expect(fetchMock).toHaveBeenNthCalledWith(1, 'http://mock-keycloak/realms/external-login/passkey/mock-client/challenge', {
+      credentials: 'include',
+    });
+    expect(fetchMock.mock.calls[1][0]).toBe('http://mock-keycloak/realms/external-login/passkey/mock-client/authenticate');
   });
 
   it('should register passkeys with the Keycloak subject as WebAuthn user id', async () => {
@@ -154,6 +180,15 @@ describe('KeycloakPasskeyManager', () => {
       .mockResolvedValue(new MockPublicKeyCredential(buffer(12), new MockAuthenticatorAttestationResponse(buffer(13), buffer(14))));
     stubWebAuthn({ create: credentialsCreate });
     fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: vi.fn().mockResolvedValue({
+          realm: 'external-login',
+          clientId: 'mock-action-client',
+          accessToken: 'mock-action-token',
+        }),
+      })
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -176,12 +211,22 @@ describe('KeycloakPasskeyManager', () => {
       userVerification: 'required',
     });
 
-    const saveRequest = fetchMock.mock.calls[1][1] as RequestInit;
-    expect(fetchMock.mock.calls[1][0]).toBe('http://mock-keycloak/realms/tumidpldap/passkey/mock-client/save');
+    expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/auth/passkeys/action-token', {
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer mock-token',
+      },
+    });
+    expect(fetchMock).toHaveBeenNthCalledWith(2, 'http://mock-keycloak/realms/external-login/passkey/mock-action-client/challenge', {
+      credentials: 'include',
+    });
+    const saveRequest = fetchMock.mock.calls[2][1] as RequestInit;
+    expect(fetchMock.mock.calls[2][0]).toBe('http://mock-keycloak/realms/external-login/passkey/mock-action-client/save');
     expect(saveRequest.credentials).toBe('include');
     expect(saveRequest.headers).toEqual({
       'Content-Type': 'application/json',
-      Authorization: 'Bearer mock-token',
+      Authorization: 'Bearer mock-action-token',
     });
     expect(JSON.parse(saveRequest.body as string)).toEqual({
       credentialId: 'DA',
@@ -217,6 +262,15 @@ describe('KeycloakPasskeyManager', () => {
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
+        json: vi.fn().mockResolvedValue({
+          realm: 'external-login',
+          clientId: 'mock-action-client',
+          accessToken: 'mock-action-token',
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
         json: vi.fn().mockResolvedValue({ challenge: 'AQID' }),
       })
       .mockResolvedValueOnce({
@@ -241,6 +295,15 @@ describe('KeycloakPasskeyManager', () => {
       .mockResolvedValue(new MockPublicKeyCredential(buffer(1), new MockAuthenticatorAttestationResponse(buffer(2), buffer(3))));
     stubWebAuthn({ create: credentialsCreate });
     fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: vi.fn().mockResolvedValue({
+          realm: 'external-login',
+          clientId: 'mock-action-client',
+          accessToken: 'mock-action-token',
+        }),
+      })
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -285,7 +348,8 @@ describe('KeycloakPasskeyManager', () => {
       { id: 'passkey-1', label: 'MacBook Pro', createdDate: 1_710_000_000_000 },
       { id: 'passkey-2', label: 'Backup key' },
     ]);
-    expect(fetchMock).toHaveBeenCalledWith('http://mock-keycloak/realms/tumidpldap/account/credentials', {
+    expect(fetchMock).toHaveBeenCalledWith('/api/auth/passkeys', {
+      credentials: 'include',
       headers: {
         Accept: 'application/json',
         Authorization: 'Bearer mock-token',
@@ -312,8 +376,9 @@ describe('KeycloakPasskeyManager', () => {
 
     await manager.removePasskey('passkey/with slash');
 
-    expect(fetchMock).toHaveBeenCalledWith('http://mock-keycloak/realms/tumidpldap/account/credentials/passkey%2Fwith%20slash', {
+    expect(fetchMock).toHaveBeenCalledWith('/api/auth/passkeys/passkey%2Fwith%20slash', {
       method: 'DELETE',
+      credentials: 'include',
       headers: {
         Accept: 'application/json',
         Authorization: 'Bearer mock-token',

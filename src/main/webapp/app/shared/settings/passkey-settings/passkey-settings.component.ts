@@ -31,7 +31,7 @@ export class PasskeySettingsComponent {
   readonly loadFailed = signal(false);
   readonly creating = signal(false);
   readonly removingId = signal<string | undefined>(undefined);
-  readonly canManagePasskeys = signal(false);
+  readonly canManagePasskeys = computed(() => this.keycloakAuthenticationService.canManagePasskeys());
 
   readonly passkeyItems = computed<PasskeySettingsItem[]>(() => {
     const removingId = this.removingId();
@@ -54,7 +54,6 @@ export class PasskeySettingsComponent {
   });
 
   constructor() {
-    this.canManagePasskeys.set(this.keycloakAuthenticationService.canManagePasskeys());
     void this.loadPasskeys();
   }
 
