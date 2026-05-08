@@ -23,7 +23,6 @@ import { BannerSectionComponent } from './banner-section/banner-section.componen
     BannerSectionComponent,
   ],
   templateUrl: './landing-page.component.html',
-  styleUrl: './landing-page.component.scss',
 })
 export class LandingPageComponent {
   router = inject(Router);

@@ -25,6 +25,7 @@ export abstract class BaseInputDirective<T> {
   complianceError = input<string | undefined>(undefined);
   warningText = input<string | undefined>(undefined);
   helperTextLeft = input<string | undefined>(undefined);
+  helperTextLeftParams = input<Record<string, unknown>>({});
   helperTextRight = input<string | undefined>(undefined);
   helperTextRightClick = output();
 
@@ -42,7 +43,7 @@ export abstract class BaseInputDirective<T> {
   displayLabel = computed(() => this.maybeTranslate(this.label()));
   displayPlaceholder = computed(() => this.maybeTranslate(this.placeholder()));
   displayTooltipText = computed(() => this.maybeTranslate(this.tooltipText()));
-  displayHelperTextLeft = computed(() => this.maybeTranslate(this.helperTextLeft()));
+  displayHelperTextLeft = computed(() => this.maybeTranslate(this.helperTextLeft(), this.helperTextLeftParams()));
   displayHelperTextRight = computed(() => this.maybeTranslate(this.helperTextRight()));
   displayWarningText = computed(() => this.maybeTranslate(this.warningText()));
 
@@ -125,11 +126,11 @@ export abstract class BaseInputDirective<T> {
     this.isFocused.set(true);
   }
 
-  protected maybeTranslate(value: string | undefined): string {
+  protected maybeTranslate(value: string | undefined, params?: Record<string, unknown>): string {
     this.langChange();
     if (value === undefined || value === '') {
       return value ?? '';
     }
-    return this.shouldTranslate() ? this.translate.instant(value) : value;
+    return this.shouldTranslate() ? this.translate.instant(value, params) : value;
   }
 }
