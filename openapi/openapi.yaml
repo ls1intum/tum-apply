@@ -693,6 +693,37 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/AuthSessionInfoDTO'}
+  /api/auth/passkeys:
+    get:
+      tags: [authentication-resource]
+      operationId: listPasskeys
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {type: object}
+  /api/auth/passkeys/action-token:
+    get:
+      tags: [authentication-resource]
+      operationId: createPasskeyActionToken
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PasskeyActionTokenDTO'}
+  /api/auth/passkeys/{credentialId}:
+    delete:
+      tags: [authentication-resource]
+      operationId: removePasskey
+      parameters:
+      - name: credentialId
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200': {description: OK}
   /api/auth/refresh:
     post:
       tags: [authentication-resource]
@@ -3558,6 +3589,13 @@ components:
         paged: {type: boolean}
         sort: {$ref: '#/components/schemas/SortObject'}
         unpaged: {type: boolean}
+    PasskeyActionTokenDTO:
+      type: object
+      properties:
+        accessToken: {type: string}
+        clientId: {type: string}
+        expiresIn: {type: integer, format: int32}
+        realm: {type: string}
     ProfOnboardingDTO:
       type: object
       properties:

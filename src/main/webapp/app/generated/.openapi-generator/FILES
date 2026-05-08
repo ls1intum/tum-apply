@@ -12,6 +12,7 @@ api/application-evaluation-resource-resources.ts
 api/application-resource-api.ts
 api/application-resource-resources.ts
 api/authentication-resource-api.ts
+api/authentication-resource-resources.ts
 api/department-resource-api.ts
 api/department-resource-resources.ts
 api/document-resource-api.ts
@@ -124,6 +125,7 @@ model/page-response-dto-research-group-dto.ts
 model/page-response-dto-school-dto.ts
 model/page-response-dto-user-short-dto.ts
 model/pageable-object.ts
+model/passkey-action-token-dto.ts
 model/prof-onboarding-dto.ts
 model/professor-dto.ts
 model/public-config-dto.ts

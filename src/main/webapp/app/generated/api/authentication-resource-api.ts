@@ -15,6 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { PasskeyActionTokenDTO } from '../model/passkey-action-token-dto';
 import { AuthSessionInfoDTO } from '../model/auth-session-info-dto';
 import { LoginRequestDTO } from '../model/login-request-dto';
 import { OtpCompleteDTO } from '../model/otp-complete-dto';
@@ -23,6 +24,24 @@ import { OtpCompleteDTO } from '../model/otp-complete-dto';
 export class AuthenticationResourceApi {
     private readonly http = inject(HttpClient);
     private readonly basePath = '';
+
+    /**
+     * 
+     * 
+     */
+    createPasskeyActionToken(): Observable<PasskeyActionTokenDTO> {
+        const url = `${this.basePath}/api/auth/passkeys/action-token`;
+        return this.http.get<PasskeyActionTokenDTO>(url);
+    }
+
+    /**
+     * 
+     * 
+     */
+    listPasskeys(): Observable<object> {
+        const url = `${this.basePath}/api/auth/passkeys`;
+        return this.http.get<object>(url);
+    }
 
     /**
      * 
@@ -60,6 +79,17 @@ export class AuthenticationResourceApi {
     refresh(): Observable<AuthSessionInfoDTO> {
         const url = `${this.basePath}/api/auth/refresh`;
         return this.http.post<AuthSessionInfoDTO>(url, null);
+    }
+
+    /**
+     * 
+     * 
+     * @param credentialId 
+     */
+    removePasskey(credentialId: string): Observable<void> {
+        const credentialIdPath = encodeURIComponent(String(credentialId));
+        const url = `${this.basePath}/api/auth/passkeys/${credentialIdPath}`;
+        return this.http.delete<void>(url);
     }
 
 }
