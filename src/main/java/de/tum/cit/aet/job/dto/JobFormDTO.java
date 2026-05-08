@@ -50,6 +50,16 @@ public record JobFormDTO(
         return getFromEntity(job, job.getComplianceIssues(), job.getBiasedIssues());
     }
 
+    /**
+     * Converts a Job entity to a DTO using explicitly loaded analysis collections.
+     * This allows callers to fetch compliance and biased issues separately and
+     * avoid joining multiple list-based element collections in one query.
+     *
+     * @param job the job entity to convert
+     * @param complianceIssues the compliance issues to include in the DTO
+     * @param biasedIssues the biased issues to include in the DTO
+     * @return a JobFormDTO containing the data from the job entity and analysis collections
+     */
     public static JobFormDTO getFromEntity(Job job, List<ComplianceIssue> complianceIssues, List<BiasedIssues> biasedIssues) {
         if (job == null) {
             throw new EntityNotFoundException("Cannot convert non-existent Job entity to JobFormDTO");
