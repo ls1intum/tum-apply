@@ -207,6 +207,7 @@ public class UserService {
             defaultRole.setUser(user);
             defaultRole.setRole(UserRole.APPLICANT);
             userResearchGroupRoleRepository.save(defaultRole);
+            user.getResearchGroupRoles().add(defaultRole);
         }
     }
 
