@@ -549,6 +549,11 @@ jhi-menu {
   justify-content: space-between;
   align-items: center;
   font-size: 0.875rem;
+  gap: 1rem;
+
+  > span:first-child {
+    white-space: nowrap;
+  }
 
   .label {
     font-weight: 600;

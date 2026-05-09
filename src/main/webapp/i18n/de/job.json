@@ -134,13 +134,15 @@
       "positionOptions": {
         "title": "Optionen zur Stelle",
         "uponArrangement": {
-          "label": "Nach Vereinbarung",
-          "subtitle": "Flexibles Startdatum",
+          "label": "Flexibles Startdatum",
+          "overviewLabel": "Flexibles Startdatum möglich",
+          "subtitle": "Startdatum kann individuell vereinbart werden",
           "tooltip": "Aktiviere diese Option, wenn das Startdatum individuell mit der Kandidatin oder dem Kandidaten vereinbart wird."
         },
         "extendable": {
-          "label": "Verlängerung möglich",
-          "subtitle": "Über die ursprüngliche Laufzeit hinaus",
+          "label": "Vertrag verlängern",
+          "overviewLabel": "Vertragsverlängerung möglich",
+          "subtitle": "Verlängerung der Vertragslaufzeit möglich",
           "tooltip": "Aktiviere diese Option, wenn der Vertrag über die angegebene Laufzeit hinaus verlängert werden kann."
         },
         "suitableForDisabled": {

@@ -343,9 +343,10 @@
                   [model]="positionDetailsForm.get('startDateByArrangement')?.value"
                   (modelChange)="positionDetailsForm.get('startDateByArrangement')?.setValue($event)"
                   [shouldTranslate]="true"
+                  [errorEnabled]="false"
                 />
                 <p
-                  class="text-sm text-text-secondary ml-7"
+                  class="text-sm text-text-secondary ml-6"
                   jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.subtitle"
                 ></p>
               </div>
@@ -356,9 +357,10 @@
                   [model]="positionDetailsForm.get('contractExtendable')?.value"
                   (modelChange)="positionDetailsForm.get('contractExtendable')?.setValue($event)"
                   [shouldTranslate]="true"
+                  [errorEnabled]="false"
                 />
                 <p
-                  class="text-sm text-text-secondary ml-7"
+                  class="text-sm text-text-secondary ml-6"
                   jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.extendable.subtitle"
                 ></p>
               </div>
@@ -369,9 +371,10 @@
                   [model]="positionDetailsForm.get('suitableForDisabled')?.value"
                   (modelChange)="positionDetailsForm.get('suitableForDisabled')?.setValue($event)"
                   [shouldTranslate]="true"
+                  [errorEnabled]="false"
                 />
                 <p
-                  class="text-sm text-text-secondary ml-7"
+                  class="text-sm text-text-secondary ml-6"
                   jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.suitableForDisabled.subtitle"
                 ></p>
               </div>

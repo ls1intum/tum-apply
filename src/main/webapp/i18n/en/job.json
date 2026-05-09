@@ -134,13 +134,15 @@
       "positionOptions": {
         "title": "Position Options",
         "uponArrangement": {
-          "label": "Upon arrangement",
-          "subtitle": "Flexible start date",
+          "label": "Flexible start date",
+          "overviewLabel": "Flexible start date possible",
+          "subtitle": "Start date can be arranged individually",
           "tooltip": "Mark this if the actual start date will be agreed upon individually with the candidate."
         },
         "extendable": {
-          "label": "Extension possible",
-          "subtitle": "Beyond initial term",
+          "label": "Extend contract",
+          "overviewLabel": "Contract extension possible",
+          "subtitle": "Contract duration may be extended",
           "tooltip": "Mark this if the contract may be extended beyond the stated duration."
         },
         "suitableForDisabled": {

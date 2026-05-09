@@ -160,7 +160,7 @@
                     <span [jhiTranslate]="job.contractDuration === '1' ? 'jobDetailPage.units.year' : 'jobDetailPage.units.years'"></span>
                     @if (job.contractExtendable) {
                       <span class="text-text-secondary"
-                        >· <span jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.extendable.label"></span
+                        >· <span jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.extendable.overviewLabel"></span
                       ></span>
                     }
                   </span>
@@ -183,7 +183,7 @@
                     {{ job.startDate | localizedDate }}
                     @if (job.startDateByArrangement) {
                       <span class="text-text-secondary"
-                        >· <span jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.label"></span
+                        >· <span jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.overviewLabel"></span
                       ></span>
                     }
                   </span>
