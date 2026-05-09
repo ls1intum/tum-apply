@@ -87,14 +87,26 @@
 
       <div class="h-4 mx-0.5 w-px bg-primary-default self-center"></div>
 
-      <jhi-button
-        [class]="headerButtonClass"
-        (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
-        label="auth.passkey.buttons.passkey"
-        icon="lock"
-        severity="primary"
-        variant="text"
-      />
+      <span class="hidden sm:inline-flex">
+        <jhi-button
+          [class]="headerButtonClass"
+          (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
+          label="auth.passkey.buttons.passkey"
+          icon="lock"
+          severity="primary"
+          variant="text"
+        />
+      </span>
+      <span class="inline-flex sm:hidden">
+        <jhi-button
+          [class]="headerButtonClass"
+          (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
+          label="auth.passkey.buttons.passkeyShort"
+          icon="lock"
+          severity="primary"
+          variant="text"
+        />
+      </span>
 
       <jhi-button
         [class]="headerButtonClass"
