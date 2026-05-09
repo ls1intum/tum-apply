@@ -30,10 +30,10 @@
 
   <div class="flex justify-end">
     <jhi-button
+      type="submit"
       severity="primary"
       icon="plus"
       [disabled]="addForm.invalid || loading()"
-      (click)="onAdd()"
       label="entity.applicationReferences.button.add"
       [shouldTranslate]="true"
     />
