@@ -416,6 +416,7 @@
       "contractDuration": "Vertragslaufzeit",
       "fundingType": "Finanzierungsart",
       "tvlGrade": "TV-L Gruppe",
+      "referenceLetters": "Benötigte Referenzen",
       "startDate": "Startdatum",
       "applicationEndDate": "Bewerbungsfrist"
     },

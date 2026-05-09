@@ -171,6 +171,12 @@
                 <span jhiTranslate="jobDetailPage.labels.tvlGrade"></span>
                 <span class="value">{{ dropDownOptions.getTvlGradesTranslationKey(job.tvlGrade) || '-' }}</span>
               </div>
+              @if (job.referenceLettersRequired > 0) {
+                <div class="info-row">
+                  <span jhiTranslate="jobDetailPage.labels.referenceLetters"></span>
+                  <span class="value">{{ job.referenceLettersRequired }}</span>
+                </div>
+              }
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.startDate"></span>
                 <span class="value">{{ (job.startDate | localizedDate) || '-' }}</span>
