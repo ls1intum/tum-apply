@@ -99,7 +99,7 @@ export class AiResourceApi {
      * 
      * @param toLang 
      * @param jobId 
-     * @param mapComplianceIssuesRequestDTO
+     * @param mapComplianceIssuesRequestDTO 
      */
     mapComplianceIssues(toLang: string, jobId: string, mapComplianceIssuesRequestDTO: MapComplianceIssuesRequestDTO): Observable<Array<ComplianceIssue>> {
         const queryParams = new URLSearchParams();
