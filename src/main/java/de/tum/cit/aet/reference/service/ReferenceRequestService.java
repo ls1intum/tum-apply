@@ -24,6 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
@@ -46,7 +47,7 @@ public class ReferenceRequestService {
     private static final int TOKEN_BYTE_LENGTH = 32;
     private static final int DEFAULT_VALIDITY_MONTHS = 2;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
-    private static final DateTimeFormatter DEADLINE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static final DateTimeFormatter DEADLINE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm 'UTC'");
 
     private final ReferenceRequestRepository referenceRequestRepository;
     private final ApplicationRepository applicationRepository;
@@ -181,7 +182,7 @@ public class ReferenceRequestService {
         refereeStub.setLastName(entry.getLastName());
 
         String referenceLink = clientUrl + "/reference/" + rawToken;
-        String deadline = entry.getTokenExpiresAt() != null ? entry.getTokenExpiresAt().toLocalDate().format(DEADLINE_FORMATTER) : "";
+        String deadline = entry.getTokenExpiresAt() != null ? entry.getTokenExpiresAt().atZone(ZoneOffset.UTC).format(DEADLINE_FORMATTER) : "";
 
         ReferenceLetterInvitationContextDTO ctx = new ReferenceLetterInvitationContextDTO(
             entry.getTitle(),
@@ -213,10 +214,12 @@ public class ReferenceRequestService {
      */
     private LocalDateTime computeTokenExpiry(Job job) {
         LocalDate jobEnd = job.getEndDate();
-        if (jobEnd != null) {
-            return jobEnd.atTime(23, 59, 59);
-        }
-        return LocalDateTime.now().plusMonths(DEFAULT_VALIDITY_MONTHS);
+
+        LocalDate expiryDate = (jobEnd != null)
+            ? jobEnd
+            : LocalDate.now(ZoneOffset.UTC).plusMonths(DEFAULT_VALIDITY_MONTHS);
+
+        return expiryDate.atTime(23, 59, 59);
     }
 
     /**
