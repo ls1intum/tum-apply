@@ -289,7 +289,7 @@ public class TemplateProcessingService {
     }
 
     /**
-     * Binds the reference-letter-invitation context onto the template data model.
+     * Adds variables related to reference letter invitations to the template data model.
      *
      * @param dataModel the data model map
      * @param ctx       the invitation context for the external referee

@@ -49,7 +49,7 @@ public class ReferenceRequestResource {
         @PathVariable UUID applicationId,
         @Valid @RequestBody CreateReferenceRequestDTO payload
     ) {
-        log.info("POST /api/applications/{}/references - Adding reference", applicationId);
+        log.info("POST /api/applications/{}/references - Adding reference {}", applicationId, payload.toString());
         return ResponseEntity.ok(referenceRequestService.addToApplication(applicationId, payload));
     }
 

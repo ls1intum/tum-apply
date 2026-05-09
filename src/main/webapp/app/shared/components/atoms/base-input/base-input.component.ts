@@ -92,9 +92,7 @@ export abstract class BaseInputDirective<T> {
       const statusSub = ctrl.statusChanges.subscribe(() => {
         this.formValidityVersion.update(v => v + 1);
       });
-      // Clear the local touched flag when the bound control is reset to untouched
-      // (e.g. via form.reset / markAsUntouched). Touch transitions in the other direction
-      // are still gated by onBlur() to preserve the autofocus-on-pristine behavior.
+      // Clear local touched flag when the bound control is reset to untouched (e.g. via form.reset / markAsUntouched).
       const eventsSub = ctrl.events.subscribe(event => {
         if (event instanceof TouchedChangeEvent && !event.touched) {
           this.isTouched.set(false);

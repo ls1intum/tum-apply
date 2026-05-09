@@ -173,6 +173,10 @@ public class ReferenceRequestService {
     /**
      * Builds the invitation email and hands it to the async sender. The referee has no User
      * account, so a transient {@link User} stub holds the email address required by the mail layer.
+     *
+     * @param application the application the referee is attached to
+     * @param entry       the reference request entry containing the referee's name and email
+     * @param rawToken    the plaintext token to include in the email
      */
     private void sendInvitation(Application application, ReferenceRequest entry, String rawToken) {
         Job job = application.getJob();
@@ -212,6 +216,9 @@ public class ReferenceRequestService {
     /**
      * Resolves the latest valid expiry for a freshly issued token:
      * Job's end date if set, otherwise defaults to {@value #DEFAULT_VALIDITY_MONTHS} months from now.
+     *
+     * @param job the job the application belongs to, used to determine the token expiry
+     * @return the computed token expiry timestamp
      */
     private LocalDateTime computeTokenExpiry(Job job) {
         LocalDate jobEnd = job.getEndDate();
@@ -222,7 +229,7 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Generates a 256-bit cryptographically random token, URL-safe Base64 encoded.
+     * @return a 256-bit cryptographically random token, URL-safe Base64 encoded.
      */
     private static String generateToken() {
         byte[] bytes = new byte[TOKEN_BYTE_LENGTH];
@@ -234,6 +241,9 @@ public class ReferenceRequestService {
      * Hashes a high-entropy token with SHA-256 for safe storage. Plain SHA-256 is acceptable
      * here because the token already carries 256 bits of entropy; slow hashing (BCrypt) would
      * add no additional brute-force resistance for a uniformly random secret of this size.
+     *
+     * @param rawToken the plaintext token to hash
+     * @return the hashed token
      */
     private static String hashToken(String rawToken) {
         try {
