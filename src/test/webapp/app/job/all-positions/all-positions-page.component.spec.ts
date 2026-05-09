@@ -27,7 +27,7 @@ describe('AllPositionsPageComponent', () => {
 
   let router: Mocked<Router>;
   let mockJobApi: JobResourceApiMock;
-  let mockRgApi: ResearchGroupResourceApiMock & { getAllProfessors: ReturnType<typeof vi.fn> };
+  let mockRgApi: ResearchGroupResourceApiMock;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
 
   beforeEach(async () => {
@@ -49,10 +49,7 @@ describe('AllPositionsPageComponent', () => {
     mockJobApi.deleteJob.mockReturnValue(of({}));
     mockJobApi.changeJobState.mockReturnValue(of({}));
 
-    mockRgApi = {
-      ...createResearchGroupResourceApiMock(),
-      getAllProfessors: vi.fn(),
-    };
+    mockRgApi = createResearchGroupResourceApiMock();
     mockRgApi.getResearchGroupsForAdmin.mockReturnValue(
       of({
         content: [{ id: 'r1', researchGroup: 'RG 1' }],
