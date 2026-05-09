@@ -12,7 +12,6 @@ api/application-evaluation-resource-resources.ts
 api/application-resource-api.ts
 api/application-resource-resources.ts
 api/authentication-resource-api.ts
-api/authentication-resource-resources.ts
 api/department-resource-api.ts
 api/department-resource-resources.ts
 api/document-resource-api.ts
@@ -111,11 +110,9 @@ model/job-dto.ts
 model/job-filters-dto.ts
 model/job-form-dto.ts
 model/job-preview-request.ts
-model/keycloak-config.ts
 model/keycloak-user-dto.ts
 model/login-request-dto.ts
 model/otp-complete-dto.ts
-model/otp-config.ts
 model/page-application-overview-dto.ts
 model/page-created-job-dto.ts
 model/page-job-card-dto.ts
@@ -128,11 +125,8 @@ model/page-response-dto-research-group-dto.ts
 model/page-response-dto-school-dto.ts
 model/page-response-dto-user-short-dto.ts
 model/pageable-object.ts
-model/passkey-action-token-dto.ts
-model/passkey-dto.ts
 model/prof-onboarding-dto.ts
 model/professor-dto.ts
-model/public-config-dto.ts
 model/rating-dto.ts
 model/rating-overview-dto.ts
 model/reference-request-dto.ts

@@ -2,12 +2,11 @@
 name: tumapply
 services:
   keycloak:
-    image: quay.io/keycloak/keycloak:26.5
+    image: quay.io/keycloak/keycloak:26.3.1
     command: 'start-dev --import-realm'
     volumes:
       - ./realm-config:/opt/keycloak/data/import
       - ./realm-config/keycloak-health-check.sh:/opt/keycloak/health-check.sh
-      - ./realm-config/providers:/opt/keycloak/providers
     environment:
       - KC_DB=dev-file
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
