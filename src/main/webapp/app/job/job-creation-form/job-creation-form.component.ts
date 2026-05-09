@@ -1420,11 +1420,15 @@ export class JobCreationFormComponent {
   }
 
   /**
-   * Loads professors of the current research group for the supervising professor select.
+   * Loads professors for the supervising-professor select.
+   * Admins see every professor in the system; everyone else sees only their research group's professors.
    */
   private async loadSupervisingProfessors(): Promise<void> {
     try {
-      const response = await firstValueFrom(this.researchGroupApi.getResearchGroupProfessors());
+      const isAdmin = this.accountService.userAuthorities?.includes(UserShortDTORolesEnum.Admin) ?? false;
+      const response = isAdmin
+        ? await firstValueFrom(this.researchGroupApi.getAllProfessors())
+        : await firstValueFrom(this.researchGroupApi.getResearchGroupProfessors());
       const options = response
         .filter(member => member.roles?.includes(UserShortDTORolesEnum.Professor) && member.userId)
         .map(member => {
