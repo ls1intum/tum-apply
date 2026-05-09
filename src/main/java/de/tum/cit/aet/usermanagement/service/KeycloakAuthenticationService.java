@@ -40,6 +40,7 @@ public class KeycloakAuthenticationService {
     private static final String GRANT_TYPE_REFRESH = "refresh_token";
 
     private final AuthzClient externalRealmAuthzClient;
+    private final AuthzClient tumRealmAuthzClient;
 
     private final String keycloakUrl;
     private final String realm;
@@ -70,6 +71,9 @@ public class KeycloakAuthenticationService {
         this.externalRealmAuthzClient = AuthzClient.create(
             new Configuration(keycloakUrl, realm, clientId, Map.of("secret", clientSecret), null)
         );
+        this.tumRealmAuthzClient = AuthzClient.create(
+            new Configuration(keycloakUrl, tumLoginRealm, clientId, Map.of("secret", clientSecret), null)
+        );
         this.keycloakUrl = keycloakUrl;
         this.realm = realm;
         this.tumLoginRealm = tumLoginRealm;
@@ -91,19 +95,25 @@ public class KeycloakAuthenticationService {
 
     /**
      * Authenticates an end user with email (username) and password using the OIDC password grant via
-     * Keycloak's Authorization Client in the external-login realm.
+     * Keycloak's Authorization Client. Tries the external-login realm first and falls back to the TUM
+     * realm so seeded test users in either realm can sign in via the email/password form.
      *
      * @param email    user's email (username)
      * @param password user's password
      * @return DTO with access token, optional refresh token and lifetimes
-     * @throws UnauthorizedException if authentication fails or the response is invalid
+     * @throws UnauthorizedException if authentication fails in both realms or the response is invalid
      */
     public AuthResponseDTO loginWithCredentials(String email, String password) {
         try {
             AccessTokenResponse token = externalRealmAuthzClient.obtainAccessToken(email, password);
             return getResponseFromToken(token);
         } catch (Exception externalFailure) {
-            throw new UnauthorizedException("Invalid username or password", externalFailure);
+            try {
+                AccessTokenResponse token = tumRealmAuthzClient.obtainAccessToken(email, password);
+                return getResponseFromToken(token);
+            } catch (Exception tumFailure) {
+                throw new UnauthorizedException("Invalid username or password", tumFailure);
+            }
         }
     }
 
