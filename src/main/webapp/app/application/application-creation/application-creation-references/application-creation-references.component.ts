@@ -12,7 +12,7 @@ import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ReferenceRequestResourceApi } from 'app/generated/api/reference-request-resource-api';
 import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
-import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
+import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 
 const TITLE_OPTIONS: readonly string[] = ['Prof. Dr.', 'Prof.', 'Dr.'];
 
@@ -40,18 +40,19 @@ const TOAST_PREFIX = 'entity.applicationReferences';
     SelectComponent,
   ],
   templateUrl: './application-creation-references.component.html',
-  styleUrl: './application-creation-references.component.scss',
 })
 export default class ApplicationCreationReferencesComponent {
   applicationId = input.required<string>();
   requiredCount = input<number>(0);
 
   valid = output<boolean>();
+  referencesChanged = output<ReferenceRequestDTO[]>();
 
   references = signal<ReferenceRequestDTO[]>([]);
   loading = signal<boolean>(false);
 
-  readonly titleOptions = TITLE_OPTIONS.map(value => ({ name: value, value }));
+  readonly titleOptions: SelectOption[] = TITLE_OPTIONS.map(value => ({ name: value, value }));
+  readonly selectedTitleOption = signal<SelectOption | undefined>(undefined);
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly toastService = inject(ToastService);
@@ -61,7 +62,7 @@ export default class ApplicationCreationReferencesComponent {
     title: this.formBuilder.nonNullable.control(''),
     firstName: this.formBuilder.nonNullable.control('', Validators.required),
     lastName: this.formBuilder.nonNullable.control('', Validators.required),
-    email: this.formBuilder.nonNullable.control('', [Validators.required, Validators.email]),
+    email: this.formBuilder.nonNullable.control('', [Validators.required, Validators.email, Validators.pattern(/.+\..{2,}$/)]),
   });
 
   /** Has the applicant added at least the required number of referees? */
@@ -85,6 +86,15 @@ export default class ApplicationCreationReferencesComponent {
   });
 
   /**
+   * Updates the bound form control whenever the title dropdown selection changes.
+   */
+  onTitleSelected(option: SelectOption): void {
+    const selected = option ?? undefined;
+    this.selectedTitleOption.set(selected);
+    this.addForm.controls.title.setValue(typeof selected?.value === 'string' ? selected.value : '');
+  }
+
+  /**
    * Submits the add form to the server, prepends the new entry to the local list, and resets the form.
    */
   async onAdd(): Promise<void> {
@@ -104,12 +114,28 @@ export default class ApplicationCreationReferencesComponent {
         }),
       );
       this.references.update(list => [...list, created]);
-      this.addForm.reset({ title: '', firstName: '', lastName: '', email: '' });
+      this.referencesChanged.emit(this.references());
+      this.resetAddForm();
     } catch {
       this.toastService.showErrorKey(`${TOAST_PREFIX}.toast.addFailed`);
     } finally {
       this.loading.set(false);
     }
+  }
+
+  /**
+   * Clears the add form value and resets validation state so the inputs render as
+   * pristine and untouched after a successful submit.
+   */
+  private resetAddForm(): void {
+    this.selectedTitleOption.set(undefined);
+    this.addForm.reset({ title: '', firstName: '', lastName: '', email: '' });
+    this.addForm.markAsPristine();
+    this.addForm.markAsUntouched();
+    Object.values(this.addForm.controls).forEach(control => {
+      control.markAsPristine();
+      control.markAsUntouched();
+    });
   }
 
   /**
@@ -124,6 +150,7 @@ export default class ApplicationCreationReferencesComponent {
     try {
       await firstValueFrom(this.referenceApi.remove(this.applicationId(), reference.referenceRequestId));
       this.references.update(list => list.filter(r => r.referenceRequestId !== reference.referenceRequestId));
+      this.referencesChanged.emit(this.references());
     } catch {
       this.toastService.showErrorKey(`${TOAST_PREFIX}.toast.removeFailed`);
     } finally {
@@ -136,6 +163,7 @@ export default class ApplicationCreationReferencesComponent {
     try {
       const list = await firstValueFrom(this.referenceApi.list(this.applicationId()));
       this.references.set(list ?? []);
+      this.referencesChanged.emit(this.references());
     } catch {
       this.toastService.showErrorKey(`${TOAST_PREFIX}.toast.loadFailed`);
     } finally {

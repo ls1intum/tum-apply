@@ -12,9 +12,9 @@
 @if (references().length === 0) {
   <p class="text-text-disabled text-sm mb-3" jhiTranslate="entity.applicationReferences.empty"></p>
 } @else {
-  <ul class="reference-list">
+  <ul class="list-none p-0 mb-4">
     @for (reference of references(); track reference.referenceRequestId) {
-      <li class="reference-row flex items-center justify-between gap-3 py-2 border-b">
+      <li class="flex items-center justify-between gap-3 py-2 border-b border-divider-default">
         <div class="flex flex-col">
           <span class="font-medium">{{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}</span>
           <span class="text-text-secondary text-sm">{{ reference.email }}</span>
@@ -37,7 +37,14 @@
 
 <form [formGroup]="addForm" class="flex flex-col gap-3" (ngSubmit)="onAdd()">
   <div class="grid md:gap-3 grid-cols-1 md:grid-cols-4">
-    <jhi-select label="entity.applicationReferences.label.title" [items]="titleOptions" [showClear]="true" class="mb-6" />
+    <jhi-select
+      label="entity.applicationReferences.label.title"
+      [items]="titleOptions"
+      [selected]="selectedTitleOption()"
+      [showClear]="true"
+      (selectedChange)="onTitleSelected($event)"
+      class="mb-6"
+    />
 
     <jhi-string-input
       label="entity.applicationReferences.label.firstName"

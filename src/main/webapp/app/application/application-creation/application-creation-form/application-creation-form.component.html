@@ -63,6 +63,7 @@
         [applicationId]="applicationId()"
         [requiredCount]="referenceLettersRequired()"
         (valid)="onReferencesValidityChanged($event)"
+        (referencesChanged)="onReferencesChanged($event)"
       />
     }
   </div>
@@ -74,6 +75,7 @@
   <jhi-application-detail-for-applicant
     [previewDetailData]="previewData()"
     [previewDocumentData]="documentIds()"
+    [previewReferences]="references()"
     [isSummaryPage]="true"
     class="w-full"
   />
@@ -90,7 +92,7 @@
     <div class="flex align-items-center gap-2">
       <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" inputId="privacyCheckbox" />
       <label for="privacyCheckbox"
-        ><span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span
+      ><span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span
       ></label>
     </div>
 

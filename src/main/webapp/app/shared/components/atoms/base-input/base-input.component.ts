@@ -1,4 +1,4 @@
-import { AbstractControl, FormControl } from '@angular/forms';
+import { AbstractControl, FormControl, TouchedChangeEvent } from '@angular/forms';
 import { Directive, Signal, computed, effect, inject, input, output, signal } from '@angular/core';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -88,10 +88,22 @@ export abstract class BaseInputDirective<T> {
 
   constructor() {
     effect(onCleanup => {
-      const sub = this.formControl().statusChanges.subscribe(() => {
+      const ctrl = this.formControl();
+      const statusSub = ctrl.statusChanges.subscribe(() => {
         this.formValidityVersion.update(v => v + 1);
       });
-      onCleanup(() => sub.unsubscribe());
+      // Clear the local touched flag when the bound control is reset to untouched
+      // (e.g. via form.reset / markAsUntouched). Touch transitions in the other direction
+      // are still gated by onBlur() to preserve the autofocus-on-pristine behavior.
+      const eventsSub = ctrl.events.subscribe(event => {
+        if (event instanceof TouchedChangeEvent && !event.touched) {
+          this.isTouched.set(false);
+        }
+      });
+      onCleanup(() => {
+        statusSub.unsubscribe();
+        eventsSub.unsubscribe();
+      });
     });
 
     // Sync `disabled` input into the provided control (if there is one).

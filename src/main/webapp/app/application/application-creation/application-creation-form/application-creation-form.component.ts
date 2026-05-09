@@ -34,6 +34,7 @@ import { ApplicationResourceApi } from 'app/generated/api/application-resource-a
 import { UpdateApplicationDTO } from 'app/generated/model/update-application-dto';
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
 import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
+import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
 
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
@@ -139,6 +140,7 @@ export default class ApplicationCreationFormComponent {
   educationDataValid = signal<boolean>(false);
   applicationDetailsDataValid = signal<boolean>(false);
   referencesValid = signal<boolean>(true);
+  references = signal<ReferenceRequestDTO[]>([]);
   referenceLettersRequired = signal<number>(0);
   referenceLettersEnabled = computed(() => this.referenceLettersRequired() > 0);
   savingTick = signal<number>(0);
@@ -612,6 +614,10 @@ export default class ApplicationCreationFormComponent {
 
   onReferencesValidityChanged(isValid: boolean): void {
     this.referencesValid.set(isValid);
+  }
+
+  onReferencesChanged(list: ReferenceRequestDTO[]): void {
+    this.references.set(list);
   }
 
   // Authenticates the current visitor (OTP) and ensures a server-side application exists.
