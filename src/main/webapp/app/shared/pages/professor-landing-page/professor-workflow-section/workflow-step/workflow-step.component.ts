@@ -8,7 +8,6 @@ import { ButtonComponent } from '../../../../components/atoms/button/button.comp
   selector: 'jhi-workflow-step',
   imports: [FontAwesomeModule, TranslateModule, ButtonComponent],
   templateUrl: './workflow-step.component.html',
-  styleUrl: './workflow-step.component.scss',
 })
 export class WorkflowStepComponent {
   icon = input<string>('file-pen');

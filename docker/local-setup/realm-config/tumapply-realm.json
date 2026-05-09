@@ -55,7 +55,7 @@
       "id": "00000000-0000-0000-0000-000000000104",
       "username": "applicant2",
       "enabled": true,
-      "email": "external@uni.de",
+      "email": "applicant2@tumapply.local",
       "emailVerified": true,
       "firstName": "Sara",
       "lastName": "Extern",
@@ -71,7 +71,7 @@
       "id": "00000000-0000-0000-0000-000000000105",
       "username": "professor2",
       "enabled": true,
-      "email": "professor2@tum.de",
+      "email": "professor2@tumapply.local",
       "emailVerified": true,
       "firstName": "Professor2",
       "lastName": "TUM",
@@ -87,7 +87,7 @@
       "id": "00000000-0000-0000-0000-000000000106",
       "username": "applicant3",
       "enabled": true,
-      "email": "longnameperson@intl.edu",
+      "email": "applicant3@tumapply.local",
       "emailVerified": true,
       "firstName": "Jean-Pierre-Étienne",
       "lastName": "Van Der Straaten-Sánchez",
@@ -95,6 +95,38 @@
         {
           "type": "password",
           "value": "applicant",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000107",
+      "username": "employee1",
+      "enabled": true,
+      "email": "employee1@tumapply.local",
+      "emailVerified": true,
+      "firstName": "Emil",
+      "lastName": "Employee",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "employee",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000108",
+      "username": "employee2",
+      "enabled": true,
+      "email": "employee2@tumapply.local",
+      "emailVerified": true,
+      "firstName": "Eva",
+      "lastName": "Employee",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "employee",
           "temporary": false
         }
       ]
