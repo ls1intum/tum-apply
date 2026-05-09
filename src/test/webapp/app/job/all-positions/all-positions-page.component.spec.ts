@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { afterEach, beforeEach, describe, it, expect, vi, Mocked } from 'vitest';
-import { of, throwError, EMPTY } from 'rxjs';
-import { Router } from '@angular/router';
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
+import { of, throwError } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { AllPositionsPageComponent } from 'app/job/all-positions/all-positions-page.component';
@@ -19,13 +18,14 @@ import {
   createResearchGroupResourceApiMock,
   ResearchGroupResourceApiMock,
 } from 'src/test/webapp/util/research-group-resource-api.service.mock';
+import { createRouterMock, provideRouterMock, RouterMock } from 'src/test/webapp/util/router.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
 describe('AllPositionsPageComponent', () => {
   let fixture: ComponentFixture<AllPositionsPageComponent>;
   let component: AllPositionsPageComponent;
 
-  let router: Mocked<Router>;
+  let router: RouterMock;
   let mockJobApi: JobResourceApiMock;
   let mockRgApi: ResearchGroupResourceApiMock;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
@@ -60,17 +60,14 @@ describe('AllPositionsPageComponent', () => {
 
     mockToastService = createToastServiceMock();
 
-    router = {
-      navigate: vi.fn(),
-      events: EMPTY,
-    } as unknown as Mocked<Router>;
+    router = createRouterMock();
 
     await TestBed.configureTestingModule({
       imports: [AllPositionsPageComponent, TranslateModule.forRoot()],
       providers: [
         provideJobResourceApiMock(mockJobApi),
         { provide: ResearchGroupResourceApi, useValue: mockRgApi },
-        { provide: Router, useValue: router },
+        provideRouterMock(router),
         provideToastServiceMock(mockToastService),
         provideFontAwesomeTesting(),
         provideTranslateMock(),
@@ -530,20 +527,20 @@ describe('AllPositionsPageComponent', () => {
     it('should call changeJobState with PUBLISHED when reopen is confirmed', async () => {
       component.currentJobId.set('j');
       await component.onConfirmReopen();
-      expect(mockJobApi.changeJobState).toHaveBeenCalledWith('j', AdminCreatedJobDTOStateEnum.Published);
+      expect(mockJobApi.changeJobState).toHaveBeenCalledExactlyOnceWith('j', AdminCreatedJobDTOStateEnum.Published);
     });
 
     it('should show success toast and reload jobs after a successful reopen', async () => {
       component.currentJobId.set('j');
       await component.onConfirmReopen();
-      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('allPositionsPage.toastMessages.reopenJobSuccess');
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledExactlyOnceWith('allPositionsPage.toastMessages.reopenJobSuccess');
     });
 
     it('should show error toast on reopen failure', async () => {
       mockJobApi.changeJobState.mockReturnValueOnce(throwError(() => new Error('boom')));
       component.currentJobId.set('j');
       await component.onConfirmReopen();
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith(
+      expect(mockToastService.showErrorKey).toHaveBeenCalledExactlyOnceWith(
         'allPositionsPage.toastMessages.reopenJobFailed',
         { detail: 'boom' },
       );
@@ -583,7 +580,7 @@ describe('AllPositionsPageComponent', () => {
   describe('Create job button', () => {
     it('should navigate to /job/create with returnTo=all-positions when clicked', () => {
       component.onCreateJob();
-      expect(router.navigate).toHaveBeenCalledWith(['/job/create'], { queryParams: { returnTo: 'all-positions' } });
+      expect(router.navigate).toHaveBeenCalledExactlyOnceWith(['/job/create'], { queryParams: { returnTo: 'all-positions' } });
     });
   });
 });

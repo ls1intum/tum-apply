@@ -15,6 +15,7 @@ import de.tum.cit.aet.job.dto.AdminJobsFilterDTO;
 import de.tum.cit.aet.job.repository.JobRepository;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,37 +33,41 @@ class JobServiceTest {
     @InjectMocks
     private JobService jobService;
 
-    @Test
-    void shouldDelegateToRepositoryWithFiltersForAdmin() {
-        PageDTO pageDTO = new PageDTO(10, 0);
-        SortDTO sortDTO = new SortDTO("lastModifiedAt", SortDTO.Direction.DESC);
-        UUID rgId = UUID.randomUUID();
-        UUID profId = UUID.randomUUID();
-        AdminJobsFilterDTO filter = new AdminJobsFilterDTO(List.of("DRAFT", "PUBLISHED"), List.of(rgId), List.of(profId));
-        Page<AdminCreatedJobDTO> expected = Page.empty();
-        when(jobRepository.findAllJobsForAdmin(any(), any(), any(), any(), any())).thenReturn(expected);
+    @Nested
+    class GetAllJobs {
 
-        Page<AdminCreatedJobDTO> result = jobService.getAllJobs(pageDTO, filter, sortDTO, "needle");
+        @Test
+        void shouldDelegateToRepositoryWithFiltersForAdmin() {
+            PageDTO pageDTO = new PageDTO(10, 0);
+            SortDTO sortDTO = new SortDTO("lastModifiedAt", SortDTO.Direction.DESC);
+            UUID rgId = UUID.randomUUID();
+            UUID profId = UUID.randomUUID();
+            AdminJobsFilterDTO filter = new AdminJobsFilterDTO(List.of("DRAFT", "PUBLISHED"), List.of(rgId), List.of(profId));
+            Page<AdminCreatedJobDTO> expected = Page.empty();
+            when(jobRepository.findAllJobsForAdmin(any(), any(), any(), any(), any())).thenReturn(expected);
 
-        assertThat(result).isSameAs(expected);
-        verify(jobRepository).findAllJobsForAdmin(
-            eq(List.of(JobState.DRAFT, JobState.PUBLISHED)),
-            eq(List.of(rgId)),
-            eq(List.of(profId)),
-            eq("needle"),
-            any(Pageable.class)
-        );
-    }
+            Page<AdminCreatedJobDTO> result = jobService.getAllJobs(pageDTO, filter, sortDTO, "needle");
 
-    @Test
-    void shouldPassNullsToRepositoryWhenAllFiltersEmpty() {
-        PageDTO pageDTO = new PageDTO(10, 0);
-        SortDTO sortDTO = new SortDTO("lastModifiedAt", SortDTO.Direction.DESC);
-        AdminJobsFilterDTO empty = new AdminJobsFilterDTO(List.of(), List.of(), List.of());
-        when(jobRepository.findAllJobsForAdmin(any(), any(), any(), any(), any())).thenReturn(Page.empty());
+            assertThat(result).isSameAs(expected);
+            verify(jobRepository).findAllJobsForAdmin(
+                eq(List.of(JobState.DRAFT, JobState.PUBLISHED)),
+                eq(List.of(rgId)),
+                eq(List.of(profId)),
+                eq("needle"),
+                any(Pageable.class)
+            );
+        }
 
-        jobService.getAllJobs(pageDTO, empty, sortDTO, null);
+        @Test
+        void shouldPassNullsToRepositoryWhenAllFiltersEmpty() {
+            PageDTO pageDTO = new PageDTO(10, 0);
+            SortDTO sortDTO = new SortDTO("lastModifiedAt", SortDTO.Direction.DESC);
+            AdminJobsFilterDTO empty = new AdminJobsFilterDTO(List.of(), List.of(), List.of());
+            when(jobRepository.findAllJobsForAdmin(any(), any(), any(), any(), any())).thenReturn(Page.empty());
 
-        verify(jobRepository).findAllJobsForAdmin(isNull(), isNull(), isNull(), isNull(), any(Pageable.class));
+            jobService.getAllJobs(pageDTO, empty, sortDTO, null);
+
+            verify(jobRepository).findAllJobsForAdmin(isNull(), isNull(), isNull(), isNull(), any(Pageable.class));
+        }
     }
 }
