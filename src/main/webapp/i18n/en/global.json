@@ -331,6 +331,7 @@
       "personal_statements": "Personal Statements",
       "personal_information": "Personal Information",
       "personal_documents": "Personal Documents",
+      "reference_letters": "Recommendation Letters Requests",
       "not_found": "Application not found"
     },
     "applicationSteps": {
@@ -460,12 +461,11 @@
       }
     },
     "applicationReferences": {
-      "description": "List the people who will write a recommendation letter for you. Each contact will receive a secure link by email when you submit the application — no account required for them.",
+      "description": "Please list your referees below. Upon submission, they will be emailed a secure link to upload their recommendation letter.",
       "requiredCount": "Required: {count} · Added: ",
       "empty": "No referees added yet.",
       "section": {
-        "required": "Required Referees",
-        "add": "Add a Referee"
+        "required": "Required Referees"
       },
       "label": {
         "title": "Title",

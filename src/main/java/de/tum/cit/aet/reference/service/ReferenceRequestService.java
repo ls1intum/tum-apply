@@ -182,7 +182,8 @@ public class ReferenceRequestService {
         refereeStub.setLastName(entry.getLastName());
 
         String referenceLink = clientUrl + "/reference/" + rawToken;
-        String deadline = entry.getTokenExpiresAt() != null ? entry.getTokenExpiresAt().atZone(ZoneOffset.UTC).format(DEADLINE_FORMATTER) : "";
+        String deadline =
+            entry.getTokenExpiresAt() != null ? entry.getTokenExpiresAt().atZone(ZoneOffset.UTC).format(DEADLINE_FORMATTER) : "";
 
         ReferenceLetterInvitationContextDTO ctx = new ReferenceLetterInvitationContextDTO(
             entry.getTitle(),
@@ -215,9 +216,7 @@ public class ReferenceRequestService {
     private LocalDateTime computeTokenExpiry(Job job) {
         LocalDate jobEnd = job.getEndDate();
 
-        LocalDate expiryDate = (jobEnd != null)
-            ? jobEnd
-            : LocalDate.now(ZoneOffset.UTC).plusMonths(DEFAULT_VALIDITY_MONTHS);
+        LocalDate expiryDate = (jobEnd != null) ? jobEnd : LocalDate.now(ZoneOffset.UTC).plusMonths(DEFAULT_VALIDITY_MONTHS);
 
         return expiryDate.atTime(23, 59, 59);
     }

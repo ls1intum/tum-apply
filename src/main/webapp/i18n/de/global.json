@@ -331,6 +331,7 @@
       "personal_statements": "Persönliche Angaben",
       "personal_information": "Persönliche Informationen",
       "personal_documents": "Persönliche Dokumente",
+      "reference_letters": "Empfehlungsschreiben Anfragen",
       "not_found": "Bewerbung nicht gefunden"
     },
     "applicationSteps": {
@@ -460,12 +461,11 @@
       }
     },
     "applicationReferences": {
-      "description": "Trage hier die Personen ein, die ein Empfehlungsschreiben für dich verfassen sollen. Sobald du deine Bewerbung absendest, erhalten sie automatisch einen sicheren Link per E-Mail – ein Konto ist nicht erforderlich.",
+      "description": "Bitte gib unten deine Referenzpersonen an. Nach dem Absenden erhalten diese einen sicheren Link per E-Mail, um ihr Empfehlungsschreiben hochzuladen.",
       "requiredCount": "Benötigt: {count} · Hinzugefügt: ",
       "empty": "Noch keine Referenzgeber hinzugefügt.",
       "section": {
-        "required": "Benötigte Referenzgeber",
-        "add": "Referenzgeber hinzufügen"
+        "required": "Benötigte Referenzgeber"
       },
       "label": {
         "title": "Titel",
