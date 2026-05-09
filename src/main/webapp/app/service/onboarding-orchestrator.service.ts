@@ -1,4 +1,4 @@
-import { Injectable, Injector, Signal, effect, inject } from '@angular/core';
+import { Injectable, Injector, Signal, effect, inject, signal } from '@angular/core';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -32,6 +32,14 @@ export class OnboardingOrchestratorService {
   // Prevents opening multiple dialogs concurrently.
   private opened = false;
 
+  private readonly _suppressesFollowupPrompts = signal(false);
+  /**
+   * True while the onboarding flow may take precedence over other post-login prompts: from the moment the
+   * triggering conditions match (logged-in applicant on a professor page) until the server check resolves
+   * negatively. Stays true if the dialog actually opens.
+   */
+  readonly suppressesFollowupPrompts = this._suppressesFollowupPrompts.asReadonly();
+
   private readonly checkTrigger$ = new Subject<void>();
   private readonly checkResult = toSignal<ProfOnboardingDTO | undefined>(
     this.checkTrigger$.pipe(switchMap(() => this.profOnboardingApi.check().pipe(take(1)))),
@@ -58,6 +66,7 @@ export class OnboardingOrchestratorService {
         if (!isLoggedIn || this.opened || !isApplicant || !onProfessorPage) {
           return;
         }
+        this._suppressesFollowupPrompts.set(true);
         this.checkTrigger$.next();
       },
       { injector: this.injector },
@@ -66,7 +75,14 @@ export class OnboardingOrchestratorService {
     effect(
       () => {
         const dto = this.checkResult();
-        if (this.opened || dto?.show !== true) {
+        if (dto === undefined) {
+          return;
+        }
+        if (dto.show !== true) {
+          this._suppressesFollowupPrompts.set(false);
+          return;
+        }
+        if (this.opened) {
           return;
         }
         this.opened = true;

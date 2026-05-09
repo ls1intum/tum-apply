@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
+import { OnboardingOrchestratorService } from 'app/service/onboarding-orchestrator.service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
@@ -23,6 +24,7 @@ export class PasskeyRegistrationPromptComponent {
   readonly accountService = inject(AccountService);
   readonly authFacade = inject(AuthFacadeService);
   readonly keycloakAuthenticationService = inject(KeycloakAuthenticationService);
+  readonly onboardingOrchestratorService = inject(OnboardingOrchestratorService);
 
   readonly loggedIn = computed(() => this.accountService.signedIn());
   readonly visible = signal(false);
@@ -73,6 +75,7 @@ export class PasskeyRegistrationPromptComponent {
       this.loggedIn() &&
       this.keycloakAuthenticationService.canManagePasskeys() &&
       !this.shownThisSession() &&
+      !this.onboardingOrchestratorService.suppressesFollowupPrompts() &&
       localStorage.getItem(PasskeyRegistrationPromptComponent.PROMPT_PREFERENCE_ID) !== 'true'
     );
   }

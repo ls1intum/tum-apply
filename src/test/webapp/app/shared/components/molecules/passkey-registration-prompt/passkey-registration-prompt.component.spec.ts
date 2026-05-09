@@ -9,6 +9,8 @@ import {
   provideKeycloakAuthenticationServiceMock,
 } from 'util/keycloak.mock';
 import { provideTranslateMock } from 'util/translate.mock';
+import { signal } from '@angular/core';
+import { OnboardingOrchestratorService } from 'app/service/onboarding-orchestrator.service';
 import { PasskeyRegistrationPromptComponent } from 'app/shared/components/molecules/passkey-registration-prompt/passkey-registration-prompt.component';
 
 describe('PasskeyRegistrationPromptComponent', () => {
@@ -42,6 +44,7 @@ describe('PasskeyRegistrationPromptComponent', () => {
         provideAuthFacadeServiceMock(authFacadeMock),
         provideKeycloakAuthenticationServiceMock(keycloakAuthenticationServiceMock),
         provideTranslateMock(),
+        { provide: OnboardingOrchestratorService, useValue: { suppressesFollowupPrompts: signal(false).asReadonly() } },
       ],
     }).compileComponents();
   });
