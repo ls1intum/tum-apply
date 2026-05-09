@@ -1,7 +1,7 @@
 package de.tum.cit.aet.ai.service;
 
 import de.tum.cit.aet.ai.constants.GenderCategory;
-import de.tum.cit.aet.ai.domain.BiasedIssues;
+import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.domain.GenderBiasWordLists;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
@@ -328,7 +328,7 @@ public class AiService {
     public List<ComplianceIssue> analyzeCurrentJobDescription(JobFormDTO jobFormDTO, String lang, String userLang) {
         String raw = "de".equals(lang) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
         String input = raw != null ? Jsoup.parse(raw).text() : "";
-        List<BiasedIssues> genderAnalysis = genderBiasAnalysisService.analyzeText(input, lang);
+        List<BiasedIssue> genderAnalysis = genderBiasAnalysisService.analyzeText(input, lang);
         return analyzeJobDescription(jobFormDTO.title(), jobFormDTO.jobId(), input, lang, userLang, genderAnalysis, null);
     }
 
@@ -358,8 +358,8 @@ public class AiService {
         String text,
         String lang,
         String userLang,
-        List<BiasedIssues> analysis,
-        List<BiasedIssues> translatedAnalysis
+        List<BiasedIssue> analysis,
+        List<BiasedIssue> translatedAnalysis
     ) {
         List<ComplianceIssue> complianceIssues;
         if (aiFeatureToggleService.isAiAvailable()) {

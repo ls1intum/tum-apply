@@ -14,7 +14,7 @@ import lombok.Setter;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-public class BiasedIssues {
+public class BiasedIssue {
 
     private String coding;
     private String language;

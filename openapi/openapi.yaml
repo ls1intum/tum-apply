@@ -1225,40 +1225,6 @@ paths:
           content:
             application/pdf:
               schema: {type: string, format: binary}
-  /api/gender-bias/analyze:
-    post:
-      tags: [gender-bias-analysis-resource]
-      operationId: analyzeText
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/GenderBiasAnalysisRequest'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/BiasedIssues'}
-  /api/gender-bias/analyze-html:
-    post:
-      tags: [gender-bias-analysis-resource]
-      operationId: analyzeHtmlContent
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/GenderBiasAnalysisRequest'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/BiasedIssues'}
   /api/images/defaults/job-banners:
     get:
       tags: [image-resource]
@@ -2860,7 +2826,7 @@ components:
         expiresIn: {type: integer, format: int64}
         profileRequired: {type: boolean}
         refreshExpiresIn: {type: integer, format: int64}
-    BiasedIssues:
+    BiasedIssue:
       type: object
       properties:
         coding: {type: string}
@@ -3094,11 +3060,6 @@ components:
         masterDegreeName: {type: string}
         masterGrade: {type: string}
         masterUniversity: {type: string}
-    GenderBiasAnalysisRequest:
-      type: object
-      properties:
-        language: {type: string}
-        text: {type: string}
     ImageDTO:
       type: object
       properties:
@@ -3233,7 +3194,7 @@ components:
       properties:
         biasedIssues:
           type: array
-          items: {$ref: '#/components/schemas/BiasedIssues'}
+          items: {$ref: '#/components/schemas/BiasedIssue'}
         complianceIssues:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
@@ -3357,7 +3318,7 @@ components:
       properties:
         biasedIssues:
           type: array
-          items: {$ref: '#/components/schemas/BiasedIssues'}
+          items: {$ref: '#/components/schemas/BiasedIssue'}
         complianceIssues:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
@@ -3717,7 +3678,7 @@ components:
       properties:
         originalAnalysis:
           type: array
-          items: {$ref: '#/components/schemas/BiasedIssues'}
+          items: {$ref: '#/components/schemas/BiasedIssue'}
         text: {type: string, minLength: 1}
       required: [text]
     UpcomingInterviewDTO:

@@ -2,7 +2,7 @@ import { Component, ViewEncapsulation, computed, input, output } from '@angular/
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
-import { BiasedIssues } from 'app/generated/model/biased-issues';
+import { BiasedIssue } from 'app/generated/model/biased-issue';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
@@ -16,7 +16,7 @@ import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.
 })
 export class GenderBiasAnalysisDialogComponent {
   visible = input.required<boolean>();
-  result = input<BiasedIssues[]>([]);
+  result = input<BiasedIssue[]>([]);
 
   visibleChange = output<boolean>();
   closeDialog = output();
@@ -84,7 +84,7 @@ export class GenderBiasAnalysisDialogComponent {
     return type === 'non-inclusive' ? 'non-inclusive-badge' : 'inclusive-badge';
   }
 
-  private getWordCounts(words: BiasedIssues[]): Map<string, number> {
+  private getWordCounts(words: BiasedIssue[]): Map<string, number> {
     const counts = new Map<string, number>();
     words.forEach(w => {
       if (w.word) {

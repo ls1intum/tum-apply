@@ -2,7 +2,7 @@ package de.tum.cit.aet.ai.service;
 
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
 import de.tum.cit.aet.ai.constants.GenderCategory;
-import de.tum.cit.aet.ai.domain.BiasedIssues;
+import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -59,7 +59,7 @@ public class ComplianceScoreService {
      * @param originalText - The original text for score-calculation
      * @return the combined gender bias score (0-100)
      */
-    public int calculateCombinedScore(List<BiasedIssues> originalAnalysis, List<BiasedIssues> translatedAnalysis, String originalText) {
+    public int calculateCombinedScore(List<BiasedIssue> originalAnalysis, List<BiasedIssue> translatedAnalysis, String originalText) {
         int scoreDE = calculateScore(originalAnalysis, originalText);
         int scoreEN = calculateScore(translatedAnalysis, originalText);
         return (int) Math.round((scoreDE + scoreEN) / 2.0);
@@ -75,7 +75,7 @@ public class ComplianceScoreService {
      * @param originalText - The original text for score-calculation
      * @return A compiled integer score (0-100) based on the most comprehensive data available.
      */
-    protected int calculateGenderScore(List<BiasedIssues> originalAnalysis, List<BiasedIssues> translatedAnalysis, String originalText) {
+    protected int calculateGenderScore(List<BiasedIssue> originalAnalysis, List<BiasedIssue> translatedAnalysis, String originalText) {
         //If both language versions are available, the combined version is set.
         if (originalAnalysis != null && translatedAnalysis != null) {
             return calculateCombinedScore(originalAnalysis, translatedAnalysis, originalText);
@@ -105,7 +105,7 @@ public class ComplianceScoreService {
      * @param originalText - The original text for score-calculation
      * @returns An integer between 0 and 100 representing the inclusivity score.
      */
-    protected int calculateScore(List<BiasedIssues> analysis, String originalText) {
+    protected int calculateScore(List<BiasedIssue> analysis, String originalText) {
         if (originalText == null || originalText.trim().isEmpty()) {
             return 0;
         }

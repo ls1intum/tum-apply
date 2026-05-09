@@ -2,13 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { BiasedIssues } from 'app/generated/model/biased-issues';
+import { BiasedIssue } from 'app/generated/model/biased-issue';
 import { ComponentRef } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
 
-type GenderBiasAnalysisDialogTestResult = Omit<BiasedIssues, 'type'> & {
-  type?: BiasedIssues['type'] | 'non-inclusive' | 'nonInclusive' | 'inclusive' | 'male';
+type GenderBiasAnalysisDialogTestResult = Omit<BiasedIssue, 'type'> & {
+  type?: BiasedIssue['type'] | 'non-inclusive' | 'nonInclusive' | 'inclusive' | 'male';
   biasedWords?: GenderBiasAnalysisDialogTestResult[];
 };
 
@@ -26,7 +26,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
   function createComponentWithInputs(
     visible: boolean,
-    result: GenderBiasAnalysisDialogTestResult | BiasedIssues[] | undefined = undefined,
+    result: GenderBiasAnalysisDialogTestResult | BiasedIssue[] | undefined = undefined,
   ): {
     fixture: ComponentFixture<GenderBiasAnalysisDialogComponent>;
     component: GenderBiasAnalysisDialogComponent;
@@ -41,7 +41,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     return { fixture, component: fixture.componentInstance };
   }
 
-  function normalizeResult(result: GenderBiasAnalysisDialogTestResult): BiasedIssues[] {
+  function normalizeResult(result: GenderBiasAnalysisDialogTestResult): BiasedIssue[] {
     if (result.biasedWords && result.biasedWords.length > 0) {
       return result.biasedWords.map(word => toBiasedIssue(word, result.coding));
     }
@@ -49,7 +49,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     return [toBiasedIssue(result)];
   }
 
-  function toBiasedIssue(result: GenderBiasAnalysisDialogTestResult, coding = result.coding): BiasedIssues {
+  function toBiasedIssue(result: GenderBiasAnalysisDialogTestResult, coding = result.coding): BiasedIssue {
     return {
       coding,
       word: result.word,
@@ -57,7 +57,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     };
   }
 
-  function normalizeType(type: GenderBiasAnalysisDialogTestResult['type']): BiasedIssues['type'] | undefined {
+  function normalizeType(type: GenderBiasAnalysisDialogTestResult['type']): BiasedIssue['type'] | undefined {
     switch (type) {
       case 'non-inclusive':
       case 'nonInclusive':
@@ -65,7 +65,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
       case 'inclusive':
         return 'INCLUSIVE';
       default:
-        return type as BiasedIssues['type'] | undefined;
+        return type as BiasedIssue['type'] | undefined;
     }
   }
 

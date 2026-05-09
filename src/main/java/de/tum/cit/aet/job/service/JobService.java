@@ -1,6 +1,6 @@
 package de.tum.cit.aet.job.service;
 
-import de.tum.cit.aet.ai.domain.BiasedIssues;
+import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
@@ -503,7 +503,7 @@ public class JobService {
         UUID jobId,
         int score,
         List<ComplianceIssue> complianceAnalysis,
-        List<BiasedIssues> biasedIssues,
+        List<BiasedIssue> biasedIssues,
         String lang
     ) {
         applyJobChangeForAnalysis(jobId, job -> {
@@ -531,7 +531,7 @@ public class JobService {
      * Issues from other languages stay unchanged.
      * Updates the job in place and caller saves it.
      */
-    private void replaceIssuesForLanguage(Job job, List<ComplianceIssue> complianceAnalysis, List<BiasedIssues> biasedIssues, String lang) {
+    private void replaceIssuesForLanguage(Job job, List<ComplianceIssue> complianceAnalysis, List<BiasedIssue> biasedIssues, String lang) {
         List<ComplianceIssue> issuesToSave = job
             .getComplianceIssues()
             .stream()
@@ -540,7 +540,7 @@ public class JobService {
         issuesToSave.addAll(complianceAnalysis);
         job.setComplianceIssues(issuesToSave);
 
-        List<BiasedIssues> biasedIssuesToSave = job
+        List<BiasedIssue> biasedIssuesToSave = job
             .getBiasedIssues()
             .stream()
             .filter(issue -> !Objects.equals(issue.getLanguage(), lang))

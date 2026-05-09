@@ -6,7 +6,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ContentChange, QuillEditorComponent } from 'ngx-quill';
 import { FormsModule } from '@angular/forms';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
-import { BiasedIssues } from 'app/generated/model/biased-issues';
+import { BiasedIssue } from 'app/generated/model/biased-issue';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import Quill from 'quill';
@@ -117,12 +117,12 @@ export class EditorComponent extends BaseInputDirective<string> {
   helperText = input<string | undefined>(undefined); // Optional helper text to display below the editor field
   showGenderDecoderButton = input<boolean>(false);
   genderDecoderClick = output<string>();
-  openAnalysisDialog = output<BiasedIssues[]>();
+  openAnalysisDialog = output<BiasedIssue[]>();
   quillEditorComponent = viewChild(QuillEditorComponent);
   highlightHovered = output<{ text: string; x: number; y: number } | undefined>();
   highlights = input<{ text: string; category: ComplianceIssueCategoryEnum }[]>([]);
   pendingHighlights = signal<{ text: string; category: ComplianceIssueCategoryEnum }[]>([]);
-  biasedAnalysis = input<BiasedIssues[] | undefined>(undefined);
+  biasedAnalysis = input<BiasedIssue[] | undefined>(undefined);
 
   readonly translateService = inject(TranslateService);
   readonly cdRef = inject(ChangeDetectorRef);

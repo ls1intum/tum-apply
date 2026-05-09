@@ -6,7 +6,7 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
 import { provideHttpClientMock } from 'util/http-client.mock';
-import { BiasedIssues } from 'app/generated/model/biased-issues';
+import { BiasedIssue } from 'app/generated/model/biased-issue';
 import { ContentChange } from 'ngx-quill';
 
 function makeEditorEvent(html: string, overrides: Partial<unknown> = {}): ContentChange {
@@ -41,7 +41,7 @@ describe('EditorComponent', () => {
     return fixture;
   }
 
-  function setBiasedAnalysis(fixture: ComponentFixture<EditorComponent>, biasedAnalysis: BiasedIssues[] | undefined): void {
+  function setBiasedAnalysis(fixture: ComponentFixture<EditorComponent>, biasedAnalysis: BiasedIssue[] | undefined): void {
     fixture.componentRef.setInput('biasedAnalysis', biasedAnalysis);
     fixture.detectChanges();
   }

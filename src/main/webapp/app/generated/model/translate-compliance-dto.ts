@@ -8,9 +8,9 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { BiasedIssues } from './biased-issues';
+import type { BiasedIssue } from './biased-issue';
 
 export interface TranslateComplianceDTO {
-    readonly originalAnalysis?: Array<BiasedIssues>;
+    readonly originalAnalysis?: Array<BiasedIssue>;
     readonly text: string;
 }

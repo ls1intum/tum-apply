@@ -1,7 +1,7 @@
 package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.tum.cit.aet.ai.domain.BiasedIssues;
+import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
@@ -33,7 +33,7 @@ public record JobFormDTO(
     Boolean suitableForDisabled, // Position suitable for persons with severe disabilities
     Integer genderBiasScore,
     List<ComplianceIssue> complianceIssues,
-    List<BiasedIssues> biasedIssues
+    List<BiasedIssue> biasedIssues
 ) {
     /**
      * Converts a Job entity to a form DTO.
@@ -60,7 +60,7 @@ public record JobFormDTO(
      * @param biasedIssues the biased issues to include in the DTO
      * @return a JobFormDTO containing the data from the job entity and analysis collections
      */
-    public static JobFormDTO getFromEntity(Job job, List<ComplianceIssue> complianceIssues, List<BiasedIssues> biasedIssues) {
+    public static JobFormDTO getFromEntity(Job job, List<ComplianceIssue> complianceIssues, List<BiasedIssue> biasedIssues) {
         if (job == null) {
             throw new EntityNotFoundException("Cannot convert non-existent Job entity to JobFormDTO");
         }

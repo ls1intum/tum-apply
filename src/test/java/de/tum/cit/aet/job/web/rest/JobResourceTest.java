@@ -7,7 +7,7 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.ai.constants.ComplianceAction;
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
 import de.tum.cit.aet.ai.constants.GenderCategory;
-import de.tum.cit.aet.ai.domain.BiasedIssues;
+import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.repository.ImageRepository;
@@ -393,7 +393,7 @@ class JobResourceTest extends AbstractResourceTest {
                     )
                 )
             );
-            job.setBiasedIssues(List.of(new BiasedIssues("non-inclusive-coded", "en", "leader", GenderCategory.NON_INCLUSIVE)));
+            job.setBiasedIssues(List.of(new BiasedIssue("non-inclusive-coded", "en", "leader", GenderCategory.NON_INCLUSIVE)));
             jobRepository.saveAndFlush(job);
 
             JobFormDTO updatedPayload = new JobFormDTO(

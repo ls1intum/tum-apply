@@ -1,7 +1,7 @@
 package de.tum.cit.aet.ai.service;
 
 import de.tum.cit.aet.ai.constants.GenderCategory;
-import de.tum.cit.aet.ai.domain.BiasedIssues;
+import de.tum.cit.aet.ai.domain.BiasedIssue;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class GenderBiasAnalysisService {
      * @param language the language code (e.g., "en" or "de")
      * @return a response containing the analysis result and identified biased words
      */
-    public List<BiasedIssues> analyzeText(String text, String language) {
+    public List<BiasedIssue> analyzeText(String text, String language) {
         // Default to English if no language specified
         String effectiveLanguage = (language == null || language.trim().isEmpty()) ? "en" : language;
 
@@ -38,17 +38,17 @@ public class GenderBiasAnalysisService {
     /**
      * Convert analysis result to DTOs with suggestions
      */
-    private List<BiasedIssues> convertToBiasedIssues(GenderBiasAnalyzer.AnalysisResult result) {
-        List<BiasedIssues> issues = new ArrayList<>();
+    private List<BiasedIssue> convertToBiasedIssues(GenderBiasAnalyzer.AnalysisResult result) {
+        List<BiasedIssue> issues = new ArrayList<>();
 
         // Add non inclusive words
         for (String word : result.nonInclusiveWords()) {
-            issues.add(new BiasedIssues(result.coding(), result.language(), word, GenderCategory.NON_INCLUSIVE));
+            issues.add(new BiasedIssue(result.coding(), result.language(), word, GenderCategory.NON_INCLUSIVE));
         }
 
         // Add inclusive words
         for (String word : result.inclusiveWords()) {
-            issues.add(new BiasedIssues(result.coding(), result.language(), word, GenderCategory.INCLUSIVE));
+            issues.add(new BiasedIssue(result.coding(), result.language(), word, GenderCategory.INCLUSIVE));
         }
 
         return issues;

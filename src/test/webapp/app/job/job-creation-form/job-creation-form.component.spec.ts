@@ -19,7 +19,7 @@ import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ImageDTOImageTypeEnum } from 'app/generated/model/image-dto';
 import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageDTO } from 'app/generated/model/image-dto';
-import { BiasedIssues } from 'app/generated/model/biased-issues';
+import { BiasedIssue } from 'app/generated/model/biased-issue';
 import * as DropdownOptions from 'app/job/dropdown-options';
 import { unescapeJsonString } from 'app/shared/util/util';
 
@@ -200,7 +200,7 @@ describe('JobCreationFormComponent', () => {
     });
 
     it('should expose gender decoder issues only for the selected description language', () => {
-      const issues: BiasedIssues[] = [
+      const issues: BiasedIssue[] = [
         { language: 'en', word: 'leader', coding: 'non-inclusive-coded', type: 'NON_INCLUSIVE' },
         { language: 'de', word: 'durchsetzungsfähig', coding: 'non-inclusive-coded', type: 'NON_INCLUSIVE' },
         { word: 'legacy', coding: 'neutral', type: 'INCLUSIVE' },

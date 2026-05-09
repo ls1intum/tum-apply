@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import de.tum.cit.aet.ai.constants.ComplianceAction;
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
 import de.tum.cit.aet.ai.constants.GenderCategory;
-import de.tum.cit.aet.ai.domain.BiasedIssues;
+import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,8 +86,8 @@ class ComplianceScoreServiceTest {
 
         @Test
         void shouldCalculateCombinedGenderScoreWhenBothAnalysesArePresent() {
-            List<BiasedIssues> original = List.of(issue("inclusive-coded", "en", "team", GenderCategory.INCLUSIVE));
-            List<BiasedIssues> translated = List.of(
+            List<BiasedIssue> original = List.of(issue("inclusive-coded", "en", "team", GenderCategory.INCLUSIVE));
+            List<BiasedIssue> translated = List.of(
                 issue("neutral", "de", "leader", GenderCategory.NON_INCLUSIVE),
                 issue("neutral", "de", "supportive", GenderCategory.INCLUSIVE)
             );
@@ -99,7 +99,7 @@ class ComplianceScoreServiceTest {
 
         @Test
         void shouldCalculateSingleLanguageGenderScoreWhenTranslatedAnalysisIsMissing() {
-            List<BiasedIssues> original = List.of(
+            List<BiasedIssue> original = List.of(
                 issue("neutral", "en", "leader", GenderCategory.NON_INCLUSIVE),
                 issue("neutral", "en", "supportive", GenderCategory.INCLUSIVE)
             );
@@ -109,8 +109,8 @@ class ComplianceScoreServiceTest {
             assertThat(score).isEqualTo(71);
         }
 
-        private BiasedIssues issue(String coding, String language, String word, GenderCategory type) {
-            return new BiasedIssues(coding, language, word, type);
+        private BiasedIssue issue(String coding, String language, String word, GenderCategory type) {
+            return new BiasedIssue(coding, language, word, type);
         }
     }
 }

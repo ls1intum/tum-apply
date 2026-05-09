@@ -30,7 +30,6 @@ import { AutoSaveController } from 'app/shared/util/auto-save-controller';
 import { SavingBadgeComponent } from 'app/shared/components/atoms/saving-badge/saving-badge.component';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
-import { GenderBiasAnalysisResourceApi } from 'app/generated/api/gender-bias-analysis-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
 import { AiFeatureStatusService } from 'app/service/ai-feature-status.service';
@@ -59,7 +58,7 @@ import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-ass
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
 import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-compliance-popover/ai-compliance-popover.component';
-import { BiasedIssues } from 'app/generated/model/biased-issues';
+import { BiasedIssue } from 'app/generated/model/biased-issue';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -262,7 +261,6 @@ export class JobCreationFormComponent {
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private aiApi = inject(AiResourceApi);
-  private genderBiasApi = inject(GenderBiasAnalysisResourceApi);
   private userApi = inject(UserResourceApi);
   private aiStreamingService = inject(AiStreamingService);
   private aiFeatureStatusService = inject(AiFeatureStatusService);
@@ -302,7 +300,7 @@ export class JobCreationFormComponent {
   readonly hasCriticalCompliance = computed(() => this.complianceCriticalCount() > 0);
 
   /** List of detected biased issues to update the UI and editor highlights */
-  readonly biasedIssues = signal<BiasedIssues[]>([]);
+  readonly biasedIssues = signal<BiasedIssue[]>([]);
 
   /** Gender decoder issues for the currently visible description language only. */
   readonly currentBiasedIssues = computed(() => {
@@ -1601,12 +1599,7 @@ export class JobCreationFormComponent {
         const text = description.trim();
         const shouldAnalyze = text !== '' && text !== this.lastAnalyzedText[currentLang] && !this.isAnalyzing();
 
-        // highlighting before translation
         if (shouldAnalyze) {
-          await firstValueFrom(this.genderBiasApi.analyzeHtmlContent({ text: description, language: currentLang }))
-            .then(issues => this.biasedIssues.set(issues))
-            .catch(() => undefined);
-
           void Promise.all([this.analyzeAndUpdateScore(currentLang), this.translateAndStoreOtherLanguage(currentLang, description)]);
         }
       }
