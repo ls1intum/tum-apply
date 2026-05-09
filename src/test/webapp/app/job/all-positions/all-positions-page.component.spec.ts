@@ -90,12 +90,12 @@ describe('AllPositionsPageComponent', () => {
     });
 
     it('should load research-group options on init via getResearchGroupsForAdmin', async () => {
-      expect(mockRgApi.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(mockRgApi.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
       expect(component.researchGroupOptions()).toEqual([{ id: 'r1', name: 'RG 1' }]);
     });
 
     it('should load professor options on init using firstName + lastName', async () => {
-      expect(mockRgApi.getAllProfessors).toHaveBeenCalled();
+      expect(mockRgApi.getAllProfessors).toHaveBeenCalledOnce();
       expect(component.professorOptions()).toEqual([{ id: 'p1', name: 'Prof One' }]);
     });
 
@@ -144,7 +144,7 @@ describe('AllPositionsPageComponent', () => {
       newFixture.detectChanges();
       await newFixture.whenStable();
 
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('allPositionsPage.errors.loadFilters');
+      expect(mockToastService.showErrorKey).toHaveBeenCalledExactlyOnceWith('allPositionsPage.errors.loadFilters');
     });
 
     it('should toast loadFilters error when getAllProfessors fails', async () => {
@@ -155,7 +155,7 @@ describe('AllPositionsPageComponent', () => {
       newFixture.detectChanges();
       await newFixture.whenStable();
 
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('allPositionsPage.errors.loadFilters');
+      expect(mockToastService.showErrorKey).toHaveBeenCalledExactlyOnceWith('allPositionsPage.errors.loadFilters');
     });
   });
 
@@ -198,7 +198,7 @@ describe('AllPositionsPageComponent', () => {
       await fixture.whenStable();
       expect(component.page()).toBe(2);
       expect(component.pageSize()).toBe(10);
-      expect(mockJobApi.getAllJobs).toHaveBeenCalled();
+      expect(mockJobApi.getAllJobs).toHaveBeenCalledOnce();
     });
 
     it('should fall back to current pageSize when event values are missing', async () => {
@@ -207,7 +207,7 @@ describe('AllPositionsPageComponent', () => {
       component.loadOnTableEmit({});
       expect(component.page()).toBe(0);
       expect(component.pageSize()).toBe(5);
-      expect(loadSpy).toHaveBeenCalled();
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
   });
 
@@ -218,7 +218,7 @@ describe('AllPositionsPageComponent', () => {
       component.onSearchEmit('  new   query ');
       expect(component.searchQuery()).toBe('new query');
       expect(component.page()).toBe(0);
-      expect(loadSpy).toHaveBeenCalled();
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
 
     it('should not reload when search query is unchanged', () => {
@@ -232,21 +232,21 @@ describe('AllPositionsPageComponent', () => {
       const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
       component.onFilterEmit({ filterId: 'status', selectedValues: ['jobState.draft', 'jobState.published'] });
       expect(component.selectedStatusFilters()).toEqual([AdminCreatedJobDTOStateEnum.Draft, AdminCreatedJobDTOStateEnum.Published]);
-      expect(loadSpy).toHaveBeenCalled();
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
 
     it('should map research-group display names to ids and reload', () => {
       const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
       component.onFilterEmit({ filterId: 'researchGroup', selectedValues: ['RG 1'] });
       expect(component.selectedResearchGroupIds()).toEqual(['r1']);
-      expect(loadSpy).toHaveBeenCalled();
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
 
     it('should map professor display names to ids and reload', () => {
       const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
       component.onFilterEmit({ filterId: 'professor', selectedValues: ['Prof One'] });
       expect(component.selectedProfessorIds()).toEqual(['p1']);
-      expect(loadSpy).toHaveBeenCalled();
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
 
     it('should keep original value when name is not found in research-group options', () => {
@@ -270,7 +270,7 @@ describe('AllPositionsPageComponent', () => {
       expect(component.page()).toBe(0);
       expect(component.sortBy()).toBe('title');
       expect(component.sortDirection()).toBe('ASC');
-      expect(loadSpy).toHaveBeenCalled();
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
   });
 
@@ -284,7 +284,7 @@ describe('AllPositionsPageComponent', () => {
 
       await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
 
-      expect(mockJobApi.getAllJobs).toHaveBeenCalledWith(
+      expect(mockJobApi.getAllJobs).toHaveBeenCalledExactlyOnceWith(
         component.pageSize(),
         component.page(),
         [AdminCreatedJobDTOStateEnum.Published],
@@ -305,7 +305,7 @@ describe('AllPositionsPageComponent', () => {
 
       await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
 
-      expect(mockJobApi.getAllJobs).toHaveBeenCalledWith(
+      expect(mockJobApi.getAllJobs).toHaveBeenCalledExactlyOnceWith(
         component.pageSize(),
         component.page(),
         undefined,
@@ -320,7 +320,7 @@ describe('AllPositionsPageComponent', () => {
     it('should toast loadJobs error when API fails', async () => {
       mockJobApi.getAllJobs.mockReturnValueOnce(throwError(() => new Error('fail')));
       await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('allPositionsPage.errors.loadJobs');
+      expect(mockToastService.showErrorKey).toHaveBeenCalledExactlyOnceWith('allPositionsPage.errors.loadJobs');
     });
 
     it('should default jobs and totalRecords when API returns undefined values', async () => {
@@ -334,32 +334,32 @@ describe('AllPositionsPageComponent', () => {
   describe('Job actions', () => {
     it('should navigate to edit page on Edit', () => {
       component.onEditJob('123');
-      expect(router.navigate).toHaveBeenCalledWith(['/job/edit/123']);
+      expect(router.navigate).toHaveBeenCalledExactlyOnceWith(['/job/edit/123']);
     });
 
     it('should log error when editing with empty id', () => {
       const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
       component.onEditJob('');
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledOnce();
     });
 
     it('should navigate to detail page on View', () => {
       component.onViewJob('321');
-      expect(router.navigate).toHaveBeenCalledWith(['/job/detail/321']);
+      expect(router.navigate).toHaveBeenCalledExactlyOnceWith(['/job/detail/321']);
     });
 
     it('should call deleteJob and refresh on delete', async () => {
       const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
       await component.onDeleteJob('1');
-      expect(mockJobApi.deleteJob).toHaveBeenCalledWith('1');
-      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('allPositionsPage.toastMessages.deleteJobSuccess');
-      expect(loadSpy).toHaveBeenCalled();
+      expect(mockJobApi.deleteJob).toHaveBeenCalledExactlyOnceWith('1');
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledExactlyOnceWith('allPositionsPage.toastMessages.deleteJobSuccess');
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
 
     it('should toast on delete failure', async () => {
       vi.spyOn(mockJobApi, 'deleteJob').mockReturnValueOnce(throwError(() => new Error('delete failed')));
       await component.onDeleteJob('1');
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith(
+      expect(mockToastService.showErrorKey).toHaveBeenCalledExactlyOnceWith(
         'allPositionsPage.toastMessages.deleteJobFailed',
         expect.objectContaining({ detail: expect.stringContaining('delete failed') }),
       );
@@ -368,15 +368,15 @@ describe('AllPositionsPageComponent', () => {
     it('should call changeJobState(CLOSED) and refresh on close', async () => {
       const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
       await component.onCloseJob('1');
-      expect(mockJobApi.changeJobState).toHaveBeenCalledWith('1', AdminCreatedJobDTOStateEnum.Closed);
-      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('allPositionsPage.toastMessages.closeJobSuccess');
-      expect(loadSpy).toHaveBeenCalled();
+      expect(mockJobApi.changeJobState).toHaveBeenCalledExactlyOnceWith('1', AdminCreatedJobDTOStateEnum.Closed);
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledExactlyOnceWith('allPositionsPage.toastMessages.closeJobSuccess');
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
 
     it('should toast on close failure', async () => {
       vi.spyOn(mockJobApi, 'changeJobState').mockReturnValueOnce(throwError(() => new Error('close fail')));
       await component.onCloseJob('1');
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith(
+      expect(mockToastService.showErrorKey).toHaveBeenCalledExactlyOnceWith(
         'allPositionsPage.toastMessages.closeJobFailed',
         expect.objectContaining({ detail: expect.stringContaining('close fail') }),
       );
@@ -395,7 +395,7 @@ describe('AllPositionsPageComponent', () => {
       const spy = vi.spyOn(component, 'onEditJob');
       component.currentJobId.set('job-1');
       component.onConfirmEdit();
-      expect(spy).toHaveBeenCalledWith('job-1');
+      expect(spy).toHaveBeenCalledExactlyOnceWith('job-1');
     });
 
     it('should skip confirm delete when currentJobId is empty', async () => {
@@ -409,7 +409,7 @@ describe('AllPositionsPageComponent', () => {
       const spy = vi.spyOn(component, 'onDeleteJob').mockResolvedValue();
       component.currentJobId.set('job-2');
       await component.onConfirmDelete();
-      expect(spy).toHaveBeenCalledWith('job-2');
+      expect(spy).toHaveBeenCalledExactlyOnceWith('job-2');
     });
 
     it('should skip confirm close when currentJobId is empty', async () => {
@@ -423,7 +423,7 @@ describe('AllPositionsPageComponent', () => {
       const spy = vi.spyOn(component, 'onCloseJob').mockResolvedValue();
       component.currentJobId.set('job-3');
       await component.onConfirmClose();
-      expect(spy).toHaveBeenCalledWith('job-3');
+      expect(spy).toHaveBeenCalledExactlyOnceWith('job-3');
     });
   });
 
@@ -455,7 +455,7 @@ describe('AllPositionsPageComponent', () => {
       component.jobs.set([{ jobId: '1', state: AdminCreatedJobDTOStateEnum.Draft, title: 'Draft' } as AdminCreatedJobDTO]);
       const items = component.jobMenuItems().get('1') ?? [];
       items[0]?.command?.();
-      expect(editSpy).toHaveBeenCalledWith('1');
+      expect(editSpy).toHaveBeenCalledExactlyOnceWith('1');
     });
 
     it('should open the edit-published dialog for published jobs', () => {
