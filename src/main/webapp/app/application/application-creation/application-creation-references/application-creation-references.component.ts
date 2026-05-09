@@ -14,7 +14,7 @@ import { ReferenceRequestResourceApi } from 'app/generated/api/reference-request
 import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
 import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
 
-const TITLE_OPTIONS: ReadonlyArray<string> = ['Prof. Dr.', 'Prof.', 'Dr.'];
+const TITLE_OPTIONS: readonly string[] = ['Prof. Dr.', 'Prof.', 'Dr.'];
 
 const TOAST_PREFIX = 'entity.applicationReferences';
 
@@ -51,7 +51,7 @@ export default class ApplicationCreationReferencesComponent {
   references = signal<ReferenceRequestDTO[]>([]);
   loading = signal<boolean>(false);
 
-  readonly titleOptions = TITLE_OPTIONS.map(value => ({ name: value, value: value }));
+  readonly titleOptions = TITLE_OPTIONS.map(value => ({ name: value, value }));
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly toastService = inject(ToastService);

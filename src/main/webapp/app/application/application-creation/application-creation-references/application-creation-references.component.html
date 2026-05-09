@@ -39,7 +39,7 @@
 
 <form [formGroup]="addForm" class="flex flex-col gap-3" (ngSubmit)="onAdd()">
   <div class="grid md:gap-3 grid-cols-1 md:grid-cols-4">
-    <jhi-select label="entity.applicationReferences.label.title" [items]="titleOptions" [showClear]="true" class="mb-6"></jhi-select>
+    <jhi-select label="entity.applicationReferences.label.title" [items]="titleOptions" [showClear]="true" class="mb-6" />
 
     <jhi-string-input
       label="entity.applicationReferences.label.firstName"
