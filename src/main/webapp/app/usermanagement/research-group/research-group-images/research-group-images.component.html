@@ -39,7 +39,7 @@
       <h2 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.imageLibrary.section.inUse"></h2>
       @if (inUseImages().length === 0) {
         <div class="mb-4">
-          <jhi-info-box message="researchGroup.imageLibrary.empty.noInUse" severity="primary" />
+          <jhi-info-box message="researchGroup.imageLibrary.empty.noInUse" severity="info" />
         </div>
       } @else {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -55,11 +55,11 @@
       <h2 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.imageLibrary.section.notInUse"></h2>
       @if (notInUseImages().length === 0 && allImages().length === 0) {
         <div class="mb-4">
-          <jhi-info-box message="researchGroup.imageLibrary.empty.noImages" severity="primary" />
+          <jhi-info-box message="researchGroup.imageLibrary.empty.noImages" severity="info" />
         </div>
       } @else if (notInUseImages().length === 0) {
         <div class="mb-4">
-          <jhi-info-box message="researchGroup.imageLibrary.empty.noNotInUse" severity="primary" />
+          <jhi-info-box message="researchGroup.imageLibrary.empty.noNotInUse" severity="info" />
         </div>
       }
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
