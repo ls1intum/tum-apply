@@ -463,9 +463,9 @@
     "applicationReferences": {
       "description": "Bitte gib unten deine Referenzpersonen an. Nach dem Absenden erhalten diese einen sicheren Link per E-Mail, um ihr Empfehlungsschreiben hochzuladen.",
       "requiredCount": "Benötigt: {count} · Hinzugefügt: ",
-      "empty": "Noch keine Referenzgeber hinzugefügt.",
+      "empty": "Noch keine Referenzpersonen hinzugefügt.",
       "section": {
-        "required": "Benötigte Referenzgeber"
+        "required": "Benötigte Referenzpersonen"
       },
       "label": {
         "title": "Titel",
@@ -478,16 +478,16 @@
       },
       "toast": {
         "loadFailed": {
-          "summary": "Referenzgeber konnten nicht geladen werden",
-          "detail": "Die Liste der Referenzgeber konnte nicht geladen werden. Bitte lade die Seite neu."
+          "summary": "Referenzperson konnten nicht geladen werden",
+          "detail": "Die Liste der Referenzpersonen konnte nicht geladen werden. Bitte lade die Seite neu."
         },
         "addFailed": {
-          "summary": "Referenzgeber konnte nicht hinzugefügt werden",
+          "summary": "Referenzperson konnte nicht hinzugefügt werden",
           "detail": "Bitte prüfe die eingegebenen Daten und versuche es erneut."
         },
         "removeFailed": {
-          "summary": "Referenzgeber konnte nicht entfernt werden",
-          "detail": "Bitte versuche es erneut."
+          "summary": "Referenzperson konnte nicht entfernt werden",
+          "detail": "Der Referenzperson konnte nicht entfernt werden. Bitte versuche es erneut."
         }
       }
     },
