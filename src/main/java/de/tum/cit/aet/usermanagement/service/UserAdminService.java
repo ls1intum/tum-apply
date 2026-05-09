@@ -75,7 +75,9 @@ public class UserAdminService {
      * @throws EntityNotFoundException if no user exists with the given ID
      */
     public AdminUserDetailDTO getUserDetail(UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+        User user = userRepository
+            .findWithResearchGroupRolesByUserId(userId)
+            .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         UserRole primaryRole = user.getResearchGroupRoles() == null
             ? null
             : user
