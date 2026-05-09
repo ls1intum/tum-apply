@@ -592,16 +592,6 @@ jhi-menu {
   border-radius: var(--border-radius-full);
 }
 
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  z-index: 2;
-  pointer-events: none; // Disable pointer events for the carousel indicators
-}
-
 /* -------------------------------
  Style primeNg tooltip component.
 -------------------------------

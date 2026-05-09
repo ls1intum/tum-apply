@@ -1,6 +1,6 @@
-<div class="filter-multiselect relative inline-block w-full" [class.open]="isOpen()">
+<div class="filter-multiselect relative inline-block w-full">
   <div
-    class="filter-button flex items-center justify-between px-3 py-1.5 border border-border-default bg-background-default rounded-md cursor-pointer transition-all text-text-secondary text-[length:var(--p-select-sm-font-size)] hover:border-[var(--p-neutral-hover-color-outlined)]"
+    class="flex items-center justify-between px-3 py-1.5 rounded-md border border-border-default bg-background-default cursor-pointer transition-all text-text-secondary text-[length:var(--p-select-sm-font-size)] hover:border-[var(--p-neutral-hover-color-outlined)]"
     role="button"
     tabindex="0"
     [attr.aria-expanded]="isOpen()"
@@ -8,18 +8,17 @@
     (click)="toggleDropdown()"
     (keydown)="onTriggerKeydown($event)"
   >
-    <div class="filter-trigger">
+    <div>
       @if (!hasSelectedItems()) {
-        <span
-          class="trigger-placeholder mr-4 max-md:mr-2 max-md:flex-1 max-md:overflow-hidden max-md:text-ellipsis max-md:whitespace-nowrap"
-          >{{ displayFilterLabel() }}</span
-        >
+        <span class="mr-4 max-md:flex-1 max-md:overflow-hidden max-md:mr-2 max-md:text-ellipsis max-md:whitespace-nowrap">{{
+          displayFilterLabel()
+        }}</span>
       } @else if (showChipsCounterOnly()) {
-        <span class="trigger-summary mr-4 max-md:mr-2 max-md:flex-1 max-md:overflow-hidden max-md:text-ellipsis max-md:whitespace-nowrap">{{
+        <span class="mr-4 max-md:flex-1 max-md:overflow-hidden max-md:mr-2 max-md:text-ellipsis max-md:whitespace-nowrap">{{
           getSummaryLabel()
         }}</span>
       } @else {
-        <div class="chip-row">
+        <div>
           @for (option of selectedOptions(); track option.value) {
             <p-chip
               [label]="option.label"
@@ -32,19 +31,19 @@
         </div>
       }
     </div>
-    <fa-icon class="filter-icon transition-transform max-md:flex-shrink-0" [class.rotate-180]="isOpen()" [icon]="['fas', 'chevron-down']" />
+    <fa-icon class="transition-transform max-md:flex-shrink-0" [class.rotate-180]="isOpen()" [icon]="['fas', 'chevron-down']" />
   </div>
 
   @if (isOpen()) {
     <div
-      class="filter-dropdown absolute z-[3] flex flex-col bg-background-default border border-border-default rounded-sm mt-1 max-h-80 min-w-max max-w-[calc(100vw-2rem)] w-full text-[length:var(--p-select-sm-font-size)] max-md:left-0 max-md:right-0"
-      [class]="dropdownAlignment() === 'right' ? 'align-right max-md:!left-auto max-md:!right-0' : ''"
+      class="filter-dropdown flex flex-col absolute z-[3] mt-1 w-full min-w-max max-w-[calc(100vw-2rem)] max-h-80 rounded-sm border border-border-default bg-background-default text-[length:var(--p-select-sm-font-size)] max-md:left-0 max-md:right-0"
+      [class]="dropdownAlignment() === 'right' ? 'max-md:!left-auto max-md:!right-0' : ''"
     >
-      <div class="panel-header flex flex-row pt-[0.6rem] pb-[0.4rem] px-3">
-        <fa-icon class="filter-icon text-primary" [icon]="['fas', 'search']" />
+      <div class="flex flex-row pt-[0.6rem] pb-[0.4rem] px-3">
+        <fa-icon class="text-primary" [icon]="['fas', 'search']" />
         <input
           type="text"
-          class="search-input w-full pl-3 outline-none shadow-none placeholder:text-text-tertiary"
+          class="w-full pl-3 outline-none shadow-none placeholder:text-text-tertiary"
           [placeholder]="displaySearchPlaceholder()"
           [value]="searchTerm()"
           (input)="onSearchChange($event)"
@@ -54,19 +53,19 @@
       <!-- Divider between search bar and listed options -->
       <p-divider />
 
-      <div class="options-container flex-1 overflow-y-auto">
-        <div class="options-list">
+      <div class="flex-1 overflow-y-auto">
+        <div>
           <!-- List all selected options -->
           @if (hasSelectedItems()) {
-            <div class="selected-header-row flex items-center">
+            <div class="flex items-center">
               <p-divider align="left">
-                <span class="divider-text text-xs text-text-primary"> {{ displaySelectedHeader() }} ({{ selectedOptions().length }}) </span>
+                <span class="text-xs text-text-primary"> {{ displaySelectedHeader() }} ({{ selectedOptions().length }}) </span>
               </p-divider>
 
               <p-divider align="right">
                 <button
                   type="button"
-                  class="divider-text clear-button text-xs cursor-pointer text-primary whitespace-nowrap hover:underline"
+                  class="text-xs cursor-pointer text-primary whitespace-nowrap hover:underline"
                   (click)="clearAll(); $event.stopPropagation()"
                 >
                   {{ displayClearAllLabel() }}
@@ -75,14 +74,14 @@
             </div>
             @for (option of selectedOptions(); track option.value; let i = $index) {
               <div
-                class="option-item selected flex items-center m-1 p-2 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
+                class="flex items-center m-1 p-2 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
                 tabindex="0"
                 role="button"
                 (click)="toggleOption(option.value)"
                 (keydown.enter)="toggleOption(option.value)"
               >
                 <p-checkbox [binary]="true" [ngModel]="true" [disabled]="true" />
-                <span class="option-label flex-1 pl-2 break-words hyphens-auto whitespace-normal">{{ option.label }}</span>
+                <span class="flex-1 pl-2 break-words hyphens-auto whitespace-normal">{{ option.label }}</span>
               </div>
             }
           }
@@ -96,7 +95,7 @@
           @if (hasUnselectedItems()) {
             @for (option of unselectedOptions(); track option.value; let i = $index) {
               <div
-                class="option-item flex items-center m-1 p-2 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
+                class="flex items-center m-1 p-2 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
                 [class.bg-primary-hover-outlined]="focusedIndexOptionList() === i"
                 tabindex="0"
                 role="button"
@@ -104,7 +103,7 @@
                 (keydown.enter)="toggleOption(option.value)"
               >
                 <p-checkbox [binary]="true" [ngModel]="false" [disabled]="true" />
-                <span class="option-label flex-1 pl-2 break-words hyphens-auto whitespace-normal">{{ option.label }}</span>
+                <span class="flex-1 pl-2 break-words hyphens-auto whitespace-normal">{{ option.label }}</span>
               </div>
             }
           }
