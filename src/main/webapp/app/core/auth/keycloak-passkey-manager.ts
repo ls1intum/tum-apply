@@ -1,6 +1,4 @@
 import {
-  AccountCredentialResponse,
-  AccountCredentialTypeResponse,
   KeycloakRealmKind,
   getErrorMessage,
   getFirstNonEmptyString,
@@ -9,7 +7,11 @@ import {
 } from './keycloak-authentication.utils';
 import { PasskeyCredentialSummary } from './models/auth.model';
 
-const PASSKEY_CREDENTIAL_TYPES = new Set(['webauthn-passwordless', 'webauthn']);
+interface PasskeyDTO {
+  id?: string;
+  label?: string;
+  createdDate?: number;
+}
 
 interface PasskeyChallengeResponse {
   challenge?: string;
@@ -186,11 +188,7 @@ export class KeycloakPasskeyManager {
   }
 
   /**
-   * Lists passkey credentials from the Keycloak account credentials endpoint.
-   *
-   * Supports both response formats seen in Keycloak variants:
-   * - direct credential-type array
-   * - object with `credentials` array
+   * Lists passkey credentials registered to the current account.
    */
   async listPasskeys(): Promise<PasskeyCredentialSummary[]> {
     this.assertPasskeyManagementAvailable();
@@ -201,24 +199,21 @@ export class KeycloakPasskeyManager {
         ...this.getOptionalAuthorizationHeader(),
       },
     });
-    const payload = (await response.json().catch(() => ({}))) as
-      | AccountCredentialTypeResponse[]
-      | { credentials?: AccountCredentialResponse[]; error?: string };
+    const payload = (await response.json().catch(() => [])) as PasskeyDTO[] | { error?: string };
 
     if (!response.ok) {
-      const payloadError = !Array.isArray(payload) ? payload.error : undefined;
+      const payloadError = Array.isArray(payload) ? undefined : payload.error;
       throw new Error(getErrorMessage(payloadError, `Failed to load passkeys: ${response.status}`));
     }
 
-    const credentials = this.extractPasskeyCredentials(payload);
+    const credentials = Array.isArray(payload) ? payload : [];
     const summaries: PasskeyCredentialSummary[] = [];
     for (const credential of credentials) {
       const id = credential.id?.trim() ?? '';
       if (id !== '') {
         const summary: PasskeyCredentialSummary = { id };
-        const label = credential.name ?? credential.userLabel;
-        if (typeof label === 'string') {
-          summary.label = label;
+        if (typeof credential.label === 'string') {
+          summary.label = credential.label;
         }
         if (typeof credential.createdDate === 'number') {
           summary.createdDate = credential.createdDate;
@@ -333,31 +328,6 @@ export class KeycloakPasskeyManager {
     if (!this.deps.canManagePasskeys()) {
       throw new Error('Passkeys can only be managed for authenticated Keycloak sessions');
     }
-  }
-
-  /**
-   * Normalizes Keycloak account credential payloads to passkey credentials only.
-   */
-  private extractPasskeyCredentials(
-    payload: AccountCredentialTypeResponse[] | { credentials?: AccountCredentialResponse[]; error?: string },
-  ): AccountCredentialResponse[] {
-    if (!Array.isArray(payload)) {
-      return payload.credentials ?? [];
-    }
-
-    const credentials: AccountCredentialResponse[] = [];
-    for (const credentialType of payload) {
-      const type = (credentialType.type ?? '').toLowerCase();
-      if (!PASSKEY_CREDENTIAL_TYPES.has(type)) {
-        continue;
-      }
-      for (const metadata of credentialType.userCredentialMetadatas ?? []) {
-        if (metadata.credential instanceof Object) {
-          credentials.push(metadata.credential);
-        }
-      }
-    }
-    return credentials;
   }
 
   /** Converts binary data to base64url encoding (RFC 4648 URL-safe alphabet). */

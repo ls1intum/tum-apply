@@ -1,29 +1,4 @@
 /**
- * Keycloak account credential payload grouped by credential type.
- */
-export interface AccountCredentialTypeResponse {
-  type?: string;
-  userCredentialMetadatas?: {
-    credential?: {
-      id?: string;
-      name?: string;
-      userLabel?: string;
-      createdDate?: number;
-    };
-  }[];
-}
-
-/**
- * Flattened Keycloak account credential metadata used by passkey UI/actions.
- */
-export interface AccountCredentialResponse {
-  id?: string;
-  name?: string;
-  userLabel?: string;
-  createdDate?: number;
-}
-
-/**
  * Returns the first non-empty string value from an arbitrary candidate list.
  */
 export function getFirstNonEmptyString(values: unknown[]): string | undefined {

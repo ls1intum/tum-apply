@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.service.JwtService;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.PasskeyActionTokenDTO;
+import de.tum.cit.aet.usermanagement.dto.auth.PasskeyDTO;
 import io.netty.channel.ChannelOption;
 import java.time.Duration;
 import java.util.List;
@@ -228,15 +229,15 @@ public class KeycloakAuthenticationService {
      * Lists the user's credentials from Keycloak and filters them to return only passkey-related credentials.
      *
      * @param jwt the user's current access token as a JWT
-     * @return a map containing the list of passkey credentials
+     * @return list of passkey credentials projected as DTOs
      */
-    public Object listPasskeys(Jwt jwt) {
-        List<CredentialRepresentation> credentials = keycloakUserService
+    public List<PasskeyDTO> listPasskeys(Jwt jwt) {
+        return keycloakUserService
             .getCredentials(jwt.getSubject(), jwt.getIssuer())
             .stream()
             .filter(this::isPasskeyCredential)
+            .map(PasskeyDTO::of)
             .toList();
-        return Map.of("credentials", credentials);
     }
 
     /**

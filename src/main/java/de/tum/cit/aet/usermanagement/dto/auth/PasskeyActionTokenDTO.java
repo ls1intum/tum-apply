@@ -1,5 +1,7 @@
 package de.tum.cit.aet.usermanagement.dto.auth;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * Short-lived browser bridge token for direct Keycloak passkey operations.
  *
@@ -8,4 +10,5 @@ package de.tum.cit.aet.usermanagement.dto.auth;
  * @param accessToken bearer token to use for the passkey save request
  * @param expiresIn   remaining token lifetime in seconds
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record PasskeyActionTokenDTO(String realm, String clientId, String accessToken, int expiresIn) {}

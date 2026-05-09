@@ -320,23 +320,11 @@ describe('KeycloakPasskeyManager', () => {
     expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM AET', id: window.location.hostname });
   });
 
-  it('should list passkeys from keycloak account credentials', async () => {
+  it('should list passkeys returned by the server', async () => {
     const credentialsPayload = [
-      {
-        type: 'password',
-        userCredentialMetadatas: [{ credential: { id: 'password-1', name: 'Password' } }],
-      },
-      {
-        type: 'webauthn-passwordless',
-        userCredentialMetadatas: [
-          { credential: { id: ' passkey-1 ', name: 'MacBook Pro', createdDate: 1_710_000_000_000 } },
-          { credential: null },
-        ],
-      },
-      {
-        type: 'webauthn',
-        userCredentialMetadatas: [{ credential: { id: 'passkey-2', userLabel: 'Backup key', createdDate: null } }],
-      },
+      { id: ' passkey-1 ', label: 'MacBook Pro', createdDate: 1_710_000_000_000 },
+      { id: 'passkey-2', label: 'Backup key' },
+      { id: '' },
     ];
     fetchMock.mockResolvedValue({
       ok: true,

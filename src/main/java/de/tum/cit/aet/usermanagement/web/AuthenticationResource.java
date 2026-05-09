@@ -10,12 +10,14 @@ import de.tum.cit.aet.usermanagement.dto.auth.AuthSessionInfoDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.LoginRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.PasskeyActionTokenDTO;
+import de.tum.cit.aet.usermanagement.dto.auth.PasskeyDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
 import de.tum.cit.aet.usermanagement.service.OtpFlowService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -156,7 +158,7 @@ public class AuthenticationResource {
 
     @Authenticated
     @GetMapping("/passkeys")
-    public Object listPasskeys(@AuthenticationPrincipal Jwt jwt) {
+    public List<PasskeyDTO> listPasskeys(@AuthenticationPrincipal Jwt jwt) {
         return keycloakAuthenticationService.listPasskeys(jwt);
     }
 
