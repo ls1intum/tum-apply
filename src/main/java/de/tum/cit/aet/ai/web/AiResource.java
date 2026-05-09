@@ -2,12 +2,14 @@ package de.tum.cit.aet.ai.web;
 
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
+import de.tum.cit.aet.ai.dto.MapComplianceIssuesRequestDTO;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiFeatureToggleService;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +73,7 @@ public class AiResource {
     @PutMapping(value = "translateJobDescriptionStream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<Flux<String>> translateJobDescriptionStream(
         @RequestParam("toLang") String toLang,
-        @RequestBody TranslateComplianceDTO request
+        @Valid @RequestBody TranslateComplianceDTO request
     ) {
         if (!aiFeatureToggleService.isAiAvailable()) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
@@ -84,6 +86,7 @@ public class AiResource {
      * Maps compliance text snippets from original lang to target lang during stream-translate.
      *
      * @param toLang  the target language for translation ("de" or "en")
+     * @param jobId   the job whose compliance issues should be updated
      * @param request A DTO containing the text to translate
      * @return a ResponseEntity of mapped snippets for target compliance analysis
      */
@@ -92,7 +95,7 @@ public class AiResource {
     public ResponseEntity<List<ComplianceIssue>> mapComplianceIssues(
         @RequestParam("toLang") String toLang,
         @RequestParam("jobId") UUID jobId,
-        @RequestBody TranslateComplianceDTO request
+        @Valid @RequestBody MapComplianceIssuesRequestDTO request
     ) {
         if (!aiFeatureToggleService.isAiAvailable()) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();

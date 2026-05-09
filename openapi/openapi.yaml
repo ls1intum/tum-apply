@@ -216,7 +216,7 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: {$ref: '#/components/schemas/TranslateComplianceDTO'}
+            schema: {$ref: '#/components/schemas/MapComplianceIssuesRequestDTO'}
         required: true
       responses:
         '200':
@@ -3445,6 +3445,15 @@ components:
         email: {type: string, format: email, minLength: 1}
         password: {type: string, minLength: 1}
       required: [email, password]
+    MapComplianceIssuesRequestDTO:
+      type: object
+      properties:
+        complianceIssues:
+          type: array
+          items: {$ref: '#/components/schemas/ComplianceIssue'}
+        text: {type: string, minLength: 1}
+        translatedText: {type: string, minLength: 1}
+      required: [complianceIssues, text, translatedText]
     MultipartUploadRequest:
       type: object
       properties:
@@ -3736,12 +3745,8 @@ components:
     TranslateComplianceDTO:
       type: object
       properties:
-        complianceIssues:
-          type: array
-          items: {$ref: '#/components/schemas/ComplianceIssue'}
         originalAnalysis: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
         text: {type: string, minLength: 1}
-        translatedText: {type: string}
       required: [text]
     UpcomingInterviewDTO:
       type: object

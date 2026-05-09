@@ -9,6 +9,7 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.ai.constants.ComplianceAction;
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
+import de.tum.cit.aet.ai.dto.MapComplianceIssuesRequestDTO;
 import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiFeatureToggleService;
 import de.tum.cit.aet.ai.service.AiService;
@@ -51,6 +52,7 @@ class AiResourceTest extends AbstractResourceTest {
 
     private final String TRANSLATE_STREAM_URL = "/api/ai/translateJobDescriptionStream";
     private final String ANALYZE_URL = "/api/ai/analyze-job-description";
+    private final String MAP_COMPLIANCE_URL = "/api/ai/map-compliance-issues";
 
     private final String input = "Hello World";
 
@@ -69,7 +71,7 @@ class AiResourceTest extends AbstractResourceTest {
         @Test
         void shouldReturnStreamWhenProfessorTranslatesJobDescription() {
             String toLang = "de";
-            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null, null, null);
+            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
 
             given(aiService.translateTextStream(anyString(), anyString())).willReturn(Flux.just("Hallo", " Welt"));
 
@@ -82,7 +84,7 @@ class AiResourceTest extends AbstractResourceTest {
         @Test
         void shouldReturnForbiddenWhenApplicantTranslatesJobDescription() {
             String url = TRANSLATE_STREAM_URL + "?toLang=de";
-            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null, null, null);
+            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
             api
                 .with(JwtPostProcessors.jwtUser(APPLICANT_USER_ID, "ROLE_APPLICANT"))
                 .putAndRead(url, request, Void.class, 403, MediaType.TEXT_EVENT_STREAM);
@@ -91,8 +93,47 @@ class AiResourceTest extends AbstractResourceTest {
         @Test
         void shouldReturnUnauthorizedWhenTranslateJobDescriptionWithoutAuthentication() {
             String url = TRANSLATE_STREAM_URL + "?toLang=de";
-            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null, null, null);
+            TranslateComplianceDTO request = new TranslateComplianceDTO(input, null);
             api.withoutPostProcessors().putAndRead(url, request, Void.class, 401, MediaType.TEXT_EVENT_STREAM);
+        }
+    }
+
+    // ===== MAP COMPLIANCE ISSUES =====
+    @Nested
+    class MapComplianceIssuesTests {
+
+        @Test
+        void shouldReturnMappedComplianceIssuesWhenProfessorMapsComplianceIssues() {
+            List<ComplianceIssue> sourceIssues = List.of(createComplianceIssue("I don't allow disabled applicants", "en"));
+            List<ComplianceIssue> mappedIssues = List.of(createComplianceIssue("Ich erlaube keine Bewerber mit Behinderung", "de"));
+            MapComplianceIssuesRequestDTO request = new MapComplianceIssuesRequestDTO(
+                "I don't allow disabled applicants",
+                "Ich erlaube keine Bewerber mit Behinderung",
+                sourceIssues
+            );
+
+            given(aiService.mapComplianceIssues(any(UUID.class), any(), anyString(), anyString(), anyString())).willReturn(mappedIssues);
+
+            List<ComplianceIssue> response = api
+                .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
+                .postAndRead(
+                    MAP_COMPLIANCE_URL + "?toLang=de&jobId=" + JOB_ID,
+                    request,
+                    new TypeReference<List<ComplianceIssue>>() {},
+                    200
+                );
+
+            assertThat(response).hasSize(1);
+            assertThat(response.getFirst().getText()).isEqualTo("Ich erlaube keine Bewerber mit Behinderung");
+        }
+
+        @Test
+        void shouldReturnBadRequestWhenMappingRequestIsMissingTranslatedText() {
+            MapComplianceIssuesRequestDTO request = new MapComplianceIssuesRequestDTO("I don't allow disabled applicants", null, List.of());
+
+            api
+                .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
+                .postAndRead(MAP_COMPLIANCE_URL + "?toLang=de&jobId=" + JOB_ID, request, Void.class, 400);
         }
     }
 
@@ -135,6 +176,18 @@ class AiResourceTest extends AbstractResourceTest {
         void shouldReturnUnauthorizedWhenAnalyzeJobDescriptionWithoutAuthentication() {
             api.withoutPostProcessors().postAndRead(ANALYZE_URL + "?lang=en", createValidJobForm(), Void.class, 401);
         }
+    }
+
+    private ComplianceIssue createComplianceIssue(String text, String language) {
+        return new ComplianceIssue(
+            "1",
+            ComplianceCategory.CRITICAL_AGG,
+            text,
+            "§ 1 AGG",
+            "Discriminatory sentence",
+            ComplianceAction.REPLACE,
+            language
+        );
     }
 
     private JobFormDTO createValidJobForm() {

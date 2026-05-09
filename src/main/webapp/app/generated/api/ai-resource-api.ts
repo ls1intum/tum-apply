@@ -18,6 +18,7 @@ import { Observable } from 'rxjs';
 import { ComplianceIssue } from '../model/compliance-issue';
 import { JobFormDTO } from '../model/job-form-dto';
 import { ExtractedApplicationDataDTO } from '../model/extracted-application-data-dto';
+import { MapComplianceIssuesRequestDTO } from '../model/map-compliance-issues-request-dto';
 import { TranslateComplianceDTO } from '../model/translate-compliance-dto';
 
 @Injectable({ providedIn: 'root' })
@@ -98,9 +99,9 @@ export class AiResourceApi {
      * 
      * @param toLang 
      * @param jobId 
-     * @param translateComplianceDTO 
+     * @param mapComplianceIssuesRequestDTO
      */
-    mapComplianceIssues(toLang: string, jobId: string, translateComplianceDTO: TranslateComplianceDTO): Observable<Array<ComplianceIssue>> {
+    mapComplianceIssues(toLang: string, jobId: string, mapComplianceIssuesRequestDTO: MapComplianceIssuesRequestDTO): Observable<Array<ComplianceIssue>> {
         const queryParams = new URLSearchParams();
         if (toLang !== undefined && toLang !== null) {
             queryParams.set('toLang', String(toLang));
@@ -110,7 +111,7 @@ export class AiResourceApi {
         }
         const queryString = queryParams.toString();
         const url = `${this.basePath}/api/ai/map-compliance-issues${queryString ? `?${queryString}` : ''}`;
-        return this.http.post<Array<ComplianceIssue>>(url, translateComplianceDTO);
+        return this.http.post<Array<ComplianceIssue>>(url, mapComplianceIssuesRequestDTO);
     }
 
     /**

@@ -9,11 +9,8 @@
  */
 
 import type { GenderBiasAnalysisResponse } from './gender-bias-analysis-response';
-import type { ComplianceIssue } from './compliance-issue';
 
 export interface TranslateComplianceDTO {
-    readonly complianceIssues?: Array<ComplianceIssue>;
     readonly originalAnalysis?: GenderBiasAnalysisResponse;
     readonly text: string;
-    readonly translatedText?: string;
 }

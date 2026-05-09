@@ -109,6 +109,7 @@ model/job-form-dto.ts
 model/job-preview-request.ts
 model/keycloak-user-dto.ts
 model/login-request-dto.ts
+model/map-compliance-issues-request-dto.ts
 model/otp-complete-dto.ts
 model/page-application-overview-dto.ts
 model/page-created-job-dto.ts

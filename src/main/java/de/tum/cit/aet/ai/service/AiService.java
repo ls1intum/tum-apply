@@ -437,27 +437,32 @@ public class AiService {
             return List.of();
         }
 
-        jobService.assertCanManageJob(jobId);
-
         String snippets = sourceIssues
             .stream()
             .map(i -> i.getText().trim())
             .collect(Collectors.joining("\n"));
 
         List<String> mappedTexts;
-        mappedTexts = chatClient
-            .prompt()
-            .user(u ->
-                u
-                    .text(snippetMappingResource)
-                    .param("snippets", snippets)
-                    .param("jobDescription", originalText)
-                    .param("translatedText", translatedText)
-            )
-            .call()
-            .entity(new ParameterizedTypeReference<List<String>>() {});
+        try {
+            mappedTexts = chatClient
+                .prompt()
+                .user(u ->
+                    u
+                        .text(snippetMappingResource)
+                        .param("snippets", snippets)
+                        .param("jobDescription", originalText)
+                        .param("translatedText", translatedText)
+                )
+                .call()
+                .entity(new ParameterizedTypeReference<List<String>>() {});
+            aiFeatureToggleService.recordSuccess();
+        } catch (Exception e) {
+            aiFeatureToggleService.recordFailure();
+            throw new InternalServerException("Compliance issue mapping failed", e);
+        }
 
-        if (mappedTexts.size() != sourceIssues.size()) {
+        if (mappedTexts == null || mappedTexts.size() != sourceIssues.size()) {
+            aiFeatureToggleService.recordFailure();
             throw new InternalServerException("Mapping returned an invalid number of snippets");
         }
 

@@ -453,7 +453,7 @@ public class JobService {
      * @param jobId the ID of the job to check
      * @return the job entity if the user can manage it
      */
-    public Job assertCanManageJob(UUID jobId) {
+    private Job assertCanManageJob(UUID jobId) {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;

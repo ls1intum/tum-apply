@@ -1656,13 +1656,17 @@ export class JobCreationFormComponent {
 
             const sourceIssues = await this.analyzeAndUpdateScore(currentLang);
             if (sourceIssues === undefined) return;
-            const mappedIssues = await firstValueFrom(
-              this.aiApi.mapComplianceIssues(targetLang, jobId, {
-                text: extractTextFromHtml(text),
-                translatedText: extractTextFromHtml(finalContent),
-                complianceIssues: sourceIssues,
-              }),
-            );
+            const hasTargetIssues = this.complianceIssues().some(issue => issue.language === targetLang);
+            let mappedIssues: ComplianceIssue[] = [];
+            if (sourceIssues.length > 0 || hasTargetIssues) {
+              mappedIssues = await firstValueFrom(
+                this.aiApi.mapComplianceIssues(targetLang, jobId, {
+                  text: extractTextFromHtml(text),
+                  translatedText: extractTextFromHtml(finalContent),
+                  complianceIssues: sourceIssues,
+                }),
+              );
+            }
 
             const otherIssues = this.complianceIssues().filter(issue => issue.language !== targetLang);
             this.complianceIssues.set(otherIssues.concat(mappedIssues));
