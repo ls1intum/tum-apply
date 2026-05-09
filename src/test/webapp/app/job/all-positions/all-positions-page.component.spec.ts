@@ -579,4 +579,11 @@ describe('AllPositionsPageComponent', () => {
       expect(component.deleteDialogMessageKey()).toBe('allPositionsPage.confirmDialog.deleteMessageNonDraft');
     });
   });
+
+  describe('Create job button', () => {
+    it('should navigate to /job/create with returnTo=all-positions when clicked', () => {
+      component.onCreateJob();
+      expect(router.navigate).toHaveBeenCalledWith(['/job/create'], { queryParams: { returnTo: 'all-positions' } });
+    });
+  });
 });
