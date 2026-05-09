@@ -410,7 +410,8 @@
   },
   "allPositionsPage": {
     "header": {
-      "title": "All Positions"
+      "title": "All Positions",
+      "createButton": "Create Position"
     },
     "searchFilterSortBar": {
       "searchText": "Search by title or supervising professor",
@@ -438,8 +439,12 @@
       "closeMessage": "Are you sure you want to close this position? Once closed, applicants will no longer be able to apply for this position. This action can NOT be undone.",
       "deleteHeader": "Confirm Delete Operation",
       "deleteMessage": "Are you sure you want to permanently delete this draft? This action can NOT be undone!",
+      "deleteHeaderNonDraft": "Confirm Delete Operation",
+      "deleteMessageNonDraft": "This position has been published. Deleting it will remove the position permanently along with any associated applications. This action can NOT be undone. Continue?",
       "editJobHeader": "Confirm Editing of a Published Position",
-      "editJobMessage": "Are you sure you want to edit this published position? Editing it will change its status back to Draft, and applicants will no longer be able to apply until you republish it."
+      "editJobMessage": "Are you sure you want to edit this published position? Editing it will change its status back to Draft, and applicants will no longer be able to apply until you republish it.",
+      "reopenHeader": "Confirm Reopening of a Position",
+      "reopenMessage": "Reopen this position? It will become visible to applicants again, and applicants will be able to submit new applications."
     },
     "errors": {
       "loadJobs": {
@@ -467,6 +472,14 @@
       "closeJobFailed": {
         "summary": "Job Closing Failed",
         "detail": "The job could not be closed. Please try again."
+      },
+      "reopenJobSuccess": {
+        "summary": "Job Reopened",
+        "detail": "The job has been reopened successfully."
+      },
+      "reopenJobFailed": {
+        "summary": "Job Reopening Failed",
+        "detail": "The job could not be reopened. Please try again."
       }
     }
   },

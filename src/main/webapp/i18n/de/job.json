@@ -410,7 +410,8 @@
   },
   "allPositionsPage": {
     "header": {
-      "title": "Alle Stellen"
+      "title": "Alle Stellen",
+      "createButton": "Stelle erstellen"
     },
     "searchFilterSortBar": {
       "searchText": "Nach Titel oder betreuendem Professor suchen",
@@ -438,8 +439,12 @@
       "closeMessage": "Bist du sicher, dass du diese Stelle schließen möchtest? Nach dem Schließen können sich Bewerber nicht mehr auf diese Stelle bewerben. Diese Aktion kann NICHT rückgängig gemacht werden.",
       "deleteHeader": "Löschvorgang bestätigen",
       "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!",
+      "deleteHeaderNonDraft": "Löschvorgang bestätigen",
+      "deleteMessageNonDraft": "Diese Stelle wurde veröffentlicht. Beim Löschen werden die Stelle und alle zugehörigen Bewerbungen dauerhaft entfernt. Diese Aktion kann NICHT rückgängig gemacht werden. Fortfahren?",
       "editJobHeader": "Stellenbearbeitung bestätigen",
-      "editJobMessage": "Bist du sicher, dass du diese Stelle bearbeiten möchtest? Nach der Bearbeitung muss die Stelle erneut veröffentlicht werden, bevor Bewerber sich darauf bewerben können."
+      "editJobMessage": "Bist du sicher, dass du diese Stelle bearbeiten möchtest? Nach der Bearbeitung muss die Stelle erneut veröffentlicht werden, bevor Bewerber sich darauf bewerben können.",
+      "reopenHeader": "Wiederöffnung der Stelle bestätigen",
+      "reopenMessage": "Diese Stelle wieder öffnen? Sie wird wieder für Bewerbende sichtbar und es können neue Bewerbungen eingereicht werden."
     },
     "errors": {
       "loadJobs": {
@@ -467,6 +472,14 @@
       "closeJobFailed": {
         "summary": "Stelle schließen fehlgeschlagen",
         "detail": "Die Stelle konnte nicht geschlossen werden. Bitte versuche es erneut oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      },
+      "reopenJobSuccess": {
+        "summary": "Stelle wieder geöffnet",
+        "detail": "Die Stelle wurde erfolgreich wieder geöffnet."
+      },
+      "reopenJobFailed": {
+        "summary": "Wiederöffnung fehlgeschlagen",
+        "detail": "Die Stelle konnte nicht wieder geöffnet werden. Bitte versuche es erneut."
       }
     }
   },
