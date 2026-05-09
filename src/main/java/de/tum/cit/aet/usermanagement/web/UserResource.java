@@ -82,7 +82,7 @@ public class UserResource {
     @PutMapping("/password")
     public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdatePasswordDTO dto) {
         log.info("PUT /api/users/password - Updating password for subject={}", jwt.getSubject());
-        boolean updated = keycloakUserService.setPassword(jwt.getSubject(), dto.newPassword(), jwt.getIssuer());
+        boolean updated = keycloakUserService.setPassword(jwt.getSubject(), dto.newPassword());
         return updated ? ResponseEntity.noContent().build() : ResponseEntity.badRequest().build();
     }
 

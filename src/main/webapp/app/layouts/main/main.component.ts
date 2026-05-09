@@ -5,7 +5,6 @@ import dayjs from 'dayjs/esm';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 import { LocalStorageService } from 'app/service/localStorage.service';
-import { PasskeyRegistrationPromptComponent } from 'app/shared/components/molecules/passkey-registration-prompt/passkey-registration-prompt.component';
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
 import { OnboardingOrchestratorService } from 'app/service/onboarding-orchestrator.service';
@@ -19,7 +18,7 @@ import PageRibbonComponent from '../profiles/page-ribbon.component';
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
   providers: [AppPageTitleStrategy],
-  imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent, PasskeyRegistrationPromptComponent],
+  imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent],
 })
 export default class MainComponent {
   readonly accountService = inject(AccountService);
