@@ -437,20 +437,20 @@ describe('AllPositionsPageComponent', () => {
       expect(items.map(i => i.label)).toEqual(['button.edit', 'button.delete']);
     });
 
-    it('should build edit/close menu items for published jobs', () => {
+    it('should build edit/delete/close menu items for published jobs', () => {
       component.jobs.set([{ jobId: '2', state: AdminCreatedJobDTOStateEnum.Published, title: 'Pub' } as AdminCreatedJobDTO]);
       const items = component.jobMenuItems().get('2') ?? [];
-      expect(items.map(i => i.label)).toEqual(['button.edit', 'button.close']);
+      expect(items.map(i => i.label)).toEqual(['button.edit', 'button.delete', 'button.close']);
     });
 
-    it('should omit menu items for closed jobs', () => {
+    it('should build edit/delete/reopen menu items for closed jobs', () => {
       component.jobs.set([{ jobId: '3', state: AdminCreatedJobDTOStateEnum.Closed, title: 'Closed' } as AdminCreatedJobDTO]);
-      expect(component.jobMenuItems().get('3') ?? []).toEqual([]);
+      expect(component.jobMenuItems().get('3')?.map(i => i.label)).toEqual(['button.edit', 'button.delete', 'button.reopen']);
     });
 
-    it('should omit menu items for applicant-found jobs', () => {
+    it('should build edit/delete/reopen menu items for applicant-found jobs', () => {
       component.jobs.set([{ jobId: '4', state: AdminCreatedJobDTOStateEnum.ApplicantFound, title: 'Found' } as AdminCreatedJobDTO]);
-      expect(component.jobMenuItems().get('4') ?? []).toEqual([]);
+      expect(component.jobMenuItems().get('4')?.map(i => i.label)).toEqual(['button.edit', 'button.delete', 'button.reopen']);
     });
 
     it('should invoke edit command directly for draft jobs', () => {
@@ -480,9 +480,103 @@ describe('AllPositionsPageComponent', () => {
     it('should open the close dialog for published jobs', () => {
       component.jobs.set([{ jobId: '2', state: AdminCreatedJobDTOStateEnum.Published, title: 'Pub' } as AdminCreatedJobDTO]);
       const items = component.jobMenuItems().get('2') ?? [];
-      items[1]?.command?.();
+      items[2]?.command?.();
       expect(component.currentJobId()).toBe('2');
       expect(component.showCloseDialog()).toBe(true);
+    });
+  });
+
+  describe('Kebab menu by state', () => {
+    function setJobsAndRebuild(state: AdminCreatedJobDTOStateEnum) {
+      mockJobApi.getAllJobs.mockReturnValueOnce(
+        of<PageAdminCreatedJobDTO>({
+          content: [{ jobId: 'j', title: 'T', state } as AdminCreatedJobDTO],
+          totalElements: 1,
+        }),
+      );
+      component.loadOnTableEmit({ first: 0, rows: 10 } as never);
+    }
+
+    it('should show Edit and Delete on DRAFT', async () => {
+      setJobsAndRebuild(AdminCreatedJobDTOStateEnum.Draft);
+      await fixture.whenStable();
+      const items = component.getMenuItems()(component.jobs()[0]);
+      expect(items.map(i => i.label)).toEqual(['button.edit', 'button.delete']);
+    });
+
+    it('should show Edit, Delete and Close on PUBLISHED', async () => {
+      setJobsAndRebuild(AdminCreatedJobDTOStateEnum.Published);
+      await fixture.whenStable();
+      const items = component.getMenuItems()(component.jobs()[0]);
+      expect(items.map(i => i.label)).toEqual(['button.edit', 'button.delete', 'button.close']);
+    });
+
+    it('should show Edit, Delete and Reopen on CLOSED', async () => {
+      setJobsAndRebuild(AdminCreatedJobDTOStateEnum.Closed);
+      await fixture.whenStable();
+      const items = component.getMenuItems()(component.jobs()[0]);
+      expect(items.map(i => i.label)).toEqual(['button.edit', 'button.delete', 'button.reopen']);
+    });
+
+    it('should show Edit, Delete and Reopen on APPLICANT_FOUND', async () => {
+      setJobsAndRebuild(AdminCreatedJobDTOStateEnum.ApplicantFound);
+      await fixture.whenStable();
+      const items = component.getMenuItems()(component.jobs()[0]);
+      expect(items.map(i => i.label)).toEqual(['button.edit', 'button.delete', 'button.reopen']);
+    });
+  });
+
+  describe('Reopen flow', () => {
+    it('should call changeJobState with PUBLISHED when reopen is confirmed', async () => {
+      component.currentJobId.set('j');
+      await component.onConfirmReopen();
+      expect(mockJobApi.changeJobState).toHaveBeenCalledWith('j', AdminCreatedJobDTOStateEnum.Published);
+    });
+
+    it('should show success toast and reload jobs after a successful reopen', async () => {
+      component.currentJobId.set('j');
+      await component.onConfirmReopen();
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('allPositionsPage.toastMessages.reopenJobSuccess');
+    });
+
+    it('should show error toast on reopen failure', async () => {
+      mockJobApi.changeJobState.mockReturnValueOnce(throwError(() => new Error('boom')));
+      component.currentJobId.set('j');
+      await component.onConfirmReopen();
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith(
+        'allPositionsPage.toastMessages.reopenJobFailed',
+        { detail: 'boom' },
+      );
+    });
+  });
+
+  describe('Delete dialog copy', () => {
+    it('should expose draft delete copy when current job is DRAFT', async () => {
+      mockJobApi.getAllJobs.mockReturnValueOnce(
+        of<PageAdminCreatedJobDTO>({
+          content: [{ jobId: 'j', title: 'T', state: AdminCreatedJobDTOStateEnum.Draft } as AdminCreatedJobDTO],
+          totalElements: 1,
+        }),
+      );
+      component.loadOnTableEmit({ first: 0, rows: 10 } as never);
+      await fixture.whenStable();
+      component.currentJobId.set('j');
+      expect(component.deleteDialogHeaderKey()).toBe('allPositionsPage.confirmDialog.deleteHeader');
+      expect(component.deleteDialogMessageKey()).toBe('allPositionsPage.confirmDialog.deleteMessage');
+    });
+
+    it('should expose non-draft delete copy when current job is PUBLISHED', async () => {
+      mockJobApi.getAllJobs.mockReturnValueOnce(
+        of<PageAdminCreatedJobDTO>({
+          content: [{ jobId: 'j', title: 'T', state: AdminCreatedJobDTOStateEnum.Published } as AdminCreatedJobDTO],
+          totalElements: 1,
+        }),
+      );
+      component.loadOnTableEmit({ first: 0, rows: 10 } as never);
+      await fixture.whenStable();
+      component.currentJobId.set('j');
+      expect(component.deleteDialogHeaderKey()).toBe('allPositionsPage.confirmDialog.deleteHeaderNonDraft');
+      expect(component.deleteDialogMessageKey()).toBe('allPositionsPage.confirmDialog.deleteMessageNonDraft');
     });
   });
 });

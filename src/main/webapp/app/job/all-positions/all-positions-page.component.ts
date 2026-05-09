@@ -26,9 +26,9 @@ import { ResearchGroupResourceApi } from '../../generated/api/research-group-res
 const TRANSLATION_KEY = 'allPositionsPage';
 
 /**
- * Admin-only page listing every job across all research groups, with the same
- * management actions a professor has on their own jobs (Edit/Delete on DRAFT,
- * Edit-with-warning/Close on PUBLISHED, none on CLOSED/APPLICANT_FOUND).
+ * Admin-only page listing every job across all research groups. The kebab menu
+ * offers Edit and Delete on every state, plus Close on PUBLISHED and Reopen
+ * on CLOSED or APPLICANT_FOUND. Edit on PUBLISHED routes through a warning dialog.
  */
 @Component({
   selector: 'jhi-all-positions-page',
@@ -91,8 +91,25 @@ export class AllPositionsPageComponent implements OnInit {
   showEditPublishedDialog = signal(false);
   showDeleteDialog = signal(false);
   showCloseDialog = signal(false);
+  showReopenDialog = signal(false);
 
   currentJobId = signal<string | undefined>(undefined);
+
+  readonly deleteDialogHeaderKey = computed<string>(() => {
+    const id = this.currentJobId();
+    const job = this.jobs().find(j => j.jobId === id);
+    return job && job.state !== AdminCreatedJobDTOStateEnum.Draft
+      ? 'allPositionsPage.confirmDialog.deleteHeaderNonDraft'
+      : 'allPositionsPage.confirmDialog.deleteHeader';
+  });
+
+  readonly deleteDialogMessageKey = computed<string>(() => {
+    const id = this.currentJobId();
+    const job = this.jobs().find(j => j.jobId === id);
+    return job && job.state !== AdminCreatedJobDTOStateEnum.Draft
+      ? 'allPositionsPage.confirmDialog.deleteMessageNonDraft'
+      : 'allPositionsPage.confirmDialog.deleteMessage';
+  });
 
   readonly selectedStatusFilters = signal<string[]>([]);
   readonly selectedResearchGroupIds = signal<string[]>([]);
@@ -131,24 +148,14 @@ export class AllPositionsPageComponent implements OnInit {
     APPLICANT_FOUND: 'success',
   });
 
-  // Computed signal that creates a map of job IDs to their menu items
   readonly jobMenuItems = computed<Map<string, JhiMenuItem[]>>(() => {
     const menuMap = new Map<string, JhiMenuItem[]>();
 
     for (const job of this.jobs()) {
       const items: JhiMenuItem[] = [];
 
-      // Edit action - different behaviour for DRAFT vs PUBLISHED
-      if (job.state === AdminCreatedJobDTOStateEnum.Draft) {
-        items.push({
-          label: 'button.edit',
-          icon: 'pencil',
-          severity: 'primary',
-          command: () => {
-            this.onEditJob(job.jobId);
-          },
-        });
-      } else if (job.state === AdminCreatedJobDTOStateEnum.Published) {
+      // 1) Edit — always available; PUBLISHED routes through a warning dialog.
+      if (job.state === AdminCreatedJobDTOStateEnum.Published) {
         items.push({
           label: 'button.edit',
           icon: 'pencil',
@@ -158,20 +165,30 @@ export class AllPositionsPageComponent implements OnInit {
             this.showEditPublishedDialog.set(true);
           },
         });
-      }
-
-      // Delete/Close action - based on state
-      if (job.state === AdminCreatedJobDTOStateEnum.Draft) {
+      } else {
         items.push({
-          label: 'button.delete',
-          icon: 'trash',
-          severity: 'danger',
+          label: 'button.edit',
+          icon: 'pencil',
+          severity: 'primary',
           command: () => {
-            this.currentJobId.set(job.jobId);
-            this.showDeleteDialog.set(true);
+            this.onEditJob(job.jobId);
           },
         });
-      } else if (job.state === AdminCreatedJobDTOStateEnum.Published) {
+      }
+
+      // 2) Delete — always available; copy varies by state via deleteDialog*Key.
+      items.push({
+        label: 'button.delete',
+        icon: 'trash',
+        severity: 'danger',
+        command: () => {
+          this.currentJobId.set(job.jobId);
+          this.showDeleteDialog.set(true);
+        },
+      });
+
+      // 3) State-change action: Close on PUBLISHED, Reopen on CLOSED / APPLICANT_FOUND.
+      if (job.state === AdminCreatedJobDTOStateEnum.Published) {
         items.push({
           label: 'button.close',
           icon: 'xmark',
@@ -179,6 +196,16 @@ export class AllPositionsPageComponent implements OnInit {
           command: () => {
             this.currentJobId.set(job.jobId);
             this.showCloseDialog.set(true);
+          },
+        });
+      } else if (job.state === AdminCreatedJobDTOStateEnum.Closed || job.state === AdminCreatedJobDTOStateEnum.ApplicantFound) {
+        items.push({
+          label: 'button.reopen',
+          icon: 'rotate-right',
+          severity: 'primary',
+          command: () => {
+            this.currentJobId.set(job.jobId);
+            this.showReopenDialog.set(true);
           },
         });
       }
@@ -259,6 +286,10 @@ export class AllPositionsPageComponent implements OnInit {
     void this.router.navigate([`/job/edit/${jobId}`]);
   }
 
+  onCreateJob(): void {
+    void this.router.navigate(['/job/create'], { queryParams: { returnTo: 'all-positions' } });
+  }
+
   onViewJob(jobId: string): void {
     if (!jobId) {
       console.error('Unable to view job with job id:', jobId);
@@ -308,6 +339,25 @@ export class AllPositionsPageComponent implements OnInit {
     const jobId = this.currentJobId();
     if (jobId !== undefined && jobId !== '') {
       await this.onCloseJob(jobId);
+    }
+  }
+
+  async onReopenJob(jobId: string): Promise<void> {
+    try {
+      await firstValueFrom(this.jobApi.changeJobState(jobId, AdminCreatedJobDTOStateEnum.Published));
+      this.toastService.showSuccessKey(`${TRANSLATION_KEY}.toastMessages.reopenJobSuccess`);
+      await this.loadJobs();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastService.showErrorKey(`${TRANSLATION_KEY}.toastMessages.reopenJobFailed`, { detail: error.message });
+      }
+    }
+  }
+
+  async onConfirmReopen(): Promise<void> {
+    const jobId = this.currentJobId();
+    if (jobId !== undefined && jobId !== '') {
+      await this.onReopenJob(jobId);
     }
   }
 
