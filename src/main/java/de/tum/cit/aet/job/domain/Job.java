@@ -92,6 +92,12 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "start_date")
     private LocalDate startDate;
 
+    @Column(name = "start_date_by_arrangement", nullable = false)
+    private Boolean startDateByArrangement = false;
+
+    @Column(name = "contract_extendable", nullable = false)
+    private Boolean contractExtendable = false;
+
     @Column(name = "suitable_for_disabled")
     private Boolean suitableForDisabled;
 

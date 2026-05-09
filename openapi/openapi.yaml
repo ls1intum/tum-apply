@@ -744,6 +744,39 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/AuthSessionInfoDTO'}
+  /api/auth/passkeys:
+    get:
+      tags: [authentication-resource]
+      operationId: listPasskeys
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/PasskeyDTO'}
+  /api/auth/passkeys/action-token:
+    get:
+      tags: [authentication-resource]
+      operationId: createPasskeyActionToken
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PasskeyActionTokenDTO'}
+  /api/auth/passkeys/{credentialId}:
+    delete:
+      tags: [authentication-resource]
+      operationId: removePasskey
+      parameters:
+      - name: credentialId
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200': {description: OK}
   /api/auth/refresh:
     post:
       tags: [authentication-resource]
@@ -2089,9 +2122,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema:
-                type: object
-                additionalProperties: {}
+              schema: {$ref: '#/components/schemas/PublicConfigDTO'}
   /api/research-groups:
     get:
       tags: [research-group-resource]
@@ -3296,6 +3327,7 @@ components:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
         contractDuration: {type: integer, format: int32}
+        contractExtendable: {type: boolean}
         endDate: {type: string, format: date}
         fundingType:
           type: string
@@ -3313,6 +3345,7 @@ components:
             SINGAPORE]
         researchArea: {type: string}
         startDate: {type: string, format: date}
+        startDateByArrangement: {type: boolean}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
@@ -3346,6 +3379,7 @@ components:
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         contractDuration: {type: integer, format: int32}
+        contractExtendable: {type: boolean}
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
         fundingType:
@@ -3365,6 +3399,7 @@ components:
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroupSummaryDTO'}
         startDate: {type: string, format: date}
+        startDateByArrangement: {type: boolean}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
@@ -3418,6 +3453,7 @@ components:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
         contractDuration: {type: integer, format: int32}
+        contractExtendable: {type: boolean}
         endDate: {type: string, format: date}
         fundingType:
           type: string
@@ -3435,6 +3471,7 @@ components:
         referenceLettersRequired: {type: integer, format: int32}
         researchArea: {type: string}
         startDate: {type: string, format: date}
+        startDateByArrangement: {type: boolean}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
@@ -3466,6 +3503,14 @@ components:
         labels:
           type: object
           additionalProperties: {type: string}
+    KeycloakConfig:
+      type: object
+      properties:
+        clientId: {type: string}
+        externalLoginRealm: {type: string}
+        relyingPartyId: {type: string}
+        tumLoginRealm: {type: string}
+        url: {type: string}
     KeycloakUserDTO:
       type: object
       properties:
@@ -3495,6 +3540,12 @@ components:
           type: string
           enum: [LOGIN, REGISTER]
       required: [code, email, purpose]
+    OtpConfig:
+      type: object
+      properties:
+        length: {type: integer, format: int32}
+        resendCooldownSeconds: {type: integer, format: int32}
+        ttlSeconds: {type: integer, format: int32}
     PageApplicationOverviewDTO:
       type: object
       properties:
@@ -3608,6 +3659,19 @@ components:
         paged: {type: boolean}
         sort: {$ref: '#/components/schemas/SortObject'}
         unpaged: {type: boolean}
+    PasskeyActionTokenDTO:
+      type: object
+      properties:
+        accessToken: {type: string}
+        clientId: {type: string}
+        expiresIn: {type: integer, format: int32}
+        realm: {type: string}
+    PasskeyDTO:
+      type: object
+      properties:
+        createdDate: {type: integer, format: int64}
+        id: {type: string}
+        label: {type: string}
     ProfOnboardingDTO:
       type: object
       properties:
@@ -3620,6 +3684,11 @@ components:
         lastName: {type: string}
         researchGroupName: {type: string}
         researchGroupWebsite: {type: string}
+    PublicConfigDTO:
+      type: object
+      properties:
+        keycloak: {$ref: '#/components/schemas/KeycloakConfig'}
+        otp: {$ref: '#/components/schemas/OtpConfig'}
     RatingDTO:
       type: object
       properties:

@@ -62,6 +62,11 @@ function getOverviewItemLabel(translate: TranslateService): Record<string, strin
     tvlGrade: `${translate.instant('jobDetailPage.labels.tvlGrade')}:`,
     startDate: `${translate.instant('jobDetailPage.labels.startDate')}:`,
     endDate: `${translate.instant('jobDetailPage.labels.applicationEndDate')}:`,
+    suitableForDisabled: `${translate.instant('jobCreationForm.basicInformationSection.positionOptions.suitableForDisabled.label')}:`,
+    uponAgreement: translate.instant('jobCreationForm.basicInformationSection.positionOptions.uponArrangement.label'),
+    extendable: translate.instant('jobCreationForm.basicInformationSection.positionOptions.extendable.label'),
+    yes: translate.instant('pdf.values.yes'),
+    no: translate.instant('pdf.values.no'),
     jobDetails: translate.instant('pdf.sections.jobDetails'),
     lang: translate.getCurrentLang(),
   };

@@ -235,7 +235,7 @@ describe('JobDetailComponent', () => {
   it('should compute jobStateText and jobStateColor correctly', () => {
     component.jobDetails.set({ jobState: JobDetailDTOStateEnum.Draft } as JobDetails);
     expect(component.jobStateText()).toBe('jobState.draft');
-    expect(component.jobStateColor()).toBe('info');
+    expect(component.jobStateColor()).toBe('neutral');
   });
 
   it('should map JobDetailDTO to JobDetails', () => {
