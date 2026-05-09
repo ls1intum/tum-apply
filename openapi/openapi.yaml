@@ -702,7 +702,9 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {type: object}
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/PasskeyDTO'}
   /api/auth/passkeys/action-token:
     get:
       tags: [authentication-resource]
@@ -3596,6 +3598,12 @@ components:
         clientId: {type: string}
         expiresIn: {type: integer, format: int32}
         realm: {type: string}
+    PasskeyDTO:
+      type: object
+      properties:
+        createdDate: {type: integer, format: int64}
+        id: {type: string}
+        label: {type: string}
     ProfOnboardingDTO:
       type: object
       properties:

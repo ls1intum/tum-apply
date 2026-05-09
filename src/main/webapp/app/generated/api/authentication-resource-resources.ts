@@ -15,6 +15,7 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { PasskeyActionTokenDTO } from '../model/passkey-action-token-dto';
+import { PasskeyDTO } from '../model/passkey-dto';
 const BASE_PATH = '';
 
 /**
@@ -33,8 +34,8 @@ export function createPasskeyActionTokenResource(): HttpResourceRef<PasskeyActio
  * 
  * Creates a reactive HTTP resource that automatically refetches when signals change.
  */
-export function listPasskeysResource(): HttpResourceRef<object | undefined> {
-    return httpResource<object>(() => {
+export function listPasskeysResource(): HttpResourceRef<Array<PasskeyDTO> | undefined> {
+    return httpResource<Array<PasskeyDTO>>(() => {
         return `${BASE_PATH}/api/auth/passkeys`;
     });
 }

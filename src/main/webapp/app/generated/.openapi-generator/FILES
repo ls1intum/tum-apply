@@ -126,6 +126,7 @@ model/page-response-dto-school-dto.ts
 model/page-response-dto-user-short-dto.ts
 model/pageable-object.ts
 model/passkey-action-token-dto.ts
+model/passkey-dto.ts
 model/prof-onboarding-dto.ts
 model/professor-dto.ts
 model/public-config-dto.ts
