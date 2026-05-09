@@ -38,7 +38,7 @@
   @if (isOpen()) {
     <div
       class="filter-dropdown absolute z-[3] flex flex-col bg-background-default border border-border-default rounded-sm mt-1 max-h-80 min-w-max max-w-[calc(100vw-2rem)] w-full text-[length:var(--p-select-sm-font-size)] max-md:left-0 max-md:right-0"
-      [ngClass]="dropdownAlignment() === 'right' ? 'align-right max-md:!left-auto max-md:!right-0' : ''"
+      [class]="dropdownAlignment() === 'right' ? 'align-right max-md:!left-auto max-md:!right-0' : ''"
     >
       <div class="panel-header flex flex-row pt-[0.6rem] pb-[0.4rem] px-3">
         <fa-icon class="filter-icon text-primary" [icon]="['fas', 'search']" />
