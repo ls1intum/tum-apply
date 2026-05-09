@@ -474,8 +474,7 @@
         "email": "E-Mail"
       },
       "button": {
-        "add": "Hinzufügen",
-        "remove": "Entfernen"
+        "add": "Hinzufügen"
       },
       "toast": {
         "loadFailed": {
