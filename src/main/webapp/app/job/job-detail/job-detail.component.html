@@ -153,14 +153,15 @@
                 }
               </div>
               <div class="info-row">
-                <span jhiTranslate="jobDetailPage.labels.contractDuration"></span>
+                <span class="whitespace-nowrap" jhiTranslate="jobDetailPage.labels.contractDuration"></span>
                 @if (job.contractDuration !== '') {
                   <span class="value">
                     {{ job.contractDuration }}
                     <span [jhiTranslate]="job.contractDuration === '1' ? 'jobDetailPage.units.year' : 'jobDetailPage.units.years'"></span>
                     @if (job.contractExtendable) {
-                      <span class="text-text-secondary"
-                        >· <span jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.extendable.overviewLabel"></span
+                      <span
+                        class="block text-text-secondary"
+                        jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.extendable.overviewLabel"
                       ></span>
                     }
                   </span>
@@ -182,8 +183,9 @@
                   <span class="value">
                     {{ job.startDate | localizedDate }}
                     @if (job.startDateByArrangement) {
-                      <span class="text-text-secondary"
-                        >· <span jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.overviewLabel"></span
+                      <span
+                        class="block text-text-secondary"
+                        jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.overviewLabel"
                       ></span>
                     }
                   </span>
