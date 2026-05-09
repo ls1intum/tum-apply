@@ -33,12 +33,6 @@ public class EmailSettingService {
      */
     @Transactional // ensures new settings are persisted and visible in the same DB transaction
     public boolean canNotify(EmailType emailType, User user) {
-        // External recipients (e.g. reference letter referees) have no TUMApply account and therefore
-        // no stored notification settings — we always send these transactional invitations.
-        if (user.getUserId() == null) {
-            return true;
-        }
-
         updateUserEmailSettings(user);
 
         Optional<EmailSetting> emailSetting = emailSettingRepository.findByUserAndEmailType(user, emailType);
