@@ -116,7 +116,7 @@
       "actions": {
         "create": "Create passkey"
       },
-      "createdAt": "Created {{date}}",
+      "createdAt": "Created {date}",
       "empty": {
         "title": "No passkeys yet",
         "description": "Create a passkey to sign in faster and more securely to this TUMApply account."
@@ -131,7 +131,7 @@
       },
       "removeConfirm": {
         "header": "Remove passkey?",
-        "message": "Are you sure you want to remove {{name}}?"
+        "message": "Are you sure you want to remove {name}?"
       },
       "removed": {
         "summary": "Passkey removed",
