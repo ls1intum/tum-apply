@@ -44,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReferenceRequestService {
 
     private static final int TOKEN_BYTE_LENGTH = 32;
-    private static final int MIN_VALIDITY_DAYS = 7;
+    private static final int DEFAULT_VALIDITY_MONTHS = 2;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final DateTimeFormatter DEADLINE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -119,8 +119,7 @@ public class ReferenceRequestService {
 
     /**
      * Generates and persists a fresh token for each pending entry on the application and dispatches
-     * the invitation email. Called by {@code ApplicationService} when an application transitions
-     * to SENT.
+     * the invitation email.
      *
      * @param application the application whose referees should be notified
      */
@@ -209,18 +208,15 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Resolves the latest valid expiry for a freshly issued token. Falls back to a minimum
-     * window of {@value #MIN_VALIDITY_DAYS} days when the application deadline is closer or absent
-     * so referees always get a usable amount of time to respond.
+     * Resolves the latest valid expiry for a freshly issued token:
+     * Job's end date if set, otherwise defaults to {@value #DEFAULT_VALIDITY_MONTHS} months from now.
      */
     private LocalDateTime computeTokenExpiry(Job job) {
-        LocalDateTime minExpiry = LocalDateTime.now().plusDays(MIN_VALIDITY_DAYS);
         LocalDate jobEnd = job.getEndDate();
-        if (jobEnd == null) {
-            return minExpiry;
+        if (jobEnd != null) {
+            return jobEnd.atTime(23, 59, 59);
         }
-        LocalDateTime jobDeadline = jobEnd.atTime(23, 59, 59);
-        return jobDeadline.isAfter(minExpiry) ? jobDeadline : minExpiry;
+        return LocalDateTime.now().plusMonths(DEFAULT_VALIDITY_MONTHS);
     }
 
     /**
