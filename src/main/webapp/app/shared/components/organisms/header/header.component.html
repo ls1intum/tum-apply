@@ -1,5 +1,5 @@
 <header
-  class="flex items-center justify-between gap-1 sm:gap-0 px-3 sm:px-6 sticky top-0 z-20 overflow-x-auto h-12 border-b transition-colors duration-300"
+  class="flex items-center justify-between gap-1 sm:gap-0 px-0 sm:px-6 sticky top-0 z-20 overflow-x-auto h-12 border-b transition-colors duration-300"
   [class.border-border-default]="showBorder()"
   [class.border-transparent]="!showBorder()"
   [class.shadow-sm]="showBorder()"
@@ -16,8 +16,8 @@
     }
   </a>
 
-  <div class="flex items-center gap-1 flex-shrink-0">
-    <div class="flex items-center gap-1 sm:mr-2">
+  <div class="flex items-center gap-0 sm:gap-1 flex-shrink-0">
+    <div class="flex items-center gap-1 mr-1 sm:mr-2">
       @for (language of languages; track language; let isLast = $last) {
         <button
           type="button"
