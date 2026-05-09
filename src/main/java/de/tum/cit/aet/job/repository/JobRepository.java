@@ -98,8 +98,8 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
           j.startDate as startDate,
           j.endDate as endDate,
           j.contractDuration as contractDuration,
-          i.url as imageUrl,
-          j.referenceLettersRequired as referenceLettersRequired
+          j.referenceLettersRequired as referenceLettersRequired,
+          i.url as imageUrl
         )
         FROM Job j
         JOIN j.supervisingProfessor p
@@ -189,8 +189,8 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             j.startDate as startDate,
             j.endDate as endDate,
             j.contractDuration as contractDuration,
-            i.url as imageUrl,
-            j.referenceLettersRequired as referenceLettersRequired
+            j.referenceLettersRequired as referenceLettersRequired,
+            i.url as imageUrl
           )
           FROM Job j
           JOIN j.supervisingProfessor p

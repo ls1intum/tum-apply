@@ -51,8 +51,8 @@ public record ApplicationForApplicantDTO(
                 job.getStartDate(),
                 job.getEndDate(),
                 job.getContractDuration(),
-                job.getImage() != null ? job.getImage().getUrl() : null,
-                job.getReferenceLettersRequired()
+                job.getReferenceLettersRequired(),
+                job.getImage() != null ? job.getImage().getUrl() : null
             ),
             application.getState(),
             application.getDesiredStartDate(),
