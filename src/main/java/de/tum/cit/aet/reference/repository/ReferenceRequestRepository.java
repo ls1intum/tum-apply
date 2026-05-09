@@ -12,5 +12,5 @@ public interface ReferenceRequestRepository extends JpaRepository<ReferenceReque
      * @param applicationId the owning application
      * @return all reference requests linked to the application, in insertion order
      */
-    List<ReferenceRequest> findByApplication_ApplicationIdOrderByCreatedAtAsc(UUID applicationId);
+    List<ReferenceRequest> findByApplicationApplicationIdOrderByCreatedAtAsc(UUID applicationId);
 }

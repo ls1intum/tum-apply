@@ -67,7 +67,7 @@ public class ReferenceRequestService {
     public List<ReferenceRequestDTO> listForApplication(UUID applicationId) {
         Application application = assertOwnsApplication(applicationId);
         return referenceRequestRepository
-            .findByApplication_ApplicationIdOrderByCreatedAtAsc(application.getApplicationId())
+            .findByApplicationApplicationIdOrderByCreatedAtAsc(application.getApplicationId())
             .stream()
             .map(ReferenceRequestDTO::fromEntity)
             .toList();
@@ -129,7 +129,7 @@ public class ReferenceRequestService {
         if (application.getJob().getReferenceLettersRequired() <= 0) {
             return;
         }
-        List<ReferenceRequest> entries = referenceRequestRepository.findByApplication_ApplicationIdOrderByCreatedAtAsc(
+        List<ReferenceRequest> entries = referenceRequestRepository.findByApplicationApplicationIdOrderByCreatedAtAsc(
             application.getApplicationId()
         );
         for (ReferenceRequest entry : entries) {
