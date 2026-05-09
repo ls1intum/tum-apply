@@ -2,6 +2,8 @@ package de.tum.cit.aet.reference.domain;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.APPLICANT)
 @Table(name = "reference_requests")
 public class ReferenceRequest extends AbstractAuditingEntity {
 
