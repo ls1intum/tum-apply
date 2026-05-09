@@ -3432,6 +3432,7 @@ components:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
+        referenceLettersRequired: {type: integer, format: int32}
         researchArea: {type: string}
         startDate: {type: string, format: date}
         state:

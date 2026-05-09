@@ -537,8 +537,9 @@ export class JobDetailComponent {
       researchGroupPostalCode,
       researchGroupCity,
 
-      // reference letters required: prefer form value when previewing, otherwise read from DTO
-      referenceLettersRequired: isForm ? ((data as any).referenceLettersRequired ?? 0) : (jobDetailDTO.referenceLettersRequired ?? 0),
+      referenceLettersRequired: isForm
+        ? ((data as JobFormDTO).referenceLettersRequired ?? 0)
+        : (jobDetailDTO.referenceLettersRequired ?? 0),
 
       jobState: isForm ? JobDetailDTOStateEnum.Draft : jobDetailDTO.state,
       belongsToResearchGroup: !isForm && jobDetailDTO.researchGroup.researchGroupId === user?.researchGroup?.researchGroupId,

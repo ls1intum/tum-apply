@@ -25,7 +25,7 @@ public record JobCardDTO(
     String relativeTimeGerman,
     Integer contractDuration,
     String imageUrl, // Job banner image URL (e.g., "/images/jobs/abc.jpg")
-    int referenceLettersRequired
+    Integer referenceLettersRequired
 ) {
     public JobCardDTO(
         @NotNull UUID jobId,
