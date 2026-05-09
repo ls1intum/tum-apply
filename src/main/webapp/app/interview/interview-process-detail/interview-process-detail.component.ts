@@ -1,12 +1,12 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { JobDetailDTOStateEnum } from 'app/generated/model/job-detail-dto';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { IntervieweeSectionComponent } from 'app/interview/interview-process-detail/interviewee-section/interviewee-section.component';
 
@@ -15,7 +15,7 @@ import { SlotsSectionComponent } from './slots-section/slots-section.component';
 @Component({
   selector: 'jhi-interview-process-detail',
   standalone: true,
-  imports: [TranslateModule, ButtonComponent, TagComponent, SlotsSectionComponent, IntervieweeSectionComponent],
+  imports: [TranslateModule, BackButtonComponent, TagComponent, SlotsSectionComponent, IntervieweeSectionComponent],
   templateUrl: './interview-process-detail.component.html',
 })
 export class InterviewProcessDetailComponent {
@@ -37,7 +37,6 @@ export class InterviewProcessDetailComponent {
   hasSlots = signal(false);
 
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly interviewApi = inject(InterviewResourceApi);
   private readonly titleService = inject(Title);
   private readonly toastService = inject(ToastService);
@@ -59,10 +58,6 @@ export class InterviewProcessDetailComponent {
 
   onSlotAssigned(): void {
     this.intervieweeRefreshKey.update(currentKey => currentKey + 1);
-  }
-
-  goBack(): void {
-    void this.router.navigate(['/interviews/overview']);
   }
 
   onSlotCancelled(): void {
