@@ -53,28 +53,12 @@
   <ng-container [ngTemplateOutlet]="steps()[currentStep() - 1].panelTemplate" />
 </div>
 
-<div
-  class="sticky-footer sticky bottom-0 mt-auto py-2 sm:py-3 bg-background-default transition-all duration-300 z-[1000] ease-in-out -mx-4 px-4 lg:-mx-12 lg:px-12 border-t"
-  [class.border-border-default]="!isAtBottom()"
-  [class.border-transparent]="isAtBottom()"
->
-  <div class="flex flex-col gap-3 transition-opacity duration-200 ease-in-out">
-    @if (statusDiv(); as statusDiv) {
-      <div class="sm:hidden flex justify-end">
-        <ng-container [ngTemplateOutlet]="statusDiv" />
-      </div>
-    }
-    <div class="flex justify-between">
-      <jhi-button-group [data]="buttonGroupPrev()" [shouldTranslate]="shouldTranslate() ?? false" />
-      <div class="flex gap-6">
-        @if (statusDiv(); as statusDiv) {
-          <div class="hidden sm:flex">
-            <ng-container [ngTemplateOutlet]="statusDiv" />
-          </div>
-        }
-        <jhi-button-group [data]="buttonGroupNext()" [shouldTranslate]="shouldTranslate() ?? false" />
-      </div>
-    </div>
-  </div>
-</div>
-<div #bottomSentinel class="h-px"></div>
+<ng-template #previousButtonsTemplate>
+  <jhi-button-group [data]="buttonGroupPrev()" [shouldTranslate]="shouldTranslate() ?? false" />
+</ng-template>
+
+<ng-template #nextButtonsTemplate>
+  <jhi-button-group [data]="buttonGroupNext()" [shouldTranslate]="shouldTranslate() ?? false" />
+</ng-template>
+
+<jhi-sticky-footer-shell [leftTemplate]="previousButtonsTemplate" [rightTemplate]="nextButtonsTemplate" [statusTemplate]="statusDiv()" />

@@ -62,7 +62,7 @@
     <div class="flex justify-end gap-1">
       <jhi-button tooltip="button.view" icon="eye" variant="text" (click)="onViewApplication(row.applicationId)" />
       <jhi-button
-        [tooltip]="getMenuItems()(row).length > 0 ? ('button.actions' | translate) : ('button.noFurtherActions' | translate)"
+        [tooltip]="getMenuItems()(row).length > 0 ? 'button.actions' : 'button.noFurtherActions'"
         icon="ellipsis-vertical"
         variant="text"
         (click)="menu.toggle($event)"
@@ -73,7 +73,7 @@
   </ng-template>
   <ng-template #jobNameTemplate let-row>
     <div class="w-full h-full flex justify-between items-center">
-      <a class="clickable-link" [routerLink]="['/job/detail', row.jobId]">{{ row.jobTitle }}</a>
+      <a class="text-primary cursor-pointer hover:underline" [routerLink]="['/job/detail', row.jobId]">{{ row.jobTitle }}</a>
     </div>
   </ng-template>
 

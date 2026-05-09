@@ -9,26 +9,6 @@ input:disabled {
   background-color: var(--p-background-disabled);
 }
 
-.saved_color {
-  color: var(--p-success-color);
-  .ng-fa-icon {
-    color: inherit;
-  }
-}
-
-.saving_color {
-  color: var(--p-warn-color);
-  .ng-fa-icon {
-    color: inherit;
-  }
-}
-
-.failed_color {
-  color: var(--p-danger-color);
-  .ng-fa-icon {
-    color: inherit;
-  }
-}
 .panel1-layout {
   @media (min-width: bp.$lg) {
     padding-inline: clamp(1rem, 3vw, 2.5rem);

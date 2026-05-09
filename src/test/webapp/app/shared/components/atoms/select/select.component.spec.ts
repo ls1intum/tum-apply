@@ -68,13 +68,11 @@ describe('SelectComponent', () => {
     expect(emitSpy).toHaveBeenCalledWith(next);
   });
 
-  it('should apply disabled styles when disabled', () => {
+  it('should reflect the disabled input on the component', () => {
     const fixture = createFixture();
     fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
 
-    const wrapper = fixture.debugElement.query(By.css('.select-wrapper')).nativeElement;
-    expect(wrapper.classList).toContain('disabled');
     expect(fixture.componentInstance.disabled()).toBe(true);
   });
 

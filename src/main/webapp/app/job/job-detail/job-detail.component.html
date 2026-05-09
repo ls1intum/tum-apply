@@ -1,5 +1,5 @@
 <jhi-confirm-dialog
-  class="confirm-dialog"
+  class="hidden"
   header="myPositionsPage.confirmDialog.closeHeader"
   message="myPositionsPage.confirmDialog.closeMessage"
   [label]="closeButtonLabel"
@@ -11,7 +11,7 @@
   (closed)="showCloseDialog.set(false)"
 />
 <jhi-confirm-dialog
-  class="confirm-dialog"
+  class="hidden"
   header="myPositionsPage.confirmDialog.deleteHeader"
   message="myPositionsPage.confirmDialog.deleteMessage"
   [label]="deleteButtonLabel"
@@ -210,7 +210,7 @@
             @if (isProfessorOrEmployee() && job.belongsToResearchGroup) {
               <fa-icon
                 [icon]="['fas', 'pencil']"
-                class="icon edit-icon cursor-pointer ml-auto"
+                class="icon text-primary hover:text-primary-hover transition-colors cursor-pointer ml-auto"
                 (click)="onEditResearchGroup()"
                 [pTooltip]="'button.edit' | translate"
                 tooltipPosition="top"

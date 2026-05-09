@@ -446,9 +446,14 @@ describe('ApplicationForm', () => {
     });
   });
 
-  it('should set savingstate to SAVING onValueChanged', () => {
+  it('should flip the badge to SAVING and forward the change through the auto-save controller', () => {
+    const notifySpy = vi.spyOn(comp.autoSave, 'notifyChanged');
+
     comp.onValueChanged();
-    expect(comp.savingState()).toBe(SavingStates.SAVING);
+
+    expect(notifySpy).toHaveBeenCalledOnce();
+    // Badge flips immediately so the SAVING text is visible across the debounce + request.
+    expect(comp.autoSave.state()).toBe(SavingStates.SAVING);
   });
 
   describe('saveToLocalStorage', () => {
@@ -1012,7 +1017,7 @@ describe('ApplicationForm', () => {
       expect(initPageSpy).toHaveBeenCalledWith('job-789');
       expect(comp.useLocalStorage()).toBe(false);
       expect(comp.applicationId()).toBe('456');
-      expect(comp.savingState()).toBe(SavingStates.SAVING);
+      expect(comp.autoSave.state()).toBe(SavingStates.SAVED);
       expect(sendDataSpy).toHaveBeenCalledWith('SAVED', false);
     });
 
@@ -1215,8 +1220,8 @@ describe('ApplicationForm', () => {
     });
 
     describe('personalInfo step buttons', () => {
-      it('should call performAutomaticSave and location.back when back button is clicked', async () => {
-        const performSaveSpy = spyOnPrivate(comp, 'performAutomaticSave').mockResolvedValue(undefined);
+      it('should flush the auto-save controller and call location.back when back button is clicked', async () => {
+        const flushSpy = vi.spyOn(comp.autoSave, 'flush').mockResolvedValue(undefined);
 
         const steps = comp.stepData();
         const personalInfoStep = steps[0]; // First step
@@ -1227,7 +1232,7 @@ describe('ApplicationForm', () => {
         // Wait for async operation
         await new Promise(resolve => setTimeout(resolve, 10));
 
-        expect(performSaveSpy).toHaveBeenCalled();
+        expect(flushSpy).toHaveBeenCalledOnce();
         expect(location.back).toHaveBeenCalled();
       });
 
@@ -1479,41 +1484,6 @@ describe('ApplicationForm', () => {
     });
   });
 
-  describe('savingBadgeCalculatedClass', () => {
-    it('should return class with saved_color when savingState is SAVED', () => {
-      comp.savingState.set(SavingStates.SAVED);
-
-      const result = comp.savingBadgeCalculatedClass();
-
-      expect(result).toBe('flex flex-wrap justify-around content-center gap-1 saved_color');
-    });
-
-    it('should return class with failed_color when savingState is FAILED', () => {
-      comp.savingState.set(SavingStates.FAILED);
-
-      const result = comp.savingBadgeCalculatedClass();
-
-      expect(result).toBe('flex flex-wrap justify-around content-center gap-1 failed_color');
-    });
-
-    it('should return class with saving_color when savingState is SAVING', () => {
-      comp.savingState.set(SavingStates.SAVING);
-
-      const result = comp.savingBadgeCalculatedClass();
-
-      expect(result).toBe('flex flex-wrap justify-around content-center gap-1 saving_color');
-    });
-
-    it('should return class with saving_color for any other savingState value', () => {
-      // Test with a value that's not SAVED or FAILED
-      comp.savingState.set('SAVING');
-
-      const result = comp.savingBadgeCalculatedClass();
-
-      expect(result).toBe('flex flex-wrap justify-around content-center gap-1 saving_color');
-    });
-  });
-
   describe('allPagesValid computed property', () => {
     it('should return false when personalInfoDataValid is false', async () => {
       // First check fails - short circuits
@@ -1581,85 +1551,47 @@ describe('ApplicationForm', () => {
     });
   });
 
-  describe('performAutomaticSave', () => {
-    it('should do nothing when savingState is not SAVING', async () => {
-      comp.savingState.set(SavingStates.SAVED); // Not SAVING
-
-      const saveToLocalStorageSpy = spyOnPrivate(comp, 'saveToLocalStorage');
-      const sendCreateApplicationDataSpy = vi.spyOn(comp, 'sendCreateApplicationData');
-
-      await comp.performAutomaticSave();
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      // Should not call any save methods
-      expect(saveToLocalStorageSpy).not.toHaveBeenCalled();
-      expect(sendCreateApplicationDataSpy).not.toHaveBeenCalled();
-      // State should remain unchanged
-      expect(comp.savingState()).toBe(SavingStates.SAVED);
-    });
-
-    it('should save to localStorage and set state to SAVED when useLocalStorage is true and save succeeds', async () => {
-      comp.savingState.set(SavingStates.SAVING);
+  describe('executeAutoSave', () => {
+    it('should save to localStorage and return true when useLocalStorage is true and save succeeds', async () => {
       comp.useLocalStorage.set(true);
-
       const saveToLocalStorageSpy = spyOnPrivate(comp, 'saveToLocalStorage').mockReturnValue(true);
 
-      await comp.performAutomaticSave();
-
-      fixture.detectChanges();
-      await fixture.whenStable();
+      const saved = await comp.executeAutoSave();
 
       expect(saveToLocalStorageSpy).toHaveBeenCalled();
-      expect(comp.savingState()).toBe(SavingStates.SAVED);
+      expect(saved).toBe(true);
     });
 
-    it('should save to localStorage and set state to FAILED when useLocalStorage is true and save fails', async () => {
-      comp.savingState.set(SavingStates.SAVING);
+    it('should save to localStorage and return false when useLocalStorage is true and save fails', async () => {
       comp.useLocalStorage.set(true);
-
       const saveToLocalStorageSpy = spyOnPrivate(comp, 'saveToLocalStorage').mockReturnValue(false);
 
-      await comp.performAutomaticSave();
-
-      fixture.detectChanges();
-      await fixture.whenStable();
+      const saved = await comp.executeAutoSave();
 
       expect(saveToLocalStorageSpy).toHaveBeenCalled();
-      expect(comp.savingState()).toBe(SavingStates.FAILED);
+      expect(saved).toBe(false);
     });
 
-    it('should save to server and set state to SAVED when useLocalStorage is false and save succeeds', async () => {
-      comp.savingState.set(SavingStates.SAVING);
-      comp.useLocalStorage.set(false);
-      comp.applicationState.set('SAVED'); // Example application state
-
-      const sendCreateApplicationDataSpy = vi.spyOn(comp, 'sendCreateApplicationData').mockResolvedValue(true);
-
-      await comp.performAutomaticSave();
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(sendCreateApplicationDataSpy).toHaveBeenCalledWith('SAVED', false);
-      expect(comp.savingState()).toBe(SavingStates.SAVED);
-    });
-
-    it('should save to server and set state to FAILED when useLocalStorage is false and save fails', async () => {
-      comp.savingState.set(SavingStates.SAVING);
+    it('should save to server and return true when useLocalStorage is false and save succeeds', async () => {
       comp.useLocalStorage.set(false);
       comp.applicationState.set('SAVED');
+      const sendDataSpy = vi.spyOn(comp, 'sendCreateApplicationData').mockResolvedValue(true);
 
-      const sendCreateApplicationDataSpy = vi.spyOn(comp, 'sendCreateApplicationData').mockResolvedValue(false);
+      const saved = await comp.executeAutoSave();
 
-      await comp.performAutomaticSave();
+      expect(sendDataSpy).toHaveBeenCalledWith('SAVED', false);
+      expect(saved).toBe(true);
+    });
 
-      fixture.detectChanges();
-      await fixture.whenStable();
+    it('should save to server and return false when useLocalStorage is false and save fails', async () => {
+      comp.useLocalStorage.set(false);
+      comp.applicationState.set('SAVED');
+      const sendDataSpy = vi.spyOn(comp, 'sendCreateApplicationData').mockResolvedValue(false);
 
-      expect(sendCreateApplicationDataSpy).toHaveBeenCalledWith('SAVED', false);
-      expect(comp.savingState()).toBe(SavingStates.FAILED);
+      const saved = await comp.executeAutoSave();
+
+      expect(sendDataSpy).toHaveBeenCalledWith('SAVED', false);
+      expect(saved).toBe(false);
     });
   });
 

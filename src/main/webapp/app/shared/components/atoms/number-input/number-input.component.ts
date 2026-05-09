@@ -9,7 +9,6 @@ import { BaseInputDirective } from '../base-input/base-input.component';
 @Component({
   selector: 'jhi-number-input',
   templateUrl: './number-input.component.html',
-  styleUrl: './number-input.component.scss',
   standalone: true,
   imports: [FormsModule, FontAwesomeModule, InputNumberModule, ReactiveFormsModule, InputNumberModule, TooltipModule],
 })

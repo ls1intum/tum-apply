@@ -7,7 +7,6 @@ import { TooltipModule } from 'primeng/tooltip';
   selector: 'jhi-rating',
   imports: [TooltipModule],
   templateUrl: './rating.component.html',
-  styleUrl: './rating.component.scss',
 })
 export class RatingComponent {
   rating = model<number | undefined>(undefined);
