@@ -189,6 +189,8 @@ export default class ApplicationDetailForApplicantComponent {
     return `${grade} ${scale}`;
   });
 
+  readonly documentViewerHeightClass = 'h-[25rem] max-lg:h-[30rem] max-md:h-[31.25rem]';
+
   readonly dropDownOptions = DropDownOptions;
   private applicationApi = inject(ApplicationResourceApi);
   private route = inject(ActivatedRoute);

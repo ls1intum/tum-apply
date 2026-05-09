@@ -16,6 +16,9 @@ import { ApplicationDetailDTO } from '../../../../generated/model/application-de
 export class ApplicationDetailCardComponent {
   application = input.required<ApplicationDetailDTO>();
 
+  readonly educationCardClass =
+    'pb-6 rounded-lg border border-border-default flex flex-col justify-start items-center gap-2.5 max-xl:w-full xl:w-96';
+
   motivationLabel = computed(() => this.translate('entity.applicationDetail.motivation'));
   skillsLabel = computed(() => this.translate('entity.applicationDetail.skills'));
   researchExperienceLabel = computed(() => this.translate('entity.applicationDetail.researchExperience'));

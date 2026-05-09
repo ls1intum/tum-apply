@@ -285,7 +285,7 @@
                 <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.CV"></h3>
               </div>
               <div class="section-card-body">
-                <div class="h-[25rem] max-lg:h-[30rem] max-md:h-[31.25rem]">
+                <div [class]="documentViewerHeightClass">
                   <jhi-document-viewer [documentId]="cvDoc" />
                 </div>
               </div>
@@ -300,7 +300,7 @@
                   <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.BACHELOR_TRANSCRIPT"></h3>
                 </div>
                 <div class="section-card-body">
-                  <div class="h-[25rem] max-lg:h-[30rem] max-md:h-[31.25rem]">
+                  <div [class]="documentViewerHeightClass">
                     <jhi-document-viewer [documentId]="doc" />
                   </div>
                 </div>
@@ -316,7 +316,7 @@
                   <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.MASTER_TRANSCRIPT"></h3>
                 </div>
                 <div class="section-card-body">
-                  <div class="h-[25rem] max-lg:h-[30rem] max-md:h-[31.25rem]">
+                  <div [class]="documentViewerHeightClass">
                     <jhi-document-viewer [documentId]="doc" />
                   </div>
                 </div>
@@ -332,7 +332,7 @@
                   <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.REFERENCES"></h3>
                 </div>
                 <div class="section-card-body">
-                  <div class="h-[25rem] max-lg:h-[30rem] max-md:h-[31.25rem]">
+                  <div [class]="documentViewerHeightClass">
                     <jhi-document-viewer [documentId]="doc" />
                   </div>
                 </div>

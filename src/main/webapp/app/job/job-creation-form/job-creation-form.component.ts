@@ -125,6 +125,7 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
   readonly publishButtonSeverity = 'primary' as ButtonColor;
   readonly publishButtonIcon = 'paper-plane';
+  readonly stepContainerClass = 'mx-auto w-full max-w-4xl px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10';
   /** Width of the compliance popover, used to clamp its position within the viewport.
    * matches the width w-72 set in ai-compliance-popover.component.html.
    */

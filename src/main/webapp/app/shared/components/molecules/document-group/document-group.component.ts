@@ -16,4 +16,7 @@ import { ApplicationDocumentIdsDTO } from '../../../../generated/model/applicati
 })
 export default class DocumentGroupComponent {
   documentIds = input.required<ApplicationDocumentIdsDTO>();
+
+  readonly documentSectionClass = 'mb-2 flex flex-col rounded-lg border border-border-default p-4';
+  readonly documentViewerClass = 'mb-1 h-80 w-full rounded-lg border border-border-default';
 }

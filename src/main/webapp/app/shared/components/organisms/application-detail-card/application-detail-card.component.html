@@ -170,7 +170,7 @@
 <!-- Education Information Template -->
 <ng-template #educationInfoTemplate>
   <!-- Bachelor's Information Card -->
-  <div class="pb-6 rounded-lg border border-border-default flex flex-col justify-start items-center gap-2.5 max-xl:w-full xl:w-96">
+  <div [class]="educationCardClass">
     <ng-container
       [ngTemplateOutlet]="card_header"
       [ngTemplateOutletContext]="{ header: 'entity.detail_card.bachelor_info', icon: 'building-columns' }"
@@ -191,7 +191,7 @@
     </div>
   </div>
   <!-- Master's Information Card -->
-  <div class="pb-6 rounded-lg border border-border-default flex flex-col justify-start items-center gap-2.5 max-xl:w-full xl:w-96">
+  <div [class]="educationCardClass">
     <ng-container
       [ngTemplateOutlet]="card_header"
       [ngTemplateOutletContext]="{ header: 'entity.detail_card.master_info', icon: 'building-columns' }"
