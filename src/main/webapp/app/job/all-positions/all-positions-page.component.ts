@@ -216,12 +216,29 @@ export class AllPositionsPageComponent implements OnInit {
     return menuMap;
   });
 
-  readonly getMenuItems = computed(() => {
-    const menuMap = this.jobMenuItems();
-    return (job: AdminCreatedJobDTO): JhiMenuItem[] => {
-      return menuMap.get(job.jobId) ?? [];
-    };
-  });
+  readonly filters = computed(() => [
+    {
+      filterId: 'status',
+      filterLabel: 'allPositionsPage.tableColumn.status',
+      filterSearchPlaceholder: 'allPositionsPage.searchFilterSortBar.filterOptions.stateSearchPlaceholder',
+      filterOptions: this.availableStatusLabels,
+      shouldTranslateOptions: true,
+    },
+    {
+      filterId: 'researchGroup',
+      filterLabel: 'allPositionsPage.filters.researchGroupLabel',
+      filterSearchPlaceholder: 'allPositionsPage.searchFilterSortBar.filterOptions.researchGroupSearchPlaceholder',
+      filterOptions: this.researchGroupOptionLabels(),
+      shouldTranslateOptions: false,
+    },
+    {
+      filterId: 'professor',
+      filterLabel: 'allPositionsPage.filters.professorLabel',
+      filterSearchPlaceholder: 'allPositionsPage.searchFilterSortBar.filterOptions.professorSearchPlaceholder',
+      filterOptions: this.professorOptionLabels(),
+      shouldTranslateOptions: false,
+    },
+  ]);
 
   private jobApi = inject(JobResourceApi);
   private researchGroupApi = inject(ResearchGroupResourceApi);

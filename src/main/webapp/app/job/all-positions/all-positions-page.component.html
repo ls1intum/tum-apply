@@ -72,29 +72,7 @@
         (searchOutput)="onSearchEmit($event)"
         (filterOutput)="onFilterEmit($event)"
         (sortOutput)="loadOnSortEmit($event)"
-        [filters]="[
-          {
-            filterId: 'status',
-            filterLabel: 'allPositionsPage.tableColumn.status',
-            filterSearchPlaceholder: 'allPositionsPage.searchFilterSortBar.filterOptions.stateSearchPlaceholder',
-            filterOptions: availableStatusLabels,
-            shouldTranslateOptions: true,
-          },
-          {
-            filterId: 'researchGroup',
-            filterLabel: 'allPositionsPage.filters.researchGroupLabel',
-            filterSearchPlaceholder: 'allPositionsPage.searchFilterSortBar.filterOptions.researchGroupSearchPlaceholder',
-            filterOptions: researchGroupOptionLabels(),
-            shouldTranslateOptions: false,
-          },
-          {
-            filterId: 'professor',
-            filterLabel: 'allPositionsPage.filters.professorLabel',
-            filterSearchPlaceholder: 'allPositionsPage.searchFilterSortBar.filterOptions.professorSearchPlaceholder',
-            filterOptions: professorOptionLabels(),
-            shouldTranslateOptions: false,
-          },
-        ]"
+        [filters]="filters()"
         [sortableFields]="sortableFields"
       />
       <div class="table-wrapper">
@@ -128,13 +106,13 @@
         <div class="flex justify-end gap-1">
           <jhi-button tooltip="button.view" icon="eye" variant="text" (click)="onViewJob(job.jobId)" />
           <jhi-button
-            [tooltip]="getMenuItems()(job).length > 0 ? 'button.actions' : 'button.noFurtherActions'"
+            [tooltip]="(jobMenuItems().get(job.jobId)?.length ?? 0) > 0 ? 'button.actions' : 'button.noFurtherActions'"
             icon="ellipsis-vertical"
             variant="text"
             (click)="menu.toggle($event)"
-            [disabled]="getMenuItems()(job).length === 0"
+            [disabled]="(jobMenuItems().get(job.jobId)?.length ?? 0) === 0"
           />
-          <jhi-menu #menu [items]="getMenuItems()(job)" [shouldTranslate]="true" />
+          <jhi-menu #menu [items]="jobMenuItems().get(job.jobId) ?? []" [shouldTranslate]="true" />
         </div>
       </ng-template>
 
