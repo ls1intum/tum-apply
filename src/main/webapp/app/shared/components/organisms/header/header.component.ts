@@ -21,6 +21,7 @@ import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { KeycloakRealmKind } from 'app/core/auth/keycloak-authentication.utils';
 import { ThemeService } from 'app/service/theme.service';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
@@ -106,7 +107,7 @@ export class HeaderComponent {
   });
 
   readonly headerButtonClass =
-    'inline-flex [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-md';
+    'inline-flex [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-0 sm:[&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-md';
 
   profileMenu = viewChild<MenuComponent>('profileMenu');
   isProfileMenuOpen = signal(false);
@@ -197,6 +198,14 @@ export class HeaderComponent {
 
   async onTUMSSOLogin(): Promise<void> {
     await this.authFacadeService.loginWithProvider(IdpProvider.TUM, this.router.url);
+  }
+
+  async onProfessorPasskeyLogin(): Promise<void> {
+    await this.authFacadeService.loginWithPasskey(KeycloakRealmKind.Tum, this.router.url);
+  }
+
+  async onApplicantPasskeyLogin(): Promise<void> {
+    await this.authFacadeService.loginWithPasskey(KeycloakRealmKind.External, this.router.url);
   }
 
   logout(): void {

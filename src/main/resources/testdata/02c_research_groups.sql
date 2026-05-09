@@ -178,6 +178,276 @@ VALUES (
         'Munich',
         '0000010',
         'DRAFT'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000011',
+        'Prof. Dr. Professor3 TUM',
+        'Research Group 3',
+        'RG3',
+        'rg3@tum.de',
+        'https://rg3.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 3 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000011',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000012',
+        'Prof. Dr. Professor4 TUM',
+        'Research Group 4',
+        'RG4',
+        'rg4@tum.de',
+        'https://rg4.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 4 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000012',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000013',
+        'Prof. Dr. Professor5 TUM',
+        'Research Group 5',
+        'RG5',
+        'rg5@tum.de',
+        'https://rg5.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 5 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000013',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000014',
+        'Prof. Dr. Professor6 TUM',
+        'Research Group 6',
+        'RG6',
+        'rg6@tum.de',
+        'https://rg6.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 6 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000014',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000015',
+        'Prof. Dr. Professor7 TUM',
+        'Research Group 7',
+        'RG7',
+        'rg7@tum.de',
+        'https://rg7.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 7 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000015',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000016',
+        'Prof. Dr. Professor8 TUM',
+        'Research Group 8',
+        'RG8',
+        'rg8@tum.de',
+        'https://rg8.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 8 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000016',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000017',
+        'Prof. Dr. Professor9 TUM',
+        'Research Group 9',
+        'RG9',
+        'rg9@tum.de',
+        'https://rg9.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 9 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000017',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000018',
+        'Prof. Dr. Professor10 TUM',
+        'Research Group 10',
+        'RG10',
+        'rg10@tum.de',
+        'https://rg10.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 10 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000018',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000019',
+        'Prof. Dr. Professor11 TUM',
+        'Research Group 11',
+        'RG11',
+        'rg11@tum.de',
+        'https://rg11.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 11 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000019',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000020',
+        'Prof. Dr. Professor12 TUM',
+        'Research Group 12',
+        'RG12',
+        'rg12@tum.de',
+        'https://rg12.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 12 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000020',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000021',
+        'Prof. Dr. Professor13 TUM',
+        'Research Group 13',
+        'RG13',
+        'rg13@tum.de',
+        'https://rg13.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 13 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000021',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000022',
+        'Prof. Dr. Professor14 TUM',
+        'Research Group 14',
+        'RG14',
+        'rg14@tum.de',
+        'https://rg14.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 14 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000022',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000023',
+        'Prof. Dr. Professor15 TUM',
+        'Research Group 15',
+        'RG15',
+        'rg15@tum.de',
+        'https://rg15.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 15 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000023',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000024',
+        'Prof. Dr. Professor16 TUM',
+        'Research Group 16',
+        'RG16',
+        'rg16@tum.de',
+        'https://rg16.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 16 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000024',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000025',
+        'Prof. Dr. Professor17 TUM',
+        'Research Group 17',
+        'RG17',
+        'rg17@tum.de',
+        'https://rg17.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 17 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000025',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000026',
+        'Prof. Dr. Professor18 TUM',
+        'Research Group 18',
+        'RG18',
+        'rg18@tum.de',
+        'https://rg18.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 18 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000026',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000027',
+        'Prof. Dr. Professor19 TUM',
+        'Research Group 19',
+        'RG19',
+        'rg19@tum.de',
+        'https://rg19.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 19 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000027',
+        'ACTIVE'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000028',
+        'Prof. Dr. Professor20 TUM',
+        'Research Group 20',
+        'RG20',
+        'rg20@tum.de',
+        'https://rg20.tum.de',
+        '00000000-0000-0000-0000-000000000001',
+        '<p>Research Group 20 — placeholder testdata research group.</p>',
+        'Arcisstraße 21',
+        '80333',
+        'Munich',
+        '0000028',
+        'ACTIVE'
     );
 
 -- =============================================
@@ -196,7 +466,6 @@ SET
 WHERE
     user_id = '00000000-0000-0000-0000-000000000102';
 
--- User: reviewer@tum.de → DSG
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000002'
@@ -205,99 +474,116 @@ WHERE
 
 UPDATE users
 SET
+  research_group_id = '00000000-0000-0000-0000-000000000001'
+WHERE
+  user_id = '00000000-0000-0000-0000-000000000107';
+
+UPDATE users
+SET
+  research_group_id = '00000000-0000-0000-0000-000000000002'
+WHERE
+  user_id = '00000000-0000-0000-0000-000000000108';
+
+UPDATE users
+SET
     research_group_id = '00000000-0000-0000-0000-000000000003' -- Quantum Computing Lab
 WHERE
     user_id = '11111111-0000-0000-0000-000000000002';
--- John Doe
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000004' -- Biomedical Engineering Group
 WHERE
     user_id = '11111111-0000-0000-0000-000000000003';
--- Alice Nguyen
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000005' -- Renewable Energy Systems
 WHERE
     user_id = '11111111-0000-0000-0000-000000000004';
--- Ricardo Martínez
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000006' -- Human-Robot Interaction Lab
 WHERE
     user_id = '11111111-0000-0000-0000-000000000005';
--- Yuki Tanaka
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000007' -- Climate Systems Research
 WHERE
     user_id = '11111111-0000-0000-0000-000000000008';
--- Emma Johnson
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000008' -- Digital Humanities Lab
 WHERE
     user_id = '11111111-0000-0000-0000-000000000009';
--- Lucas Rossi
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000009' -- Nano-Materials Group
 WHERE
     user_id = '11111111-0000-0000-0000-000000000010';
--- Fatima Khan
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000010' -- Computational Linguistics Research
 WHERE
     user_id = '11111111-0000-0000-0000-000000000012';
--- Daniel Kim
-
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000001' -- Applied Education Technologies
 WHERE
     user_id = '11111111-0000-0000-0000-000000000020';
--- Nina Petrova
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000001' -- Applied Education Technologies
 WHERE
     user_id = '11111111-0000-0000-0000-000000000021';
--- George Mensah
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000001' -- Applied Education Technologies
 WHERE
     user_id = '11111111-0000-0000-0000-000000000022';
--- Eva Fischer
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000002' -- Data Science Group
 WHERE
     user_id = '11111111-0000-0000-0000-000000000024';
--- Olga Smir
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000002' -- Data Science Group
 WHERE
     user_id = '11111111-0000-0000-0000-000000000027';
--- Erik Olsen
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000002' -- Data Science Group
 WHERE
     user_id = '11111111-0000-0000-0000-000000000029';
--- Matteo Rinaldi
+
+-- Assign professor3..professor20 to Research Group 3..Research Group 20
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000011' WHERE user_id = '00000000-0000-0000-0000-000000000109';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000012' WHERE user_id = '00000000-0000-0000-0000-000000000110';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000013' WHERE user_id = '00000000-0000-0000-0000-000000000111';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000014' WHERE user_id = '00000000-0000-0000-0000-000000000112';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000015' WHERE user_id = '00000000-0000-0000-0000-000000000113';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000016' WHERE user_id = '00000000-0000-0000-0000-000000000114';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000017' WHERE user_id = '00000000-0000-0000-0000-000000000115';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000018' WHERE user_id = '00000000-0000-0000-0000-000000000116';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000019' WHERE user_id = '00000000-0000-0000-0000-000000000117';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000020' WHERE user_id = '00000000-0000-0000-0000-000000000118';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000021' WHERE user_id = '00000000-0000-0000-0000-000000000119';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000022' WHERE user_id = '00000000-0000-0000-0000-000000000120';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000023' WHERE user_id = '00000000-0000-0000-0000-000000000121';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000024' WHERE user_id = '00000000-0000-0000-0000-000000000122';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000025' WHERE user_id = '00000000-0000-0000-0000-000000000123';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000026' WHERE user_id = '00000000-0000-0000-0000-000000000124';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000027' WHERE user_id = '00000000-0000-0000-0000-000000000125';
+UPDATE users SET research_group_id = '00000000-0000-0000-0000-000000000028' WHERE user_id = '00000000-0000-0000-0000-000000000126';
