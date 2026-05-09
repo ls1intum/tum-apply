@@ -578,9 +578,9 @@ describe('AllPositionsPageComponent', () => {
   });
 
   describe('Create job button', () => {
-    it('should navigate to /job/create with returnTo=all-positions when clicked', () => {
+    it('should navigate to /job/create when clicked', () => {
       component.onCreateJob();
-      expect(router.navigate).toHaveBeenCalledExactlyOnceWith(['/job/create'], { queryParams: { returnTo: 'all-positions' } });
+      expect(router.navigate).toHaveBeenCalledExactlyOnceWith(['/job/create']);
     });
   });
 });

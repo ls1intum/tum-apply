@@ -705,7 +705,7 @@ export class JobCreationFormComponent {
       // refresh local truth from server response
       this.applyServerJobForm(saved);
       this.toastService.showSuccessKey('toast.published');
-      void this.router.navigate([this.returnRoute()]);
+      this.onBack();
     } catch {
       this.toastService.showErrorKey('toast.publishFailed');
     }
@@ -716,15 +716,6 @@ export class JobCreationFormComponent {
    */
   onBack(): void {
     this.location.back();
-  }
-
-  /**
-   * Resolves the post-action navigation target from the optional returnTo query param.
-   * Admins arriving from /all-positions pass `returnTo=all-positions`; everyone else returns to /my-positions.
-   */
-  private returnRoute(): string {
-    const returnTo = this.route.snapshot.queryParamMap.get('returnTo');
-    return returnTo === 'all-positions' ? '/all-positions' : '/my-positions';
   }
 
   /**
@@ -1329,7 +1320,7 @@ export class JobCreationFormComponent {
         this.mode.set('edit');
         const jobId = this.route.snapshot.paramMap.get('job_id') ?? '';
         if (!jobId) {
-          this.router.navigate([this.returnRoute()]);
+          this.router.navigate(['/my-positions']);
           return;
         }
 
@@ -1347,7 +1338,7 @@ export class JobCreationFormComponent {
       this.autoSaveInitialized = false;
     } catch {
       this.toastService.showErrorKey('toast.loadFailed');
-      this.router.navigate([this.returnRoute()]);
+      this.router.navigate(['/my-positions']);
     } finally {
       this.isLoading.set(false);
     }

@@ -287,7 +287,7 @@ export class AllPositionsPageComponent implements OnInit {
   }
 
   onCreateJob(): void {
-    void this.router.navigate(['/job/create'], { queryParams: { returnTo: 'all-positions' } });
+    void this.router.navigate(['/job/create']);
   }
 
   onViewJob(jobId: string): void {
