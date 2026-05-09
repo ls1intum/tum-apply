@@ -13,8 +13,8 @@
 
 <jhi-confirm-dialog
   label="button.delete"
-  header="allPositionsPage.confirmDialog.deleteHeader"
-  message="allPositionsPage.confirmDialog.deleteMessage"
+  [header]="deleteDialogHeaderKey()"
+  [message]="deleteDialogMessageKey()"
   severity="danger"
   confirmIcon="trash"
   [showOpenButton]="false"
@@ -35,6 +35,18 @@
   (closed)="showCloseDialog.set(false)"
 />
 
+<jhi-confirm-dialog
+  label="button.reopen"
+  header="allPositionsPage.confirmDialog.reopenHeader"
+  message="allPositionsPage.confirmDialog.reopenMessage"
+  severity="primary"
+  confirmIcon="rotate-right"
+  [showOpenButton]="false"
+  [visible]="showReopenDialog()"
+  (confirmed)="onConfirmReopen()"
+  (closed)="showReopenDialog.set(false)"
+/>
+
 <div class="page-container">
   <div class="header-container">
     <div class="page-header">
@@ -42,6 +54,13 @@
         <span jhiTranslate="allPositionsPage.header.title"></span>
       </h1>
     </div>
+    <jhi-button
+      label="allPositionsPage.header.createButton"
+      icon="plus"
+      severity="primary"
+      (click)="onCreateJob()"
+      [shouldTranslate]="true"
+    />
   </div>
   <div class="my-positions-container">
     <div class="body">
