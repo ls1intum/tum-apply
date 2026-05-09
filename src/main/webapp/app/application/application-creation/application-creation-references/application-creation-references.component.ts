@@ -21,8 +21,7 @@ const TOAST_PREFIX = 'entity.applicationReferences';
 /**
  * Step shown in the application creation flow when the underlying job has external
  * recommendation letters enabled. Lets the applicant add and remove referee contacts
- * (title / first name / last name / email). The invitation email is not sent here —
- * it goes out on application submit.
+ * (title / first name / last name / email).
  */
 @Component({
   selector: 'jhi-application-creation-references',
@@ -54,9 +53,7 @@ export default class ApplicationCreationReferencesComponent {
   readonly titleOptions: SelectOption[] = TITLE_OPTIONS.map(value => ({ name: value, value }));
   readonly selectedTitleOption = signal<SelectOption | undefined>(undefined);
 
-  private readonly formBuilder = inject(FormBuilder);
-  private readonly toastService = inject(ToastService);
-  private readonly referenceApi = inject(ReferenceRequestResourceApi);
+  readonly formBuilder = inject(FormBuilder);
 
   readonly addForm = this.formBuilder.nonNullable.group({
     title: this.formBuilder.nonNullable.control(''),
@@ -66,9 +63,11 @@ export default class ApplicationCreationReferencesComponent {
   });
 
   /** Has the applicant added at least the required number of referees? */
-  readonly stepValid = computed(() => this.references().length >= (this.requiredCount() ?? 0));
+  readonly stepValid = computed(() => this.references().length >= this.requiredCount());
 
   private readonly initialized = signal<boolean>(false);
+  private readonly toastService = inject(ToastService);
+  private readonly referenceApi = inject(ReferenceRequestResourceApi);
 
   /**
    * Reload the list whenever the active applicationId becomes available.
@@ -89,9 +88,8 @@ export default class ApplicationCreationReferencesComponent {
    * Updates the bound form control whenever the title dropdown selection changes.
    */
   onTitleSelected(option: SelectOption): void {
-    const selected = option ?? undefined;
-    this.selectedTitleOption.set(selected);
-    this.addForm.controls.title.setValue(typeof selected?.value === 'string' ? selected.value : '');
+    this.selectedTitleOption.set(option);
+    this.addForm.controls.title.setValue(typeof option.value === 'string' ? option.value : '');
   }
 
   /**
@@ -107,7 +105,7 @@ export default class ApplicationCreationReferencesComponent {
     try {
       const created = await firstValueFrom(
         this.referenceApi.add(this.applicationId(), {
-          title: raw.title?.trim() || undefined,
+          title: raw.title.trim() || undefined,
           firstName: raw.firstName.trim(),
           lastName: raw.lastName.trim(),
           email: raw.email.trim(),
@@ -121,21 +119,6 @@ export default class ApplicationCreationReferencesComponent {
     } finally {
       this.loading.set(false);
     }
-  }
-
-  /**
-   * Clears the add form value and resets validation state so the inputs render as
-   * pristine and untouched after a successful submit.
-   */
-  private resetAddForm(): void {
-    this.selectedTitleOption.set(undefined);
-    this.addForm.reset({ title: '', firstName: '', lastName: '', email: '' });
-    this.addForm.markAsPristine();
-    this.addForm.markAsUntouched();
-    Object.values(this.addForm.controls).forEach(control => {
-      control.markAsPristine();
-      control.markAsUntouched();
-    });
   }
 
   /**
@@ -158,11 +141,29 @@ export default class ApplicationCreationReferencesComponent {
     }
   }
 
+  /**
+   * Clears the add form value and resets validation state so the inputs render as
+   * pristine and untouched after a successful submit.
+   */
+  private resetAddForm(): void {
+    this.selectedTitleOption.set(undefined);
+    this.addForm.reset({ title: '', firstName: '', lastName: '', email: '' });
+    this.addForm.markAsPristine();
+    this.addForm.markAsUntouched();
+    Object.values(this.addForm.controls).forEach(control => {
+      control.markAsPristine();
+      control.markAsUntouched();
+    });
+  }
+
+  /**
+   * Loads the current list of references from the server and updates the local state.
+   */
   private async refresh(): Promise<void> {
     this.loading.set(true);
     try {
       const list = await firstValueFrom(this.referenceApi.list(this.applicationId()));
-      this.references.set(list ?? []);
+      this.references.set(list);
       this.referencesChanged.emit(this.references());
     } catch {
       this.toastService.showErrorKey(`${TOAST_PREFIX}.toast.loadFailed`);
