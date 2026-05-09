@@ -196,7 +196,7 @@
               </div>
             </div>
             @if (application.applicant?.user?.website || application.applicant?.user?.linkedinUrl) {
-              <div class="flex items-center gap-4 border-t-[0.05rem] border-border-default mt-4 pt-4">
+              <div class="flex items-center gap-4 border-t border-border-default mt-4 pt-4">
                 @if (application.applicant?.user?.website) {
                   <div class="flex items-center gap-2">
                     <fa-icon [icon]="['fas', 'link']" class="icon" />
