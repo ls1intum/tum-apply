@@ -494,7 +494,6 @@ SET
 WHERE
     user_id = '00000000-0000-0000-0000-000000000102';
 
--- User: reviewer@tum.de → DSG
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000002'
@@ -503,102 +502,99 @@ WHERE
 
 UPDATE users
 SET
+    research_group_id = '00000000-0000-0000-0000-000000000001'
+WHERE
+    user_id = '00000000-0000-0000-0000-000000000107';
+
+UPDATE users
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000002'
+WHERE
+    user_id = '00000000-0000-0000-0000-000000000108';
+
+UPDATE users
+SET
     research_group_id = '00000000-0000-0000-0000-000000000003' -- Quantum Computing Lab
 WHERE
     user_id = '11111111-0000-0000-0000-000000000002';
--- John Doe
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000004' -- Biomedical Engineering Group
 WHERE
     user_id = '11111111-0000-0000-0000-000000000003';
--- Alice Nguyen
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000005' -- Renewable Energy Systems
 WHERE
     user_id = '11111111-0000-0000-0000-000000000004';
--- Ricardo Martínez
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000006' -- Human-Robot Interaction Lab
 WHERE
     user_id = '11111111-0000-0000-0000-000000000005';
--- Yuki Tanaka
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000007' -- Climate Systems Research
 WHERE
     user_id = '11111111-0000-0000-0000-000000000008';
--- Emma Johnson
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000008' -- Digital Humanities Lab
 WHERE
     user_id = '11111111-0000-0000-0000-000000000009';
--- Lucas Rossi
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000009' -- Nano-Materials Group
 WHERE
     user_id = '11111111-0000-0000-0000-000000000010';
--- Fatima Khan
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000010' -- Computational Linguistics Research
 WHERE
     user_id = '11111111-0000-0000-0000-000000000012';
--- Daniel Kim
-
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000001' -- Applied Education Technologies
 WHERE
     user_id = '11111111-0000-0000-0000-000000000020';
--- Nina Petrova
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000001' -- Applied Education Technologies
 WHERE
     user_id = '11111111-0000-0000-0000-000000000021';
--- George Mensah
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000001' -- Applied Education Technologies
 WHERE
     user_id = '11111111-0000-0000-0000-000000000022';
--- Eva Fischer
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000002' -- Data Science Group
 WHERE
     user_id = '11111111-0000-0000-0000-000000000024';
--- Olga Smir
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000002' -- Data Science Group
 WHERE
     user_id = '11111111-0000-0000-0000-000000000027';
--- Erik Olsen
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000002' -- Data Science Group
 WHERE
     user_id = '11111111-0000-0000-0000-000000000029';
--- Matteo Rinaldi
 
 
 -- =============================================
