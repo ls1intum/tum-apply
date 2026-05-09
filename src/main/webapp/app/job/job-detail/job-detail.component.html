@@ -153,12 +153,18 @@
                 }
               </div>
               <div class="info-row">
-                <span jhiTranslate="jobDetailPage.labels.contractDuration"></span>
+                <span class="whitespace-nowrap" jhiTranslate="jobDetailPage.labels.contractDuration"></span>
                 @if (job.contractDuration !== '') {
-                  <span class="value"
-                    >{{ job.contractDuration }}
-                    <span [jhiTranslate]="job.contractDuration === '1' ? 'jobDetailPage.units.year' : 'jobDetailPage.units.years'"></span
-                  ></span>
+                  <span class="value">
+                    {{ job.contractDuration }}
+                    <span [jhiTranslate]="job.contractDuration === '1' ? 'jobDetailPage.units.year' : 'jobDetailPage.units.years'"></span>
+                    @if (job.contractExtendable) {
+                      <span
+                        class="block text-text-secondary"
+                        jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.extendable.overviewLabel"
+                      ></span>
+                    }
+                  </span>
                 } @else {
                   <span class="value">-</span>
                 }
@@ -173,7 +179,21 @@
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.startDate"></span>
-                <span class="value">{{ (job.startDate | localizedDate) || '-' }}</span>
+                @if (job.startDate) {
+                  <span class="value">
+                    {{ job.startDate | localizedDate }}
+                    @if (job.startDateByArrangement) {
+                      <span
+                        class="block text-text-secondary"
+                        jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.overviewLabel"
+                      ></span>
+                    }
+                  </span>
+                } @else if (job.startDateByArrangement) {
+                  <span class="value" jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.label"></span>
+                } @else {
+                  <span class="value">-</span>
+                }
               </div>
               @if (job.endDate) {
                 <div class="info-row">

@@ -45,11 +45,13 @@ export interface JobDetails {
   location: JobFormDTOLocationEnum;
   workload: string;
   contractDuration: string;
+  contractExtendable: boolean;
   fundingType: JobFormDTOFundingTypeEnum | undefined;
   tvlGrade: JobFormDTOTvlGradeEnum | undefined;
   jobDescriptionEN: string;
   jobDescriptionDE: string;
   startDate: string;
+  startDateByArrangement: boolean;
   endDate: string;
   createdAt: string;
   lastModifiedAt: string;
@@ -518,11 +520,13 @@ export class JobDetailComponent {
       location: data.location as JobFormDTOLocationEnum,
       workload: data.workload?.toString() ?? '',
       contractDuration: data.contractDuration?.toString() ?? '',
+      contractExtendable: data.contractExtendable ?? false,
       fundingType: data.fundingType as JobFormDTOFundingTypeEnum | undefined,
       tvlGrade: data.tvlGrade as JobFormDTOTvlGradeEnum | undefined,
       jobDescriptionEN: data.jobDescriptionEN ?? '',
       jobDescriptionDE: data.jobDescriptionDE ?? '',
       startDate,
+      startDateByArrangement: data.startDateByArrangement ?? false,
       endDate,
       createdAt,
       lastModifiedAt,
@@ -541,7 +545,7 @@ export class JobDetailComponent {
       applicationId: jobDetailDTO.applicationId ?? undefined,
       applicationState: jobDetailDTO.applicationState ?? undefined,
 
-      suitableForDisabled: isForm ? (data as JobFormDTO).suitableForDisabled : jobDetailDTO.suitableForDisabled,
+      suitableForDisabled: data.suitableForDisabled,
     };
   }
 
