@@ -1620,7 +1620,7 @@ export class JobCreationFormComponent {
             }
           }
         },
-        abortController.signal
+        abortController.signal,
       );
 
       if (accumulatedContent) {
@@ -1655,6 +1655,7 @@ export class JobCreationFormComponent {
             this.isAnalyzing.set(true);
 
             const sourceIssues = await this.analyzeAndUpdateScore(currentLang);
+            if (sourceIssues === undefined) return;
             const mappedIssues = await firstValueFrom(
               this.aiApi.mapComplianceIssues(targetLang, jobId, {
                 text: extractTextFromHtml(text),
@@ -1695,9 +1696,9 @@ export class JobCreationFormComponent {
    *
    * @param lang - The language to analyze ('en' or 'de')
    */
-  private async analyzeAndUpdateScore(lang: string): Promise<ComplianceIssue[]> {
+  private async analyzeAndUpdateScore(lang: string): Promise<ComplianceIssue[] | undefined> {
     const jobId = this.jobId();
-    if (!jobId) return [];
+    if (!jobId) return undefined;
 
     // 1) Build a fresh DTO and skip if the description hasn't changed since last analysis
     const jobForm = this.createJobDTO(JobFormDTOStateEnum.Draft);
@@ -1705,7 +1706,7 @@ export class JobCreationFormComponent {
     const descriptionText = lang === 'en' ? (jobForm.jobDescriptionEN ?? '') : (jobForm.jobDescriptionDE ?? '');
     if (!descriptionText.trim() || descriptionText === this.lastAnalyzedText[lang]) {
       this.isAnalyzing.set(false); // Clear flag in case caller pre-set it
-      return [];
+      return undefined;
     }
 
     this.isAnalyzing.set(true);
@@ -1739,7 +1740,7 @@ export class JobCreationFormComponent {
       return compliance;
     } catch {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiComplianceFailed');
-      return [];
+      return undefined;
     } finally {
       this.isAnalyzing.set(false);
     }

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
@@ -420,35 +421,43 @@ public class AiService {
         String translatedText,
         String toLang
     ) {
-        if (jobId == null || sourceIssues == null || sourceIssues.isEmpty() || translatedText == null || translatedText.isBlank()) {
+        if (sourceIssues == null) {
+            return List.of();
+        }
+        // Empty source issues mean "no issues found" -> clear stale target-language issues.
+        if (sourceIssues.isEmpty()) {
+            jobService.updateComplianceIssues(jobId, List.of(), toLang);
+            return List.of();
+        }
+        // Missing target text only means "cannot map" -> do not clear existing issues.
+        if (translatedText == null || translatedText.isBlank()) {
             return List.of();
         }
         if (!aiFeatureToggleService.isAiAvailable()) {
             return List.of();
         }
 
-        String snippets = buildSnippetList(sourceIssues);
+        jobService.assertCanManageJob(jobId);
+
+        String snippets = sourceIssues
+            .stream()
+            .map(i -> i.getText().trim())
+            .collect(Collectors.joining("\n"));
 
         List<String> mappedTexts;
-        try {
-            mappedTexts = chatClient
-                .prompt()
-                .user(u ->
-                    u
-                        .text(snippetMappingResource)
-                        .param("snippets", snippets)
-                        .param("jobDescription", originalText)
-                        .param("translatedText", translatedText)
-                )
-                .call()
-                .entity(new ParameterizedTypeReference<List<String>>() {});
-        } catch (Exception e) {
-            aiFeatureToggleService.recordFailure();
-            throw new InternalServerException("Compliance issue mapping failed", e);
-        }
+        mappedTexts = chatClient
+            .prompt()
+            .user(u ->
+                u
+                    .text(snippetMappingResource)
+                    .param("snippets", snippets)
+                    .param("jobDescription", originalText)
+                    .param("translatedText", translatedText)
+            )
+            .call()
+            .entity(new ParameterizedTypeReference<List<String>>() {});
 
-        if (mappedTexts == null || mappedTexts.size() != sourceIssues.size()) {
-            aiFeatureToggleService.recordFailure();
+        if (mappedTexts.size() != sourceIssues.size()) {
             throw new InternalServerException("Mapping returned an invalid number of snippets");
         }
 
@@ -469,15 +478,6 @@ public class AiService {
         }
 
         jobService.updateComplianceIssues(jobId, mappedIssues, toLang);
-        aiFeatureToggleService.recordSuccess();
         return mappedIssues;
-    }
-
-    private String buildSnippetList(List<ComplianceIssue> sourceIssues) {
-        StringBuilder snippetsBuilder = new StringBuilder();
-        for (ComplianceIssue issue : sourceIssues) {
-            snippetsBuilder.append(issue.getText().trim()).append("\n");
-        }
-        return snippetsBuilder.toString();
     }
 }
