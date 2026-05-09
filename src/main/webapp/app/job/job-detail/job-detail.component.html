@@ -53,7 +53,7 @@
           </div>
           <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
           @if (previewData()) {
-            <jhi-tag class="job-state-badge" text="jobState.preview" [color]="'info'" />
+            <jhi-tag class="job-state-badge" text="jobState.preview" [color]="'neutral'" />
           } @else if (job.belongsToResearchGroup) {
             <jhi-tag class="job-state-badge" [text]="jobStateText()" [color]="jobStateColor()" />
           }

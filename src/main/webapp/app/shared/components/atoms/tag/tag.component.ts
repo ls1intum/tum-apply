@@ -12,7 +12,7 @@ import { injectTranslator } from 'app/shared/util/translate-signal.util';
 })
 export class TagComponent {
   text = input<string>('');
-  color = input<'primary' | 'secondary' | 'success' | 'info' | 'warn' | 'danger' | 'contrast'>('primary');
+  color = input<'primary' | 'secondary' | 'success' | 'info' | 'warn' | 'danger' | 'contrast' | 'neutral'>('primary');
   icon = input<IconDefinition | undefined>(undefined);
   round = input<boolean>(false);
   iconRight = input<boolean>(false);
@@ -24,8 +24,14 @@ export class TagComponent {
   readonly iconProp = computed(() => this.icon() as IconDefinition);
   readonly severity = computed(() => {
     const colorValue = this.color();
-    return colorValue === 'primary' ? 'info' : colorValue;
+    if (colorValue === 'primary') return 'info';
+    // PrimeNG only ships styles for a fixed severity set; map our extra
+    // 'neutral' colour to 'secondary' and override the rendered colours
+    // via a Tailwind class on the element instead.
+    if (colorValue === 'neutral') return 'secondary';
+    return colorValue;
   });
+  readonly neutralOverrideClass = computed(() => (this.color() === 'neutral' ? 'p-tag-neutral' : ''));
 
   displayText = computed(() => this.translator.translate(this.text(), this.shouldTranslate(), this.translationParams()) ?? '');
   displayTooltipText = computed(
