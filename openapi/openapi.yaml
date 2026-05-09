@@ -3316,6 +3316,7 @@ components:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
         contractDuration: {type: integer, format: int32}
+        contractExtendable: {type: boolean}
         endDate: {type: string, format: date}
         fundingType:
           type: string
@@ -3333,6 +3334,7 @@ components:
             SINGAPORE]
         researchArea: {type: string}
         startDate: {type: string, format: date}
+        startDateByArrangement: {type: boolean}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
@@ -3366,6 +3368,7 @@ components:
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         contractDuration: {type: integer, format: int32}
+        contractExtendable: {type: boolean}
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
         fundingType:
@@ -3384,6 +3387,7 @@ components:
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroupSummaryDTO'}
         startDate: {type: string, format: date}
+        startDateByArrangement: {type: boolean}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
@@ -3437,6 +3441,7 @@ components:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
         contractDuration: {type: integer, format: int32}
+        contractExtendable: {type: boolean}
         endDate: {type: string, format: date}
         fundingType:
           type: string
@@ -3453,6 +3458,7 @@ components:
             SINGAPORE]
         researchArea: {type: string}
         startDate: {type: string, format: date}
+        startDateByArrangement: {type: boolean}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
