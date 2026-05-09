@@ -4,17 +4,13 @@ import de.tum.cit.aet.core.exception.UnauthorizedException;
 import de.tum.cit.aet.core.service.JwtService;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
-import de.tum.cit.aet.usermanagement.dto.auth.PasskeyActionTokenDTO;
-import de.tum.cit.aet.usermanagement.dto.auth.PasskeyDTO;
 import io.netty.channel.ChannelOption;
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.Configuration;
 import org.keycloak.representations.AccessTokenResponse;
-import org.keycloak.representations.idm.CredentialRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -39,13 +35,10 @@ public class KeycloakAuthenticationService {
     private static final String GRANT_TYPE_TOKEN_EXCHANGE = "urn:ietf:params:oauth:grant-type:token-exchange";
     private static final String GRANT_TYPE_REFRESH = "refresh_token";
 
-    private final AuthzClient externalRealmAuthzClient;
-    private final AuthzClient tumRealmAuthzClient;
+    private final AuthzClient authzClient;
 
     private final String keycloakUrl;
     private final String realm;
-    private final String tumLoginRealm;
-    private final String browserClientId;
     private final String clientId;
     private final String clientSecret;
 
@@ -54,30 +47,20 @@ public class KeycloakAuthenticationService {
 
     private final WebClient webClient;
     private final JwtService jwtService;
-    private final KeycloakUserService keycloakUserService;
 
     public KeycloakAuthenticationService(
         @Value("${keycloak.url}") String keycloakUrl,
-        @Value("${keycloak.external-login-realm}") String realm,
-        @Value("${keycloak.tum-login-realm}") String tumLoginRealm,
-        @Value("${keycloak.client-id}") String browserClientId,
+        @Value("${keycloak.realm}") String realm,
         @Value("${keycloak.server.client-id}") String clientId,
         @Value("${keycloak.server.client-secret}") String clientSecret,
-        @Value("${keycloak.admin.external.client-id}") String adminClientId,
-        @Value("${keycloak.admin.external.client-secret}") String adminClientSecret,
-        JwtService jwtService,
-        KeycloakUserService keycloakUserService
+        @Value("${keycloak.admin.client-id}") String adminClientId,
+        @Value("${keycloak.admin.client-secret}") String adminClientSecret,
+        JwtService jwtService
     ) {
-        this.externalRealmAuthzClient = AuthzClient.create(
-            new Configuration(keycloakUrl, realm, clientId, Map.of("secret", clientSecret), null)
-        );
-        this.tumRealmAuthzClient = AuthzClient.create(
-            new Configuration(keycloakUrl, tumLoginRealm, clientId, Map.of("secret", clientSecret), null)
-        );
+        this.authzClient = AuthzClient.create(new Configuration(keycloakUrl, realm, clientId, Map.of("secret", clientSecret), null));
+
         this.keycloakUrl = keycloakUrl;
         this.realm = realm;
-        this.tumLoginRealm = tumLoginRealm;
-        this.browserClientId = browserClientId;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
 
@@ -90,30 +73,23 @@ public class KeycloakAuthenticationService {
 
         this.webClient = WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
         this.jwtService = jwtService;
-        this.keycloakUserService = keycloakUserService;
     }
 
     /**
      * Authenticates an end user with email (username) and password using the OIDC password grant via
-     * Keycloak's Authorization Client. Tries the external-login realm first and falls back to the TUM
-     * realm so seeded test users in either realm can sign in via the email/password form.
+     * Keycloak's Authorization Client. Returns access/refresh tokens.
      *
      * @param email    user's email (username)
      * @param password user's password
      * @return DTO with access token, optional refresh token and lifetimes
-     * @throws UnauthorizedException if authentication fails in both realms or the response is invalid
+     * @throws UnauthorizedException if authentication fails or response is invalid
      */
     public AuthResponseDTO loginWithCredentials(String email, String password) {
         try {
-            AccessTokenResponse token = externalRealmAuthzClient.obtainAccessToken(email, password);
+            AccessTokenResponse token = authzClient.obtainAccessToken(email, password);
             return getResponseFromToken(token);
-        } catch (Exception externalFailure) {
-            try {
-                AccessTokenResponse token = tumRealmAuthzClient.obtainAccessToken(email, password);
-                return getResponseFromToken(token);
-            } catch (Exception tumFailure) {
-                throw new UnauthorizedException("Invalid username or password", tumFailure);
-            }
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid username or password", e);
         }
     }
 
@@ -128,12 +104,9 @@ public class KeycloakAuthenticationService {
             return;
         }
 
-        // The refresh token can come from either realm (external login or TUM IDP); try each in turn.
         if (
-            !logoutWithClient(this.realm, this.clientId, this.clientSecret, refreshToken) &&
-            !logoutWithClient(this.realm, this.adminClientId, this.adminClientSecret, refreshToken) &&
-            !logoutWithClient(this.tumLoginRealm, this.clientId, this.clientSecret, refreshToken) &&
-            !logoutWithClient(this.tumLoginRealm, this.adminClientId, this.adminClientSecret, refreshToken)
+            !logoutWithClient(this.clientId, this.clientSecret, refreshToken) &&
+            !logoutWithClient(this.adminClientId, this.adminClientSecret, refreshToken)
         ) {
             throw new UnauthorizedException("Failed to logout user");
         }
@@ -213,51 +186,10 @@ public class KeycloakAuthenticationService {
         form.add("requested_subject", keycloakUserId);
         form.add("audience", clientId);
 
-        AccessTokenResponse tokenResponse = callKeycloak(this.realm, OidcEndpoint.TOKEN, form, "Token exchange failed")
+        AccessTokenResponse tokenResponse = callKeycloak(OidcEndpoint.TOKEN, form, "Token exchange failed")
             .bodyToMono(AccessTokenResponse.class)
             .block(Duration.ofSeconds(5));
         return getResponseFromToken(tokenResponse);
-    }
-
-    /**
-     * Creates a DTO containing the necessary information to perform passkey-related actions on the client side,
-     * such as registering a new passkey.
-     *
-     * @param jwt the user's current access token as a JWT
-     * @return DTO with realm, client ID, token value and expiry for passkey actions
-     */
-    public PasskeyActionTokenDTO createPasskeyActionToken(Jwt jwt) {
-        return new PasskeyActionTokenDTO(
-            getRealmFromJwt(jwt),
-            getPasskeyClientId(jwt),
-            jwt.getTokenValue(),
-            jwtService.secondsUntilExpiry(jwt)
-        );
-    }
-
-    /**
-     * Lists the user's credentials from Keycloak and filters them to return only passkey-related credentials.
-     *
-     * @param jwt the user's current access token as a JWT
-     * @return list of passkey credentials projected as DTOs
-     */
-    public List<PasskeyDTO> listPasskeys(Jwt jwt) {
-        return keycloakUserService
-            .getCredentials(jwt.getSubject(), jwt.getIssuer())
-            .stream()
-            .filter(this::isPasskeyCredential)
-            .map(PasskeyDTO::of)
-            .toList();
-    }
-
-    /**
-     * Removes a passkey credential from the user's account in Keycloak.
-     *
-     * @param jwt          the user's current access token as a JWT
-     * @param credentialId the ID of the credential to remove
-     */
-    public void removePasskey(Jwt jwt, String credentialId) {
-        keycloakUserService.removeCredential(jwt.getSubject(), jwt.getIssuer(), credentialId);
     }
 
     // ===== Helpers =====
@@ -270,15 +202,15 @@ public class KeycloakAuthenticationService {
      * @param refreshToken the user's refresh token
      * @return true if logout succeeded, false if it was rejected (4xx)
      */
-    private boolean logoutWithClient(String realm, String clientId, String clientSecret, String refreshToken) {
+    private boolean logoutWithClient(String clientId, String clientSecret, String refreshToken) {
         try {
             MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
             addClientAuth(form, clientId, clientSecret);
             form.add("refresh_token", refreshToken);
-            callKeycloak(realm, OidcEndpoint.LOGOUT, form, "Failed to logout user").toBodilessEntity().block(Duration.ofSeconds(5));
+            callKeycloak(OidcEndpoint.LOGOUT, form, "Failed to logout user").toBodilessEntity().block(Duration.ofSeconds(5));
             return true;
         } catch (UnauthorizedException ex) {
-            log.debug("Logout with client {} on realm {} failed: {}", clientId, realm, ex.getMessage());
+            log.debug("Logout with client {} failed: {}", clientId, ex.getMessage());
             return false;
         }
     }
@@ -300,7 +232,7 @@ public class KeycloakAuthenticationService {
         addClientAuth(form, clientId, clientSecret);
         form.add("grant_type", GRANT_TYPE_REFRESH);
         form.add("refresh_token", refreshToken);
-        return callKeycloak(this.realm, OidcEndpoint.TOKEN, form, "Failed to refresh token")
+        return callKeycloak(OidcEndpoint.TOKEN, form, "Failed to refresh token")
             .bodyToMono(AccessTokenResponse.class)
             .block(Duration.ofSeconds(5));
     }
@@ -323,38 +255,11 @@ public class KeycloakAuthenticationService {
     }
 
     /**
-     * Returns the fully qualified OIDC endpoint URL (token or logout) for the given realm.
-     *
-     * @param realm    Keycloak realm name to address
-     * @param endpoint which OIDC endpoint to build the URL for
-     * @return fully qualified URL of the endpoint on the given realm
+     * Returns the fully qualified OIDC endpoint URL (token or logout) for the configured realm.
      */
-    private String endpointUrl(String realm, OidcEndpoint endpoint) {
+    private String endpointUrl(OidcEndpoint endpoint) {
         String endpointPath = (endpoint == OidcEndpoint.TOKEN) ? "token" : "logout";
         return keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/" + endpointPath;
-    }
-
-    private String getRealmFromJwt(Jwt jwt) {
-        String issuer = jwt.getIssuer() != null ? jwt.getIssuer().toString() : "";
-        if (realmIssuer(tumLoginRealm).equals(issuer)) {
-            return tumLoginRealm;
-        }
-        return realm;
-    }
-
-    private String realmIssuer(String realmName) {
-        String baseUrl = keycloakUrl.endsWith("/") ? keycloakUrl.substring(0, keycloakUrl.length() - 1) : keycloakUrl;
-        return baseUrl + "/realms/" + realmName;
-    }
-
-    private String getPasskeyClientId(Jwt jwt) {
-        String authorizedParty = jwtService.getAuthorizedParty(jwt);
-        return StringUtil.isBlank(authorizedParty) ? browserClientId : authorizedParty;
-    }
-
-    private boolean isPasskeyCredential(CredentialRepresentation credential) {
-        String type = credential.getType();
-        return "webauthn-passwordless".equalsIgnoreCase(type) || "webauthn".equalsIgnoreCase(type);
     }
 
     /**
@@ -369,16 +274,11 @@ public class KeycloakAuthenticationService {
      * POSTs an application/x-www-form-urlencoded form to the given OIDC endpoint and returns the prepared
      * {@link WebClient.ResponseSpec} with error mapping applied.
      */
-    private WebClient.ResponseSpec callKeycloak(
-        String realm,
-        OidcEndpoint endpoint,
-        MultiValueMap<String, String> form,
-        String errorPrefix
-    ) {
+    private WebClient.ResponseSpec callKeycloak(OidcEndpoint endpoint, MultiValueMap<String, String> form, String errorPrefix) {
         try {
             return webClient
                 .post()
-                .uri(endpointUrl(realm, endpoint))
+                .uri(endpointUrl(endpoint))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData(form))
                 .retrieve()
