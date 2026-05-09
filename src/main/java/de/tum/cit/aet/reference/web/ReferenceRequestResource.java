@@ -49,6 +49,7 @@ public class ReferenceRequestResource {
         @PathVariable UUID applicationId,
         @Valid @RequestBody CreateReferenceRequestDTO payload
     ) {
+        log.info("POST /api/applications/{}/references - Adding reference", applicationId);
         return ResponseEntity.ok(referenceRequestService.addToApplication(applicationId, payload));
     }
 
@@ -62,6 +63,7 @@ public class ReferenceRequestResource {
     @ApplicantOrAdmin
     @DeleteMapping("/{referenceId}")
     public ResponseEntity<Void> remove(@PathVariable UUID applicationId, @PathVariable UUID referenceId) {
+        log.info("DELETE /api/applications/{}/references/{} - Deleting reference", applicationId, referenceId);
         referenceRequestService.removeFromApplication(applicationId, referenceId);
         return ResponseEntity.noContent().build();
     }
