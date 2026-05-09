@@ -683,7 +683,7 @@ export class JobCreationFormComponent {
   /**
    * Publishes the job posting after validation.
    * Requires privacy consent and valid forms.
-   * Navigates to /my-positions on success.
+   * Navigates to the return route on success.
    *
    * Before sending the Published DTO, cancels any pending debounced autosave
    * and waits for an in-flight autosave to settle. Otherwise a Draft autosave
@@ -705,7 +705,7 @@ export class JobCreationFormComponent {
       // refresh local truth from server response
       this.applyServerJobForm(saved);
       this.toastService.showSuccessKey('toast.published');
-      void this.router.navigate(['/my-positions']);
+      void this.router.navigate([this.returnRoute()]);
     } catch {
       this.toastService.showErrorKey('toast.publishFailed');
     }
@@ -716,6 +716,15 @@ export class JobCreationFormComponent {
    */
   onBack(): void {
     this.location.back();
+  }
+
+  /**
+   * Resolves the post-action navigation target from the optional returnTo query param.
+   * Admins arriving from /all-positions pass `returnTo=all-positions`; everyone else returns to /my-positions.
+   */
+  private returnRoute(): string {
+    const returnTo = this.route.snapshot.queryParamMap.get('returnTo');
+    return returnTo === 'all-positions' ? '/all-positions' : '/my-positions';
   }
 
   /**
@@ -1320,7 +1329,7 @@ export class JobCreationFormComponent {
         this.mode.set('edit');
         const jobId = this.route.snapshot.paramMap.get('job_id') ?? '';
         if (!jobId) {
-          this.router.navigate(['/my-positions']);
+          this.router.navigate([this.returnRoute()]);
           return;
         }
 
@@ -1338,7 +1347,7 @@ export class JobCreationFormComponent {
       this.autoSaveInitialized = false;
     } catch {
       this.toastService.showErrorKey('toast.loadFailed');
-      this.router.navigate(['/my-positions']);
+      this.router.navigate([this.returnRoute()]);
     } finally {
       this.isLoading.set(false);
     }
