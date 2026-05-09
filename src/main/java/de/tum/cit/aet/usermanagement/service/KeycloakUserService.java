@@ -7,7 +7,6 @@ import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import jakarta.ws.rs.core.Response;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -35,31 +34,28 @@ public class KeycloakUserService {
     public record PagedResult<T>(List<T> content, long total) {}
 
     private final CurrentUserService currentUserService;
-    private final Keycloak tumKeycloak;
-    private final Keycloak externalKeycloak;
-    private final String keycloakUrl;
-    private final String tumRealm;
-    private final String externalRealm;
+    private final Keycloak keycloak;
+    private final String realm;
     private final UserRepository userRepository;
     private static final int SAFETY_MAX = 1000;
 
     public KeycloakUserService(
         UserRepository userRepository,
         @Value("${keycloak.url}") String url,
-        @Value("${keycloak.tum-login-realm}") String tumRealm,
-        @Value("${keycloak.external-login-realm}") String externalRealm,
-        @Value("${keycloak.admin.tum.client-id}") String tumClientId,
-        @Value("${keycloak.admin.tum.client-secret}") String tumClientSecret,
-        @Value("${keycloak.admin.external.client-id}") String externalClientId,
-        @Value("${keycloak.admin.external.client-secret}") String externalClientSecret,
+        @Value("${keycloak.realm}") String realm,
+        @Value("${keycloak.admin.client-id}") String clientId,
+        @Value("${keycloak.admin.client-secret}") String clientSecret,
         CurrentUserService currentUserService
     ) {
         this.userRepository = userRepository;
-        this.keycloakUrl = url;
-        this.tumRealm = tumRealm;
-        this.externalRealm = externalRealm;
-        this.tumKeycloak = buildAdminClient(url, tumRealm, tumClientId, tumClientSecret);
-        this.externalKeycloak = buildAdminClient(url, externalRealm, externalClientId, externalClientSecret);
+        this.realm = realm;
+        this.keycloak = KeycloakBuilder.builder()
+            .serverUrl(url)
+            .realm(realm)
+            .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+            .clientId(clientId)
+            .clientSecret(clientSecret)
+            .build();
         this.currentUserService = currentUserService;
     }
 
@@ -115,7 +111,7 @@ public class KeycloakUserService {
      * Searches Keycloak for LDAP-backed (TUM) users matching the given search key.
      */
     private List<KeycloakUserDTO> searchTumUsers(String searchKey, boolean excludeCurrentUser) {
-        List<UserRepresentation> users = tumKeycloak.realm(tumRealm).users().search(searchKey, 0, SAFETY_MAX);
+        List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, 0, SAFETY_MAX);
         if (users == null || users.isEmpty()) {
             return List.of();
         }
@@ -232,7 +228,7 @@ public class KeycloakUserService {
      * @return an {@link Optional} containing the user ID if a user with the given email exists; otherwise {@link Optional#empty()}
      */
     public Optional<String> findUserIdByEmail(String email) {
-        List<UserRepresentation> res = externalKeycloak.realm(externalRealm).users().searchByEmail(email, true);
+        List<UserRepresentation> res = keycloak.realm(realm).users().searchByEmail(email, true);
         if (res == null || res.isEmpty()) {
             return Optional.empty();
         }
@@ -261,7 +257,7 @@ public class KeycloakUserService {
             newUserRepresentation.setEnabled(true);
             newUserRepresentation.setEmailVerified(true);
 
-            try (Response resp = externalKeycloak.realm(externalRealm).users().create(newUserRepresentation)) {
+            try (Response resp = keycloak.realm(realm).users().create(newUserRepresentation)) {
                 if (resp.getStatus() == 201 && resp.getLocation() != null) {
                     String path = resp.getLocation().getPath();
                     return path.substring(path.lastIndexOf('/') + 1);
@@ -280,16 +276,14 @@ public class KeycloakUserService {
      *
      * @param userId      the Keycloak user ID
      * @param newPassword the new password (must be non-blank)
-     * @param issuer      the issuer URL to determine the realm context; if {@code null} or unrecognized, defaults to external realm
      * @return {@code true} if the password was updated, {@code false} if input invalid or user not found
      */
-    public boolean setPassword(String userId, String newPassword, URL issuer) {
+    public boolean setPassword(String userId, String newPassword) {
         String trimmedPassword = newPassword.trim();
         if (userId == null || trimmedPassword.isBlank()) {
             return false;
         }
-        RealmAdminContext adminContext = resolveAdminContext(issuer);
-        UserResource userResource = adminContext.keycloak().realm(adminContext.realm()).users().get(userId);
+        UserResource userResource = keycloak.realm(realm).users().get(userId);
         if (userResource == null) {
             return false;
         }
@@ -307,75 +301,11 @@ public class KeycloakUserService {
     }
 
     /**
-     * Lists Keycloak credentials for the user in the realm that issued the current token.
-     *
-     * @param userId the Keycloak user ID
-     * @param issuer the token issuer used to select the realm
-     * @return credentials registered for the user, or an empty list when the user cannot be resolved
-     */
-    public List<CredentialRepresentation> getCredentials(String userId, URL issuer) {
-        if (userId == null || userId.isBlank()) {
-            return List.of();
-        }
-        RealmAdminContext adminContext = resolveAdminContext(issuer);
-        List<CredentialRepresentation> credentials = adminContext.keycloak().realm(adminContext.realm()).users().get(userId).credentials();
-        return credentials != null ? credentials : List.of();
-    }
-
-    /**
-     * Removes one Keycloak credential for the user in the realm that issued the current token.
-     *
-     * @param userId       the Keycloak user ID
-     * @param issuer       the token issuer used to select the realm
-     * @param credentialId the Keycloak credential ID to remove
-     */
-    public void removeCredential(String userId, URL issuer, String credentialId) {
-        if (userId == null || userId.isBlank() || credentialId == null || credentialId.isBlank()) {
-            return;
-        }
-        RealmAdminContext adminContext = resolveAdminContext(issuer);
-        adminContext.keycloak().realm(adminContext.realm()).users().get(userId).removeCredential(credentialId);
-    }
-
-    /**
      * Invalidates all active sessions of the specified user via backchannel logout.
      *
      * @param userId the Keycloak user ID; must not be {@code null}
      */
     public void logout(String userId) {
-        externalKeycloak.realm(externalRealm).users().get(userId).logout();
+        keycloak.realm(realm).users().get(userId).logout();
     }
-
-    private Keycloak buildAdminClient(String url, String realm, String clientId, String clientSecret) {
-        return KeycloakBuilder.builder()
-            .serverUrl(url)
-            .realm(realm)
-            .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-            .clientId(clientId)
-            .clientSecret(clientSecret)
-            .build();
-    }
-
-    private RealmAdminContext resolveAdminContext(URL issuer) {
-        if (issuer != null) {
-            String issuerValue = issuer.toString();
-            if (realmIssuer(tumRealm).equals(issuerValue)) {
-                return new RealmAdminContext(tumKeycloak, tumRealm);
-            }
-            if (realmIssuer(externalRealm).equals(issuerValue)) {
-                return new RealmAdminContext(externalKeycloak, externalRealm);
-            }
-        }
-        return new RealmAdminContext(externalKeycloak, externalRealm);
-    }
-
-    private String realmIssuer(String realm) {
-        return String.format(
-            "%s/realms/%s",
-            keycloakUrl.endsWith("/") ? keycloakUrl.substring(0, keycloakUrl.length() - 1) : keycloakUrl,
-            realm
-        );
-    }
-
-    private record RealmAdminContext(Keycloak keycloak, String realm) {}
 }

@@ -1,4 +1,4 @@
-import { Injectable, Injector, Signal, computed, effect, inject, signal } from '@angular/core';
+import { Injectable, Injector, Signal, effect, inject } from '@angular/core';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -22,13 +22,6 @@ import { ProfOnboardingDTO } from '../generated/model/prof-onboarding-dto';
  */
 @Injectable({ providedIn: 'root' })
 export class OnboardingOrchestratorService {
-  /**
-   * True while the onboarding flow may take precedence over other post-login prompts: from the moment the
-   * triggering conditions match (logged-in applicant on a professor page) until the server check resolves
-   * negatively. Stays true if the dialog actually opens.
-   */
-  readonly suppressesFollowupPrompts: Signal<boolean> = computed(() => this.suppressesFollowupPromptsState());
-
   private readonly injector = inject(Injector);
   private readonly router = inject(Router);
   private readonly accountService = inject(AccountService);
@@ -38,8 +31,6 @@ export class OnboardingOrchestratorService {
 
   // Prevents opening multiple dialogs concurrently.
   private opened = false;
-
-  private readonly suppressesFollowupPromptsState = signal(false);
 
   private readonly checkTrigger$ = new Subject<void>();
   private readonly checkResult = toSignal<ProfOnboardingDTO | undefined>(
@@ -67,7 +58,6 @@ export class OnboardingOrchestratorService {
         if (!isLoggedIn || this.opened || !isApplicant || !onProfessorPage) {
           return;
         }
-        this.suppressesFollowupPromptsState.set(true);
         this.checkTrigger$.next();
       },
       { injector: this.injector },
@@ -76,14 +66,7 @@ export class OnboardingOrchestratorService {
     effect(
       () => {
         const dto = this.checkResult();
-        if (dto === undefined) {
-          return;
-        }
-        if (dto.show !== true) {
-          this.suppressesFollowupPromptsState.set(false);
-          return;
-        }
-        if (this.opened) {
+        if (this.opened || dto?.show !== true) {
           return;
         }
         this.opened = true;
