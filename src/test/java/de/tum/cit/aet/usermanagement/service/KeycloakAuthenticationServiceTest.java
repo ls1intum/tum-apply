@@ -107,8 +107,7 @@ class KeycloakAuthenticationServiceTest {
 
             List<PasskeyDTO> actual = service.listPasskeys(jwt);
 
-            assertThat(actual)
-                .containsExactly(new PasskeyDTO("passkey-1", "MacBook", 1L), new PasskeyDTO("passkey-2", "Backup", 2L));
+            assertThat(actual).containsExactly(new PasskeyDTO("passkey-1", "MacBook", 1L), new PasskeyDTO("passkey-2", "Backup", 2L));
             verify(keycloakUserService).getCredentials("user-id", jwt.getIssuer());
         }
     }
