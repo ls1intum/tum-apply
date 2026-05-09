@@ -1,6 +1,18 @@
 import { IconDefinition, IconName, IconPack, IconPrefix } from '@fortawesome/fontawesome-svg-core';
 import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 
+export const facTum: IconDefinition = {
+  prefix: 'fas' as IconPrefix,
+  iconName: 'tum' as IconName,
+  icon: [
+    136,
+    71,
+    [],
+    '',
+    'M52.1644 0V57.7534H67.0685V0H136V70.7945H122.959V13.0411H108.055V70.7945H95.0137V13.0411H80.1096V70.7945H39.1233V13.0411H26.0822V70.7945H13.0411V13.0411H0V0H52.1644Z',
+  ],
+} as IconDefinition;
+
 export const facWithdraw: IconDefinition = {
   prefix: 'fas' as IconPrefix,
   iconName: 'withdraw' as IconName,
@@ -122,6 +134,7 @@ export const facSparkle: IconDefinition = {
 };
 
 export const tumApplyIconPack: IconPack = {
+  facTum,
   facWithdraw,
   facJobs,
   facCreateJob,

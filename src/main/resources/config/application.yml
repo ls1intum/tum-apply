@@ -174,11 +174,6 @@ spring:
       enabled: true
       max-file-size: 25MB
       max-request-size: 25MB
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${keycloak.url}/realms/${keycloak.realm}
   task:
     execution:
       thread-name-prefix: tum-apply-task-
@@ -310,24 +305,38 @@ debug: ${DEBUG:false}
 
 keycloak:
   url: ${KEYCLOAK_URL:http://localhost:9080}
-  realm: ${KEYCLOAK_REALM:tumapply}
+  # Realm used for TUM login and passkey flows
+  tum-login-realm: ${KEYCLOAK_TUM_LOGIN_REALM:tumidpldap}
+  # Realm used for external/social login flows
+  external-login-realm: ${KEYCLOAK_EXTERNAL_LOGIN_REALM:external-login}
   # Client ID used by the browser/client application to authenticate with Keycloak
   client-id: ${KEYCLOAK_CLIENT_ID:tumapply-client}
+  # WebAuthn relying party ID used for passkey registration; leave empty to fall back to the current hostname
+  relying-party-id: ${KEYCLOAK_RELYING_PARTY_ID:}
   # Admin user to create initial users in Keycloak
   users:
     admin:
       username: ${KEYCLOAK_USERS_ADMIN_USERNAME:admin}
       password: ${KEYCLOAK_USERS_ADMIN_PASSWORD:admin}
   server:
-    # Client ID used by the server to authenticate with Keycloak
+    # External realm (`keycloak.external-login-realm`) confidential client used by backend auth flows
+    # (password login, refresh, logout, token exchange audience target)
     client-id: ${KEYCLOAK_SERVER_CLIENT_ID:tumapply-server-client}
-    # Secret used by the server to authenticate securely with Keycloak
+    # Secret for the external realm server client above
     client-secret: ${KEYCLOAK_SERVER_CLIENT_SECRET:tumapply-server-secret}
   admin:
-    # Admin service-account client used by the server for Keycloak Admin API calls (create users, set emailVerified, backchannel logout)
-    client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:tumapply-otp-admin}
-    # Secret for the admin client; generate in Keycloak → Clients → tumapply-otp-admin → Credentials
-    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:tumapply-otp-secret}
+    tum:
+      # TUM realm (`keycloak.tum-login-realm`) admin service-account client used by backend Admin API calls
+      # (e.g., user lookup/search in Keycloak)
+      client-id: ${KEYCLOAK_ADMIN_TUM_CLIENT_ID:tumapply-admin-api}
+      # Secret for the TUM realm admin client above
+      client-secret: ${KEYCLOAK_ADMIN_TUM_CLIENT_SECRET:tumapply-admin-api-secret}
+    external:
+      # External realm (`keycloak.external-login-realm`) admin service-account client used by backend
+      # Admin API calls and token exchange/impersonation flows
+      client-id: ${KEYCLOAK_ADMIN_EXTERNAL_CLIENT_ID:tumapply-admin-api}
+      # Secret for the external realm admin client above
+      client-secret: ${KEYCLOAK_ADMIN_EXTERNAL_CLIENT_SECRET:tumapply-admin-api-secret}
 
 user:
   retention:
