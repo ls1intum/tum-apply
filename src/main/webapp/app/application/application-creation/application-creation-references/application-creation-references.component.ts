@@ -93,7 +93,8 @@ export default class ApplicationCreationReferencesComponent {
   }
 
   /**
-   * Submits the add form to the server, prepends the new entry to the local list, and resets the form.
+   * Adds a new referee to the application by sending the entered data to the server.
+   * On success, the new entry is added to the local list and the form is reset.
    */
   async onAdd(): Promise<void> {
     if (this.addForm.invalid) {
@@ -111,7 +112,7 @@ export default class ApplicationCreationReferencesComponent {
           email: raw.email.trim(),
         }),
       );
-      this.references.update(list => [...list, created]);
+      this.references.update(list => list.concat(created));
       this.referencesChanged.emit(this.references());
       this.resetAddForm();
     } catch {
@@ -122,8 +123,8 @@ export default class ApplicationCreationReferencesComponent {
   }
 
   /**
-   * Removes a referee from the application. The request is irreversible, so the caller
-   * is expected to confirm in the UI before invoking this method.
+   * Removes the given referee from the application by sending a delete request to the server.
+   * On success, the entry is removed from the local list.
    *
    * @param reference the referee entry to remove
    */
