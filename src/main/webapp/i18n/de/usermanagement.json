@@ -78,13 +78,13 @@
     },
     "toastMessages": {
       "createSuccess": "Nutzende angelegt.",
-      "createFailed": "Nutzende konnten nicht angelegt werden: {{ detail }}",
+      "createFailed": "Nutzende konnten nicht angelegt werden: {detail}",
       "updateSuccess": "Nutzende aktualisiert.",
-      "updateFailed": "Nutzende konnten nicht aktualisiert werden: {{ detail }}",
+      "updateFailed": "Nutzende konnten nicht aktualisiert werden: {detail}",
       "deleteSuccess": "Nutzende gelöscht.",
-      "deleteFailed": "Nutzende konnten nicht gelöscht werden: {{ detail }}",
+      "deleteFailed": "Nutzende konnten nicht gelöscht werden: {detail}",
       "importSuccess": "Nutzende aus Keycloak importiert.",
-      "importFailed": "Nutzende konnten nicht importiert werden: {{ detail }}"
+      "importFailed": "Nutzende konnten nicht importiert werden: {detail}"
     }
   }
 }
