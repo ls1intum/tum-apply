@@ -1,4 +1,5 @@
-import { Component, computed, inject, input, output, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, input, output, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -79,14 +80,18 @@ export class MenuComponent {
 
   private router = inject(Router);
 
-  constructor() {
-    // Clean up menu overlays on navigation start
-    // This fixes PrimeNG 21 issue where popups don't close on navigation
-    this.router.events.pipe(filter(event => event instanceof NavigationStart)).subscribe(() => {
-      this.clearMenuPopups();
-      this.visibleChange.emit(false);
-    });
-  }
+  // Latest NavigationStart event as a signal; auto-cleans on component destroy.
+  private readonly navigationStart = toSignal(this.router.events.pipe(filter(event => event instanceof NavigationStart)), {
+    initialValue: undefined,
+  });
+
+  // Clean up menu overlays on navigation start.
+  // Workaround for PrimeNG 21 popup-on-navigation behavior; remove once upstream is fixed.
+  private readonly clearOnNavigation = effect(() => {
+    if (this.navigationStart() === undefined) return;
+    this.clearMenuPopups();
+    this.visibleChange.emit(false);
+  });
 
   toggle(event: Event): void {
     this.menu().toggle(event);

@@ -17,7 +17,7 @@
     }
 
     <div
-      class="input-wrapper flex flex-col overflow-hidden min-h-[12.5rem] resize-y"
+      class="input-wrapper"
       [class.error]="isEmpty()"
       contenteditable="false"
       (focusin)="onFocus()"
@@ -30,7 +30,7 @@
       [style.height]="height()"
     >
       <quill-editor
-        class="custom-quill-editor flex flex-col flex-1 min-h-0"
+        class="custom-quill-editor"
         (onFocus)="onFocus()"
         (onBlur)="onBlur()"
         [ngModel]="editorValue()"

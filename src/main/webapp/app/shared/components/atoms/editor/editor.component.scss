@@ -1,3 +1,18 @@
+.input-wrapper {
+  display: flex;
+  resize: vertical;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 12.5rem;
+}
+
+.custom-quill-editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
 .ql-toolbar.ql-snow {
   position: relative;
   display: flex;

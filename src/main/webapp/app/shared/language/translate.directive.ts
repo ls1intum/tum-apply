@@ -39,14 +39,19 @@ export default class TranslateDirective implements OnChanges, OnInit, OnDestroy 
   }
 
   private getTranslation(): void {
+    const key = this.jhiTranslate();
+    if (key === undefined || key === null || key === '') {
+      this.el.nativeElement.innerHTML = '';
+      return;
+    }
     this.translateService
-      .get(this.jhiTranslate(), this.translateValues())
+      .get(key, this.translateValues())
       .pipe(takeUntil(this.directiveDestroyed))
       .subscribe({
         next: value => {
           this.el.nativeElement.innerHTML = value;
         },
-        error: () => `${translationNotFoundMessage}[${this.jhiTranslate()}]`,
+        error: () => `${translationNotFoundMessage}[${key}]`,
       });
   }
 }
