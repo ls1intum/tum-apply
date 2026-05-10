@@ -3686,9 +3686,6 @@ components:
         applicantLastName: {type: string}
         deadline: {type: string, format: date-time}
         jobTitle: {type: string}
-        refereeFirstName: {type: string}
-        refereeLastName: {type: string}
-        refereeTitle: {type: string}
         researchGroupName: {type: string}
         status:
           type: string
