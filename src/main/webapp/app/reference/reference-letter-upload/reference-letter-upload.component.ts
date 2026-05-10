@@ -25,7 +25,6 @@ const TOAST_PREFIX = 'reference.letterUpload';
   standalone: true,
   imports: [CommonModule, FontAwesomeModule, TranslateModule, TranslateDirective, FileUploadModule],
   templateUrl: './reference-letter-upload.component.html',
-  styleUrl: './reference-letter-upload.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReferenceLetterUploadComponent {
