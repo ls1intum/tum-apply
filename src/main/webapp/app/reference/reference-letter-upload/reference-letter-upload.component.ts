@@ -139,5 +139,4 @@ export class ReferenceLetterUploadComponent {
       this.loading.set(false);
     }
   }
-
 }

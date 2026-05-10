@@ -267,10 +267,10 @@ export class UploadButtonComponent {
         this.documentIds()?.map(doc =>
           doc.id === documentId
             ? {
-              id: doc.id,
-              name: newName,
-              size: doc.size,
-            }
+                id: doc.id,
+                name: newName,
+                size: doc.size,
+              }
             : doc,
         ) ?? [];
       this.documentIds.set(updatedDocs);
@@ -284,10 +284,10 @@ export class UploadButtonComponent {
         this.documentIds()?.map(doc =>
           doc.id === documentId
             ? {
-              id: doc.id,
-              name: newName,
-              size: doc.size,
-            }
+                id: doc.id,
+                name: newName,
+                size: doc.size,
+              }
             : doc,
         ) ?? [];
       this.documentIds.set(updatedDocs);
