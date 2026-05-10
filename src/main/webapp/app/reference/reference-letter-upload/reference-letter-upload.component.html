@@ -1,7 +1,7 @@
 <div class="flex flex-col items-center px-4 py-12">
   <div class="w-full max-w-xl">
     @if (loading()) {
-      <div class="text-center text-text-secondary" jhiTranslate="reference.letterUpload.loading">Loading…</div>
+      <div class="text-center text-text-secondary" jhiTranslate="reference.letterUpload.loading">Loading...</div>
     } @else if (errorKey(); as key) {
       <!-- Invalid / expired token error -->
       <div class="border border-border-default rounded-lg p-8 text-center bg-background-surface">
@@ -94,7 +94,7 @@
       </div>
 
       <!-- Upload control -->
-      <div class="border border-border-default rounded-lg p-6 bg-background-surface flex flex-col gap-4">
+      <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 bg-background-surface">
         <jhi-upload-button
           [documentType]="documentType"
           [allowMultiple]="false"

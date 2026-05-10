@@ -167,11 +167,8 @@ public class ApplicationService {
     @Transactional
     public ApplicationForApplicantDTO updateApplication(UpdateApplicationDTO updateApplicationDTO) {
         Application application = assertCanManageApplication(updateApplicationDTO.applicationId());
-        // When the applicant submits but the job requires recommendation letters that aren't all
-        // in yet, the application enters PENDING instead of SENT. Once every required
-        // letter is uploaded, ReferenceRequestService promotes the application back to SENT.
+        boolean isSubmitting = ApplicationState.SENT.equals(updateApplicationDTO.applicationState());
         ApplicationState targetState = updateApplicationDTO.applicationState();
-        boolean isSubmitting = ApplicationState.SENT.equals(targetState);
         if (isSubmitting && referenceRequestService.hasIncompleteReferences(application)) {
             targetState = ApplicationState.PENDING;
         }

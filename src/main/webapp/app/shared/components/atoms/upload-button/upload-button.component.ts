@@ -313,9 +313,7 @@ export class UploadButtonComponent {
    */
   private async ensureAuthenticated(): Promise<boolean> {
     // In deferred mode the file pick never reaches this component's upload paths — the parent
-    // owns the upload step and is responsible for whatever auth model that flow needs. Gating
-    // the pick on a built-in auth check would silently drop the file for any deferred caller
-    // that doesn't also use the built-in application/applicant API.
+    // owns the upload step and is responsible for whatever auth model that flow needs.
     if (this.deferUpload()) {
       return true;
     }

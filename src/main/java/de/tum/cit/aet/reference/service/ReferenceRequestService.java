@@ -169,9 +169,6 @@ public class ReferenceRequestService {
         Application application = entry.getApplication();
         Job job = application.getJob();
         return new ReferenceLetterContextDTO(
-            entry.getTitle(),
-            entry.getFirstName(),
-            entry.getLastName(),
             application.getApplicantFirstName(),
             application.getApplicantLastName(),
             job.getTitle(),

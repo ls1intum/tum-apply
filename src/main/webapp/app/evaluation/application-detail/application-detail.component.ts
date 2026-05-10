@@ -109,13 +109,11 @@ export class ApplicationDetailComponent {
       return false;
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
-    // Professors cannot accept/reject while reference letters are still pending — the application
-    // is incomplete in that case and decisions should wait until every required letter is in.
+
     return (
       state !== ApplicationDetailDTOApplicationStateEnum.Accepted &&
       state !== ApplicationDetailDTOApplicationStateEnum.Rejected &&
-      state !== ApplicationDetailDTOApplicationStateEnum.JobClosed &&
-      state !== ApplicationDetailDTOApplicationStateEnum.Pending
+      state !== ApplicationDetailDTOApplicationStateEnum.JobClosed
     );
   });
 

@@ -58,10 +58,6 @@ public class ReferenceRequest extends AbstractAuditingEntity {
     @Column(name = "reminder_count", nullable = false)
     private int reminderCount = 0;
 
-    /**
-     * FK to the {@code documents} row holding the uploaded recommendation letter.
-     * {@code null} until the referee submits a PDF; resolved through {@code DocumentService}.
-     */
     @Column(name = "document_id")
     private UUID documentId;
 }

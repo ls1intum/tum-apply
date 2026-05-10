@@ -13,9 +13,6 @@ export type ReferenceLetterUploadResourceApiMock = {
 export const createMockContext = (overrides: Partial<ReferenceLetterContextDTO> = {}): ReferenceLetterContextDTO =>
   Object.assign(
     {
-      refereeTitle: 'Prof. Dr.',
-      refereeFirstName: 'Ada',
-      refereeLastName: 'Lovelace',
       applicantFirstName: 'Sample',
       applicantLastName: 'Applicant',
       jobTitle: 'PhD Position',
@@ -30,9 +27,9 @@ export function createReferenceLetterUploadResourceApiMock(
 ): ReferenceLetterUploadResourceApiMock {
   const submitted: ReferenceRequestDTO = {
     referenceRequestId: 'submitted-id',
-    title: initialContext.refereeTitle,
-    firstName: initialContext.refereeFirstName,
-    lastName: initialContext.refereeLastName,
+    title: 'Prof. Dr.',
+    firstName: 'Ada',
+    lastName: 'Lovelace',
     email: 'ada@example.com',
     status: ReferenceRequestDTOStatusEnum.Submitted,
     documentId: 'document-id',

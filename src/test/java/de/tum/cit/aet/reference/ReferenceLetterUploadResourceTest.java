@@ -125,7 +125,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldReturnPrefilledContextForKnownToken() {
-            ReferenceRequest entry = savedRequestedEntry("known-token");
+            savedRequestedEntry("known-token");
 
             ReferenceLetterContextDTO context = api.getAndRead(
                 String.format(CONTEXT_URL, "known-token"),
@@ -134,9 +134,8 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
                 200
             );
 
-            assertThat(context.refereeFirstName()).isEqualTo(entry.getFirstName());
-            assertThat(context.refereeLastName()).isEqualTo(entry.getLastName());
             assertThat(context.applicantFirstName()).isEqualTo(application.getApplicantFirstName());
+            assertThat(context.applicantLastName()).isEqualTo(application.getApplicantLastName());
             assertThat(context.jobTitle()).isEqualTo(jobWithReferences.getTitle());
             assertThat(context.researchGroupName()).isEqualTo(researchGroup.getName());
             assertThat(context.status()).isEqualTo(ReferenceRequestStatus.REQUESTED);
