@@ -38,13 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import tools.jackson.core.type.TypeReference;
 
-/**
- * Integration tests for {@link de.tum.cit.aet.reference.web.ReferenceRequestResource}.
- *
- * Each test creates the world the endpoint needs (research group, professor, applicant,
- * job with reference letters required, application). The applicant authenticates via
- * {@link JwtPostProcessors#jwtUser} and exercises the REST surface end-to-end.
- */
 class ReferenceRequestResourceTest extends AbstractResourceTest {
 
     private static final String REFERENCES_URL = "/api/applications/%s/references";
@@ -113,7 +106,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
     }
 
     @Nested
-    class ListReferences {
+    class GetReferences {
 
         @Test
         void shouldReturnEmptyListWhenNoneAdded() {

@@ -399,7 +399,7 @@ public class JobService {
         job.setSuitableForDisabled(dto.suitableForDisabled());
         job.setStartDateByArrangement(Boolean.TRUE.equals(dto.startDateByArrangement()));
         job.setContractExtendable(Boolean.TRUE.equals(dto.contractExtendable()));
-        job.setReferenceLettersRequired(dto.referenceLettersRequired());
+        job.setReferenceLettersRequired(Objects.requireNonNullElse(dto.referenceLettersRequired(), 0));
 
         // Capture old image before any modifications
         Image oldImage = job.getImage();
