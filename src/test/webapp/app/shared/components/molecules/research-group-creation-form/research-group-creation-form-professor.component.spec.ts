@@ -204,20 +204,17 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       fillValidForm();
     });
 
-    it.each<['invalid form', 'already submitting'] | unknown[]>([['invalid form'], ['already submitting']])(
-      'should not submit when %s',
-      desc => {
-        if (desc === 'invalid form') {
-          component.form.patchValue({ title: '' });
-        } else {
-          component.isSubmitting.set(true);
-        }
+    it.each(['invalid form', 'already submitting'] as const)('should not submit when %s', (desc) => {
+      if (desc === 'invalid form') {
+        component.form.patchValue({ title: '' });
+      } else {
+        component.isSubmitting.set(true);
+      }
 
-        component.onConfirmSubmit();
+      component.onConfirmSubmit();
 
-        expect(mockResearchGroupService.createProfessorResearchGroupRequest).not.toHaveBeenCalled();
-      },
-    );
+      expect(mockResearchGroupService.createProfessorResearchGroupRequest).not.toHaveBeenCalled();
+    });
 
     it('should call research group service with trimmed and abbreviated data', async () => {
       fillValidForm({

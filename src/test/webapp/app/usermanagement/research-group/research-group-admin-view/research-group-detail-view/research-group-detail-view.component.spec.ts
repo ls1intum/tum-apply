@@ -102,7 +102,7 @@ describe('ResearchGroupDetailViewComponent', () => {
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.detailView.errors.view');
     });
 
-    it.each([
+    it.each<{ description: string; params: Record<string, string> }>([
       { description: 'undefined', params: {} },
       { description: 'empty string', params: { researchGroupId: '' } },
       { description: 'whitespace', params: { researchGroupId: '   ' } },
@@ -124,7 +124,7 @@ describe('ResearchGroupDetailViewComponent', () => {
       expect(mockResearchGroupService.updateResearchGroup).not.toHaveBeenCalled();
     });
 
-    it.each([
+    it.each<{ description: string; params: Record<string, string> }>([
       { description: 'no params', params: {} },
       { description: 'whitespace', params: { researchGroupId: '   ' } },
     ])('should show error when saving with $description researchGroupId', async ({ params }) => {

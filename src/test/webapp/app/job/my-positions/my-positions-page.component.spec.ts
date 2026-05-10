@@ -17,7 +17,7 @@ import {
 } from 'src/test/webapp/util/job-resource-api.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
-type MyPositionsPageComponentInternals = MyPositionsPageComponent & {
+type MyPositionsPageComponentInternals = {
   loadJobs(): Promise<void>;
   mapTranslationKeysToEnumValues(translationKeys: string[]): string[];
 };
@@ -92,7 +92,7 @@ describe('MyPositionsPageComponent', () => {
 
   describe('Search and Filters', () => {
     it('should reload on new search query and reset page', () => {
-      const loadSpy = vi.spyOn(component as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       component.searchQuery.set('old');
       component.page.set(2);
       component.onSearchEmit('new');
@@ -102,20 +102,20 @@ describe('MyPositionsPageComponent', () => {
     });
 
     it('should not reload when query is same after trim/normalize', () => {
-      const loadSpy = vi.spyOn(component as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       component.searchQuery.set('same query');
       component.onSearchEmit('  same   query ');
       expect(loadSpy).not.toHaveBeenCalled();
     });
 
     it('should trim and normalize whitespace in search query', () => {
-      vi.spyOn(component as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
+      vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       component.onSearchEmit(' test multiple spaces here ');
       expect(component.searchQuery()).toBe('test multiple spaces here');
     });
 
     it('should handle status filter and ignore non-status filters', () => {
-      const loadSpy = vi.spyOn(component as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       component.onFilterEmit({ filterId: 'status', selectedValues: ['jobState.draft'] });
       expect(component.selectedStatusFilters()).toContain(CreatedJobDTOStateEnum.Draft);
       expect(loadSpy).toHaveBeenCalledOnce();
@@ -128,14 +128,14 @@ describe('MyPositionsPageComponent', () => {
     });
 
     it('should fall back to original key in mapTranslationKeysToEnumValues', () => {
-      const result = (component as MyPositionsPageComponentInternals).mapTranslationKeysToEnumValues(['unknownKey']);
+      const result = (component as unknown as MyPositionsPageComponentInternals).mapTranslationKeysToEnumValues(['unknownKey']);
       expect(result).toEqual(['unknownKey']);
     });
   });
 
   describe('Sorting and Pagination', () => {
     it('should sort and reset page', () => {
-      const loadSpy = vi.spyOn(component as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       component.page.set(3);
       component.loadOnSortEmit({ field: 'title', direction: 'ASC' });
       expect(component.sortBy()).toBe('title');
@@ -145,7 +145,7 @@ describe('MyPositionsPageComponent', () => {
     });
 
     it('should compute page from first/rows on table emit', () => {
-      const loadSpy = vi.spyOn(component as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       component.loadOnTableEmit({ first: 20, rows: 10 });
       expect(component.page()).toBe(2);
       expect(component.pageSize()).toBe(10);
@@ -153,7 +153,7 @@ describe('MyPositionsPageComponent', () => {
     });
 
     it('should default page=0 when first/rows undefined', () => {
-      vi.spyOn(component as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
+      vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       component.pageSize.set(5);
       component.loadOnTableEmit({});
       expect(component.page()).toBe(0);
@@ -163,7 +163,7 @@ describe('MyPositionsPageComponent', () => {
 
   describe('Load Jobs', () => {
     it('should load jobs and set state', async () => {
-      await (component as MyPositionsPageComponentInternals).loadJobs();
+      await (component as unknown as MyPositionsPageComponentInternals).loadJobs();
       expect(mockJobApi.getJobsForCurrentResearchGroup).toHaveBeenCalledTimes(2);
       expect(component.jobs().length).toBe(1);
       expect(component.totalRecords()).toBe(1);
@@ -171,7 +171,7 @@ describe('MyPositionsPageComponent', () => {
 
     it('should toast error when API fails', async () => {
       mockJobApi.getJobsForCurrentResearchGroup.mockReturnValueOnce(throwError(() => new Error('fail')));
-      await (component as MyPositionsPageComponentInternals).loadJobs();
+      await (component as unknown as MyPositionsPageComponentInternals).loadJobs();
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('myPositionsPage.errors.loadJobs');
     });
 
@@ -182,7 +182,7 @@ describe('MyPositionsPageComponent', () => {
       setup();
       const spy = vi.spyOn(mockJobApi, 'getJobsForCurrentResearchGroup');
       spy.mockClear();
-      await (component as MyPositionsPageComponentInternals).loadJobs();
+      await (component as unknown as MyPositionsPageComponentInternals).loadJobs();
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -190,7 +190,7 @@ describe('MyPositionsPageComponent', () => {
       mockJobApi.getJobsForCurrentResearchGroup.mockReturnValueOnce(
         of<PageCreatedJobDTO>({ content: undefined, totalElements: undefined }),
       );
-      await (component as MyPositionsPageComponentInternals).loadJobs();
+      await (component as unknown as MyPositionsPageComponentInternals).loadJobs();
       expect(component.jobs()).toEqual([]);
       expect(component.totalRecords()).toBe(0);
     });
@@ -199,7 +199,7 @@ describe('MyPositionsPageComponent', () => {
       component.selectedStatusFilters.set([CreatedJobDTOStateEnum.Published]);
       const spy = vi.spyOn(mockJobApi, 'getJobsForCurrentResearchGroup');
       spy.mockReturnValue(of({ content: [], totalElements: 0 } as PageCreatedJobDTO));
-      await (component as MyPositionsPageComponentInternals).loadJobs();
+      await (component as unknown as MyPositionsPageComponentInternals).loadJobs();
       expect(spy).toHaveBeenCalledWith(
         component.pageSize(),
         component.page(),
@@ -213,7 +213,7 @@ describe('MyPositionsPageComponent', () => {
 
   describe('Job Actions', () => {
     it('should delete job successfully and reload', async () => {
-      const loadSpy = vi.spyOn(component as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       await component.onDeleteJob('1');
       expect(mockJobApi.deleteJob).toHaveBeenCalledWith('1');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledOnce();
@@ -230,7 +230,7 @@ describe('MyPositionsPageComponent', () => {
     });
 
     it('should close job successfully and reload', async () => {
-      const loadSpy = vi.spyOn(component as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       await component.onCloseJob('1');
       expect(mockJobApi.changeJobState).toHaveBeenCalledWith('1', CreatedJobDTOStateEnum.Closed);
       expect(mockToastService.showSuccessKey).toHaveBeenCalledOnce();

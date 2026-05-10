@@ -32,7 +32,7 @@ type ResearchGroupDetails = {
   city?: string;
 };
 
-type JobDetailComponentInternals = JobDetailComponent & {
+type JobDetailComponentInternals = {
   loadJobDetailsFromForm(form: JobFormDTO): Promise<void>;
   mapToJobDetails(data: JobDetailDTO | JobFormDTO, user?: User, researchGroupDetails?: ResearchGroupDetails, isForm?: boolean): JobDetails;
   isOwnerOfJob(job: JobDetails): boolean;
@@ -262,21 +262,21 @@ describe('JobDetailComponent', () => {
   describe('loadJobDetailsFromForm', () => {
     it('should set jobDetails and dataLoaded', async () => {
       const form: JobFormDTO = { title: 'FormJob', jobDescriptionEN: 'Desc', jobDescriptionDE: 'Desc' } as JobFormDTO;
-      await (component as JobDetailComponentInternals).loadJobDetailsFromForm(form);
+      await (component as unknown as JobDetailComponentInternals).loadJobDetailsFromForm(form);
       expect(component.jobDetails()).not.toBeNull();
       expect(component.dataLoaded()).toBe(true);
     });
 
     it('should toast error when researchGroupApi fails', async () => {
       researchGroupApi.getResourceGroupDetails.mockReturnValue(throwError(() => new Error('RG error')));
-      await (component as JobDetailComponentInternals).loadJobDetailsFromForm({ title: 'FormJob' } as JobFormDTO);
+      await (component as unknown as JobDetailComponentInternals).loadJobDetailsFromForm({ title: 'FormJob' } as JobFormDTO);
       expect(mockToastService.showError).toHaveBeenCalledOnce();
     });
 
     it('should call getResourceGroupDetails with empty string when user has no researchGroup id', async () => {
       mockAccountService.user.set({ id: 'u2', name: 'NoGroupUser', researchGroup: {} } as User);
       const spy = vi.spyOn(researchGroupApi, 'getResourceGroupDetails').mockReturnValue(of({ description: 'none' }));
-      await (component as JobDetailComponentInternals).loadJobDetailsFromForm({
+      await (component as unknown as JobDetailComponentInternals).loadJobDetailsFromForm({
         title: 'Form Job',
         subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
         location: JobFormDTOLocationEnum.Garching,
@@ -305,7 +305,7 @@ describe('JobDetailComponent', () => {
 
   describe('mapToJobDetails', () => {
     function callMap(args: MapToJobDetailsArgs): JobDetails {
-      return (component as JobDetailComponentInternals).mapToJobDetails.apply(component, args);
+      return (component as unknown as JobDetailComponentInternals).mapToJobDetails.apply(component, args);
     }
 
     it('should map JobDetailDTO core fields', () => {
@@ -450,7 +450,7 @@ describe('JobDetailComponent', () => {
       ],
     ])('should return false when %s', (_label, setup, job) => {
       setup();
-      expect((component as JobDetailComponentInternals).isOwnerOfJob(job)).toBe(false);
+      expect((component as unknown as JobDetailComponentInternals).isOwnerOfJob(job)).toBe(false);
     });
   });
 
@@ -502,7 +502,7 @@ describe('JobDetailComponent', () => {
     const previewJob: JobFormDTO = { title: 'PreviewJob' } as JobFormDTO;
     const fixture2 = TestBed.createComponent(JobDetailComponent);
     const comp2 = fixture2.componentInstance;
-    const loadSpy = vi.spyOn(comp2 as JobDetailComponentInternals, 'loadJobDetailsFromForm').mockResolvedValue();
+    const loadSpy = vi.spyOn(comp2 as unknown as JobDetailComponentInternals, 'loadJobDetailsFromForm').mockResolvedValue();
     fixture2.componentRef.setInput('previewData', signal(previewJob));
     fixture2.detectChanges();
     await Promise.resolve();
