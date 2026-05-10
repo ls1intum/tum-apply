@@ -1,8 +1,26 @@
+export interface InfoGitResponse {
+  branch?: string;
+  commit?: {
+    id?: string;
+    'id.abbrev'?: string;
+    time?: string;
+    user?: { name?: string };
+  };
+}
+
 export interface InfoResponse {
   'display-ribbon-on-profiles'?: string;
-  git?: any;
+  git?: InfoGitResponse;
   build?: any;
   activeProfiles?: string[];
+}
+
+export interface GitInfo {
+  branch: string;
+  commitHashShort: string;
+  commitHashFull: string;
+  commitTime: string;
+  lastCommitter: string;
 }
 
 export class ProfileInfo {
@@ -11,5 +29,6 @@ export class ProfileInfo {
     public ribbonEnv?: string,
     public inProduction?: boolean,
     public openAPIEnabled?: boolean,
+    public gitInfo?: GitInfo,
   ) {}
 }

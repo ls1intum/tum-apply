@@ -4,7 +4,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
-import { InfoResponse, ProfileInfo } from './profile-info.model';
+import { GitInfo, InfoGitResponse, InfoResponse, ProfileInfo } from './profile-info.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
@@ -35,10 +35,29 @@ export class ProfileService {
             profileInfo.ribbonEnv = ribbonProfiles[0];
           }
         }
+        profileInfo.gitInfo = mapGitInfo(response.git);
         return profileInfo;
       }),
       shareReplay(),
     );
     return this.profileInfo$;
   }
+}
+
+function mapGitInfo(git: InfoGitResponse | undefined): GitInfo | undefined {
+  const id = git?.commit?.id;
+  const idAbbrev = git?.commit?.['id.abbrev'];
+  const branch = git?.branch;
+  const time = git?.commit?.time;
+  const userName = git?.commit?.user?.name;
+  if (!id || !idAbbrev || !branch || !time || !userName) {
+    return undefined;
+  }
+  return {
+    branch,
+    commitHashShort: idAbbrev,
+    commitHashFull: id,
+    commitTime: time,
+    lastCommitter: userName,
+  };
 }
