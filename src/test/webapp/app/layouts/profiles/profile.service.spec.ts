@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { ProfileInfo } from 'app/layouts/profiles/profile-info.model';
 import { createHttpClientMock, provideHttpClientMock, HttpClientMock } from 'util/http-client.mock';
 
 describe('ProfileService', () => {
@@ -39,7 +40,7 @@ describe('ProfileService', () => {
     httpMock.get.mockReturnValueOnce(of(buildInfoResponse()));
     const service = TestBed.inject(ProfileService);
 
-    const profileInfo = await new Promise<any>(resolve => service.getProfileInfo().subscribe(resolve));
+    const profileInfo = await new Promise<ProfileInfo>(resolve => service.getProfileInfo().subscribe(resolve));
 
     expect(profileInfo.gitInfo).toEqual({
       branch: 'main',
@@ -54,7 +55,7 @@ describe('ProfileService', () => {
     httpMock.get.mockReturnValueOnce(of(buildInfoResponse({ git: undefined })));
     const service = TestBed.inject(ProfileService);
 
-    const profileInfo = await new Promise<any>(resolve => service.getProfileInfo().subscribe(resolve));
+    const profileInfo = await new Promise<ProfileInfo>(resolve => service.getProfileInfo().subscribe(resolve));
 
     expect(profileInfo.gitInfo).toBeUndefined();
   });
