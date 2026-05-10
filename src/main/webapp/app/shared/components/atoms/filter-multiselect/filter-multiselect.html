@@ -75,7 +75,7 @@
         @if (hasVisibleItems()) {
           @for (option of visibleOptions(); track option.value; let i = $index) {
             <div
-              #option
+              #optionRow
               class="flex items-center m-1 p-2 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
               [class.bg-primary-hover-outlined]="focusedIndexOptionList() === i"
               tabindex="0"

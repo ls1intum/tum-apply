@@ -52,8 +52,6 @@ export class FilterMultiselect {
   dropdownAlignment = signal<'left' | 'right'>('left');
   maxVisibleChips = 2;
 
-  private readonly renderedOptions = signal<RenderedOption[]>([]);
-
   filterChange = output<{ filterId: string; selectedValues: string[] }>();
 
   displayFilterLabel = computed(() => this.translator.translate(this.filterLabel()) ?? '');
@@ -115,6 +113,7 @@ export class FilterMultiselect {
   selectedCount = computed(() => this.selectedValues().length);
   totalCount = computed(() => this.filterOptions().length);
 
+  private readonly renderedOptions = signal<RenderedOption[]>([]);
   private readonly elementRef = inject(ElementRef);
   private readonly dropdownRef = viewChild<ElementRef<HTMLElement>>('dropdown');
   private readonly translator = injectTranslator();
@@ -156,11 +155,8 @@ export class FilterMultiselect {
         if (!this.isOpen()) {
           this.toggleDropdown();
           this.focusedIndexOptionList.set(0);
-        } else if (this.focusedIndexOptionList() >= 0) {
-          const option = options[this.focusedIndexOptionList()];
-          if (option) {
-            this.toggleOption(option.value);
-          }
+        } else if (this.focusedIndexOptionList() >= 0 && this.focusedIndexOptionList() <= maxIndex) {
+          this.toggleOption(options[this.focusedIndexOptionList()].value);
         }
         break;
 
