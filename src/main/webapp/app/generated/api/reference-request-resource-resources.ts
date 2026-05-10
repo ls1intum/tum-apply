@@ -24,7 +24,7 @@ const BASE_PATH = '';
  * Creates a reactive HTTP resource that automatically refetches when signals change.
  * @param applicationId 
  */
-export function listResource(applicationId: Signal<string> | string): HttpResourceRef<Array<ReferenceRequestDTO> | undefined> {
+export function getReferencesResource(applicationId: Signal<string> | string): HttpResourceRef<Array<ReferenceRequestDTO> | undefined> {
     return httpResource<Array<ReferenceRequestDTO>>(() => {
         const applicationIdValue = typeof applicationId === 'function' ? applicationId() : applicationId;
         const applicationIdPath = encodeURIComponent(String(applicationIdValue));

@@ -40,7 +40,7 @@ export class ReferenceRequestResourceApi {
      * 
      * @param applicationId 
      */
-    list(applicationId: string): Observable<Array<ReferenceRequestDTO>> {
+    getReferences(applicationId: string): Observable<Array<ReferenceRequestDTO>> {
         const applicationIdPath = encodeURIComponent(String(applicationId));
         const url = `${this.basePath}/api/applications/${applicationIdPath}/references`;
         return this.http.get<Array<ReferenceRequestDTO>>(url);

@@ -660,7 +660,7 @@ paths:
   /api/applications/{applicationId}/references:
     get:
       tags: [reference-request-resource]
-      operationId: list
+      operationId: getReferences
       parameters:
       - name: applicationId
         in: path
