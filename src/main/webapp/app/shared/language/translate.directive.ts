@@ -40,7 +40,7 @@ export default class TranslateDirective implements OnChanges, OnInit, OnDestroy 
 
   private getTranslation(): void {
     const key = this.jhiTranslate();
-    if (key === undefined || key === null || key === '') {
+    if (key === '') {
       this.el.nativeElement.innerHTML = '';
       return;
     }
