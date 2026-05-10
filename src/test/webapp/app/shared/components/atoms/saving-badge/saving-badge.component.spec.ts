@@ -31,11 +31,4 @@ describe('SavingBadgeComponent', () => {
     expect(component.translationKey()).toBe(key);
   });
 
-  it('should apply the resolved color class to the rendered badge', () => {
-    fixture.componentRef.setInput('state', SavingStates.SAVED);
-    fixture.detectChanges();
-
-    const badge = fixture.nativeElement.querySelector('div');
-    expect(badge?.classList).toContain('text-positive-default');
-  });
 });

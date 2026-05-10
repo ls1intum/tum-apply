@@ -55,19 +55,10 @@ describe('GradingScaleEditDialogComponent', () => {
   });
 
   describe('initialization', () => {
-    it('should set currentGrade from dialog config data', () => {
+    it('should initialize fields and data signal from dialog config (non-percentage)', () => {
       expect(comp.currentGrade).toBe(currentGrade);
-    });
-
-    it('should set originalUpperLimit from dialog config data', () => {
       expect(comp.originalUpperLimit).toBe(originalUpperLimit);
-    });
-
-    it('should set originalLowerLimit from dialog config data', () => {
       expect(comp.originalLowerLimit).toBe(originalLowerLimit);
-    });
-
-    it('should initialize data signal upperLimit and lowerLimit from config with percentage = false', () => {
       expect(comp.data().upperLimit).toBe(originalUpperLimit);
       expect(comp.data().lowerLimit).toBe(originalLowerLimit);
       expect(comp.data().isPercentage).toBe(false);
@@ -141,33 +132,14 @@ describe('GradingScaleEditDialogComponent', () => {
     });
 
     describe('isValid', () => {
-      it('should return false when upperLimit is empty', () => {
-        comp.data.set({ upperLimit: '', lowerLimit: originalLowerLimit, isPercentage: false });
-
-        expect(comp.isValid()).toBe(false);
-      });
-
-      it('should return false when lowerLimit is empty', () => {
-        comp.data.set({ upperLimit: originalUpperLimit, lowerLimit: '', isPercentage: false });
-
-        expect(comp.isValid()).toBe(false);
-      });
-
-      it('should return false when both limits are empty', () => {
-        comp.data.set({ upperLimit: '', lowerLimit: '', isPercentage: false });
-
-        expect(comp.isValid()).toBe(false);
-      });
-
-      it('should return false when upperLimit is whitespace only', () => {
-        comp.data.set({ upperLimit: '   ', lowerLimit: originalLowerLimit, isPercentage: false });
-
-        expect(comp.isValid()).toBe(false);
-      });
-
-      it('should return false when lowerLimit is whitespace only', () => {
-        comp.data.set({ upperLimit: originalUpperLimit, lowerLimit: '   ', isPercentage: false });
-
+      it.each([
+        ['upperLimit empty', '', '4.0'],
+        ['lowerLimit empty', '1.0', ''],
+        ['both empty', '', ''],
+        ['upperLimit whitespace', '   ', '4.0'],
+        ['lowerLimit whitespace', '1.0', '   '],
+      ])('should return false when %s', (_label, upperLimit, lowerLimit) => {
+        comp.data.set({ upperLimit, lowerLimit, isPercentage: false });
         expect(comp.isValid()).toBe(false);
       });
     });
@@ -249,27 +221,13 @@ describe('GradingScaleEditDialogComponent', () => {
   });
 
   describe('onSave', () => {
-    it('should not close dialog when upperLimit is empty', () => {
-      comp.data.set({ upperLimit: '', lowerLimit: originalLowerLimit, isPercentage: false });
-
+    it.each([
+      ['upperLimit empty', '', '4.0'],
+      ['lowerLimit empty', '1.0', ''],
+      ['both empty', '', ''],
+    ])('should not close dialog when %s', (_label, upperLimit, lowerLimit) => {
+      comp.data.set({ upperLimit, lowerLimit, isPercentage: false });
       comp.onSave();
-
-      expect(dialogRef.close).not.toHaveBeenCalled();
-    });
-
-    it('should not close dialog when lowerLimit is empty', () => {
-      comp.data.set({ upperLimit: originalUpperLimit, lowerLimit: '', isPercentage: false });
-
-      comp.onSave();
-
-      expect(dialogRef.close).not.toHaveBeenCalled();
-    });
-
-    it('should not close dialog when both limits are empty', () => {
-      comp.data.set({ upperLimit: '', lowerLimit: '', isPercentage: false });
-
-      comp.onSave();
-
       expect(dialogRef.close).not.toHaveBeenCalled();
     });
 

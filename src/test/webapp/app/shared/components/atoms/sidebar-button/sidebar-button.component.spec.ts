@@ -36,9 +36,6 @@ describe('SidebarButtonComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
   describe('navigation', () => {
     it('should call router.navigate on click', () => {
       const navigateSpy = vi.spyOn(router, 'navigate');

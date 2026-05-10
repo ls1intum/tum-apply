@@ -66,10 +66,6 @@ describe('Registration Component', () => {
     vi.clearAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('sendOtp', () => {
     it('should return false for empty email', async () => {
       const res = await component.sendOtp('   ');
@@ -142,13 +138,13 @@ describe('Registration Component', () => {
   });
 
   describe('navigation', () => {
-    it('onBack should call orchestrator.previousStep', () => {
+    it('should call orchestrator.previousStep on onBack', () => {
       const prevSpy = vi.spyOn(authOrchestrator, 'previousStep');
       component.onBack();
       expect(prevSpy).toHaveBeenCalledOnce();
     });
 
-    it('onSkip should call orchestrator.nextStep', () => {
+    it('should call orchestrator.nextStep on onSkip', () => {
       const nextSpy = vi.spyOn(authOrchestrator, 'nextStep');
       component.onSkip();
       expect(nextSpy).toHaveBeenCalledOnce();

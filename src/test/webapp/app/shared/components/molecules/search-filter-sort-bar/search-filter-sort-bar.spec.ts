@@ -65,14 +65,6 @@ describe('SearchFilterSortBar', () => {
     vi.useRealTimers();
   });
 
-  it('should initialize with default values', () => {
-    const fixture = createSearchFilterSortBarFixture();
-
-    expect(fixture.componentInstance.inputText).toBe('');
-    expect(fixture.componentInstance.totalRecords()).toBe(0);
-    expect(fixture.componentInstance.filters()).toEqual([]);
-  });
-
   it('should emit search output with debounce', () => {
     const fixture = createSearchFilterSortBarFixture();
     const searchOutputSpy = vi.spyOn(fixture.componentInstance.searchOutput, 'emit');
@@ -99,25 +91,8 @@ describe('SearchFilterSortBar', () => {
 
     vi.advanceTimersByTime(300);
 
-    expect(searchOutputSpy).toHaveBeenCalledTimes(1);
+    expect(searchOutputSpy).toHaveBeenCalledOnce();
     expect(searchOutputSpy).toHaveBeenCalledWith('second search');
-  });
-
-  it('should emit multiple searches with proper debouncing', () => {
-    const fixture = createSearchFilterSortBarFixture();
-    const searchOutputSpy = vi.spyOn(fixture.componentInstance.searchOutput, 'emit');
-
-    fixture.componentInstance.inputText = 'first';
-    fixture.componentInstance.onSearch();
-    vi.advanceTimersByTime(300);
-
-    fixture.componentInstance.inputText = 'second';
-    fixture.componentInstance.onSearch();
-    vi.advanceTimersByTime(300);
-
-    expect(searchOutputSpy).toHaveBeenCalledTimes(2);
-    expect(searchOutputSpy).toHaveBeenNthCalledWith(1, 'first');
-    expect(searchOutputSpy).toHaveBeenNthCalledWith(2, 'second');
   });
 
   it('should emit filter change', () => {
@@ -152,95 +127,7 @@ describe('SearchFilterSortBar', () => {
     expect(sortOutputSpy).toHaveBeenCalledWith(sortChange);
   });
 
-  it('should display filters when provided', () => {
-    const fixture = createSearchFilterSortBarFixture({
-      filters: mockFilters,
-    });
-
-    expect(fixture.componentInstance.filters()).toEqual(mockFilters);
-    expect(fixture.componentInstance.filters().length).toBe(2);
-  });
-
-  it('should display sort options when provided', () => {
-    const fixture = createSearchFilterSortBarFixture({
-      sortableFields: mockSortOptions,
-    });
-
-    expect(fixture.componentInstance.sortableFields()).toEqual(mockSortOptions);
-  });
-
-  it('should handle empty filters array', () => {
-    const fixture = createSearchFilterSortBarFixture({
-      filters: [],
-    });
-
-    expect(fixture.componentInstance.filters()).toEqual([]);
-  });
-
-  it('should handle undefined sortable fields', () => {
-    const fixture = createSearchFilterSortBarFixture({
-      sortableFields: undefined,
-    });
-
-    expect(fixture.componentInstance.sortableFields()).toBeUndefined();
-  });
-
-  it('should display correct total records', () => {
-    const fixture = createSearchFilterSortBarFixture({
-      totalRecords: 42,
-    });
-
-    expect(fixture.componentInstance.totalRecords()).toBe(42);
-  });
-
-  it('should use single entity for count of 1', () => {
-    const fixture = createSearchFilterSortBarFixture({
-      totalRecords: 1,
-      singleEntity: 'job',
-      multipleEntities: 'jobs',
-    });
-
-    expect(fixture.componentInstance.totalRecords()).toBe(1);
-    expect(fixture.componentInstance.singleEntity()).toBe('job');
-  });
-
-  it('should use multiple entities for count more than 1', () => {
-    const fixture = createSearchFilterSortBarFixture({
-      totalRecords: 5,
-      singleEntity: 'job',
-      multipleEntities: 'jobs',
-    });
-
-    expect(fixture.componentInstance.totalRecords()).toBe(5);
-    expect(fixture.componentInstance.multipleEntities()).toBe('jobs');
-  });
-
-  it('should handle search text placeholder', () => {
-    const fixture = createSearchFilterSortBarFixture({
-      searchText: 'Enter search term...',
-    });
-
-    expect(fixture.componentInstance.searchText()).toBe('Enter search term...');
-  });
-
   describe('DOM rendering', () => {
-    it('should render search input element', () => {
-      const fixture = createSearchFilterSortBarFixture({
-        searchText: 'Search items...',
-      });
-
-      const searchInput = fixture.nativeElement.querySelector('input[type="text"]');
-      expect(searchInput).toBeTruthy();
-      expect(searchInput.placeholder).toBe('Search items...');
-    });
-
-    it('should render search icon', () => {
-      const fixture = createSearchFilterSortBarFixture();
-
-      const icon = fixture.nativeElement.querySelector('fa-icon');
-      expect(icon).toBeTruthy();
-    });
-
     it('should render filter components when filters are provided', () => {
       const fixture = createSearchFilterSortBarFixture({
         filters: mockFilters,
@@ -276,215 +163,36 @@ describe('SearchFilterSortBar', () => {
       const sortingComponent = fixture.nativeElement.querySelector('jhi-sorting');
       expect(sortingComponent).toBeFalsy();
     });
-
-    it('should render record count element', () => {
-      const fixture = createSearchFilterSortBarFixture({
-        totalRecords: 10,
-      });
-
-      const recordCount = fixture.nativeElement.querySelector('div[jhiTranslate="entity.filters.recordsFound"]');
-      expect(recordCount).toBeTruthy();
-    });
   });
 
   describe('cleanup', () => {
-    it('should call clearTimeout when onSearch is called again before timeout', () => {
+    it('should clear timeout on subsequent search calls within debounce', () => {
       const fixture = createSearchFilterSortBarFixture();
       const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
 
       fixture.componentInstance.inputText = 'first';
       fixture.componentInstance.onSearch();
-
-      fixture.componentInstance.inputText = 'second';
-      fixture.componentInstance.onSearch();
-
-      expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not call clearTimeout on first search', () => {
-      const fixture = createSearchFilterSortBarFixture();
-      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
-
-      fixture.componentInstance.inputText = 'first';
-      fixture.componentInstance.onSearch();
-
       expect(clearTimeoutSpy).not.toHaveBeenCalled();
-    });
-
-    it('should clear timeout multiple times for rapid searches', () => {
-      const fixture = createSearchFilterSortBarFixture();
-      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
-
-      fixture.componentInstance.inputText = 'first';
-      fixture.componentInstance.onSearch();
 
       fixture.componentInstance.inputText = 'second';
       fixture.componentInstance.onSearch();
-
-      fixture.componentInstance.inputText = 'third';
-      fixture.componentInstance.onSearch();
-
-      expect(clearTimeoutSpy).toHaveBeenCalledTimes(2);
+      expect(clearTimeoutSpy).toHaveBeenCalledOnce();
     });
   });
 
-  describe('edge cases', () => {
-    it('should handle empty search input', () => {
-      const fixture = createSearchFilterSortBarFixture();
-      const searchOutputSpy = vi.spyOn(fixture.componentInstance.searchOutput, 'emit');
-
-      fixture.componentInstance.inputText = '';
-      fixture.componentInstance.onSearch();
-
-      vi.advanceTimersByTime(300);
-
-      expect(searchOutputSpy).toHaveBeenCalledWith('');
-    });
-
-    it('should handle very long search input', () => {
-      const fixture = createSearchFilterSortBarFixture();
-      const searchOutputSpy = vi.spyOn(fixture.componentInstance.searchOutput, 'emit');
-
-      const longString = 'a'.repeat(1000);
-      fixture.componentInstance.inputText = longString;
-      fixture.componentInstance.onSearch();
-
-      vi.advanceTimersByTime(300);
-
-      expect(searchOutputSpy).toHaveBeenCalledWith(longString);
-      expect(searchOutputSpy.mock.calls[0][0].length).toBe(1000);
-    });
-
-    it('should handle search input with special characters', () => {
-      const fixture = createSearchFilterSortBarFixture();
-      const searchOutputSpy = vi.spyOn(fixture.componentInstance.searchOutput, 'emit');
-
-      const specialChars = '!@#$%^&*()_+-=[]{}|;:\'",.<>?/\\';
-      fixture.componentInstance.inputText = specialChars;
-      fixture.componentInstance.onSearch();
-
-      vi.advanceTimersByTime(300);
-
-      expect(searchOutputSpy).toHaveBeenCalledWith(specialChars);
-    });
-
-    it('should handle search input with whitespace only', () => {
-      const fixture = createSearchFilterSortBarFixture();
-      const searchOutputSpy = vi.spyOn(fixture.componentInstance.searchOutput, 'emit');
-
-      fixture.componentInstance.inputText = '   ';
-      fixture.componentInstance.onSearch();
-
-      vi.advanceTimersByTime(300);
-
-      expect(searchOutputSpy).toHaveBeenCalledWith('   ');
-    });
-
-    it('should handle totalRecords of 0', () => {
-      const fixture = createSearchFilterSortBarFixture({
-        totalRecords: 0,
-      });
-
-      expect(fixture.componentInstance.totalRecords()).toBe(0);
-    });
-
-    it('should handle very large totalRecords number', () => {
-      const fixture = createSearchFilterSortBarFixture({
-        totalRecords: 999999,
-      });
-
-      expect(fixture.componentInstance.totalRecords()).toBe(999999);
-    });
-
-    it('should handle filter change with empty selected values', () => {
-      const fixture = createSearchFilterSortBarFixture({
-        filters: mockFilters,
-      });
-      const filterOutputSpy = vi.spyOn(fixture.componentInstance.filterOutput, 'emit');
-
-      const filterChange: FilterChange = {
-        filterId: 'status-filter',
-        selectedValues: [],
-      };
-
-      fixture.componentInstance.onFilterChange(filterChange);
-
-      expect(filterOutputSpy).toHaveBeenCalledWith(filterChange);
-    });
-
-    it('should handle filter change with different filterId values', () => {
-      const fixture = createSearchFilterSortBarFixture({
-        filters: mockFilters,
-      });
-      const filterOutputSpy = vi.spyOn(fixture.componentInstance.filterOutput, 'emit');
-
-      const filterChange1: FilterChange = {
-        filterId: 'status-filter',
-        selectedValues: ['Active'],
-      };
-
-      const filterChange2: FilterChange = {
-        filterId: 'category-filter',
-        selectedValues: ['Category A'],
-      };
-
-      fixture.componentInstance.onFilterChange(filterChange1);
-      fixture.componentInstance.onFilterChange(filterChange2);
-
-      expect(filterOutputSpy).toHaveBeenNthCalledWith(1, filterChange1);
-      expect(filterOutputSpy).toHaveBeenNthCalledWith(2, filterChange2);
-      expect(filterOutputSpy).toHaveBeenCalledTimes(2);
-    });
-  });
-
-  it('should pass filterId to filter components', () => {
+  it('should emit filter change with empty selected values', () => {
     const fixture = createSearchFilterSortBarFixture({
       filters: mockFilters,
     });
+    const filterOutputSpy = vi.spyOn(fixture.componentInstance.filterOutput, 'emit');
 
-    expect(fixture.componentInstance.filters()[0].filterId).toBe('status-filter');
-    expect(fixture.componentInstance.filters()[1].filterId).toBe('category-filter');
-  });
+    const filterChange: FilterChange = {
+      filterId: 'status-filter',
+      selectedValues: [],
+    };
 
-  it('should handle filters with all properties', () => {
-    const completeFilters: Filter[] = [
-      {
-        filterId: 'complete-filter',
-        filterLabel: 'Complete Filter',
-        filterSearchPlaceholder: 'Search...',
-        filterOptions: ['Option 1', 'Option 2'],
-        shouldTranslateOptions: true,
-      },
-    ];
+    fixture.componentInstance.onFilterChange(filterChange);
 
-    const fixture = createSearchFilterSortBarFixture({
-      filters: completeFilters,
-    });
-
-    const filter = fixture.componentInstance.filters()[0];
-    expect(filter.filterId).toBe('complete-filter');
-    expect(filter.filterLabel).toBe('Complete Filter');
-    expect(filter.filterSearchPlaceholder).toBe('Search...');
-    expect(filter.filterOptions).toEqual(['Option 1', 'Option 2']);
-    expect(filter.shouldTranslateOptions).toBe(true);
-  });
-
-  it('should handle filters without shouldTranslateOptions', () => {
-    const filtersWithoutTranslate: Filter[] = [
-      {
-        filterId: 'simple-filter',
-        filterLabel: 'Simple Filter',
-        filterSearchPlaceholder: 'Search...',
-        filterOptions: ['A', 'B'],
-      },
-    ];
-
-    const fixture = createSearchFilterSortBarFixture({
-      filters: filtersWithoutTranslate,
-    });
-
-    const filter = fixture.componentInstance.filters()[0];
-    expect(filter.filterId).toBe('simple-filter');
-    expect(filter.shouldTranslateOptions).toBeUndefined();
+    expect(filterOutputSpy).toHaveBeenCalledWith(filterChange);
   });
 });

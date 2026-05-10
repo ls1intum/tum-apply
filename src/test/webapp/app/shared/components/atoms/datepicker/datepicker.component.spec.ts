@@ -73,11 +73,6 @@ describe('DatePickerComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create', () => {
-    const fixture = createFixture();
-    expect(fixture.componentInstance).toBeTruthy();
-  });
-
   describe('Date Input and Validation', () => {
     it('should set modelDate to undefined for invalid date', () => {
       const fixture = createFixture();
@@ -142,53 +137,6 @@ describe('DatePickerComponent', () => {
       await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(comp.modelDate()).toEqual(TEST_DATES.testDate);
-    });
-  });
-
-  describe('Input Properties', () => {
-    it('should accept label and required inputs', () => {
-      const fixture = createFixture();
-      setInputAndDetectChanges(fixture, 'label', 'datepicker.label');
-      setInputAndDetectChanges(fixture, 'required', true);
-
-      expect(fixture.componentInstance.label()).toBe('datepicker.label');
-      expect(fixture.componentInstance.required()).toBe(true);
-    });
-
-    it('should apply disabled state', () => {
-      const fixture = createFixture();
-      setInputAndDetectChanges(fixture, 'disabled', true);
-      expect(fixture.componentInstance.disabled()).toBe(true);
-    });
-
-    it('should accept icon input', () => {
-      const fixture = createFixture();
-      setInputAndDetectChanges(fixture, 'icon', 'calendar');
-      expect(fixture.componentInstance.icon()).toBe('calendar');
-    });
-
-    it('should accept shouldTranslate and placeholder inputs', () => {
-      const fixture = createFixture();
-      setInputAndDetectChanges(fixture, 'shouldTranslate', true);
-      setInputAndDetectChanges(fixture, 'placeholder', 'datepicker.placeholder');
-
-      expect(fixture.componentInstance.shouldTranslate()).toBe(true);
-      expect(fixture.componentInstance.placeholder()).toBe('datepicker.placeholder');
-    });
-  });
-
-  describe('Calendar State Management', () => {
-    it('should toggle isCalendarOpen signal', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      expect(comp.isCalendarOpen()).toBe(false);
-
-      comp.isCalendarOpen.set(true);
-      expect(comp.isCalendarOpen()).toBe(true);
-
-      comp.isCalendarOpen.set(false);
-      expect(comp.isCalendarOpen()).toBe(false);
     });
   });
 

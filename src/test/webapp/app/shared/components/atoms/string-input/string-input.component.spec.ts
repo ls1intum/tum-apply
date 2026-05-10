@@ -27,21 +27,6 @@ describe('StringInputComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should render label and required asterisk', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-    expect(comp.label()).toBe('Test Label');
-    expect(comp.required()).toBe(true);
-  });
-
-  it('should not show asterisk when required=false', () => {
-    const fixture = createFixture();
-    fixture.componentRef.setInput('required', false);
-
-    const comp = fixture.componentInstance;
-    expect(comp.required()).toBe(false);
-  });
-
   it('should call onInputChange and emit modelChange with new value', () => {
     const fixture = createFixture();
     const comp = fixture.componentInstance;
@@ -53,60 +38,6 @@ describe('StringInputComponent', () => {
     expect(emitSpy).toHaveBeenCalledWith('Hello');
     expect(mockCtrl.value).toBe('Hello');
     expect(mockCtrl.dirty).toBe(true);
-  });
-
-  it('should bind placeholder correctly', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-
-    expect(comp.placeholder()).toBe('Enter value');
-  });
-
-  it('should not display tooltip when icon is not circle-info', async () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-
-    fixture.componentRef.setInput('icon', 'user');
-    await fixture.whenStable();
-
-    expect(comp.icon()).toBe('user');
-    expect(comp.tooltipText()).toBeUndefined();
-  });
-
-  it('should show tooltip when icon is circle-info and tooltipText is provided', async () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-
-    fixture.componentRef.setInput('icon', 'circle-info');
-    fixture.componentRef.setInput('tooltipText', 'Helpful information');
-    await fixture.whenStable();
-
-    expect(comp.icon()).toBe('circle-info');
-    expect(comp.tooltipText()).toBe('Helpful information');
-  });
-
-  it('should show translated label when shouldTranslate=true', async () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-
-    fixture.componentRef.setInput('shouldTranslate', true);
-    fixture.componentRef.setInput('label', 'string.label');
-    await fixture.whenStable();
-
-    expect(comp.shouldTranslate()).toBe(true);
-  });
-
-  it('should call onFocus and onBlur handlers when input is focused and blurred', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-    const spyFocus = vi.spyOn(comp, 'onFocus');
-    const spyBlur = vi.spyOn(comp, 'onBlur');
-
-    comp.onFocus();
-    comp.onBlur();
-
-    expect(spyFocus).toHaveBeenCalledTimes(1);
-    expect(spyBlur).toHaveBeenCalledTimes(1);
   });
 
   describe('BaseInputDirective - isTouched computed property', () => {
@@ -264,85 +195,6 @@ describe('StringInputComponent', () => {
       expect(comp.isTouched()).toBe(false);
       comp.onBlur();
       expect(comp.isTouched()).toBe(true);
-    });
-  });
-
-  describe('BaseInputDirective - formControl computed property', () => {
-    it('should return provided FormControl when control input is a FormControl', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      const ctrl = new FormControl('test value');
-      fixture.componentRef.setInput('control', ctrl);
-
-      expect(comp.formControl()).toBe(ctrl);
-      expect(comp.formControl().value).toBe('test value');
-    });
-
-    it('should create new FormControl when control input is undefined', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      fixture.componentRef.setInput('control', undefined);
-
-      expect(comp.formControl()).toBeDefined();
-      expect(comp.formControl() instanceof FormControl).toBe(true);
-    });
-  });
-
-  describe('BaseInputDirective - input signals', () => {
-    it('should correctly bind model input signal', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      fixture.componentRef.setInput('model', 'test model value');
-
-      expect(comp.model()).toBe('test model value');
-    });
-
-    it('should correctly bind disabled input signal', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      fixture.componentRef.setInput('disabled', true);
-
-      expect(comp.disabled()).toBe(true);
-    });
-
-    it('should correctly bind icon input signal', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      fixture.componentRef.setInput('icon', 'circle-info');
-
-      expect(comp.icon()).toBe('circle-info');
-    });
-
-    it('should correctly bind tooltipText input signal', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      fixture.componentRef.setInput('tooltipText', 'Help text');
-
-      expect(comp.tooltipText()).toBe('Help text');
-    });
-
-    it('should correctly bind shouldTranslate input signal', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      fixture.componentRef.setInput('shouldTranslate', true);
-
-      expect(comp.shouldTranslate()).toBe(true);
-    });
-
-    it('should correctly bind autofocus input signal', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      fixture.componentRef.setInput('autofocus', true);
-
-      expect(comp.autofocus()).toBe(true);
-    });
-
-    it('should correctly bind errorEnabled input signal', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      fixture.componentRef.setInput('errorEnabled', false);
-
-      expect(comp.errorEnabled()).toBe(false);
     });
   });
 

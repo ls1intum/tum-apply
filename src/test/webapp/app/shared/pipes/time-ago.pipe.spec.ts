@@ -1,11 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
-import { TranslateService } from '@ngx-translate/core';
 import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
 
 describe('TimeAgoPipe', () => {
   let pipe: TimeAgoPipe;
-  let translate: TranslateService;
 
   beforeEach(() => {
     const mockTranslate = createTranslateServiceMock();
@@ -21,7 +19,6 @@ describe('TimeAgoPipe', () => {
     TestBed.configureTestingModule({
       providers: [provideTranslateMock(mockTranslate)],
     });
-    translate = TestBed.inject(TranslateService);
     pipe = TestBed.runInInjectionContext(() => new TimeAgoPipe());
   });
 

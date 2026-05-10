@@ -54,10 +54,6 @@ describe('Login Component', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('login steps', () => {
     it('should show password fields when login step is "password"', () => {
       authOrchestrator.loginStep.set('password');

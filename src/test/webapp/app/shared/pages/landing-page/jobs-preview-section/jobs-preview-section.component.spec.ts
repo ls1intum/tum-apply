@@ -65,10 +65,6 @@ describe('JobsPreviewSectionComponent', () => {
     fixture?.destroy();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should load jobs on init', () => {
     expect(api.getAvailableJobs).toHaveBeenCalledWith(4, 0, undefined, undefined, undefined, 'startDate', 'DESC');
     expect(component.jobs().length).toBe(2);

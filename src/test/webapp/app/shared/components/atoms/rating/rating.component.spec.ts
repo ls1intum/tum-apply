@@ -19,7 +19,7 @@ describe('RatingComponent', () => {
   });
 
   // ---------------- ON SECTION CLICK ----------------
-  it('does nothing when not selectable', () => {
+  it('should do nothing when not selectable', () => {
     fixture.componentRef.setInput('selectable', false);
     fixture.detectChanges();
 
@@ -27,7 +27,7 @@ describe('RatingComponent', () => {
     expect(component.rating()).toBeUndefined();
   });
 
-  it('selects and toggles off when selectable', () => {
+  it('should select and toggle off when selectable', () => {
     fixture.componentRef.setInput('selectable', true);
     fixture.detectChanges();
 
@@ -39,7 +39,7 @@ describe('RatingComponent', () => {
     expect(component.rating()).toBeUndefined();
   });
 
-  it('changes rating when selecting different value', () => {
+  it('should change rating when selecting different value', () => {
     fixture.componentRef.setInput('selectable', true);
     fixture.detectChanges();
 
@@ -51,14 +51,14 @@ describe('RatingComponent', () => {
   });
 
   // ---------------- GET SECTION COLOR ----------------
-  it('returns background color when rating is undefined', () => {
+  it('should return background color when rating is undefined', () => {
     fixture.componentRef.setInput('rating', undefined);
     fixture.detectChanges();
 
     expect(component.getSectionColor(0)).toBe('var(--p-background-surface-alt)');
   });
 
-  it('returns correct colors for each likert value', () => {
+  it('should return correct colors for each likert value', () => {
     fixture.componentRef.setInput('rating', -2);
     fixture.detectChanges();
     expect(component.getSectionColor(0)).toBe('var(--color-negative-active)');
@@ -80,7 +80,7 @@ describe('RatingComponent', () => {
     expect(component.getSectionColor(4)).toBe('var(--color-positive-active)');
   });
 
-  it('falls back to background color when section does not match current rating', () => {
+  it('should fall back to background color when section does not match current rating', () => {
     fixture.componentRef.setInput('rating', 2);
     fixture.detectChanges();
 
@@ -98,14 +98,14 @@ describe('RatingComponent', () => {
   });
 
   // ---------------- GET CURSOR ----------------
-  it('returns pointer when selectable', () => {
+  it('should return pointer when selectable', () => {
     fixture.componentRef.setInput('selectable', true);
     fixture.detectChanges();
 
     expect(component.getCursor()).toBe('pointer');
   });
 
-  it('returns default when not selectable', () => {
+  it('should return default when not selectable', () => {
     fixture.componentRef.setInput('selectable', false);
     fixture.detectChanges();
 

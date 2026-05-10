@@ -108,8 +108,7 @@ describe('ProfilePictureSettingsComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create and normalize the current user data', () => {
-    expect(component).toBeTruthy();
+  it('should normalize the current user data', () => {
     expect(component.fullName()).toBe('Ada Lovelace');
     expect(component.currentProfilePictureUrl()).toBe('/images/original-avatar.jpg');
 

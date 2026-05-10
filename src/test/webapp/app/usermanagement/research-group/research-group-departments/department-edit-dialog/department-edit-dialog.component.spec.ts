@@ -64,11 +64,6 @@ describe('DepartmentEditDialogComponent', () => {
   };
 
   describe('Initialization', () => {
-    it('should create', () => {
-      createComponent();
-      expect(component).toBeTruthy();
-    });
-
     it('should load schools on init', async () => {
       createComponent();
       await fixture.whenStable();

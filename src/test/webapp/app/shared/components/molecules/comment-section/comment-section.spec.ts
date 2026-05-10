@@ -57,8 +57,7 @@ describe('CommentSection', () => {
 
   // ---------------- INIT ----------------
   describe('init', () => {
-    it('should create component and set current user', () => {
-      expect(component).toBeTruthy();
+    it('should set currentUser from logged-in user name', () => {
       expect(component['currentUser']).toBe('Alice Reviewer');
     });
 
@@ -109,25 +108,6 @@ describe('CommentSection', () => {
       expect(mockCommentApi.listComments).toHaveBeenCalledWith('app-1');
       expect(component['comments']()).toEqual(data);
       expect(component['createDraft']()).toBe('');
-    });
-
-    it('should early return when id undefined', async () => {
-      fixture.componentRef.setInput('applicationId', undefined);
-      fixture.detectChanges();
-
-      await component.loadComments();
-      expect(mockCommentApi.listComments).not.toHaveBeenCalled();
-    });
-
-    it('should set comments on success', async () => {
-      const data: CommentDTO[] = [{ commentId: 'x', message: 'msg' }];
-      mockCommentApi.listComments.mockReturnValueOnce(of(data));
-
-      fixture.componentRef.setInput('applicationId', 'app-2');
-      fixture.detectChanges();
-      await component.loadComments();
-
-      expect(component['comments']()).toEqual(data);
     });
 
     it('should show toast on error', async () => {
@@ -294,7 +274,7 @@ describe('CommentSection', () => {
     it('should delegate to loadComments', async () => {
       const spy = vi.spyOn(component, 'loadComments').mockResolvedValue(void 0);
       await component.refresh();
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledOnce();
     });
   });
 });

@@ -56,9 +56,9 @@ describe('AuthDialogService', () => {
 
       authDialogService.open(opts);
 
-      expect(authOrchestratorMock.open).toHaveBeenCalledTimes(1);
+      expect(authOrchestratorMock.open).toHaveBeenCalledOnce();
       expect(authOrchestratorMock.open).toHaveBeenCalledWith(opts);
-      expect(dialogService.open).toHaveBeenCalledTimes(1);
+      expect(dialogService.open).toHaveBeenCalledOnce();
 
       const [component, config] = dialogService.open.mock.calls[0];
       expect(component).toBe(AuthCardComponent);
@@ -81,7 +81,7 @@ describe('AuthDialogService', () => {
       authDialogService.open();
       authDialogService.open();
 
-      expect(first.ref.close).toHaveBeenCalledTimes(1);
+      expect(first.ref.close).toHaveBeenCalledOnce();
       expect(second.ref.close).not.toHaveBeenCalled();
       expect(dialogService.open).toHaveBeenCalledTimes(2);
     });
@@ -95,8 +95,8 @@ describe('AuthDialogService', () => {
       authDialogService.open();
       authDialogService.close();
 
-      expect(ref.close).toHaveBeenCalledTimes(1);
-      expect(authOrchestratorMock.close).toHaveBeenCalledTimes(1);
+      expect(ref.close).toHaveBeenCalledOnce();
+      expect(authOrchestratorMock.close).toHaveBeenCalledOnce();
     });
 
     it('should be idempotent when close is called multiple times', () => {
@@ -107,7 +107,7 @@ describe('AuthDialogService', () => {
       authDialogService.close();
       authDialogService.close();
 
-      expect(ref.close).toHaveBeenCalledTimes(1);
+      expect(ref.close).toHaveBeenCalledOnce();
       expect(authOrchestratorMock.close).toHaveBeenCalledTimes(2);
     });
   });
@@ -122,8 +122,8 @@ describe('AuthDialogService', () => {
       onClose$.next({});
       TestBed.tick();
 
-      expect(ref.close).toHaveBeenCalledTimes(1);
-      expect(authOrchestratorMock.close).toHaveBeenCalledTimes(1);
+      expect(ref.close).toHaveBeenCalledOnce();
+      expect(authOrchestratorMock.close).toHaveBeenCalledOnce();
     });
 
     it('should close dialog and orchestrator when onDestroy event is emitted', () => {
@@ -135,8 +135,8 @@ describe('AuthDialogService', () => {
       onDestroy$.next({});
       TestBed.tick();
 
-      expect(ref.close).toHaveBeenCalledTimes(1);
-      expect(authOrchestratorMock.close).toHaveBeenCalledTimes(1);
+      expect(ref.close).toHaveBeenCalledOnce();
+      expect(authOrchestratorMock.close).toHaveBeenCalledOnce();
     });
 
     it('should close dialog when orchestrator isOpen becomes false', () => {
@@ -148,7 +148,7 @@ describe('AuthDialogService', () => {
       authOrchestratorMock.isOpen.set(false);
       TestBed.tick();
 
-      expect(ref.close).toHaveBeenCalledTimes(1);
+      expect(ref.close).toHaveBeenCalledOnce();
       expect(authOrchestratorMock.close).not.toHaveBeenCalled();
     });
   });

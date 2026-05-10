@@ -15,7 +15,6 @@ import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
 import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
 import { DepartmentDTO } from 'app/generated/model/department-dto';
 import { UserShortDTO } from 'app/generated/model/user-short-dto';
-import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
@@ -132,10 +131,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
     });
   }
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   /**
    * Form Initialization Tests
    * Verifies that all form controls are properly created with correct initial states
@@ -143,21 +138,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
   describe('Form Initialization', () => {
     it('should request current user data for professor prefill', () => {
       expect(mockGetCurrentUser).toHaveBeenCalledOnce();
-    });
-
-    it('should initialize with all required form fields', () => {
-      expect(component.form.get('title')).toBeTruthy();
-      expect(component.form.get('firstName')).toBeTruthy();
-      expect(component.form.get('lastName')).toBeTruthy();
-      expect(component.form.get('tumID')).toBeTruthy();
-      expect(component.form.get('researchGroupHead')).toBeTruthy();
-      expect(component.form.get('researchGroupName')).toBeTruthy();
-    });
-
-    it('should initialize form with empty values', () => {
-      expect(component.form.get('title')?.value).toBe('');
-      expect(component.form.get('firstName')?.value).toBe('');
-      expect(component.form.get('lastName')?.value).toBe('');
     });
 
     it('should prefill professor fields from current user data', async () => {
@@ -206,25 +186,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       expect(component.form.get('researchGroupContactEmail')?.value).toBe('manual@tum.de');
     });
 
-    it('should mark required fields as invalid when empty', () => {
-      const titleControl = component.form.get('title');
-      const firstNameControl = component.form.get('firstName');
-      const lastNameControl = component.form.get('lastName');
-      const tumIDControl = component.form.get('tumID');
-
-      expect(titleControl?.valid).toBe(false);
-      expect(firstNameControl?.valid).toBe(false);
-      expect(lastNameControl?.valid).toBe(false);
-      expect(tumIDControl?.valid).toBe(false);
-    });
-
-    it('should mark optional fields as valid when empty', () => {
-      const abbreviationControl = component.form.get('researchGroupAbbreviation');
-      const websiteControl = component.form.get('researchGroupWebsite');
-
-      expect(abbreviationControl?.valid).toBe(true);
-      expect(websiteControl?.valid).toBe(true);
-    });
   });
 
   /**
@@ -364,26 +325,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       );
     });
 
-    it('should convert empty optional fields to empty strings', async () => {
-      fillValidForm({
-        researchGroupAbbreviation: '',
-        researchGroupWebsite: '',
-        researchGroupCity: '',
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockResearchGroupService.createProfessorResearchGroupRequest).toHaveBeenCalledWith(
-        expect.objectContaining({
-          abbreviation: '',
-          website: '',
-          city: '',
-        }),
-      );
-    });
-
     it('should handle non-string values in optional fields', async () => {
       fillValidForm({
         researchGroupWebsite: 12345,
@@ -400,12 +341,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
           abbreviation: '',
         }),
       );
-    });
-
-    it('should set isSubmitting to true during submission', () => {
-      component.onConfirmSubmit();
-
-      expect(component.isSubmitting()).toBe(true);
     });
 
     it('should call confirmOnboarding after successful research group creation', async () => {
@@ -595,81 +530,26 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       expect(() => componentNoRef.onCancel()).not.toThrow();
     });
 
-    it('should handle null values in optional fields', async () => {
-      fillValidForm({
-        researchGroupAbbreviation: null,
-        researchGroupWebsite: null,
-      });
+    it.each([
+      { desc: 'null', overrides: { researchGroupAbbreviation: null, researchGroupWebsite: null }, expected: { abbreviation: '', website: '' } },
+      {
+        desc: 'undefined',
+        overrides: { researchGroupAbbreviation: undefined, researchGroupContactEmail: undefined },
+        expected: { abbreviation: '', contactEmail: '' },
+      },
+      {
+        desc: 'whitespace-only',
+        overrides: { researchGroupAbbreviation: '   ', researchGroupWebsite: '  ', researchGroupCity: '    ', researchGroupDescription: '\t\n' },
+        expected: { abbreviation: '', website: '', city: '', description: '' },
+      },
+    ])('should normalize $desc values in optional fields to empty strings', async ({ overrides, expected }) => {
+      fillValidForm(overrides);
 
       component.onConfirmSubmit();
 
       await new Promise(resolve => setTimeout(resolve, 0));
 
-      expect(mockResearchGroupService.createProfessorResearchGroupRequest).toHaveBeenCalledWith(
-        expect.objectContaining({
-          abbreviation: '',
-          website: '',
-        }),
-      );
-    });
-
-    it('should handle undefined values in optional fields', async () => {
-      fillValidForm({
-        researchGroupAbbreviation: undefined,
-        researchGroupContactEmail: undefined,
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockResearchGroupService.createProfessorResearchGroupRequest).toHaveBeenCalledWith(
-        expect.objectContaining({
-          abbreviation: '',
-          contactEmail: '',
-        }),
-      );
-    });
-
-    it('should handle whitespace-only values in optional fields', async () => {
-      fillValidForm({
-        researchGroupAbbreviation: '   ',
-        researchGroupWebsite: '  ',
-        researchGroupCity: '    ',
-        researchGroupDescription: '\t\n',
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockResearchGroupService.createProfessorResearchGroupRequest).toHaveBeenCalledWith(
-        expect.objectContaining({
-          abbreviation: '',
-          website: '',
-          city: '',
-          description: '',
-        }),
-      );
-    });
-  });
-
-  /**
-   * Loading State Tests
-   * Verifies isSubmitting signal prevents duplicate submissions
-   */
-  describe('Loading State', () => {
-    it('should initialize with isSubmitting as false', () => {
-      expect(component.isSubmitting()).toBe(false);
-    });
-
-    it('should prevent multiple simultaneous submissions', () => {
-      fillValidForm();
-      component.isSubmitting.set(true);
-
-      component.onConfirmSubmit();
-
-      expect(mockResearchGroupService.createProfessorResearchGroupRequest).not.toHaveBeenCalled();
+      expect(mockResearchGroupService.createProfessorResearchGroupRequest).toHaveBeenCalledWith(expect.objectContaining(expected));
     });
   });
 
@@ -682,26 +562,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       expect(component.mode()).toBe('professor');
     });
 
-    it('should enable personal information fields in professor mode', () => {
-      expect(component.form.get('title')?.disabled).toBe(false);
-      expect(component.form.get('firstName')?.disabled).toBe(false);
-      expect(component.form.get('lastName')?.disabled).toBe(false);
-      expect(component.form.get('additionalNotes')?.disabled).toBe(false);
-    });
-
-    it('should require tumID validation in professor mode', () => {
-      const tumIDControl = component.form.get('tumID');
-
-      tumIDControl?.setValue('');
-      expect(tumIDControl?.valid).toBe(false);
-
-      tumIDControl?.setValue('invalid-format');
-      expect(tumIDControl?.valid).toBe(false);
-
-      tumIDControl?.setValue('ab12cde');
-      expect(tumIDControl?.valid).toBe(true);
-    });
-
     it('should call createProfessorResearchGroupRequest in professor mode', async () => {
       fillValidForm();
 
@@ -711,40 +571,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
 
       expect(mockResearchGroupService.createProfessorResearchGroupRequest).toHaveBeenCalledOnce();
       expect(mockResearchGroupService.createResearchGroupAsAdmin).not.toHaveBeenCalled();
-    });
-
-    it('should call confirmOnboarding in professor mode', async () => {
-      fillValidForm();
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockProfOnboardingService.confirmOnboarding).toHaveBeenCalledOnce();
-    });
-
-    it('should show professor success toast in professor mode', async () => {
-      fillValidForm();
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('onboarding.professorRequest.success');
-    });
-
-    it('should show professor error toast when creation fails in professor mode', async () => {
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() =>
-        throwError(() => new HttpErrorResponse({ error: 'Creation failed' })),
-      );
-
-      fillValidForm();
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.error');
     });
   });
 

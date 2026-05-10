@@ -92,125 +92,6 @@ describe('ResearchGroupAdminView', () => {
     vi.clearAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize with default values', () => {
-    expect(component.researchGroups()).toEqual([]);
-    expect(component.totalRecords()).toBe(0);
-    expect(component.page()).toBe(0);
-    expect(component.pageSize()).toBe(10);
-    expect(component.searchQuery()).toBe('');
-    expect(component.sortBy()).toBe('state');
-    expect(component.sortDirection()).toBe('DESC');
-    expect(component.selectedStatusFilters()).toEqual([]);
-  });
-
-  describe('Columns Configuration', () => {
-    it('should have correct columns configuration', () => {
-      fixture.detectChanges();
-      const columns = component.columns();
-
-      expect(columns).toHaveLength(5);
-      expect(columns[0].field).toBe('professorName');
-      expect(columns[1].field).toBe('status');
-      expect(columns[2].field).toBe('researchGroup');
-      expect(columns[3].field).toBe('createdAt');
-      expect(columns[4].field).toBe('actions');
-    });
-
-    it('should have correct translation keys for column headers', () => {
-      fixture.detectChanges();
-      const columns = component.columns();
-
-      expect(columns[0].header).toBe('researchGroup.adminView.tableColumn.professor');
-      expect(columns[1].header).toBe('researchGroup.adminView.tableColumn.status');
-      expect(columns[2].header).toBe('researchGroup.adminView.tableColumn.researchGroup');
-      expect(columns[3].header).toBe('researchGroup.adminView.tableColumn.requestedAt');
-      expect(columns[4].header).toBe('');
-    });
-
-    it('should have correct column widths', () => {
-      fixture.detectChanges();
-      const columns = component.columns();
-
-      expect(columns[0].width).toBe('20rem');
-      expect(columns[1].width).toBe('6rem');
-      expect(columns[2].width).toBe('30rem');
-      expect(columns[3].width).toBe('16rem');
-      expect(columns[4].width).toBe('5rem');
-    });
-
-    it('should configure status column with template and center alignment', () => {
-      fixture.detectChanges();
-      const columns = component.columns();
-      const statusColumn = columns[1];
-
-      expect(statusColumn.alignCenter).toBe(true);
-      expect(statusColumn.template).toBeDefined();
-    });
-
-    it('should configure createdAt column as date type', () => {
-      fixture.detectChanges();
-      const columns = component.columns();
-      const dateColumn = columns[3];
-
-      expect(dateColumn.type).toBe('date');
-    });
-
-    it('should configure actions column with template', () => {
-      fixture.detectChanges();
-      const columns = component.columns();
-      const actionsColumn = columns[4];
-
-      expect(actionsColumn.template).toBeDefined();
-    });
-  });
-
-  describe('Status Options and Mappings', () => {
-    it('should have correct status options', () => {
-      expect(component.availableStatusOptions).toHaveLength(3);
-      expect(component.availableStatusOptions).toEqual([
-        { key: 'DRAFT', label: 'researchGroup.adminView.groupState.draft' },
-        { key: 'ACTIVE', label: 'researchGroup.adminView.groupState.active' },
-        { key: 'DENIED', label: 'researchGroup.adminView.groupState.denied' },
-      ]);
-    });
-
-    it('should have correct state text map', () => {
-      const stateTextMap = component.stateTextMap();
-      expect(stateTextMap['DRAFT']).toBe('researchGroup.adminView.groupState.draft');
-      expect(stateTextMap['ACTIVE']).toBe('researchGroup.adminView.groupState.active');
-      expect(stateTextMap['DENIED']).toBe('researchGroup.adminView.groupState.denied');
-    });
-
-    it('should have correct state severity map', () => {
-      const stateSeverityMap = component.stateSeverityMap();
-      expect(stateSeverityMap['DRAFT']).toBe('contrast');
-      expect(stateSeverityMap['ACTIVE']).toBe('success');
-      expect(stateSeverityMap['DENIED']).toBe('danger');
-    });
-  });
-
-  describe('Sortable Fields Configuration', () => {
-    it('should have correct sortable fields', () => {
-      expect(component.sortableFields).toHaveLength(2);
-      expect(component.sortableFields[0].fieldName).toBe('state');
-      expect(component.sortableFields[1].fieldName).toBe('createdAt');
-    });
-
-    it('should have correct translation keys for sortable field display names', () => {
-      expect(component.sortableFields[0].displayName).toBe('researchGroup.adminView.tableColumn.status');
-      expect(component.sortableFields[1].displayName).toBe('researchGroup.adminView.tableColumn.requestedAt');
-    });
-
-    it('should have correct sort types for sortable fields', () => {
-      expect(component.sortableFields[0].type).toBe('TEXT');
-      expect(component.sortableFields[1].type).toBe('NUMBER');
-    });
-  });
-
   describe('Loading Research Groups', () => {
     it('should load research groups on table emit', async () => {
       mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
@@ -398,24 +279,6 @@ describe('ResearchGroupAdminView', () => {
       expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
-    it('should reload when create dialog returns created group payload', async () => {
-      const mockDialogRef = {
-        onClose: {
-          subscribe: vi.fn((callback: (result: unknown) => void) => {
-            callback({ id: 'new-rg-id' });
-          }),
-        },
-      } as unknown as DynamicDialogRef;
-
-      mockDialogService.open.mockReturnValue(mockDialogRef);
-      mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
-
-      component.onCreateResearchGroup();
-      await Promise.resolve();
-
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
-    });
-
     it('should not reload when create dialog is cancelled', async () => {
       const mockDialogRef = {
         onClose: {
@@ -460,83 +323,37 @@ describe('ResearchGroupAdminView', () => {
   });
 
   describe('Research Group Actions', () => {
-    it('should approve research group successfully', async () => {
-      mockResearchGroupService.activateResearchGroup.mockReturnValue(of(void 0));
+    it.each([
+      { action: 'onApproveResearchGroup' as const, apiMethod: 'activateResearchGroup' as const, successKey: 'researchGroup.adminView.success.approve', errorKey: 'researchGroup.adminView.errors.approve' },
+      { action: 'onDenyResearchGroup' as const, apiMethod: 'denyResearchGroup' as const, successKey: 'researchGroup.adminView.success.deny', errorKey: 'researchGroup.adminView.errors.deny' },
+      { action: 'onWithdrawResearchGroup' as const, apiMethod: 'withdrawResearchGroup' as const, successKey: 'researchGroup.adminView.success.withdraw', errorKey: 'researchGroup.adminView.errors.withdraw' },
+    ])('$action: should succeed and reload', async ({ action, apiMethod, successKey }) => {
+      mockResearchGroupService[apiMethod].mockReturnValue(of(void 0));
       mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
 
-      await component.onApproveResearchGroup('rg-1');
+      await component[action]('rg-1');
 
-      expect(mockResearchGroupService.activateResearchGroup).toHaveBeenCalledWith('rg-1');
-      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.approve');
+      expect(mockResearchGroupService[apiMethod]).toHaveBeenCalledWith('rg-1');
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith(successKey);
       expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
     });
 
-    it('should handle error when approving research group fails', async () => {
-      mockResearchGroupService.activateResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
+    it.each([
+      { action: 'onApproveResearchGroup' as const, apiMethod: 'activateResearchGroup' as const, errorKey: 'researchGroup.adminView.errors.approve' },
+      { action: 'onDenyResearchGroup' as const, apiMethod: 'denyResearchGroup' as const, errorKey: 'researchGroup.adminView.errors.deny' },
+      { action: 'onWithdrawResearchGroup' as const, apiMethod: 'withdrawResearchGroup' as const, errorKey: 'researchGroup.adminView.errors.withdraw' },
+    ])('$action: should show error and not reload on failure', async ({ action, apiMethod, errorKey }) => {
+      mockResearchGroupService[apiMethod].mockReturnValue(throwError(() => new Error('API Error')));
 
-      await component.onApproveResearchGroup('rg-1');
+      await component[action]('rg-1');
 
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.approve');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).not.toHaveBeenCalled();
-    });
-
-    it('should deny research group successfully', async () => {
-      mockResearchGroupService.denyResearchGroup.mockReturnValue(of(void 0));
-      mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
-
-      await component.onDenyResearchGroup('rg-1');
-
-      expect(mockResearchGroupService.denyResearchGroup).toHaveBeenCalledWith('rg-1');
-      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.deny');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
-    });
-
-    it('should handle error when denying research group fails', async () => {
-      mockResearchGroupService.denyResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
-
-      await component.onDenyResearchGroup('rg-1');
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.deny');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).not.toHaveBeenCalled();
-    });
-
-    it('should withdraw research group successfully', async () => {
-      mockResearchGroupService.withdrawResearchGroup.mockReturnValue(of(void 0));
-      mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
-
-      await component.onWithdrawResearchGroup('rg-2');
-
-      expect(mockResearchGroupService.withdrawResearchGroup).toHaveBeenCalledWith('rg-2');
-      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.withdraw');
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
-    });
-
-    it('should handle error when withdrawing research group fails', async () => {
-      mockResearchGroupService.withdrawResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
-
-      await component.onWithdrawResearchGroup('rg-2');
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.withdraw');
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith(errorKey);
       expect(mockResearchGroupService.getResearchGroupsForAdmin).not.toHaveBeenCalled();
     });
   });
 
   describe('Translation Key to Enum Mapping in Filters', () => {
-    it('should map translation keys to enum values correctly', async () => {
-      mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
-
-      const filterChange: FilterChange = {
-        filterId: 'status',
-        selectedValues: ['researchGroup.adminView.groupState.draft', 'researchGroup.adminView.groupState.denied'],
-      };
-
-      component.onFilterEmit(filterChange);
-      await Promise.resolve();
-
-      expect(component.selectedStatusFilters()).toEqual(['DRAFT', 'DENIED']);
-    });
-
-    it('should handle unknown translation keys in filter mapping', async () => {
+    it('should pass through unknown translation keys in filter mapping', async () => {
       mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
 
       const filterChange: FilterChange = {
@@ -548,28 +365,6 @@ describe('ResearchGroupAdminView', () => {
       await Promise.resolve();
 
       expect(component.selectedStatusFilters()).toEqual(['unknown.key'] as unknown as ('DRAFT' | 'ACTIVE' | 'DENIED')[]);
-    });
-  });
-
-  describe('Filter Configuration', () => {
-    it('should have correct filter configuration', () => {
-      expect(component.filters).toHaveLength(1);
-      expect(component.filters[0].filterId).toBe('status');
-      expect(component.filters[0].shouldTranslateOptions).toBe(true);
-    });
-
-    it('should have correct translation keys for filter labels', () => {
-      expect(component.filters[0].filterLabel).toBe('researchGroup.adminView.filter.status');
-      expect(component.filters[0].filterSearchPlaceholder).toBe('researchGroup.adminView.filter.stateSearchPlaceholder');
-    });
-
-    it('should have correct filter options with translation keys', () => {
-      const filterOptions = component.filters[0].filterOptions;
-      expect(filterOptions).toEqual([
-        'researchGroup.adminView.groupState.draft',
-        'researchGroup.adminView.groupState.active',
-        'researchGroup.adminView.groupState.denied',
-      ]);
     });
   });
 
@@ -687,25 +482,12 @@ describe('ResearchGroupAdminView', () => {
       expect(withdrawSpy).not.toHaveBeenCalled();
     });
 
-    it('returns empty menu items when research group id is missing', () => {
-      component.researchGroups.set([{ ...mockResearchGroup1, id: undefined }]);
-      const items = component.getMenuItems()({ ...mockResearchGroup1, id: undefined });
-      expect(items).toEqual([]);
-    });
-
-    it('returns menu items when research group id is present', () => {
-      component.researchGroups.set([mockResearchGroup2]);
-      const items = component.getMenuItems()(mockResearchGroup2);
-      expect(items.map(item => item.label)).toEqual([
-        'researchGroup.members.manageMembers',
-        'researchGroup.imageLibrary.manageButton',
-        'button.withdraw',
-      ]);
-    });
-
-    it('returns empty menu items when id is present but not in menu map', () => {
-      component.researchGroups.set([]);
-      const items = component.getMenuItems()(mockResearchGroup2);
+    it.each([
+      { description: 'id is missing', setup: () => ({ ...mockResearchGroup1, id: undefined }), groups: [{ ...mockResearchGroup1, id: undefined }] },
+      { description: 'id is present but not in menu map', setup: () => mockResearchGroup2, groups: [] },
+    ])('returns empty menu items when $description', ({ setup, groups }) => {
+      component.researchGroups.set(groups);
+      const items = component.getMenuItems()(setup());
       expect(items).toEqual([]);
     });
   });

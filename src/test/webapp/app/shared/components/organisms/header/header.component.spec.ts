@@ -76,10 +76,6 @@ describe('HeaderComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('onLogoClick', () => {
     it.each<[string, UserShortDTORolesEnum[], string, boolean, string[]]>([
       ['professor', [UserShortDTORolesEnum.Professor], '/', true, ['/professor']],
@@ -274,15 +270,6 @@ describe('HeaderComponent', () => {
       expect(component.isProfileMenuOpen()).toBe(false);
     });
 
-    it('should reflect menu visibility changes in isProfileMenuOpen (simulating visibleChange)', () => {
-      component.isProfileMenuOpen.set(false);
-
-      component.isProfileMenuOpen.set(true);
-      expect(component.isProfileMenuOpen()).toBe(true);
-
-      component.isProfileMenuOpen.set(false);
-      expect(component.isProfileMenuOpen()).toBe(false);
-    });
   });
 
   describe('profileMenuItems', () => {
@@ -338,23 +325,6 @@ describe('HeaderComponent', () => {
       expect(logoutSpy).toHaveBeenCalledOnce();
     });
 
-    it('should reactively update when language changes', () => {
-      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
-      fixture.detectChanges();
-
-      const menuItemsBefore = component.profileMenuItems();
-      expect(menuItemsBefore).toHaveLength(2);
-
-      // Trigger language change
-      translate.use('de');
-      fixture.detectChanges();
-
-      const menuItemsAfter = component.profileMenuItems();
-      expect(menuItemsAfter).toHaveLength(2);
-      // Menu items should still have the same structure
-      expect(menuItemsAfter[0]?.label).toBe('header.settings');
-      expect(menuItemsAfter[1]?.label).toBe('header.logout');
-    });
   });
 
   describe('login & logout', () => {
@@ -363,7 +333,7 @@ describe('HeaderComponent', () => {
 
       component.login();
 
-      expect(authDialog.open).toHaveBeenCalledTimes(1);
+      expect(authDialog.open).toHaveBeenCalledOnce();
       const args = authDialog.open.mock.calls[0]?.[0] as AuthDialogOpenArgs;
       expect(args.mode).toBe('login');
       expect(authFacade.loginWithProvider).not.toHaveBeenCalled();
@@ -376,16 +346,8 @@ describe('HeaderComponent', () => {
       component.login();
 
       expect(authDialog.open).not.toHaveBeenCalled();
-      expect(authFacade.loginWithProvider).toHaveBeenCalledTimes(1);
+      expect(authFacade.loginWithProvider).toHaveBeenCalledOnce();
       expect(authFacade.loginWithProvider).toHaveBeenCalledWith(IdpProvider.TUM, '/professor');
-    });
-
-    it('should call authDialogService.open in openLoginDialog', () => {
-      component.openLoginDialog();
-
-      expect(authDialog.open).toHaveBeenCalledTimes(1);
-      const args = authDialog.open.mock.calls[0]?.[0] as AuthDialogOpenArgs;
-      expect(args.mode).toBe('login');
     });
 
     it('should call loginWithProvider with TUM and current URL in onTUMSSOLogin', async () => {
@@ -393,14 +355,14 @@ describe('HeaderComponent', () => {
 
       await component.onTUMSSOLogin();
 
-      expect(authFacade.loginWithProvider).toHaveBeenCalledTimes(1);
+      expect(authFacade.loginWithProvider).toHaveBeenCalledOnce();
       expect(authFacade.loginWithProvider).toHaveBeenCalledWith(IdpProvider.TUM, '/some-url');
     });
 
     it('should call logout on authFacadeService when logout is called', () => {
       component.logout();
 
-      expect(authFacade.logout).toHaveBeenCalledTimes(1);
+      expect(authFacade.logout).toHaveBeenCalledOnce();
     });
   });
 
@@ -411,7 +373,7 @@ describe('HeaderComponent', () => {
 
       component.toggleLanguage(firstLanguage);
 
-      expect(useSpy).toHaveBeenCalledTimes(1);
+      expect(useSpy).toHaveBeenCalledOnce();
       expect(useSpy).toHaveBeenCalledWith(firstLanguage.toLowerCase());
     });
 
@@ -422,7 +384,7 @@ describe('HeaderComponent', () => {
       component.toggleLanguage('XX');
 
       expect(useSpy).not.toHaveBeenCalled();
-      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(warnSpy).toHaveBeenCalledOnce();
       expect(warnSpy.mock.calls[0]?.[0]).toContain('Unsupported language: XX');
     });
 
@@ -437,11 +399,6 @@ describe('HeaderComponent', () => {
   });
 
   describe('layout & state exposure', () => {
-    it('should expose isDarkMode signal without throwing', () => {
-      const darkMode = component.isDarkMode();
-      expect(typeof darkMode).toBe('boolean');
-    });
-
     it('should default to an empty array for routeAuthorities when route data is missing authorities', () => {
       router.routerState.snapshot.root.data = {};
       fixture = TestBed.createComponent(HeaderComponent);

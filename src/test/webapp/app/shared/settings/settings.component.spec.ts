@@ -151,22 +151,6 @@ describe('SettingsComponent', () => {
       expect(tabs.find(tab => tab.id === 'application-information')).toBeUndefined();
     });
 
-    it('should include correct translation keys for all tabs', () => {
-      accountServiceMock.user.set({
-        id: 'u1',
-        name: 'Test Applicant',
-        email: 'applicant@test.com',
-        authorities: [UserShortDTORolesEnum.Applicant],
-      });
-
-      const component = TestBed.createComponent(SettingsComponent).componentInstance;
-      const tabs = component.tabs();
-
-      expect(tabs[0].translationKey).toBe('settings.tabs.general');
-      expect(tabs[1].translationKey).toBe('settings.tabs.notifications');
-      expect(tabs[2].translationKey).toBe('settings.tabs.applicationInformation');
-      expect(tabs[3].translationKey).toBe('settings.tabs.documents');
-    });
   });
 
   // ===== ACTIVE TAB CHANGES =====

@@ -63,11 +63,6 @@ describe('UploadButtonComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create an uploadbutton', () => {
-    const fixture = createUploadButtonFixture({ applicationId: 'app-id', documentType: 'CV' });
-    expect(fixture.componentRef).toBeTruthy();
-  });
-
   it('should show error if file exceeds max upload size', async () => {
     const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
     const component = fixture.componentInstance;
@@ -446,7 +441,7 @@ describe('UploadButtonComponent', () => {
 
       // Expect delete then upload
       expect(applicationApi.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
-      expect(applicationApi.uploadDocuments).toHaveBeenCalledTimes(1);
+      expect(applicationApi.uploadDocuments).toHaveBeenCalledOnce();
 
       // Check if list updated
       expect(component.documentIds()).toEqual([{ id: 'new-id', name: 'duplicate.pdf', size: 2000 }]);
@@ -543,7 +538,7 @@ describe('UploadButtonComponent', () => {
   });
 
   describe('Auth gate via requestAuth', () => {
-    it('invokes requestAuth when applicationId is empty and resumes the upload after the callback resolves', async () => {
+    it('should invoke requestAuth when applicationId is empty and resume the upload after the callback resolves', async () => {
       const fixture = TestBed.createComponent(UploadButtonComponent);
       const component = fixture.componentInstance;
       fixture.componentRef.setInput('documentType', 'CV');
@@ -560,10 +555,10 @@ describe('UploadButtonComponent', () => {
       const file = new File([new ArrayBuffer(10)], 'cv.pdf');
       await component.onFileSelected({ currentFiles: [file] } as FileSelectEvent);
 
-      expect(trigger).toHaveBeenCalledTimes(1);
+      expect(trigger).toHaveBeenCalledOnce();
     });
 
-    it('does not upload when applicationId is empty and no requestAuth callback is provided', async () => {
+    it('should not upload when applicationId is empty and no requestAuth callback is provided', async () => {
       const fixture = TestBed.createComponent(UploadButtonComponent);
       const component = fixture.componentInstance;
       fixture.componentRef.setInput('documentType', 'CV');
@@ -578,7 +573,7 @@ describe('UploadButtonComponent', () => {
       expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
     });
 
-    it('does not upload when requestAuth rejects (user cancels OTP)', async () => {
+    it('should not upload when requestAuth rejects (user cancels OTP)', async () => {
       const fixture = TestBed.createComponent(UploadButtonComponent);
       const component = fixture.componentInstance;
       fixture.componentRef.setInput('documentType', 'CV');

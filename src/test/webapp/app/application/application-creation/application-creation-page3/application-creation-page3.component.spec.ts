@@ -32,12 +32,6 @@ describe('ApplicationPage3Component', () => {
     });
     fixture.detectChanges();
   });
-  describe('Component Initialization', () => {
-    it('should create the component', () => {
-      expect(comp).toBeTruthy();
-    });
-  });
-
   describe('Validation Status', () => {
     it('should have invalid form status when required fields are empty', () => {
       comp.data.set({
@@ -174,51 +168,6 @@ describe('ApplicationPage3Component', () => {
         skills: 'Angular, TypeScript',
         experiences: 'Built multiple apps',
       });
-    });
-
-    it('should return empty string for missing desiredDate', () => {
-      const applicationWithDesiredDateUndefined: ApplicationForApplicantDTO = {
-        ...application,
-        desiredDate: undefined,
-      };
-
-      const result = getPage3FromApplication(applicationWithDesiredDateUndefined);
-
-      expect(result.desiredStartDate).toBe('');
-      expect(result.motivation).toBe('Because I love coding');
-    });
-
-    it('should return empty string for missing motivation', () => {
-      const applicationWithMotivationUndefined: ApplicationForApplicantDTO = {
-        ...application,
-        motivation: undefined,
-      };
-
-      const result = getPage3FromApplication(applicationWithMotivationUndefined);
-
-      expect(result.motivation).toBe('');
-    });
-
-    it('should return empty string for missing specialSkills', () => {
-      const applicationWithSpecialSkillsUndefined: ApplicationForApplicantDTO = {
-        ...application,
-        specialSkills: undefined,
-      };
-
-      const result = getPage3FromApplication(applicationWithSpecialSkillsUndefined);
-
-      expect(result.skills).toBe('');
-    });
-
-    it('should return empty string for missing projects', () => {
-      const applicationWithProjectsUndefined: ApplicationForApplicantDTO = {
-        ...application,
-        projects: undefined,
-      };
-
-      const result = getPage3FromApplication(applicationWithProjectsUndefined);
-
-      expect(result.experiences).toBe('');
     });
 
     it('should return empty strings for all undefined fields', () => {

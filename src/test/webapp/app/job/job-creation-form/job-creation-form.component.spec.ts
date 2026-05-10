@@ -186,15 +186,8 @@ describe('JobCreationFormComponent', () => {
   });
 
   describe('Component Initialization', () => {
-    it('should create component', () => {
-      expect(component).toBeTruthy();
-    });
-
-    it('should set mode to create by default', () => {
+    it('should default to create mode and set userId from loaded user', () => {
       expect(component.mode()).toBe('create');
-    });
-
-    it('should set userId from loaded user', () => {
       expect(component.userId()).toBe('u1');
     });
 
@@ -853,88 +846,35 @@ describe('JobCreationFormComponent', () => {
 
   describe('AI Generation Methods', () => {
     describe('extractJobDescriptionFromStream', () => {
-      it('should return null for empty content', () => {
-        const result = getPrivate(component).extractJobDescriptionFromStream('');
-        expect(result).toBeNull();
-      });
-
-      it('should return null for whitespace-only content', () => {
-        const result = getPrivate(component).extractJobDescriptionFromStream('   ');
-        expect(result).toBeNull();
-      });
-
-      it('should parse complete valid JSON', () => {
-        const json = '{"jobDescription":"<p>Test content</p>"}';
-        const result = getPrivate(component).extractJobDescriptionFromStream(json);
-        expect(result).toBe('<p>Test content</p>');
-      });
-
-      it('should parse JSON with escaped characters', () => {
-        const json = '{"jobDescription":"Line1\\nLine2\\tTabbed"}';
-        const result = getPrivate(component).extractJobDescriptionFromStream(json);
-        expect(result).toBe('Line1\nLine2\tTabbed');
-      });
-
-      it('should parse JSON with escaped quotes', () => {
-        const json = '{"jobDescription":"He said \\"Hello\\""}';
-        const result = getPrivate(component).extractJobDescriptionFromStream(json);
-        expect(result).toBe('He said "Hello"');
-      });
-
-      it('should handle incomplete JSON gracefully', () => {
-        const partialJson = '{"jobDescription":"<p>Partial content';
-        const result = getPrivate(component).extractJobDescriptionFromStream(partialJson);
-        expect(result).toBe('<p>Partial content');
-      });
-
-      it('should handle JSON with trailing incomplete parts', () => {
-        const partialJson = '{"jobDescription":"<p>Content</p>"';
-        const result = getPrivate(component).extractJobDescriptionFromStream(partialJson);
-        expect(result).toBe('<p>Content</p>');
-      });
-
-      it('should return content as-is if not JSON format', () => {
-        const plainHtml = '<p>Plain HTML content</p>';
-        const result = getPrivate(component).extractJobDescriptionFromStream(plainHtml);
-        expect(result).toBe('<p>Plain HTML content</p>');
-      });
-
-      it('should handle complex HTML content in JSON', () => {
-        const json = '{"jobDescription":"<p><strong>Bold</strong> and <em>italic</em></p>"}';
-        const result = getPrivate(component).extractJobDescriptionFromStream(json);
-        expect(result).toBe('<p><strong>Bold</strong> and <em>italic</em></p>');
+      it.each([
+        ['empty content returns null', '', null],
+        ['whitespace-only content returns null', '   ', null],
+        ['complete valid JSON', '{"jobDescription":"<p>Test content</p>"}', '<p>Test content</p>'],
+        ['JSON with escaped chars', '{"jobDescription":"Line1\\nLine2\\tTabbed"}', 'Line1\nLine2\tTabbed'],
+        ['JSON with escaped quotes', '{"jobDescription":"He said \\"Hello\\""}', 'He said "Hello"'],
+        ['incomplete JSON', '{"jobDescription":"<p>Partial content', '<p>Partial content'],
+        ['JSON with trailing incomplete parts', '{"jobDescription":"<p>Content</p>"', '<p>Content</p>'],
+        ['plain (non-JSON) content as-is', '<p>Plain HTML content</p>', '<p>Plain HTML content</p>'],
+        [
+          'complex HTML in JSON',
+          '{"jobDescription":"<p><strong>Bold</strong> and <em>italic</em></p>"}',
+          '<p><strong>Bold</strong> and <em>italic</em></p>',
+        ],
+      ])('should handle %s', (_label, input, expected) => {
+        expect(getPrivate(component).extractJobDescriptionFromStream(input as string)).toBe(expected as string | null);
       });
     });
 
     describe('unescapeJsonString', () => {
-      it('should unescape newline characters', () => {
-        const result = unescapeJsonString('Line1\\nLine2');
-        expect(result).toBe('Line1\nLine2');
-      });
-
-      it('should unescape carriage return characters', () => {
-        const result = unescapeJsonString('Line1\\rLine2');
-        expect(result).toBe('Line1\rLine2');
-      });
-
-      it('should unescape tab characters', () => {
-        const result = unescapeJsonString('Col1\\tCol2');
-        expect(result).toBe('Col1\tCol2');
-      });
-
-      it('should unescape escaped quotes', () => {
-        const result = unescapeJsonString('He said \\"Hi\\"');
-        expect(result).toBe('He said "Hi"');
-      });
-
-      it('should handle multiple escape sequences', () => {
-        const result = unescapeJsonString('Line1\\nLine2\\tTabbed\\rReturn');
-        expect(result).toBe('Line1\nLine2\tTabbed\rReturn');
-      });
-
-      it('should return unchanged string if no escapes', () => {
-        const result = unescapeJsonString('Plain text');
-        expect(result).toBe('Plain text');
+      it.each([
+        ['newline', 'Line1\\nLine2', 'Line1\nLine2'],
+        ['carriage return', 'Line1\\rLine2', 'Line1\rLine2'],
+        ['tab', 'Col1\\tCol2', 'Col1\tCol2'],
+        ['escaped quotes', 'He said \\"Hi\\"', 'He said "Hi"'],
+        ['multiple escape sequences', 'Line1\\nLine2\\tTabbed\\rReturn', 'Line1\nLine2\tTabbed\rReturn'],
+        ['no escapes', 'Plain text', 'Plain text'],
+      ])('should handle %s', (_label, input, expected) => {
+        expect(unescapeJsonString(input)).toBe(expected);
       });
     });
 
@@ -1018,7 +958,7 @@ describe('JobCreationFormComponent', () => {
 
         await component.generateJobApplicationDraft();
 
-        expect(cancelSpy).toHaveBeenCalledTimes(1);
+        expect(cancelSpy).toHaveBeenCalledOnce();
       });
 
       it('should not invoke cancelTranslation when no translation is in flight', async () => {

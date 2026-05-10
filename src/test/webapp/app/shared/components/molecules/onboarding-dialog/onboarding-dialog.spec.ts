@@ -46,10 +46,6 @@ describe('OnboardingDialog', () => {
     vi.clearAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('markOnboarded', () => {
     it('should close the dialog and open the professor form when openForm is true', () => {
       component.markOnboarded(true);
@@ -62,6 +58,7 @@ describe('OnboardingDialog', () => {
           header: 'onboarding.professorRequest.dialogTitle',
         }),
       );
+      expect(mockProfOnboardingService.confirmOnboarding).not.toHaveBeenCalled();
     });
 
     it('should close dialog and confirm onboarding when openForm is false', () => {
@@ -75,18 +72,6 @@ describe('OnboardingDialog', () => {
     it('should default to opening form when no parameter is provided', () => {
       component.markOnboarded();
       expect(mockDialogService.open).toHaveBeenCalledOnce();
-    });
-
-    it('should not call confirmOnboarding when openForm is true', () => {
-      component.markOnboarded(true);
-
-      expect(mockProfOnboardingService.confirmOnboarding).not.toHaveBeenCalled();
-    });
-
-    it('should not open dialog when markOnboarded is called with false', () => {
-      component.markOnboarded(false);
-
-      expect(mockDialogService.open).not.toHaveBeenCalled();
     });
   });
 

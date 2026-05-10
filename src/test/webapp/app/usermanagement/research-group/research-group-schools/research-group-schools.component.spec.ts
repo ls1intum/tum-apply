@@ -46,10 +46,6 @@ describe('ResearchGroupSchoolsComponent', () => {
   });
 
   describe('initial load', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
     it('loads schools and maps them correctly', async () => {
       await component.loadSchools();
       fixture.detectChanges();

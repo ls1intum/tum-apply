@@ -137,7 +137,7 @@ describe('AiStreamingService', () => {
 
       // Only data: line should be processed
       expect(result).toBe('content');
-      expect(onChunk).toHaveBeenCalledTimes(1);
+      expect(onChunk).toHaveBeenCalledOnce();
     });
 
     it('should process remaining buffer content after stream ends', async () => {

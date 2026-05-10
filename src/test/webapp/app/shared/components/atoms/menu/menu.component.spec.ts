@@ -50,13 +50,6 @@ describe('MenuComponent', () => {
     }).compileComponents();
   });
 
-  describe('Rendering', () => {
-    it('should create the component', () => {
-      const fixture = createMenuFixture({ items: [] });
-      expect(fixture.componentInstance).toBeTruthy();
-    });
-  });
-
   describe('Command handling', () => {
     it('should call the item command and clean up popups when invoked', () => {
       const commandSpy = vi.fn();

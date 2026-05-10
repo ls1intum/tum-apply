@@ -40,10 +40,6 @@ describe('DocumentCacheService', () => {
     global.URL = originalURL;
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
   it('should return undefined when getting non-existent document', () => {
     const result = service.get('non-existent-id');
     expect(result).toBeUndefined();

@@ -59,11 +59,8 @@ describe('ApplicationPage1Component', () => {
     fixture.detectChanges();
   });
 
-  it('should create the component and initial form is invalid', () => {
-    expect(comp).toBeTruthy();
-    const form = comp.page1Form();
-    expect(form).toBeDefined();
-    expect(form.valid).toBe(false);
+  it('should be invalid initially when required fields are empty', () => {
+    expect(comp.page1Form().valid).toBe(false);
   });
 
   it('should become valid when all required fields are filled and postal code passes validation', () => {
@@ -220,29 +217,6 @@ describe('ApplicationPage1Component', () => {
     comp.setDateOfBirth(undefined);
     expect(comp.data().dateOfBirth).toBe('');
     expect(changedSpy).toHaveBeenCalled();
-  });
-
-  it('should include optional fields in form and allow valid values', () => {
-    comp.data.set({
-      ...comp.data(),
-      firstName: 'Foo',
-      lastName: 'Bar',
-      email: 'foo@bar.com',
-      phoneNumber: '55555',
-      street: '123 Street',
-      city: 'Townsville',
-      postcode: '80331',
-      country: { value: 'DE', name: 'Germany' },
-      gender: { value: 'male', name: 'Male' },
-      nationality: { value: 'FR', name: 'France' },
-      dateOfBirth: '1990-01-01',
-      website: 'https://example.com',
-      linkedIn: 'https://linkedin.com/in/example',
-    });
-
-    const form = comp.page1Form();
-    form.updateValueAndValidity();
-    expect(form.valid).toBe(true);
   });
 
   it('getPage1FromApplication handles missing fields gracefully', () => {

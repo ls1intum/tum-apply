@@ -53,11 +53,6 @@ describe('SchoolEditDialogComponent', () => {
   };
 
   describe('Initialization', () => {
-    it('should create', () => {
-      createComponent();
-      expect(component).toBeTruthy();
-    });
-
     it('should initialize in create mode', () => {
       createComponent();
       expect(component.isEditMode()).toBe(false);

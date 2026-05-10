@@ -95,11 +95,6 @@ describe('ApplicationPage2Component', () => {
   });
 
   describe('Component Initialization', () => {
-    it('should create the component', () => {
-      const { componentInstance } = createApplicationPage2Fixture();
-      expect(componentInstance).toBeTruthy();
-    });
-
     it('should populate the form with initial data', () => {
       const { componentInstance } = createApplicationPage2Fixture({
         data: {

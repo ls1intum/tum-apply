@@ -122,7 +122,7 @@ describe('gradingScaleRangeValidator', () => {
       ['3.5', '4.0', '1.0', false, 'clears errors when grade is in range'],
       ['30%', '100%', '50%', true, 'sets errors when percentage grade is below range'],
       ['85%', '100%', '50%', false, 'clears errors when percentage grade is in range'],
-    ] as const)('%s: hasError outOfRange = %s', (grade, upper, lower, hasError, _description) => {
+    ] as const)('should set hasError outOfRange = %s when %s', (grade, upper, lower, hasError, _description) => {
       const validator = gradingScaleRangeValidator(() => grade);
       const group = createRangeGroup(upper, lower);
 

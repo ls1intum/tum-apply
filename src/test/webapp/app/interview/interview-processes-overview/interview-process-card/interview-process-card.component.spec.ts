@@ -123,26 +123,4 @@ describe('InterviewProcessCardComponent', () => {
       expect(emitSpy).toHaveBeenCalledWith('job-1');
     });
   });
-
-  describe('Total Slots', () => {
-    it('should return the total slots from the process', () => {
-      const process: InterviewOverviewDTO = {
-        jobId: 'job-6',
-        processId: 'process-6',
-        jobTitle: 'PM',
-        jobState: JobDetailDTOStateEnum.Published,
-        isClosed: false,
-        totalSlots: 15,
-        totalInterviews: 5,
-        scheduledCount: 3,
-        completedCount: 1,
-        invitedCount: 4,
-        uncontactedCount: 2,
-      };
-      fixture.componentRef.setInput('process', process);
-      fixture.detectChanges();
-
-      expect(component.totalSlots()).toBe(15);
-    });
-  });
 });

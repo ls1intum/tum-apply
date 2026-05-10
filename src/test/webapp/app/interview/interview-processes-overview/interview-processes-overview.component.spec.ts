@@ -99,8 +99,11 @@ describe('InterviewProcessesOverviewComponent', () => {
       expect(component.loading()).toBe(false);
     });
 
-    it('should assign fallback image URL when process has no imageUrl', async () => {
-      const processWithoutImage: InterviewOverviewDTO = {
+    it.each([
+      { description: 'no imageUrl', imageUrl: undefined, expectedContains: '/content/images/job-banner/' },
+      { description: 'existing imageUrl', imageUrl: '/custom/image.jpg', expectedContains: '/custom/image.jpg' },
+    ])('should resolve imageUrl when process has $description', async ({ imageUrl, expectedContains }) => {
+      const process: InterviewOverviewDTO = {
         jobId: 'job-1',
         processId: 'process-1',
         jobTitle: 'Software Engineer',
@@ -112,40 +115,16 @@ describe('InterviewProcessesOverviewComponent', () => {
         completedCount: 1,
         invitedCount: 4,
         uncontactedCount: 2,
+        imageUrl,
       };
-      (mockInterviewService.getInterviewOverview as ReturnType<typeof vi.fn>).mockReturnValue(of([processWithoutImage]));
+      (mockInterviewService.getInterviewOverview as ReturnType<typeof vi.fn>).mockReturnValue(of([process]));
       (mockInterviewService.getUpcomingInterviews as ReturnType<typeof vi.fn>).mockReturnValue(of([]));
 
       fixture = TestBed.createComponent(InterviewProcessesOverviewComponent);
       component = fixture.componentInstance;
       await fixture.whenStable();
 
-      expect(component.interviewProcesses()[0].imageUrl).toContain('/content/images/job-banner/');
-    });
-
-    it('should keep existing imageUrl when process has one', async () => {
-      const processWithImage: InterviewOverviewDTO = {
-        jobId: 'job-1',
-        processId: 'process-1',
-        jobTitle: 'Software Engineer',
-        jobState: JobDetailDTOStateEnum.Published,
-        isClosed: false,
-        totalSlots: 10,
-        totalInterviews: 5,
-        scheduledCount: 3,
-        completedCount: 1,
-        invitedCount: 4,
-        uncontactedCount: 2,
-        imageUrl: '/custom/image.jpg',
-      };
-      (mockInterviewService.getInterviewOverview as ReturnType<typeof vi.fn>).mockReturnValue(of([processWithImage]));
-      (mockInterviewService.getUpcomingInterviews as ReturnType<typeof vi.fn>).mockReturnValue(of([]));
-
-      fixture = TestBed.createComponent(InterviewProcessesOverviewComponent);
-      component = fixture.componentInstance;
-      await fixture.whenStable();
-
-      expect(component.interviewProcesses()[0].imageUrl).toBe('/custom/image.jpg');
+      expect(component.interviewProcesses()[0].imageUrl).toContain(expectedContains);
     });
   });
 

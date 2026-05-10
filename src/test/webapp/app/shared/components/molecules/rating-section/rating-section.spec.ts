@@ -37,10 +37,6 @@ describe('RatingSection', () => {
 
   // ---------------- INIT ----------------
   describe('Initialization & Creation', () => {
-    it('should create component', () => {
-      expect(component).toBeTruthy();
-    });
-
     it('should not call loadRatings when applicationId is undefined', async () => {
       fixture.componentRef.setInput('applicationId', undefined);
       fixture.detectChanges();

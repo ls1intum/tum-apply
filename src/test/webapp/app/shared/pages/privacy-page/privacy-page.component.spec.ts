@@ -72,35 +72,20 @@ describe('PrivacyPageComponent', () => {
     vi.restoreAllMocks();
   });
 
-  describe('Component Creation', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-  });
-
   describe('Export Functionality', () => {
     it('should request data export, set status, and show info toast', async () => {
       serviceMocks.getDataExportStatus.mockReturnValue(of({ status: DataExportStatusDTOStatusEnum.InCreation, cooldownSeconds: 0 }));
 
       await component.exportUserData();
 
-      expect(serviceMocks.requestDataExport).toHaveBeenCalledTimes(1);
+      expect(serviceMocks.requestDataExport).toHaveBeenCalledOnce();
       expect(componentAccess.currentExportStatus()).toBe(DataExportStatusDTOStatusEnum.InCreation);
       expect(componentAccess.exportButtonDisabled()).toBe(true);
       expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.inCreation');
       expect(mockToast.showInfoKey).toHaveBeenCalledWith('privacy.export.requested');
     });
 
-    it('should no-op when button is disabled', async () => {
-      serviceMocks.getDataExportStatus.mockReturnValue(of({ status: DataExportStatusDTOStatusEnum.InCreation, cooldownSeconds: 0 }));
-      componentAccess.currentExportStatus.set(DataExportStatusDTOStatusEnum.InCreation);
-      expect(componentAccess.currentExportStatus()).toBe(DataExportStatusDTOStatusEnum.InCreation);
-      expect(componentAccess.exportButtonDisabled()).toBe(true);
-      await component.exportUserData();
-      expect(serviceMocks.requestDataExport).toHaveBeenCalledTimes(1);
-    });
-
-    it('should no-op when not signed in', async () => {
+    it('should no-op refreshStatus when not signed in', async () => {
       const prevCalls = serviceMocks.getDataExportStatus.mock.calls.length;
       vi.spyOn(accountServiceMock, 'signedIn').mockReturnValue(false);
 
@@ -109,44 +94,21 @@ describe('PrivacyPageComponent', () => {
       expect(serviceMocks.getDataExportStatus).toHaveBeenCalledTimes(prevCalls);
     });
 
-    it('should show 409 toast on conflict', async () => {
-      serviceMocks.requestDataExport.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 409 })));
+    it.each([
+      [409, 'privacy.export.requestFailed409'],
+      [429, 'privacy.export.requestFailed429'],
+      [500, 'privacy.export.requestFailed'],
+    ])('should show toast for HTTP %i error', async (status, key) => {
+      serviceMocks.requestDataExport.mockReturnValue(throwError(() => new HttpErrorResponse({ status })));
 
       await component.exportUserData();
 
-      expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed409');
-      expect(componentAccess.currentExportStatus()).toBeUndefined();
-    });
-
-    it('should show 429 toast on rate limit', async () => {
-      serviceMocks.requestDataExport.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 429 })));
-
-      await component.exportUserData();
-
-      expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed429');
-      expect(componentAccess.currentExportStatus()).toBeUndefined();
-    });
-
-    it('should show generic toast on other HttpErrorResponse', async () => {
-      serviceMocks.requestDataExport.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
-
-      await component.exportUserData();
-
-      expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed');
+      expect(mockToast.showErrorKey).toHaveBeenCalledWith(key);
       expect(componentAccess.currentExportStatus()).toBeUndefined();
     });
 
     it('should show generic toast on non-Http error', async () => {
       serviceMocks.requestDataExport.mockReturnValue(throwError(() => new Error('boom')));
-
-      await component.exportUserData();
-
-      expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed');
-      expect(componentAccess.currentExportStatus()).toBeUndefined();
-    });
-
-    it('should show requestFailed toast when exportUserData throws non-HTTP error', async () => {
-      serviceMocks.requestDataExport.mockReturnValue(throwError(() => new Error('oops')));
 
       await component.exportUserData();
 

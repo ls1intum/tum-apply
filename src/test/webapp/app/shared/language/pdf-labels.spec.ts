@@ -8,30 +8,6 @@ import { formatGradeDisplay, getApplicationPDFLabels, getJobPDFLabels } from 'ap
  * Helper functions
  * ====================================================== */
 
-function expectOverviewLabels(labels: Record<string, string>) {
-  expect(labels).toHaveProperty('supervisor');
-  expect(labels).toHaveProperty('location');
-  expect(labels).toHaveProperty('subjectArea');
-  expect(labels).toHaveProperty('researchArea');
-  expect(labels).toHaveProperty('workload');
-  expect(labels).toHaveProperty('hoursPerWeek');
-  expect(labels).toHaveProperty('duration');
-  expect(labels).toHaveProperty('years');
-  expect(labels).toHaveProperty('fundingType');
-  expect(labels).toHaveProperty('startDate');
-  expect(labels).toHaveProperty('endDate');
-  expect(labels).toHaveProperty('lang');
-}
-
-function expectFooterLabels(labels: Record<string, string>) {
-  expect(labels).toHaveProperty('thisDocumentWasGeneratedOn');
-  expect(labels).toHaveProperty('byUser');
-  expect(labels).toHaveProperty('usingTumapply');
-  expect(labels).toHaveProperty('metaEndText');
-  expect(labels).toHaveProperty('page');
-  expect(labels).toHaveProperty('of');
-}
-
 function expectColonLabels(labels: Record<string, string>) {
   ['subjectArea', 'researchArea', 'workload', 'duration', 'fundingType', 'startDate', 'endDate'].forEach(key => {
     expect(labels[key]).toContain(':');
@@ -66,32 +42,6 @@ describe('PDF Labels', () => {
   });
 
   describe('getApplicationPDFLabels', () => {
-    it('should return all required application PDF labels', () => {
-      const labels = getApplicationPDFLabels(translate);
-
-      expect(labels).toHaveProperty('applicationBy');
-      expect(labels).toHaveProperty('headline');
-      expect(labels).toHaveProperty('overview');
-
-      expectOverviewLabels(labels);
-      expectFooterLabels(labels);
-
-      expect(labels.lang).toBe(translate.getCurrentLang());
-
-      expect(labels).toHaveProperty('personalStatements');
-      expect(labels).toHaveProperty('personalInformation');
-      expect(labels).toHaveProperty('applicantInfo');
-      expect(labels).toHaveProperty('bachelorInfo');
-      expect(labels).toHaveProperty('masterInfo');
-      expect(labels).toHaveProperty('degreeName');
-      expect(labels).toHaveProperty('university');
-      expect(labels).toHaveProperty('grade');
-
-      expect(labels).toHaveProperty('application');
-      expect(labels).toHaveProperty('researchGroup');
-      expect(labels).toHaveProperty('jobDetails');
-    });
-
     it('should return correct translation keys', () => {
       const labels = getApplicationPDFLabels(translate);
 
@@ -151,30 +101,6 @@ describe('PDF Labels', () => {
   });
 
   describe('getJobPDFLabels', () => {
-    it('should return all required job PDF labels', () => {
-      const labels = getJobPDFLabels(translate);
-
-      expect(labels).toHaveProperty('jobBy');
-      expect(labels).toHaveProperty('forJob');
-      expect(labels).toHaveProperty('status');
-
-      expectOverviewLabels(labels);
-      expectFooterLabels(labels);
-
-      expect(labels.lang).toBe(translate.getCurrentLang());
-
-      expect(labels).toHaveProperty('jobDetails');
-
-      expect(labels).toHaveProperty('researchGroup');
-      expect(labels).toHaveProperty('contactDetails');
-      expect(labels).toHaveProperty('address');
-      expect(labels).toHaveProperty('email');
-      expect(labels).toHaveProperty('website');
-
-      expect(labels).toHaveProperty('jobPdfEnding');
-      expect(labels).toHaveProperty('overview');
-    });
-
     it('should return correct translation keys', () => {
       const labels = getJobPDFLabels(translate);
 

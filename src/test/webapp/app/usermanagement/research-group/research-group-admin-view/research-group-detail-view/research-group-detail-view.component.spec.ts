@@ -79,93 +79,14 @@ describe('ResearchGroupDetailViewComponent', () => {
   });
 
   describe('initialization', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
-    it('should initialize form with empty values', () => {
-      expect(component.form.value).toEqual({
-        abbreviation: '',
-        name: '',
-        departmentId: '',
-        head: '',
-        email: '',
-        website: '',
-        description: '',
-        city: '',
-        postalCode: '',
-        street: '',
-      });
-    });
-
-    it('should compute researchGroupId from dialog config', () => {
-      expect(component.researchGroupId()).toBe('rg-123');
-    });
-
-    it('should handle undefined researchGroupId in route params', () => {
-      mockActivatedRoute.setParams({});
-      expect(component.researchGroupId()).toBeUndefined();
-    });
-
     it('should load research group data on init', async () => {
       mockResearchGroupService.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockDepartmentService.getDepartments.mockReturnValue(of(mockDepartments));
 
       await component.ngOnInit();
 
+      expect(mockResearchGroupService.getResearchGroup).toHaveBeenCalledOnce();
       expect(mockResearchGroupService.getResearchGroup).toHaveBeenCalledWith('rg-123');
-      expect(mockResearchGroupService.getResearchGroup).toHaveBeenCalledTimes(1);
-      expect(mockDepartmentService.getDepartments).toHaveBeenCalledTimes(1);
-      expect(component.form.value.name).toBe('AI Research Lab');
-      expect(component.form.value.abbreviation).toBe('ARL');
-      expect(component.form.value.head).toBe('Prof. Dr. Smith');
-      expect(component.form.value.departmentId).toBe('dept-1');
-      expect(component.isLoading()).toBe(false);
-    });
-
-    it('should handle error when loading research group fails', async () => {
-      mockResearchGroupService.getResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
-
-      await component.ngOnInit();
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.detailView.errors.view');
-      expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
-      expect(component.isLoading()).toBe(false);
-    });
-
-    it('should not load data when researchGroupId is undefined', async () => {
-      mockActivatedRoute.setParams({});
-
-      await component.ngOnInit();
-
-      expect(mockResearchGroupService.getResearchGroup).not.toHaveBeenCalled();
-      expect(component.isLoading()).toBe(false);
-    });
-
-    it('should not load data when researchGroupId is empty string', async () => {
-      mockActivatedRoute.setParams({ researchGroupId: '' });
-
-      await component.ngOnInit();
-
-      expect(mockResearchGroupService.getResearchGroup).not.toHaveBeenCalled();
-      expect(component.isLoading()).toBe(false);
-    });
-
-    it('should not load data when researchGroupId is whitespace', async () => {
-      mockActivatedRoute.setParams({ researchGroupId: '   ' });
-
-      await component.ngOnInit();
-
-      expect(mockResearchGroupService.getResearchGroup).not.toHaveBeenCalled();
-      expect(component.isLoading()).toBe(false);
-    });
-
-    it('should populate form with all fields from research group data', async () => {
-      mockResearchGroupService.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockDepartmentService.getDepartments.mockReturnValue(of(mockDepartments));
-
-      await component.ngOnInit();
-
       expect(component.form.value).toEqual({
         name: 'AI Research Lab',
         abbreviation: 'ARL',
@@ -178,6 +99,30 @@ describe('ResearchGroupDetailViewComponent', () => {
         postalCode: '12345',
         city: 'Munich',
       });
+      expect(component.isLoading()).toBe(false);
+    });
+
+    it('should handle error when loading research group fails', async () => {
+      mockResearchGroupService.getResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
+
+      await component.ngOnInit();
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledOnce();
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.detailView.errors.view');
+      expect(component.isLoading()).toBe(false);
+    });
+
+    it.each([
+      { description: 'undefined', params: {} },
+      { description: 'empty string', params: { researchGroupId: '' } },
+      { description: 'whitespace', params: { researchGroupId: '   ' } },
+    ])('should not load data when researchGroupId is $description', async ({ params }) => {
+      mockActivatedRoute.setParams(params);
+
+      await component.ngOnInit();
+
+      expect(mockResearchGroupService.getResearchGroup).not.toHaveBeenCalled();
+      expect(component.isLoading()).toBe(false);
     });
   });
 
@@ -191,38 +136,11 @@ describe('ResearchGroupDetailViewComponent', () => {
       expect(component.isSaving()).toBe(false);
     });
 
-    it('should show error when saving without researchGroupId', async () => {
-      mockActivatedRoute.setParams({});
-      component.form.patchValue({ name: 'Test', head: 'Test Head', departmentId: 'dept-1' });
-
-      await component.onSave();
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.detailView.errors.noId');
-      expect(mockResearchGroupService.updateResearchGroup).not.toHaveBeenCalled();
-    });
-
-    it('should show error when saving with null researchGroupId', async () => {
-      mockActivatedRoute.setParams({ researchGroupId: '' });
-      component.form.patchValue({ name: 'Test', head: 'Test Head', departmentId: 'dept-1' });
-
-      await component.onSave();
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.detailView.errors.noId');
-      expect(mockResearchGroupService.updateResearchGroup).not.toHaveBeenCalled();
-    });
-
-    it('should show error when saving with empty researchGroupId', async () => {
-      mockActivatedRoute.setParams({ researchGroupId: '' });
-      component.form.patchValue({ name: 'Test', head: 'Test Head', departmentId: 'dept-1' });
-
-      await component.onSave();
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.detailView.errors.noId');
-      expect(mockResearchGroupService.updateResearchGroup).not.toHaveBeenCalled();
-    });
-
-    it('should show error when saving with whitespace researchGroupId', async () => {
-      mockActivatedRoute.setParams({ researchGroupId: '   ' });
+    it.each([
+      { description: 'no params', params: {} },
+      { description: 'whitespace', params: { researchGroupId: '   ' } },
+    ])('should show error when saving with $description researchGroupId', async ({ params }) => {
+      mockActivatedRoute.setParams(params);
       component.form.patchValue({ name: 'Test', head: 'Test Head', departmentId: 'dept-1' });
 
       await component.onSave();

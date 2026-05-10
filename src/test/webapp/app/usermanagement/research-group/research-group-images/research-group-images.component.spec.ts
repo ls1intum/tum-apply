@@ -53,11 +53,6 @@ describe('ResearchGroupImagesComponent', () => {
   });
 
   describe('initialization and loading', () => {
-    it('should create', async () => {
-      await createComponent();
-      expect(component).toBeTruthy();
-    });
-
     it('loads current user research group images in default mode', async () => {
       await createComponent();
 

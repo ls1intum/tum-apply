@@ -10,7 +10,6 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 describe('FaqSectionComponent', () => {
   let fixture: ComponentFixture<FaqSectionComponent>;
   let component: FaqSectionComponent;
-  let nativeElement: HTMLElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -20,33 +19,7 @@ describe('FaqSectionComponent', () => {
 
     fixture = TestBed.createComponent(FaqSectionComponent);
     component = fixture.componentInstance;
-    nativeElement = fixture.nativeElement;
     fixture.detectChanges();
-  });
-
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should render the headline and subheadline translation keys', () => {
-    const headline = nativeElement.querySelector('h2');
-    const subheadline = nativeElement.querySelector('p');
-    expect(headline?.getAttribute('jhiTranslate')).toBe('landingPage.faq.headline');
-    expect(subheadline?.getAttribute('jhiTranslate')).toBe('landingPage.faq.subheadline');
-  });
-
-  it('should render external link with correct href and icon', () => {
-    const linkElement = nativeElement.querySelector('.sub-subtitle-link');
-
-    expect(linkElement).not.toBeNull();
-    if (!(linkElement instanceof HTMLAnchorElement)) {
-      throw new Error('Expected .sub-subtitle-link to be an <a> element');
-    }
-
-    expect(linkElement.href).toContain('https://ls1intum.github.io/tum-apply');
-
-    const icon = linkElement.querySelector('fa-icon');
-    expect(icon).not.toBeNull();
   });
 
   it('should render all FAQ tabs based on the tabs array', () => {

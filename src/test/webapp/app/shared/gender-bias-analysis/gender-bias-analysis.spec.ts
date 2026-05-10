@@ -29,14 +29,6 @@ describe('GenderBiasAnalysisService', () => {
   });
 
   describe('getAnalysisForField', () => {
-    it('should return an observable for a field', () => {
-      const fieldId = 'test-field';
-
-      const analysis = service.getAnalysisForField(fieldId);
-
-      expect(analysis).toBeDefined();
-    });
-
     it('should return the same observable for the same field id', () => {
       const fieldId = 'test-field';
 
@@ -283,19 +275,6 @@ describe('GenderBiasAnalysisService', () => {
           text: 'Test',
           language: 'en',
         });
-      });
-    });
-
-    describe('field initialization', () => {
-      it('should initialize field and retry when subjects do not exist', () => {
-        const fieldId = 'new-field';
-
-        expect(() => {
-          service.triggerAnalysis(fieldId, 'Test text', 'en');
-        }).not.toThrow();
-
-        const analysis = service.getAnalysisForField(fieldId);
-        expect(analysis).toBeDefined();
       });
     });
 

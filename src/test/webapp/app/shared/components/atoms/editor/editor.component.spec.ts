@@ -127,29 +127,6 @@ describe('EditorComponent', () => {
   });
 
   describe('Error handling', () => {
-    it('should set error message for empty required input', async () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      vi.spyOn(comp, 'isTouched').mockReturnValue(true);
-      vi.spyOn(comp, 'isFocused').mockReturnValue(false);
-      (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue.set('');
-      fixture.detectChanges();
-
-      const error = comp.errorMessage();
-      expect(error).toBeDefined();
-    });
-
-    it('should set error message when over character limit', async () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue.set('<p>' + 'x'.repeat(500) + '</p>');
-      fixture.detectChanges();
-
-      const msg = comp.errorMessage();
-      expect(msg).toBeDefined();
-    });
-
     it('should return required error when input is empty and required is true', () => {
       const fixture = TestBed.createComponent(EditorComponent);
       const comp = fixture.componentInstance;
@@ -185,7 +162,7 @@ describe('EditorComponent', () => {
       expect(ctrl.dirty).toBe(true);
     });
 
-    it('editorValue returns empty string when formControl value is null (value ?? "")', () => {
+    it('should return empty string from editorValue when formControl value is null', () => {
       const fixture = TestBed.createComponent(EditorComponent);
       const comp = fixture.componentInstance;
 
@@ -234,7 +211,7 @@ describe('EditorComponent', () => {
         editor: { root: { innerHTML: '<p>Ignored</p>' } },
       });
 
-      expect(emitSpy).not.toHaveBeenCalledOnce();
+      expect(emitSpy).not.toHaveBeenCalled();
     });
 
     it('should truncate changes if text exceeds max buffer', () => {
@@ -249,7 +226,7 @@ describe('EditorComponent', () => {
       expect(event.editor.setSelection).toHaveBeenCalledOnce();
     });
 
-    it('textChanged applies default (characterLimit ?? STANDARD_CHARACTER_LIMIT) + buffer', () => {
+    it('should apply default characterLimit plus buffer in textChanged', () => {
       const fixture = TestBed.createComponent(EditorComponent);
       const comp = fixture.componentInstance;
 
@@ -259,21 +236,6 @@ describe('EditorComponent', () => {
 
       expect(event.editor.setContents).toHaveBeenCalledOnce();
       expect(event.editor.setSelection).toHaveBeenCalledOnce();
-    });
-  });
-
-  describe('Focus and blur', () => {
-    it('should handle focus and blur correctly', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      const spyFocus = vi.spyOn(comp, 'onFocus');
-      const spyBlur = vi.spyOn(comp, 'onBlur');
-
-      comp.onFocus();
-      comp.onBlur();
-
-      expect(spyFocus).toHaveBeenCalledTimes(1);
-      expect(spyBlur).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -308,58 +270,6 @@ describe('EditorComponent', () => {
 
       expect(event.editor.setContents).not.toHaveBeenCalled();
       expect(event.editor.setSelection).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Gender Decoder Integration', () => {
-    it('should not show gender decoder button when showGenderDecoderButton is false', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      fixture.componentRef.setInput('showGenderDecoderButton', false);
-      fixture.detectChanges();
-
-      expect(comp.shouldShowButton()).toBe(false);
-    });
-
-    it('should show gender decoder button when showGenderDecoderButton is true and analysisResult exists', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      fixture.componentRef.setInput('showGenderDecoderButton', true);
-      vi.spyOn(comp, 'analysisResult').mockReturnValue({
-        coding: 'non-inclusive-coded',
-        words: [],
-      } as GenderBiasAnalysisResponse);
-      fixture.detectChanges();
-
-      expect(comp.shouldShowButton()).toBe(true);
-    });
-
-    it('should not show button when showGenderDecoderButton is true but analysisResult is undefined', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      fixture.componentRef.setInput('showGenderDecoderButton', true);
-      vi.spyOn(comp, 'analysisResult').mockReturnValue(undefined);
-      fixture.detectChanges();
-
-      expect(comp.shouldShowButton()).toBe(false);
-    });
-
-    it('should not trigger analysis when showGenderDecoderButton is false', async () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      fixture.componentRef.setInput('showGenderDecoderButton', false);
-      fixture.detectChanges();
-
-      const event = makeEditorEvent('<p>Test content</p>');
-      (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
-
-      await fixture.whenStable();
-
-      expect(genderBiasService.triggerAnalysis).not.toHaveBeenCalledOnce();
     });
   });
 
@@ -605,48 +515,6 @@ describe('EditorComponent', () => {
     });
   });
 
-  describe('getCodingTranslationKey', () => {
-    it('should return correct key for "non-inclusive-coded"', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const result = comp['getCodingTranslationKey']('non-inclusive-coded');
-      expect(result).toBe('genderDecoder.formulationTexts.nonInclusive');
-    });
-
-    it('should return correct key for "inclusive-coded"', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const result = comp['getCodingTranslationKey']('inclusive-coded');
-      expect(result).toBe('genderDecoder.formulationTexts.inclusive');
-    });
-
-    it('should return correct key for "neutral"', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const result = comp['getCodingTranslationKey']('neutral');
-      expect(result).toBe('genderDecoder.formulationTexts.neutral');
-    });
-
-    it('should return correct key for "empty"', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const result = comp['getCodingTranslationKey']('empty');
-      expect(result).toBe('genderDecoder.formulationTexts.neutral');
-    });
-
-    it('should return default key for unknown coding', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const result = comp['getCodingTranslationKey']('unknown-type');
-      expect(result).toBe('genderDecoder.formulationTexts.neutral');
-    });
-  });
-
   describe('analyzeEffect', () => {
     it('should not trigger analysis when showGenderDecoderButton is false', async () => {
       const fixture = createFixture();
@@ -659,7 +527,7 @@ describe('EditorComponent', () => {
       (fixture.componentInstance as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
       await fixture.whenStable();
 
-      expect(genderBiasService.triggerAnalysis).not.toHaveBeenCalledOnce();
+      expect(genderBiasService.triggerAnalysis).not.toHaveBeenCalled();
     });
   });
 

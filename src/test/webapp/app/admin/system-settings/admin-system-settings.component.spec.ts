@@ -64,22 +64,12 @@ describe('AdminSystemSettingsComponent', () => {
     vi.clearAllMocks();
   });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('Loading Status', () => {
     it('should fetch AI status on construction', async () => {
       await Promise.resolve();
 
       expect(mockApi.getAiStatus).toHaveBeenCalledOnce();
       expect(component.aiStatus()).toEqual(enabledStatus);
-    });
-
-    it('should set isLoading to false after successful load', async () => {
-      await Promise.resolve();
-
-      expect(component.isLoading()).toBe(false);
     });
 
     it('should show error toast when loading fails', async () => {
@@ -151,21 +141,6 @@ describe('AdminSystemSettingsComponent', () => {
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.ai.toast.toggleError');
     });
 
-    it('should set isUpdating to false after toggle completes', async () => {
-      mockApi.toggleAi.mockReturnValue(of(disabledStatus));
-
-      await component.onAiToggleChanged(false);
-
-      expect(component.isUpdating()).toBe(false);
-    });
-
-    it('should set isUpdating to false after toggle fails', async () => {
-      mockApi.toggleAi.mockReturnValue(throwError(() => new Error('API error')));
-
-      await component.onAiToggleChanged(false);
-
-      expect(component.isUpdating()).toBe(false);
-    });
   });
 
   describe('Reset Circuit Breaker', () => {
@@ -187,20 +162,5 @@ describe('AdminSystemSettingsComponent', () => {
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.ai.toast.resetError');
     });
 
-    it('should set isUpdating to false after reset completes', async () => {
-      mockApi.resetCircuitBreaker.mockReturnValue(of(enabledStatus));
-
-      await component.resetCircuitBreaker();
-
-      expect(component.isUpdating()).toBe(false);
-    });
-
-    it('should set isUpdating to false after reset fails', async () => {
-      mockApi.resetCircuitBreaker.mockReturnValue(throwError(() => new Error('API error')));
-
-      await component.resetCircuitBreaker();
-
-      expect(component.isUpdating()).toBe(false);
-    });
   });
 });

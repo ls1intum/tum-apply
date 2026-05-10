@@ -140,7 +140,7 @@ describe('ServerAuthenticationService', () => {
       const firstRefresh = service.refreshTokens();
       const secondRefresh = service.refreshTokens();
       await Promise.all([firstRefresh, secondRefresh]);
-      expect(authApi.refresh).toHaveBeenCalledTimes(1);
+      expect(authApi.refresh).toHaveBeenCalledOnce();
     });
 
     it('should schedule automatic token refresh after login', async () => {

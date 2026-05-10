@@ -63,11 +63,6 @@ describe('DepartmentImages', () => {
   });
 
   describe('initialization', () => {
-    it('should create', async () => {
-      await createComponent();
-      expect(component).toBeTruthy();
-    });
-
     it('loads departments and applies preselected department', async () => {
       routeMock.setQueryParams({ departmentId: 'd1' });
       mockImageApi.getDefaultJobBanners.mockReturnValue(of([imageInUse]));

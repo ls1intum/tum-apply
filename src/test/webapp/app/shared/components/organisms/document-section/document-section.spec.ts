@@ -129,7 +129,7 @@ describe('DocumentSection', () => {
 
       expect(mockApi.downloadAll).toHaveBeenCalledWith('app-1');
       expect(createObjectSpy).toHaveBeenCalledWith(blob);
-      expect(clickSpy).toHaveBeenCalled();
+      expect(clickSpy).toHaveBeenCalledOnce();
       expect(anchor.download).toBe('documents.zip');
       expect(revokeObjectSpy).toHaveBeenCalledWith('blob:url');
     });

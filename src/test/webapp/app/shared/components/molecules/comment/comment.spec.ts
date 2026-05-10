@@ -20,7 +20,7 @@ describe('Comment', () => {
   });
 
   // ---------------- CAN SAVE ----------------
-  it('canSave true in create mode when draft has text', () => {
+  it('should allow saving in create mode when draft has text', () => {
     fixture.componentRef.setInput('isCreate', true);
     fixture.detectChanges();
 
@@ -29,7 +29,7 @@ describe('Comment', () => {
     expect(component['canSave']()).toBe(true);
   });
 
-  it('canSave false when not edit and not create', () => {
+  it('should not allow saving when not in edit or create mode', () => {
     fixture.componentRef.setInput('isCreate', false);
     component['draft'].set('something');
     component.text.set('something');
@@ -38,7 +38,7 @@ describe('Comment', () => {
     expect(component['canSave']()).toBe(false);
   });
 
-  it('canSave true in edit mode when draft differs from text', () => {
+  it('should allow saving in edit mode when draft differs from text', () => {
     fixture.componentRef.setInput('commentId', '1');
     fixture.componentRef.setInput('editingId', '1');
     component.text.set('old');
@@ -50,7 +50,7 @@ describe('Comment', () => {
   });
 
   // ---------------- UPDATE DRAFT EFFECT ----------------
-  it('updates draft when creating', () => {
+  it('should update draft when creating', () => {
     fixture.componentRef.setInput('isCreate', true);
     component.text.set('draftText');
     fixture.detectChanges();
@@ -58,7 +58,7 @@ describe('Comment', () => {
     expect(component['draft']()).toBe('draftText');
   });
 
-  it('updates draft when not editing', () => {
+  it('should update draft when not editing', () => {
     fixture.componentRef.setInput('isCreate', false);
     fixture.componentRef.setInput('editingId', 'x');
     fixture.componentRef.setInput('commentId', 'y');
@@ -70,7 +70,7 @@ describe('Comment', () => {
   });
 
   // ---------------- ONINPUT ----------------
-  it('onInput updates draft and text in create mode', () => {
+  it('should update draft and text in create mode on input', () => {
     fixture.componentRef.setInput('isCreate', true);
     fixture.detectChanges();
 
@@ -81,7 +81,7 @@ describe('Comment', () => {
     expect(component.text()).toBe('hello');
   });
 
-  it('onInput updates draft only when not create', () => {
+  it('should update only draft when not in create mode on input', () => {
     fixture.componentRef.setInput('isCreate', false);
     fixture.detectChanges();
 
@@ -93,7 +93,7 @@ describe('Comment', () => {
   });
 
   // ---------------- START / CANCEL / SAVE ----------------
-  it('startEdit copies text to draft and emits enterEdit', () => {
+  it('should copy text to draft and emit enterEdit on startEdit', () => {
     const spy = vi.fn();
     component.text.set('copyMe');
     component.enterEdit.subscribe(spy);
@@ -101,19 +101,19 @@ describe('Comment', () => {
     component.startEdit();
 
     expect(component['draft']()).toBe('copyMe');
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
-  it('onCancel emits exitEdit', () => {
+  it('should emit exitEdit on cancel', () => {
     const spy = vi.fn();
     component.exitEdit.subscribe(spy);
 
     component.onCancel();
 
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
-  it('onSave emits saved and exitEdit', () => {
+  it('should emit saved and exitEdit on save', () => {
     const savedSpy = vi.fn();
     const exitSpy = vi.fn();
     component.saved.subscribe(savedSpy);
@@ -123,6 +123,6 @@ describe('Comment', () => {
     component.onSave();
 
     expect(savedSpy).toHaveBeenCalledWith('final');
-    expect(exitSpy).toHaveBeenCalled();
+    expect(exitSpy).toHaveBeenCalledOnce();
   });
 });

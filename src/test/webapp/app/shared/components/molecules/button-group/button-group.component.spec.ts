@@ -34,11 +34,6 @@ describe('ButtonGroupComponent', () => {
   });
 
   describe('Rendering', () => {
-    it('should create a button group', () => {
-      const fixture = createButtonFixture();
-      expect(fixture.componentRef).toBeTruthy();
-    });
-
     it('should render one element per provided button', () => {
       const fixture = createButtonFixture({
         buttons: [

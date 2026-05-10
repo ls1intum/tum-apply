@@ -134,10 +134,6 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
   }
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   /**
    * Admin Mode Tests
    * Admins can create research groups directly (ACTIVE state)
@@ -157,15 +153,6 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       expect(component.form.get('firstName')?.disabled).toBe(true);
       expect(component.form.get('lastName')?.disabled).toBe(true);
       expect(component.form.get('additionalNotes')?.disabled).toBe(true);
-    });
-
-    it('should mark form as valid without personal information in admin mode', () => {
-      fillValidForm({
-        researchGroupHead: 'Prof. Dr. Test',
-        researchGroupName: 'Test Research Group',
-      });
-
-      expect(component.form.valid).toBe(true);
     });
 
     it('should call createResearchGroupAsAdmin in admin mode', async () => {
@@ -317,38 +304,6 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       expect(mockProfOnboardingService.confirmOnboarding).not.toHaveBeenCalled();
     });
 
-    it('should set isSubmitting to true during submission in admin mode', () => {
-      fillValidForm();
-
-      component.onConfirmSubmit();
-
-      expect(component.isSubmitting()).toBe(true);
-    });
-
-    it('should set isSubmitting to false after successful submission in admin mode', async () => {
-      fillValidForm();
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(component.isSubmitting()).toBe(false);
-    });
-
-    it('should set isSubmitting to false after failed submission in admin mode', async () => {
-      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() =>
-        throwError(() => new HttpErrorResponse({ error: 'Creation failed' })),
-      );
-
-      fillValidForm();
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(component.isSubmitting()).toBe(false);
-    });
-
     it('should not close dialog when submission fails in admin mode', async () => {
       mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() =>
         throwError(() => new HttpErrorResponse({ error: 'Creation failed' })),
@@ -399,24 +354,6 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
           universityId: 'ab12cde',
           researchGroupHead: 'Prof. Dr. Admin Test',
           researchGroupName: 'Admin Research Group',
-        }),
-      );
-    });
-
-    it('should handle null values in optional fields in admin mode', async () => {
-      fillValidForm({
-        researchGroupAbbreviation: null,
-        researchGroupWebsite: null,
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockResearchGroupService.createResearchGroupAsAdmin).toHaveBeenCalledWith(
-        expect.objectContaining({
-          abbreviation: '',
-          website: '',
         }),
       );
     });

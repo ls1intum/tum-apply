@@ -188,10 +188,6 @@ describe('ApplicationForm', () => {
     vi.resetAllMocks();
   });
 
-  it('should create the component', () => {
-    expect(comp).toBeTruthy();
-  });
-
   it('should initialize jobId and applicationId from route', async () => {
     // wait for all async tasks to finish
     await fixture.whenStable();
@@ -1824,7 +1820,7 @@ describe('ApplicationForm', () => {
 
       // Should call with the current signal values
       expect(localStorageService.clearApplicationDraft).toHaveBeenCalledWith('existing-app-789', 'job-999');
-      expect(localStorageService.clearApplicationDraft).toHaveBeenCalledTimes(1);
+      expect(localStorageService.clearApplicationDraft).toHaveBeenCalledOnce();
     });
   });
 
@@ -1910,7 +1906,7 @@ describe('ApplicationForm', () => {
 
       // Should pass undefined as applicantId and jobId parameter
       expect(localStorageService.loadApplicationDraft).toHaveBeenCalledWith(undefined, 'job-789');
-      expect(localStorageService.loadApplicationDraft).toHaveBeenCalledTimes(1);
+      expect(localStorageService.loadApplicationDraft).toHaveBeenCalledOnce();
     });
 
     it('should handle error message formatting in catch block', async () => {

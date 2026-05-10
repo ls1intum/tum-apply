@@ -75,10 +75,6 @@ describe('JobCardListComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create component', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should load filters successfully', async () => {
     await component.loadAllFilter();
 
@@ -245,10 +241,6 @@ describe('JobCardListComponent', () => {
     fixture.detectChanges();
     expect(component.page()).toBe(Math.floor(16 / component.pageSize()));
     expect(spy).toHaveBeenCalledOnce();
-  });
-
-  it('should call loadAllFilter in constructor', () => {
-    expect(jobApi.getAllFilters).toHaveBeenCalled();
   });
 
   it('should render one job-card per job when jobs exist', () => {

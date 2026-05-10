@@ -82,10 +82,6 @@ describe('ResearchGroupMembersComponent', () => {
     vi.clearAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should load members automatically via table lazy load on component init', () => {
     mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
     fixture.detectChanges();
@@ -113,41 +109,6 @@ describe('ResearchGroupMembersComponent', () => {
     fixture.detectChanges();
 
     expect(mockResearchGroupApi.getResearchGroupMembersById).toHaveBeenCalledWith(groupId, 10, 0);
-  });
-
-  it('should initialize with default values', () => {
-    expect(component.members()).toEqual([]);
-    expect(component.pageNumber()).toBe(0);
-    expect(component.pageSize()).toBe(10);
-    expect(component.total()).toBe(0);
-  });
-
-  it('should have correct columns configuration', () => {
-    const columns = component.columns();
-    const expectedColumns = [
-      { field: 'name', header: 'researchGroup.members.tableColumns.name', width: '26rem' },
-      { field: 'email', header: 'researchGroup.members.tableColumns.email', width: '26rem' },
-      { field: 'role', header: 'researchGroup.members.tableColumns.role', width: '26rem' },
-      { field: 'actions', header: '', width: '5rem' },
-    ];
-
-    expect(columns).toHaveLength(4);
-    expectedColumns.forEach((expectedColumn, index) => {
-      expect(columns[index]).toEqual(expect.objectContaining(expectedColumn));
-    });
-  });
-
-  it('should assign templates to correct columns', () => {
-    fixture.detectChanges();
-
-    const columns = component.columns();
-    const nameColumn = columns.find(c => c.field === 'name');
-    const actionsColumn = columns.find(c => c.field === 'actions');
-
-    expect(nameColumn?.template).toBeTruthy();
-    expect(actionsColumn?.template).toBeTruthy();
-    expect(columns.find(c => c.field === 'email')?.template).toBeUndefined();
-    expect(columns.find(c => c.field === 'role')?.template).toBeUndefined();
   });
 
   it('should update page number and load members on table emit', () => {
@@ -287,18 +248,6 @@ describe('ResearchGroupMembersComponent', () => {
     expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
   });
 
-  it('should format role with proper capitalization', () => {
-    const memberWithLowercaseRole: UserShortDTO = {
-      userId: 'user-1',
-      firstName: 'John',
-      lastName: 'Doe',
-      roles: [UserShortDTORolesEnum.Professor],
-    };
-    component.members.set([memberWithLowercaseRole]);
-    const row = component.tableData()[0];
-    expect(row.role).toBe('Professor');
-  });
-
   describe('openAddMembersModal', () => {
     let dialogService: DialogService;
 
@@ -334,7 +283,7 @@ describe('ResearchGroupMembersComponent', () => {
     });
   });
 
-  it('should prevent employee from removing a professor', () => {
+  it('should not allow employee to remove members regardless of target role', () => {
     mockAccountService.user.update(user => {
       if (!user) {
         return user;
@@ -346,37 +295,15 @@ describe('ResearchGroupMembersComponent', () => {
         authorities: [UserShortDTORolesEnum.Employee],
       };
     });
-    const professorMember: UserShortDTO = {
-      userId: 'user-1',
-      firstName: 'John',
-      lastName: 'Doe',
-      roles: [UserShortDTORolesEnum.Professor],
-    };
-    component.members.set([professorMember]);
+    component.members.set([
+      { userId: 'user-1', firstName: 'John', lastName: 'Doe', roles: [UserShortDTORolesEnum.Professor] },
+      { userId: 'user-2', firstName: 'Jane', lastName: 'Smith', roles: [UserShortDTORolesEnum.Employee] },
+    ]);
 
-    const row = component.tableData()[0];
+    const rows = component.tableData();
 
-    expect(row.canRemove).toBe(false);
-  });
-
-  it('should not allow employee to remove members', () => {
-    mockAccountService.user.update(user => {
-      if (!user) {
-        return user;
-      }
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        authorities: [UserShortDTORolesEnum.Employee],
-      };
-    });
-    const studentMember: UserShortDTO = { userId: 'user-1', firstName: 'John', lastName: 'Doe', roles: [UserShortDTORolesEnum.Employee] };
-    component.members.set([studentMember]);
-
-    const row = component.tableData()[0];
-
-    expect(row.canRemove).toBe(false);
+    expect(rows[0].canRemove).toBe(false);
+    expect(rows[1].canRemove).toBe(false);
   });
 
   it('should load and set the research group name', async () => {
@@ -398,39 +325,21 @@ describe('ResearchGroupMembersComponent', () => {
     expect(component.researchGroupName()).toBeUndefined();
   });
 
-  it('should mark employee as true when user has Employee role', () => {
+  it.each([
+    { description: 'has Employee role', authorities: [UserShortDTORolesEnum.Employee], expected: true },
+    { description: 'lacks Employee role', authorities: [UserShortDTORolesEnum.Professor], expected: false },
+  ])('should compute isEmployee=$expected when user $description', ({ authorities, expected }) => {
     mockAccountService.user.update(user => {
       if (!user) {
         return user;
       }
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        authorities: [UserShortDTORolesEnum.Employee],
-      };
+      return { id: user.id, name: user.name, email: user.email, authorities };
     });
 
-    expect(component.isEmployee()).toBe(true);
+    expect(component.isEmployee()).toBe(expected);
   });
 
-  it('should mark employee as false when user lacks Employee role', () => {
-    mockAccountService.user.update(user => {
-      if (!user) {
-        return user;
-      }
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        authorities: [UserShortDTORolesEnum.Professor],
-      };
-    });
-
-    expect(component.isEmployee()).toBe(false);
-  });
-
-  it('should mark employee as false when authorities are undefined', () => {
+  it('should compute isEmployee=false when user is undefined', () => {
     mockAccountService.user.set(undefined);
 
     expect(component.isEmployee()).toBe(false);

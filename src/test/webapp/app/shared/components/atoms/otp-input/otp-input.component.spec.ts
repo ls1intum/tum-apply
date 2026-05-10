@@ -99,11 +99,10 @@ describe('OtpInput', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create with default configuration and compute ttlMinutes', () => {
+  it('should compute length and ttlMinutes from application config', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
 
-    expect(component).toBeTruthy();
     expect(component.length).toBe(applicationConfigMock.otp.length);
     expect(component.ttlMinutes).toBe(Math.max(1, Math.ceil(applicationConfigMock.otp.ttlSeconds / 60)));
   });
@@ -203,7 +202,7 @@ describe('OtpInput', () => {
     component.onSubmit();
 
     expect(clearSpy).toHaveBeenCalledOnce();
-    expect(authFacadeMock.verifyOtp).not.toHaveBeenCalledOnce();
+    expect(authFacadeMock.verifyOtp).not.toHaveBeenCalled();
   });
 
   it('should submit OTP and call verifyOtp when form is valid', () => {
@@ -245,7 +244,7 @@ describe('OtpInput', () => {
     component.onKeyDown(createKeyboardEvent('Backspace', preventDefault));
 
     // Backspace has key.length > 1 and should not be prevented
-    expect(preventDefault).not.toHaveBeenCalledOnce();
+    expect(preventDefault).not.toHaveBeenCalled();
   });
 
   it('should block non-alphanumeric single-character keys', () => {
@@ -265,7 +264,7 @@ describe('OtpInput', () => {
     const preventDefault = vi.fn();
     component.onKeyDown(createKeyboardEvent('A', preventDefault));
 
-    expect(preventDefault).not.toHaveBeenCalledOnce();
+    expect(preventDefault).not.toHaveBeenCalled();
   });
 
   it('should not resend OTP when disableResend is true (busy or cooldown)', () => {
@@ -277,7 +276,7 @@ describe('OtpInput', () => {
 
     component.onResend();
 
-    expect(authFacadeMock.requestOtp).not.toHaveBeenCalledOnce();
+    expect(authFacadeMock.requestOtp).not.toHaveBeenCalled();
   });
 
   it('should resend OTP, clear errors and reset value when allowed', () => {
@@ -331,26 +330,6 @@ describe('OtpInput', () => {
     fixture.detectChanges();
 
     expect(component.disabledSubmit()).toBe(false);
-  });
-
-  it('should use default resend label when not on cooldown', () => {
-    authOrchestratorServiceMock.cooldownSeconds.set(0);
-
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    const labelWithoutCooldown = component.resendLabel;
-    expect(labelWithoutCooldown).toBeTruthy();
-  });
-
-  it('should use cooldown resend label when on cooldown', () => {
-    authOrchestratorServiceMock.cooldownSeconds.set(10);
-
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    const labelWithCooldown = component.resendLabel;
-    expect(labelWithCooldown).toBeTruthy();
   });
 
   it('should wire template events correctly (OTP change, Enter key, and button clicks)', () => {

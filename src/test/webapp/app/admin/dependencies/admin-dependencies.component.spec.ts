@@ -119,10 +119,6 @@ describe('AdminDependenciesComponent', () => {
     vi.clearAllMocks();
   });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should initialize with correct default signal values', () => {
     expect(component.isLoading()).toBe(false);
     expect(component.isRefreshing()).toBe(false);
@@ -141,11 +137,6 @@ describe('AdminDependenciesComponent', () => {
 
       expect(mockDependencyApi.getOverview).toHaveBeenCalledOnce();
       expect(component.dependenciesOverview()).toEqual(mockOverview);
-    });
-
-    it('should set isLoading to false after successful load', async () => {
-      await Promise.resolve();
-      expect(component.isLoading()).toBe(false);
     });
 
     it('should show error toast when loading fails and reset isLoading', async () => {

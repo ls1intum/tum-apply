@@ -63,7 +63,7 @@ describe('CredentialsGroupComponent', () => {
     }).compileComponents();
   });
 
-  it('should create component and initialize form with otp length from config', () => {
+  it('should initialize form with otp length from config', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
     expect(component.otpLength).toBe(applicationConfigMock.otp.length);

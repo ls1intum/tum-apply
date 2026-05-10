@@ -9,7 +9,6 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { ButtonStubComponent } from 'src/test/webapp/util/button.stub';
 
 describe('ApplicationStepComponent', () => {
-  let component: ApplicationStepComponent;
   let fixture: ComponentFixture<ApplicationStepComponent>;
 
   beforeEach(async () => {
@@ -28,11 +27,6 @@ describe('ApplicationStepComponent', () => {
       .compileComponents();
 
     fixture = TestBed.createComponent(ApplicationStepComponent);
-    component = fixture.componentInstance;
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 
   it('should render button with correct icon', () => {

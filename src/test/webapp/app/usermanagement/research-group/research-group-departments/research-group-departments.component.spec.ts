@@ -64,10 +64,6 @@ describe('ResearchGroupDepartmentsComponent', () => {
   });
 
   describe('initial load', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
     it('loads departments and maps them correctly', async () => {
       // Trigger load
       await component.loadDepartments();

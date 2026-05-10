@@ -39,14 +39,6 @@ describe('FilterMultiselect', () => {
     vi.restoreAllMocks();
   });
 
-  it('should initialize with empty selected values and closed dropdown', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    expect(filterFixture.componentInstance.selectedValues()).toEqual([]);
-    expect(filterFixture.componentInstance.isOpen()).toBe(false);
-    expect(filterFixture.componentInstance.searchTerm()).toBe('');
-  });
-
   it('should return all options when no search term is provided', () => {
     const filterFixture = createFilterMultiselectFixture();
 
@@ -54,7 +46,7 @@ describe('FilterMultiselect', () => {
     expect(filteredOptions).toEqual(mockFilterOptions);
   });
 
-  it('clears search term when opening the dropdown', () => {
+  it('should clear search term when opening the dropdown', () => {
     const fx = createFilterMultiselectFixture();
     fx.componentInstance.searchTerm.set('abc');
     fx.componentInstance.toggleDropdown();
@@ -326,17 +318,4 @@ describe('FilterMultiselect', () => {
     expect(noResultsElement?.textContent?.trim()).toContain('entity.filters.noResults');
   });
 
-  it('should use default filterId when not provided in override', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    expect(filterFixture.componentInstance.filterId()).toBe('test-filter-id');
-  });
-
-  it('should handle different filterId values', () => {
-    const filterFixture1 = createFilterMultiselectFixture({ filterId: 'filter-1' });
-    const filterFixture2 = createFilterMultiselectFixture({ filterId: 'filter-2' });
-
-    expect(filterFixture1.componentInstance.filterId()).toBe('filter-1');
-    expect(filterFixture2.componentInstance.filterId()).toBe('filter-2');
-  });
 });

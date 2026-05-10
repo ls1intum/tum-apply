@@ -41,7 +41,7 @@ describe('KeycloakAuthenticationService', () => {
       keycloakInstance.init.mockResolvedValue(true);
       const result = await service.init();
       expect(result).toBe(true);
-      expect(keycloakInstance.init).toHaveBeenCalledTimes(1);
+      expect(keycloakInstance.init).toHaveBeenCalledOnce();
     });
 
     it('should handle non-authenticated init', async () => {
@@ -49,7 +49,7 @@ describe('KeycloakAuthenticationService', () => {
       keycloakInstance.init.mockResolvedValue(false);
       const result = await runSilently(() => service.init());
       expect(result).toBe(false);
-      expect(keycloakInstance.init).toHaveBeenCalledTimes(1);
+      expect(keycloakInstance.init).toHaveBeenCalledOnce();
     });
 
     it('should return undefined/false when keycloak not initialized', () => {
@@ -84,8 +84,8 @@ describe('KeycloakAuthenticationService', () => {
 
       await service.init();
 
-      expect(setIntervalSpy).toHaveBeenCalledTimes(1);
-      expect(ensureFreshTokenSpy).toHaveBeenCalledTimes(1);
+      expect(setIntervalSpy).toHaveBeenCalledOnce();
+      expect(ensureFreshTokenSpy).toHaveBeenCalledOnce();
 
       setIntervalSpy.mockRestore();
       ensureFreshTokenSpy.mockRestore();
@@ -100,19 +100,19 @@ describe('KeycloakAuthenticationService', () => {
     ])('should login with %s provider using idpHint %s', async (provider, hint) => {
       await service.loginWithProvider(provider);
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ idpHint: hint }));
-      expect(keycloakInstance.login).toHaveBeenCalledTimes(1);
+      expect(keycloakInstance.login).toHaveBeenCalledOnce();
     });
 
     it('should login with TUM provider without idpHint', async () => {
       await service.loginWithProvider(IdpProvider.TUM);
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.not.objectContaining({ idpHint: expect.anything() }));
-      expect(keycloakInstance.login).toHaveBeenCalledTimes(1);
+      expect(keycloakInstance.login).toHaveBeenCalledOnce();
     });
 
     it('should include redirectUri when provided', async () => {
       await service.loginWithProvider(IdpProvider.Google, '/redirect');
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: expect.stringContaining('/redirect') }));
-      expect(keycloakInstance.login).toHaveBeenCalledTimes(1);
+      expect(keycloakInstance.login).toHaveBeenCalledOnce();
     });
 
     it('should reject external redirect URIs on login', async () => {
@@ -143,7 +143,7 @@ describe('KeycloakAuthenticationService', () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       keycloakInstance.login.mockRejectedValue(new Error('Login failed'));
       await service.loginWithProvider(IdpProvider.Google);
-      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+      expect(consoleErrorSpy).toHaveBeenCalledOnce();
       consoleErrorSpy.mockRestore();
     });
   });
@@ -153,7 +153,7 @@ describe('KeycloakAuthenticationService', () => {
       keycloakInstance.authenticated = true;
       await service.ensureFreshToken();
       expect(keycloakInstance.updateToken).toHaveBeenCalledWith(20);
-      expect(keycloakInstance.updateToken).toHaveBeenCalledTimes(1);
+      expect(keycloakInstance.updateToken).toHaveBeenCalledOnce();
     });
 
     it('should not refresh token when not authenticated', async () => {
@@ -183,7 +183,7 @@ describe('KeycloakAuthenticationService', () => {
 
       await Promise.all([firstRefresh, secondRefresh]);
 
-      expect(keycloakInstance.updateToken).toHaveBeenCalledTimes(1);
+      expect(keycloakInstance.updateToken).toHaveBeenCalledOnce();
     });
   });
 
@@ -198,7 +198,7 @@ describe('KeycloakAuthenticationService', () => {
 
       document.dispatchEvent(new Event('visibilitychange'));
 
-      expect(ensureFreshTokenSpy).toHaveBeenCalledTimes(1);
+      expect(ensureFreshTokenSpy).toHaveBeenCalledOnce();
 
       if (originalHidden !== undefined) {
         Object.defineProperty(document, 'hidden', { value: originalHidden, configurable: true });
@@ -225,7 +225,7 @@ describe('KeycloakAuthenticationService', () => {
     it('should call keycloak logout when authenticated', async () => {
       keycloakInstance.authenticated = true;
       await service.logout();
-      expect(keycloakInstance.logout).toHaveBeenCalledTimes(1);
+      expect(keycloakInstance.logout).toHaveBeenCalledOnce();
     });
 
     it('should not call keycloak logout when not authenticated', async () => {

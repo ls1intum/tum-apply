@@ -45,8 +45,6 @@ describe('ImageUploadButtonComponent', () => {
   const SMALL_FILE_SIZE = 1024; // 1KB
   const CUSTOM_MAX_FILE_SIZE = 1024 * 1024; // 1MB
   const OVERSIZED_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-  const DEFAULT_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const DEFAULT_MAX_DIMENSION = 4096;
   const VALID_IMAGE_WIDTH = 1920;
   const VALID_IMAGE_HEIGHT = 1080;
   const OVERSIZED_IMAGE_DIMENSION = 5000;
@@ -79,17 +77,6 @@ describe('ImageUploadButtonComponent', () => {
   });
 
   describe('Component Initialization', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
-    it('should initialize with default config values', () => {
-      expect(component.DEFAULT_MAX_FILE_SIZE).toBe(DEFAULT_MAX_FILE_SIZE);
-      expect(component.DEFAULT_MAX_DIMENSION).toBe(DEFAULT_MAX_DIMENSION);
-      expect(component.DEFAULT_ACCEPTED_TYPES).toEqual(['image/jpeg', 'image/jpg', 'image/png']);
-      expect(component.isUploading()).toBe(false);
-    });
-
     it('should compute accepted image types from config', () => {
       fixture.componentRef.setInput('config', { acceptedTypes: ['image/png', 'image/webp'] });
       fixture.detectChanges();

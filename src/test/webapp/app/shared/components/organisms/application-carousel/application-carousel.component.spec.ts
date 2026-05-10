@@ -91,29 +91,15 @@ describe('ApplicationCarouselComponent', () => {
       component['updateVisibleCards']();
     }
 
-    it('sets 1 when width < md', () => {
-      setup(600);
-      expect(component.cardsVisible()).toBe(1);
-    });
-
-    it('sets 2 when width between md and smallDesktop', () => {
-      setup(780);
-      expect(component.cardsVisible()).toBe(2);
-    });
-
-    it('sets 3 when width between smallDesktop and xl', () => {
-      setup(1000);
-      expect(component.cardsVisible()).toBe(3);
-    });
-
-    it('sets 5 when width between xl and ultraWide', () => {
-      setup(1600);
-      expect(component.cardsVisible()).toBe(5);
-    });
-
-    it('sets 6 when width ≥ ultraWide', () => {
-      setup(2100);
-      expect(component.cardsVisible()).toBe(6);
+    it.each<[number, number]>([
+      [600, 1],
+      [780, 2],
+      [1000, 3],
+      [1600, 5],
+      [2100, 6],
+    ])('should set cardsVisible based on width: width=%i -> %i cards', (width, expected) => {
+      setup(width);
+      expect(component.cardsVisible()).toBe(expected);
     });
   });
   // ---------------- VISIBLE APPLICATIONS ----------------
@@ -153,23 +139,15 @@ describe('ApplicationCarouselComponent', () => {
 
   // ---------------- MIDDLE INDEX ----------------
   describe('middle index', () => {
-    it('should compute middle index correctly', () => {
-      component.cardsVisible.set(5);
-      expect(component.middle()).toBe(2);
-
-      component.cardsVisible.set(3);
-      expect(component.middle()).toBe(1);
-
-      component.cardsVisible.set(1);
-      expect(component.middle()).toBe(0);
-    });
-
-    it('should compute middle correctly for even cardsVisible', () => {
-      component.cardsVisible.set(4);
-      expect(component.middle()).toBe(2);
-
-      component.cardsVisible.set(6);
-      expect(component.middle()).toBe(3);
+    it.each<[number, number]>([
+      [1, 0],
+      [3, 1],
+      [4, 2],
+      [5, 2],
+      [6, 3],
+    ])('should compute middle index for cardsVisible=%i as %i', (cardsVisible, expected) => {
+      component.cardsVisible.set(cardsVisible);
+      expect(component.middle()).toBe(expected);
     });
   });
 
@@ -181,7 +159,7 @@ describe('ApplicationCarouselComponent', () => {
 
       component.loadNext();
 
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledOnce();
     });
 
     it('should emit prev event when loadPrev is called', () => {
@@ -190,7 +168,7 @@ describe('ApplicationCarouselComponent', () => {
 
       component.loadPrev();
 
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledOnce();
     });
   });
 
@@ -201,7 +179,7 @@ describe('ApplicationCarouselComponent', () => {
 
       component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
 
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledOnce();
     });
 
     it('should call loadPrev when ArrowLeft is pressed', () => {
@@ -209,7 +187,7 @@ describe('ApplicationCarouselComponent', () => {
 
       component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
 
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledOnce();
     });
 
     it('should not call navigation methods for other keys', () => {

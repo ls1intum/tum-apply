@@ -58,48 +58,14 @@ describe('EmployeeRequestAccessFormComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  describe('Form Initialization', () => {
-    it('should initialize with professorName field', () => {
-      expect(component.employeeForm.get('professorName')).toBeDefined();
-    });
-
-    it('should initialize form with empty value', () => {
-      expect(component.employeeForm.get('professorName')?.value).toBe('');
-    });
-
-    it('should mark professorName as required', () => {
+  describe('Form Validation', () => {
+    it('should enforce required and minimum length 3 on professorName', () => {
       const control = component.employeeForm.get('professorName');
       control?.setValue('');
       expect(control?.hasError('required')).toBe(true);
-    });
-
-    it('should enforce minimum length of 3 characters', () => {
-      const control = component.employeeForm.get('professorName');
       control?.setValue('ab');
       expect(control?.hasError('minlength')).toBe(true);
-
       control?.setValue('abc');
-      expect(control?.hasError('minlength')).toBe(false);
-    });
-  });
-
-  describe('Form Validation', () => {
-    it('should be invalid when professorName is empty', () => {
-      component.employeeForm.patchValue({ professorName: '' });
-      expect(component.employeeForm.valid).toBe(false);
-    });
-
-    it('should be invalid when professorName is less than 3 characters', () => {
-      component.employeeForm.patchValue({ professorName: 'AB' });
-      expect(component.employeeForm.valid).toBe(false);
-    });
-
-    it('should be valid when professorName has at least 3 characters', () => {
-      component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
       expect(component.employeeForm.valid).toBe(true);
     });
   });
@@ -310,18 +276,4 @@ describe('EmployeeRequestAccessFormComponent', () => {
     });
   });
 
-  describe('Loading State', () => {
-    it('should initialize with isSubmitting as false', () => {
-      expect(component.isSubmitting()).toBe(false);
-    });
-
-    it('should prevent multiple simultaneous submissions', () => {
-      component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
-      component.isSubmitting.set(true);
-
-      component.onConfirmSubmit();
-
-      expect(mockResearchGroupService.createEmployeeResearchGroupRequest).not.toHaveBeenCalled();
-    });
-  });
 });

@@ -55,10 +55,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     vi.resetAllMocks();
   });
 
-  it('should create the component', () => {
-    expect(comp).toBeTruthy();
-  });
-
   it('should initialize with default values', async () => {
     await comp.loadPage({ first: 0, rows: 10 });
     await fixture.whenStable();
@@ -104,12 +100,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       await comp.loadPage(event);
 
       expect(applicationApi.getApplicationPages).toHaveBeenCalledWith(10, 0, 'createdAt', 'DESC');
-    });
-
-    it('should set loading to false after load completes', async () => {
-      await comp.loadPage(mockLazyLoadEvent);
-
-      expect(comp.loading()).toBe(false);
     });
 
     it('should handle error when loading page fails', async () => {

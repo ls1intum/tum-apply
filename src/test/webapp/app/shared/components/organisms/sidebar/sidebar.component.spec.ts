@@ -41,11 +41,7 @@ describe('SidebarComponent', () => {
     vi.clearAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('toggleSidebar should emit sidebarCollapsedChange with the opposite value', () => {
+  it('should emit sidebarCollapsedChange with the opposite value when toggleSidebar called', () => {
     const emitSpy = vi.spyOn(component.sidebarCollapsedChange, 'emit');
     fixture.componentRef.setInput('isSidebarCollapsed', false);
     fixture.detectChanges();
@@ -78,44 +74,18 @@ describe('SidebarComponent', () => {
   });
 
   describe('isActive method', () => {
-    it('should return true for exact match', () => {
-      router.url = '/job-overview';
-      expect(component.isActive('/job-overview')).toBe(true);
-    });
-
-    it('should return true for prefix match', () => {
-      router.url = '/job/create/123';
-      expect(component.isActive('/job/create')).toBe(true);
-    });
-
-    it('should return true for root path', () => {
-      router.url = '/';
-      expect(component.isActive('/')).toBe(true);
-    });
-
-    it('should return false for partial prefix match', () => {
-      router.url = '/job-overview-something';
-      expect(component.isActive('/job-overview')).toBe(false);
-    });
-
-    it('should return true for custom group main path', () => {
-      router.url = '/application/overview';
-      expect(component.isActive('/application/overview')).toBe(true);
-    });
-
-    it('should return true for custom group sub path', () => {
-      router.url = '/application/detail/456';
-      expect(component.isActive('/application/overview')).toBe(true);
-    });
-
-    it('should ignore query parameters when matching', () => {
-      router.url = '/job-overview?param=value';
-      expect(component.isActive('/job-overview')).toBe(true);
-    });
-
-    it('should return false for non-matching link', () => {
-      router.url = '/some/other/path';
-      expect(component.isActive('/job-overview')).toBe(false);
+    it.each<[string, string, string, boolean]>([
+      ['exact match', '/job-overview', '/job-overview', true],
+      ['prefix match', '/job/create/123', '/job/create', true],
+      ['root path', '/', '/', true],
+      ['partial prefix non-match', '/job-overview-something', '/job-overview', false],
+      ['custom group main path', '/application/overview', '/application/overview', true],
+      ['custom group sub path', '/application/detail/456', '/application/overview', true],
+      ['ignore query parameters', '/job-overview?param=value', '/job-overview', true],
+      ['non-matching link', '/some/other/path', '/job-overview', false],
+    ])('should resolve isActive for %s', (_desc, url, link, expected) => {
+      router.url = url;
+      expect(component.isActive(link)).toBe(expected);
     });
   });
 });

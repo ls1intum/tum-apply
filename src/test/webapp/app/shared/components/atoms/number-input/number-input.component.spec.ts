@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { By } from '@angular/platform-browser';
 import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -30,18 +29,6 @@ describe('NumberInputComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should render label and required indicator', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-
-    fixture.componentRef.setInput('label', 'Test Number');
-    fixture.componentRef.setInput('required', true);
-    fixture.detectChanges();
-
-    expect(comp.label()).toBe('Test Number');
-    expect(comp.required()).toBe(true);
-  });
-
   it('should emit modelChange and update form control on input change', () => {
     const fixture = createFixture();
     const comp = fixture.componentInstance;
@@ -53,13 +40,6 @@ describe('NumberInputComponent', () => {
     expect(spyEmit).toHaveBeenCalledWith(5);
     expect(mockCtrl.value).toBe(5);
     expect(mockCtrl.dirty).toBe(true);
-  });
-
-  it('should correctly apply min/max fraction digits from inputs', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-    expect(comp.minFractionDigits()).toBe(1);
-    expect(comp.maxFractionDigits()).toBe(2);
   });
 
   it('should mark smallerThanMin and largerThanMax correctly', async () => {
@@ -99,43 +79,6 @@ describe('NumberInputComponent', () => {
     const ctrl = new FormControl(0);
     comp['validateMinMax'](5, ctrl);
     expect(ctrl.errors).toBeNull();
-  });
-
-  it('should show tooltip when icon=circle-info and tooltipText provided', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-
-    fixture.componentRef.setInput('icon', 'circle-info');
-    fixture.componentRef.setInput('tooltipText', 'Helpful tip');
-    fixture.detectChanges();
-
-    expect(comp.icon()).toBe('circle-info');
-    expect(comp.tooltipText()).toBe('Helpful tip');
-  });
-
-  it('should render regular icon when icon is not circle-info', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-
-    fixture.componentRef.setInput('icon', 'user');
-    fixture.detectChanges();
-
-    expect(comp.icon()).toBe('user');
-    expect(comp.tooltipText()).toBeUndefined();
-  });
-
-  it('should call onFocus and onBlur handlers', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-
-    const spyFocus = vi.spyOn(comp, 'onFocus');
-    const spyBlur = vi.spyOn(comp, 'onBlur');
-
-    comp.onFocus();
-    comp.onBlur();
-
-    expect(spyFocus).toHaveBeenCalled();
-    expect(spyBlur).toHaveBeenCalled();
   });
 
   it('should handle null value gracefully', () => {

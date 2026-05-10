@@ -64,14 +64,6 @@ describe('DocumentViewerComponent', () => {
     vi.resetAllMocks();
   });
 
-  it('should create the component', () => {
-    expect(comp).toBeTruthy();
-  });
-
-  it('should initialize with undefined sanitizedBlobUrl', () => {
-    expect(comp.sanitizedBlobUrl()).toBeUndefined();
-  });
-
   describe('initDocument', () => {
     it('should use cached document if available', async () => {
       cacheService.get = vi.fn().mockReturnValue(mockSafeUrl);
@@ -107,7 +99,7 @@ describe('DocumentViewerComponent', () => {
 
       await comp.initDocument();
 
-      expect(cacheService.set).toHaveBeenCalled();
+      expect(cacheService.set).toHaveBeenCalledOnce();
     });
 
     it('should handle download error gracefully', async () => {
@@ -155,29 +147,6 @@ describe('DocumentViewerComponent', () => {
       await comp.initDocument();
       expect(documentApi.downloadDocument).toHaveBeenCalledWith('doc-2');
       expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl2);
-    });
-  });
-
-  describe('integration - cache behavior', () => {
-    it('should use cache and skip download when document is cached', async () => {
-      cacheService.get = vi.fn().mockReturnValue(mockSafeUrl);
-      const downloadSpy = vi.spyOn(documentApi, 'downloadDocument');
-
-      await comp.initDocument();
-
-      expect(cacheService.get).toHaveBeenCalledWith('doc-123');
-      expect(downloadSpy).not.toHaveBeenCalled();
-      expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl);
-    });
-
-    it('should cache downloaded document', async () => {
-      const mockBlob = new ArrayBuffer(200);
-      documentApi.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
-      cacheService.set = vi.fn().mockReturnValue(mockSafeUrl);
-
-      await comp.initDocument();
-
-      expect(cacheService.set).toHaveBeenCalledWith('doc-123', expect.any(Blob));
     });
   });
 

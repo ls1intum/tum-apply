@@ -66,19 +66,19 @@ describe('DocumentDialog', () => {
 
   describe.each([
     {
-      desc: 'auto-selects the first document if selectedId is undefined',
+      desc: 'should auto-select the first document if selectedId is undefined',
       holders: [createHolder('doc1', 'Doc 1')],
       selected: undefined,
       expected: 'doc1',
     },
     {
-      desc: 'returns document if selectedId matches',
+      desc: 'should return document if selectedId matches',
       holders: [createHolder('doc1', 'Doc 1'), createHolder('doc2', 'Doc 2')],
       selected: 'doc2',
       expected: 'doc2',
     },
     {
-      desc: 'returns undefined if selectedId not found',
+      desc: 'should return undefined if selectedId not found',
       holders: [createHolder('doc1', 'Doc 1')],
       selected: 'missing',
       expected: undefined,
@@ -92,20 +92,20 @@ describe('DocumentDialog', () => {
 
   describe.each([
     {
-      desc: 'returns true when id matches selectedDocument',
+      desc: 'should return true when id matches selectedDocument',
       holders: [createHolder('doc1', 'Doc 1')],
       selected: 'doc1',
       checkId: 'doc1',
       expected: true,
     },
     {
-      desc: 'returns false when id does not match',
+      desc: 'should return false when id does not match',
       holders: [createHolder('doc1', 'Doc 1')],
       selected: 'doc1',
       checkId: 'doc2',
       expected: false,
     },
-    { desc: 'returns false if no document selected', holders: [], selected: undefined, checkId: 'doc1', expected: false },
+    { desc: 'should return false if no document selected', holders: [], selected: undefined, checkId: 'doc1', expected: false },
   ])('isSelected', ({ desc, holders, selected, checkId, expected }) => {
     it(desc, () => {
       setHolders(holders, selected);

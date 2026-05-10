@@ -88,10 +88,6 @@ describe('JobDetailComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create component', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should navigate to apply form on onApply()', () => {
     component.jobId.set('job123');
     component.onApply();
@@ -521,37 +517,7 @@ describe('JobDetailComponent', () => {
     expect(result).toBeNull();
   });
 
-  it('should mapToJobDetails handle all default fallbacks and missing fields', () => {
-    const dto = {
-      title: 'X',
-      state: undefined,
-      supervisingProfessorName: undefined,
-      researchGroup: { name: undefined, researchGroupId: 'rgX' },
-      createdAt: new Date().toISOString(),
-      lastModifiedAt: new Date().toISOString(),
-      startDate: undefined,
-      endDate: undefined,
-      jobDescriptionEN: undefined,
-      jobDescriptionDE: undefined,
-      workload: undefined,
-      contractDuration: undefined,
-    } as unknown as JobDetailDTO;
-
-    const user = mockAccountService.loadedUser();
-    const result = (
-      component as unknown as {
-        mapToJobDetails: (d: JobDetailDTO, u?: ReturnType<typeof mockAccountService.loadedUser>) => JobDetails;
-      }
-    ).mapToJobDetails(dto, user);
-
-    expect(result.supervisingProfessor).toBeUndefined();
-
-    expect(result.researchGroup).toBe('');
-    expect(result.workload).toBe('');
-    expect(result.contractDuration).toBe('');
-  });
-
-  it('should call loadJobDetailsFromForm when previewDataValue exists (covering effect line)', async () => {
+  it('should call loadJobDetailsFromForm when previewDataValue exists', async () => {
     const previewJob: JobFormDTO = { title: 'PreviewJob' } as JobFormDTO;
 
     const fixture2 = TestBed.createComponent(JobDetailComponent);

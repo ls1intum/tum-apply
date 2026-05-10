@@ -23,14 +23,14 @@ describe('Prose', () => {
     comp = fixture.componentInstance;
   });
 
-  it('returns "—" when text is undefined', () => {
+  it('should return "—" when text is undefined', () => {
     fixture.componentRef.setInput('text', undefined);
     fixture.detectChanges();
 
     expect(comp.safeHtml()).toBe('—');
   });
 
-  it('returns sanitized text when sanitizer provides value', () => {
+  it('should return sanitized text when sanitizer provides value', () => {
     mockSanitizer.sanitize.mockReturnValue('<b>ok</b>');
 
     fixture.componentRef.setInput('text', '<b>ok</b>');
@@ -40,7 +40,7 @@ describe('Prose', () => {
     expect(mockSanitizer.sanitize).toHaveBeenCalledWith(SecurityContext.HTML, '<b>ok</b>');
   });
 
-  it('returns "—" if sanitizer returns null', () => {
+  it('should return "—" if sanitizer returns null', () => {
     mockSanitizer.sanitize.mockReturnValue(null);
 
     fixture.componentRef.setInput('text', '<script>alert(1)</script>');
