@@ -132,7 +132,7 @@ export class FilterMultiselect {
     if (this.isOpen()) {
       this.searchTerm.set('');
       this.calculateDropdownAlignment();
-      this.focusedIndexOptionList.set(0);
+      this.focusedIndexOptionList.set(-1);
     }
   }
 
