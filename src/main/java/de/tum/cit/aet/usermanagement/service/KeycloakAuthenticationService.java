@@ -8,8 +8,13 @@ import de.tum.cit.aet.usermanagement.dto.auth.PasskeyActionTokenDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.PasskeyDTO;
 import io.netty.channel.ChannelOption;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.Configuration;
@@ -55,6 +60,7 @@ public class KeycloakAuthenticationService {
     private final WebClient webClient;
     private final JwtService jwtService;
     private final KeycloakUserService keycloakUserService;
+    private final ConcurrentMap<String, CompletableFuture<AuthResponseDTO>> inFlightRefreshes = new ConcurrentHashMap<>();
 
     public KeycloakAuthenticationService(
         @Value("${keycloak.url}") String keycloakUrl,
@@ -152,9 +158,46 @@ public class KeycloakAuthenticationService {
      * @return DTO with access token, refresh token and lifetimes for {@code clientId}
      */
     public AuthResponseDTO refreshTokens(String accessToken, String refreshToken) {
-        final Jwt jwt = jwtService.decode(accessToken);
+        if (StringUtil.isBlank(refreshToken)) {
+            return refreshTokensInternal(accessToken, refreshToken);
+        }
+
+        CompletableFuture<AuthResponseDTO> newRefresh = new CompletableFuture<>();
+        CompletableFuture<AuthResponseDTO> inFlight = inFlightRefreshes.putIfAbsent(refreshToken, newRefresh);
+        if (inFlight != null) {
+            try {
+                return inFlight.join();
+            } catch (CompletionException ex) {
+                Throwable cause = ex.getCause() != null ? ex.getCause() : ex;
+                if (cause instanceof RuntimeException runtimeException) {
+                    throw runtimeException;
+                }
+                throw new UnauthorizedException("Refresh failed", cause);
+            }
+        }
+
+        try {
+            AuthResponseDTO refreshed = refreshTokensInternal(accessToken, refreshToken);
+            newRefresh.complete(refreshed);
+            return refreshed;
+        } catch (RuntimeException ex) {
+            newRefresh.completeExceptionally(ex);
+            throw ex;
+        } finally {
+            inFlightRefreshes.remove(refreshToken, newRefresh);
+        }
+    }
+
+    private AuthResponseDTO refreshTokensInternal(String accessToken, String refreshToken) {
+        Jwt jwt = null;
+        try {
+            jwt = jwtService.decode(accessToken);
+        } catch (UnauthorizedException ex) {
+            log.debug("refreshTokens(): access token decode failed, continuing with refresh-token path: {}", ex.getMessage());
+        }
         final String preferredRealm = determinePreferredRealm(jwt);
         final String fallbackRealm = preferredRealm.equals(this.realm) ? this.tumLoginRealm : this.realm;
+        final List<String> refreshFailures = new ArrayList<>();
 
         // 1) No refresh token: accept valid access token, else session expired
         if (StringUtil.isBlank(refreshToken)) {
@@ -169,15 +212,21 @@ public class KeycloakAuthenticationService {
             final String authorizedParty = jwtService.getAuthorizedParty(jwt);
             if (clientId.equals(authorizedParty)) {
                 // Default refresh with server client
-                AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(preferredRealm, clientId, clientSecret, refreshToken);
+                AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(
+                    preferredRealm,
+                    clientId,
+                    clientSecret,
+                    refreshToken,
+                    refreshFailures
+                );
                 if (serverRefresh != null) {
                     return getResponseFromToken(serverRefresh);
                 }
-                serverRefresh = tryRefreshTokensWithClient(fallbackRealm, clientId, clientSecret, refreshToken);
+                serverRefresh = tryRefreshTokensWithClient(fallbackRealm, clientId, clientSecret, refreshToken, refreshFailures);
                 if (serverRefresh != null) {
                     return getResponseFromToken(serverRefresh);
                 }
-                throw new UnauthorizedException("Unable to refresh");
+                throw buildRefreshFailure(refreshFailures, authorizedParty, jwt);
             }
             if (adminClientId.equals(authorizedParty)) {
                 // Subject-only refresh via otp client
@@ -187,21 +236,29 @@ public class KeycloakAuthenticationService {
                 }
                 return exchangeForUserTokens(subject);
             }
-            throw new UnauthorizedException("Unauthorized client for refresh");
+            refreshFailures.add(
+                "Access token azp '" + authorizedParty + "' not in configured clients [" + clientId + ", " + adminClientId + "]"
+            );
         }
 
         // 3) No valid access token: try to refresh with both clients
-        AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(preferredRealm, clientId, clientSecret, refreshToken);
+        AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(preferredRealm, clientId, clientSecret, refreshToken, refreshFailures);
         if (serverRefresh == null) {
-            serverRefresh = tryRefreshTokensWithClient(fallbackRealm, clientId, clientSecret, refreshToken);
+            serverRefresh = tryRefreshTokensWithClient(fallbackRealm, clientId, clientSecret, refreshToken, refreshFailures);
         }
         if (serverRefresh != null) {
             return getResponseFromToken(serverRefresh);
         }
 
-        AccessTokenResponse otpRefresh = tryRefreshTokensWithClient(preferredRealm, adminClientId, adminClientSecret, refreshToken);
+        AccessTokenResponse otpRefresh = tryRefreshTokensWithClient(
+            preferredRealm,
+            adminClientId,
+            adminClientSecret,
+            refreshToken,
+            refreshFailures
+        );
         if (otpRefresh == null) {
-            otpRefresh = tryRefreshTokensWithClient(fallbackRealm, adminClientId, adminClientSecret, refreshToken);
+            otpRefresh = tryRefreshTokensWithClient(fallbackRealm, adminClientId, adminClientSecret, refreshToken, refreshFailures);
         }
         if (otpRefresh != null) {
             Jwt otpJwt = jwtService.decode(otpRefresh.getToken());
@@ -212,7 +269,7 @@ public class KeycloakAuthenticationService {
             return exchangeForUserTokens(keycloakUserId);
         }
 
-        throw new UnauthorizedException("Unable to refresh");
+        throw buildRefreshFailure(refreshFailures, jwt != null ? jwtService.getAuthorizedParty(jwt) : null, jwt);
     }
 
     /**
@@ -329,13 +386,27 @@ public class KeycloakAuthenticationService {
      * @param refreshToken the user's refresh token
      * @return DTO with fresh access token, refresh token, and lifetimes or null if exception
      */
-    private AccessTokenResponse tryRefreshTokensWithClient(String targetRealm, String clientId, String clientSecret, String refreshToken) {
+    private AccessTokenResponse tryRefreshTokensWithClient(
+        String targetRealm,
+        String clientId,
+        String clientSecret,
+        String refreshToken,
+        List<String> failures
+    ) {
         try {
             return refreshTokensWithClient(targetRealm, clientId, clientSecret, refreshToken);
         } catch (UnauthorizedException ex) {
             log.debug("Refresh with client {} on realm {} failed: {}", clientId, targetRealm, ex.getMessage());
+            failures.add("client=" + clientId + ", realm=" + targetRealm + ": " + ex.getMessage());
             return null;
         }
+    }
+
+    private UnauthorizedException buildRefreshFailure(List<String> failures, String authorizedParty, Jwt jwt) {
+        String issuer = jwt != null && jwt.getIssuer() != null ? jwt.getIssuer().toString() : "n/a";
+        String azp = StringUtil.isBlank(authorizedParty) ? "n/a" : authorizedParty;
+        String details = failures.isEmpty() ? "no downstream refresh attempt succeeded" : String.join(" | ", failures);
+        return new UnauthorizedException("Unable to refresh (issuer=" + issuer + ", azp=" + azp + "): " + details);
     }
 
     private String determinePreferredRealm(Jwt accessJwt) {

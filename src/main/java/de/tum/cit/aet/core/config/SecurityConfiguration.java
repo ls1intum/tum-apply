@@ -2,11 +2,18 @@ package de.tum.cit.aet.core.config;
 
 import de.tum.cit.aet.core.security.CustomJwtAuthenticationConverter;
 import de.tum.cit.aet.core.security.SpaWebFilter;
+import de.tum.cit.aet.core.util.CookieUtils;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.util.Set;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -19,6 +26,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.WebUtils;
 
 @Configuration
@@ -28,15 +38,20 @@ public class SecurityConfiguration {
     private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
     private final CorsFilter corsFilter;
     private final KeycloakAuthenticationService keycloakAuthenticationService;
+    private final Set<String> trustedIssuers;
 
     public SecurityConfiguration(
         CustomJwtAuthenticationConverter customJwtAuthenticationConverter,
         CorsFilter corsFilter,
-        KeycloakAuthenticationService keycloakAuthenticationService
+        KeycloakAuthenticationService keycloakAuthenticationService,
+        @Value("${keycloak.url}") String keycloakUrl,
+        @Value("${keycloak.tum-login-realm}") String tumLoginRealm,
+        @Value("${keycloak.external-login-realm}") String externalLoginRealm
     ) {
         this.customJwtAuthenticationConverter = customJwtAuthenticationConverter;
         this.corsFilter = corsFilter;
         this.keycloakAuthenticationService = keycloakAuthenticationService;
+        this.trustedIssuers = Set.of(realmIssuer(keycloakUrl, tumLoginRealm), realmIssuer(keycloakUrl, externalLoginRealm));
     }
 
     /**
@@ -187,13 +202,49 @@ public class SecurityConfiguration {
         return request -> {
             Cookie accessCookie = WebUtils.getCookie(request, "access_token");
             Cookie refreshCookie = WebUtils.getCookie(request, "refresh_token");
-            if (accessCookie != null && accessCookie.getValue() != null) {
+            if (accessCookie != null && accessCookie.getValue() != null && !accessCookie.getValue().isBlank()) {
+                if (
+                    refreshCookie != null &&
+                    refreshCookie.getValue() != null &&
+                    !refreshCookie.getValue().isBlank() &&
+                    hasUntrustedIssuer(accessCookie.getValue())
+                ) {
+                    AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(accessCookie.getValue(), refreshCookie.getValue());
+                    writeAuthCookies(tokens);
+                    return tokens.accessToken();
+                }
                 return accessCookie.getValue();
-            } else if ((accessCookie == null || accessCookie.getValue() == null) && refreshCookie != null) {
+            } else if ((accessCookie == null || accessCookie.getValue() == null || accessCookie.getValue().isBlank()) && refreshCookie != null) {
                 AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(null, refreshCookie.getValue());
+                writeAuthCookies(tokens);
                 return tokens.accessToken();
             }
             return defaultResolver.resolve(request);
         };
+    }
+
+    private void writeAuthCookies(AuthResponseDTO tokens) {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            return;
+        }
+        HttpServletResponse response = attributes.getResponse();
+        if (response != null) {
+            CookieUtils.setAuthCookies(response, tokens);
+        }
+    }
+
+    private boolean hasUntrustedIssuer(String token) {
+        try {
+            JWTClaimsSet claims = JWTParser.parse(token).getJWTClaimsSet();
+            String issuer = claims.getIssuer();
+            return issuer == null || issuer.isBlank() || !trustedIssuers.contains(issuer);
+        } catch (ParseException e) {
+            return true;
+        }
+    }
+
+    private String realmIssuer(String keycloakUrl, String realm) {
+        return UriComponentsBuilder.fromUriString(keycloakUrl).pathSegment("realms", realm).build().toUriString();
     }
 }
