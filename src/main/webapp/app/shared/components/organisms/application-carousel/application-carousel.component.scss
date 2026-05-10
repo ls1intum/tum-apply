@@ -1,38 +1,6 @@
 @use '../../../../../content/scss/breakpoints' as bp;
 
-.carousel {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: clamp(0.5rem, 1.5vw, 1.5rem);
-}
-
-.cards {
-  flex: 1 1 0;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  gap: 4%;
-}
-
-.cards p {
-  white-space: nowrap;
-  text-align: center;
-  min-width: 40%;
-}
-
-/* Tablets and smaller (width <= 768px) */
 @media (max-width: bp.$md) {
-  .carousel {
-    gap: 0.75rem;
-  }
-
-  .cards {
-    gap: 0.5rem;
-  }
-
-  .nav .jhi-button,
   .nav .p-button {
     width: 2.75rem;
     height: 2.75rem;
@@ -43,17 +11,7 @@
   }
 }
 
-/* Large phones */
 @media (max-width: bp.$sm) {
-  .carousel {
-    gap: 0.3rem;
-  }
-
-  .cards {
-    gap: 0.25rem;
-  }
-
-  .nav .jhi-button,
   .nav .p-button {
     width: 1.8rem;
     height: 1.8rem;
@@ -64,17 +22,7 @@
   }
 }
 
-/* Standard phones */
 @media (max-width: bp.$xs) {
-  .carousel {
-    gap: 0.25rem;
-  }
-
-  .cards {
-    gap: 0.2rem;
-  }
-
-  .nav .jhi-button,
   .nav .p-button {
     width: 1.6rem;
     height: 1.6rem;
@@ -85,17 +33,7 @@
   }
 }
 
-/* Small phones */
 @media (max-width: bp.$xxs) {
-  .carousel {
-    gap: 0.2rem;
-  }
-
-  .cards {
-    gap: 0.15rem;
-  }
-
-  .nav .jhi-button,
   .nav .p-button {
     width: 1.4rem;
     height: 1.4rem;
@@ -103,23 +41,5 @@
     padding: 0.15rem;
     font-size: 0.7rem;
     border-radius: var(--border-radius-md);
-  }
-
-  @media (max-width: bp.$mobileCompact) {
-    .cards {
-      flex-wrap: nowrap;
-      justify-content: center;
-      gap: 0.25rem;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 12rem;
-      flex: 1 1 auto;
-    }
-
-    .carousel {
-      overflow-x: hidden;
-    }
   }
 }

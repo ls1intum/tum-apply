@@ -27,7 +27,7 @@ describe('InformationSectionComponent', () => {
   });
 
   it('should render the headline with correct translate key', () => {
-    const headline = nativeElement.querySelector('h2.title');
+    const headline = nativeElement.querySelector('h2[jhiTranslate]');
     expect(headline).not.toBeNull();
     expect(headline?.getAttribute('jhiTranslate')).toBe('landingPage.informationSection.headline');
   });

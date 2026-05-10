@@ -173,18 +173,18 @@ export class EditorComponent extends BaseInputDirective<string> {
   charCounterColor = computed(() => {
     const limit = this.characterLimit();
     if (limit === undefined) {
-      return 'char-counter-normal';
+      return '';
     }
 
     const count = this.characterCount();
     const over = count - limit;
 
     if (over > 0 && over < STANDARD_CHARACTER_BUFFER) {
-      return 'char-counter-warning';
+      return 'text-warning';
     } else if (over >= STANDARD_CHARACTER_BUFFER) {
-      return 'char-counter-danger';
+      return 'text-negative';
     }
-    return 'char-counter-normal'; // default character count color
+    return ''; // default character count color
   });
 
   editorValue = computed(() => {

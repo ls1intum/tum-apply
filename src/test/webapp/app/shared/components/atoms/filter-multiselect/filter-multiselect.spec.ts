@@ -306,7 +306,7 @@ describe('FilterMultiselect', () => {
 
     expect(filterFixture.componentInstance.filteredOptions()).toEqual([]);
 
-    const noResultsElement = filterFixture.nativeElement.querySelector('.no-results');
+    const noResultsElement = filterFixture.nativeElement.querySelector('[data-testid="filter-no-results"]');
     expect(noResultsElement).toBeTruthy();
     expect(noResultsElement?.textContent?.trim()).toContain('entity.filters.noResults');
   });
@@ -321,7 +321,7 @@ describe('FilterMultiselect', () => {
 
     expect(filterFixture.componentInstance.filteredOptions()).toEqual([]);
 
-    const noResultsElement = filterFixture.nativeElement.querySelector('.no-results');
+    const noResultsElement = filterFixture.nativeElement.querySelector('[data-testid="filter-no-results"]');
     expect(noResultsElement).toBeTruthy();
     expect(noResultsElement?.textContent?.trim()).toContain('entity.filters.noResults');
   });

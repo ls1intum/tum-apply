@@ -36,8 +36,8 @@ describe('HeroSectionComponent', () => {
   });
 
   it('should render headline and subline translate keys', () => {
-    const headline = nativeElement.querySelector('h1.title');
-    const subline = nativeElement.querySelector('p.subtitle');
+    const headline = nativeElement.querySelector('h1[jhiTranslate]');
+    const subline = nativeElement.querySelector('p[jhiTranslate]');
     expect(headline?.getAttribute('jhiTranslate')).toBe('landingPage.hero.headline');
     expect(subline?.getAttribute('jhiTranslate')).toBe('landingPage.hero.subline');
   });
