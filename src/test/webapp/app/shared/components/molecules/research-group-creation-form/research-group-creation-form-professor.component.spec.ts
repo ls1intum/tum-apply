@@ -204,7 +204,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       fillValidForm();
     });
 
-    it.each(['invalid form', 'already submitting'] as const)('should not submit when %s', (desc) => {
+    it.each(['invalid form', 'already submitting'] as const)('should not submit when %s', desc => {
       if (desc === 'invalid form') {
         component.form.patchValue({ title: '' });
       } else {
