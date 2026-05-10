@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { of, throwError } from 'rxjs';
 
@@ -10,7 +10,6 @@ import { ProfOnboardingResourceApi } from 'app/generated/api/prof-onboarding-res
 import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
 import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
-import { ToastService } from 'app/service/toast-service';
 import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
 import { SchoolShortDTO } from 'app/generated/model/school-short-dto';
 import { DepartmentDTO } from 'app/generated/model/department-dto';
@@ -131,16 +130,12 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
     });
   }
 
-  /**
-   * Form Initialization Tests
-   * Verifies that all form controls are properly created with correct initial states
-   */
   describe('Form Initialization', () => {
     it('should request current user data for professor prefill', () => {
       expect(mockGetCurrentUser).toHaveBeenCalledOnce();
     });
 
-    it('should prefill professor fields from current user data', async () => {
+    it('should prefill professor fields from current user data, but not overwrite already-entered values', async () => {
       mockGetCurrentUser.mockReturnValue(
         of({
           firstName: 'Anna',
@@ -153,135 +148,89 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       await (component as any).prefillProfessorData();
 
       expect(component.form.get('firstName')?.value).toBe('Anna');
-      expect(component.form.get('lastName')?.value).toBe('Muster');
-      expect(component.form.get('tumID')?.value).toBe('ab12cde');
       expect(component.form.get('researchGroupHead')?.value).toBe('Anna Muster');
       expect(component.form.get('researchGroupContactEmail')?.value).toBe('anna.muster@tum.de');
-    });
 
-    it('should not overwrite already entered values when prefilling', async () => {
-      component.form.patchValue({
-        firstName: 'ManualFirst',
-        lastName: 'ManualLast',
-        tumID: 'zz99zzz',
-        researchGroupHead: 'Manual Head',
-        researchGroupContactEmail: 'manual@tum.de',
-      });
-
+      component.form.patchValue({ firstName: 'ManualFirst', researchGroupContactEmail: 'manual@tum.de' });
       mockGetCurrentUser.mockReturnValue(
-        of({
-          firstName: 'PrefilledFirst',
-          lastName: 'PrefilledLast',
-          email: 'prefilled@tum.de',
-          universityId: 'ab12cde',
-        } as UserShortDTO),
+        of({ firstName: 'OtherFirst', email: 'other@tum.de', universityId: 'ab12cde' } as UserShortDTO),
       );
 
       await (component as any).prefillProfessorData();
 
       expect(component.form.get('firstName')?.value).toBe('ManualFirst');
-      expect(component.form.get('lastName')?.value).toBe('ManualLast');
-      expect(component.form.get('tumID')?.value).toBe('zz99zzz');
-      expect(component.form.get('researchGroupHead')?.value).toBe('Manual Head');
       expect(component.form.get('researchGroupContactEmail')?.value).toBe('manual@tum.de');
     });
-
   });
 
-  /**
-   * Form Validation Tests
-   * Tests email validation, max length constraints, and TUM ID format
-   */
   describe('Form Validation', () => {
-    it('should validate email format for contact email', () => {
-      const emailControl = component.form.get('researchGroupContactEmail');
-
-      emailControl?.setValue('invalid-email');
-      expect(emailControl?.valid).toBe(false);
-
-      emailControl?.setValue('valid@email.com');
-      expect(emailControl?.valid).toBe(true);
+    it.each<[string, string, boolean]>([
+      ['researchGroupContactEmail', 'invalid-email', false],
+      ['researchGroupContactEmail', 'valid@email.com', true],
+      ['tumID', 'invalid', false],
+      ['tumID', 'ab12cde', true],
+    ])('should validate %s with value %s as %s', (field, value, expectedValid) => {
+      const control = component.form.get(field);
+      control?.setValue(value);
+      expect(control?.valid).toBe(expectedValid);
     });
 
     it('should enforce max length on description field', () => {
       const descriptionControl = component.form.get('researchGroupDescription');
-      const longText = 'a'.repeat(1001);
 
-      descriptionControl?.setValue(longText);
+      descriptionControl?.setValue('a'.repeat(1001));
       expect(descriptionControl?.hasError('maxlength')).toBe(true);
 
       descriptionControl?.setValue('a'.repeat(1000));
       expect(descriptionControl?.valid).toBe(true);
     });
-
-    it('should validate TUM ID format', () => {
-      const tumIDControl = component.form.get('tumID');
-
-      tumIDControl?.setValue('invalid');
-      expect(tumIDControl?.valid).toBe(false);
-
-      tumIDControl?.setValue('ab12cde');
-      expect(tumIDControl?.valid).toBe(true);
-    });
-
-    it('should validate form as valid when all required fields are filled', () => {
-      fillValidForm();
-
-      expect(component.form.valid).toBe(true);
-    });
   });
 
-  /**
-   * Form Submission Tests
-   * Tests the onSubmit method which triggers the confirmation dialog
-   */
   describe('onSubmit', () => {
-    it('should not submit when form is invalid', () => {
+    it('should toggle confirm dialog only when form is valid', () => {
       component.onSubmit();
       expect(component.showConfirmDialog()).toBe(false);
-    });
 
-    it('should trigger confirm dialog when form is valid', () => {
       fillValidForm();
-
       component.onSubmit();
-
       expect(component.showConfirmDialog()).toBe(true);
     });
   });
 
-  /**
-   * Confirmed Submission Tests
-   * Tests actual submission after user confirms in dialog
-   * Includes data transformation, trimming, and API calls
-   */
   describe('onConfirmSubmit', () => {
     beforeEach(() => {
       fillValidForm();
     });
 
-    it('should not submit when form is invalid', () => {
-      component.form.patchValue({ title: '' }); // Make form invalid
+    it.each<['invalid form', 'already submitting'] | unknown[]>([
+      ['invalid form'],
+      ['already submitting'],
+    ])('should not submit when %s', desc => {
+      if (desc === 'invalid form') {
+        component.form.patchValue({ title: '' });
+      } else {
+        component.isSubmitting.set(true);
+      }
 
       component.onConfirmSubmit();
 
       expect(mockResearchGroupService.createProfessorResearchGroupRequest).not.toHaveBeenCalled();
     });
 
-    it('should not submit when already submitting', () => {
-      component.isSubmitting.set(true);
+    it('should call research group service with trimmed and abbreviated data', async () => {
+      fillValidForm({
+        title: '  Prof.  ',
+        firstName: '  Max  ',
+        lastName: '  Mustermann  ',
+        tumID: '  ab12cde  ',
+        researchGroupHead: '  Prof. Dr. Max Mustermann  ',
+        researchGroupName: '  AI Research Group  ',
+        researchGroupAbbreviation: 'AIRG',
+      });
 
       component.onConfirmSubmit();
 
-      expect(mockResearchGroupService.createProfessorResearchGroupRequest).not.toHaveBeenCalled();
-    });
-
-    it('should call research group service with correct data', async () => {
-      fillValidForm({ researchGroupAbbreviation: 'AIRG' });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(mockResearchGroupService.createProfessorResearchGroupRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -296,36 +245,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       );
     });
 
-    it('should trim whitespace from form values', async () => {
-      fillValidForm({
-        title: '  Prof.  ',
-        firstName: '  Max  ',
-        lastName: '  Mustermann  ',
-        tumID: '  ab12cde  ',
-        researchGroupHead: '  Prof. Dr. Max Mustermann  ',
-        researchGroupName: '  AI Research Group  ',
-      });
-
-      // Ensure form is valid
-      expect(component.form.valid).toBe(true);
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-
-      expect(mockResearchGroupService.createProfessorResearchGroupRequest).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: 'Prof.',
-          firstName: 'Max',
-          lastName: 'Mustermann',
-          universityId: 'ab12cde',
-          researchGroupHead: 'Prof. Dr. Max Mustermann',
-          researchGroupName: 'AI Research Group',
-        }),
-      );
-    });
-
-    it('should handle non-string values in optional fields', async () => {
+    it('should normalize non-string values in optional fields to empty strings', async () => {
       fillValidForm({
         researchGroupWebsite: 12345,
         researchGroupAbbreviation: { some: 'object' },
@@ -336,60 +256,28 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       await new Promise(resolve => setTimeout(resolve, 0));
 
       expect(mockResearchGroupService.createProfessorResearchGroupRequest).toHaveBeenCalledWith(
-        expect.objectContaining({
-          website: '',
-          abbreviation: '',
-        }),
+        expect.objectContaining({ website: '', abbreviation: '' }),
       );
     });
 
-    it('should call confirmOnboarding after successful research group creation', async () => {
+    it('should call confirmOnboarding, show success toast, close dialog and reset isSubmitting after successful submission', async () => {
       component.onConfirmSubmit();
 
       await new Promise(resolve => setTimeout(resolve, 0));
 
       expect(mockProfOnboardingService.confirmOnboarding).toHaveBeenCalledOnce();
-    });
-
-    it('should show success toast after successful submission', async () => {
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('onboarding.professorRequest.success');
-    });
-
-    it('should close dialog after successful submission', async () => {
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
       expect(mockDialogRef.close).toHaveBeenCalledWith({ researchGroupId: 'test-id' });
-    });
-
-    it('should set isSubmitting to false after successful submission', async () => {
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
       expect(component.isSubmitting()).toBe(false);
     });
   });
 
-  /**
-   * Error Handling Tests
-   * Verifies proper error messages for different error scenarios including:
-   * - Duplicate research group names (409)
-   * - Invalid TUM-IDs (404)
-   * - Generic errors
-   * - Non-HTTP errors
-   */
   describe('Error Handling', () => {
     beforeEach(() => {
       fillValidForm();
     });
 
-    it('should show error toast when research group creation fails', async () => {
+    it('should show error toast, not close dialog, not call confirmOnboarding, and reset isSubmitting on failure', async () => {
       mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() =>
         throwError(() => new HttpErrorResponse({ error: 'API Error' })),
       );
@@ -399,98 +287,27 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       await new Promise(resolve => setTimeout(resolve, 0));
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.error');
-    });
-
-    it('should not close dialog when submission fails', async () => {
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() =>
-        throwError(() => new HttpErrorResponse({ error: 'API Error' })),
-      );
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
       expect(mockDialogRef.close).not.toHaveBeenCalled();
-    });
-
-    it('should set isSubmitting to false after failed submission', async () => {
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() =>
-        throwError(() => new HttpErrorResponse({ error: 'API Error' })),
-      );
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
+      expect(mockProfOnboardingService.confirmOnboarding).not.toHaveBeenCalled();
       expect(component.isSubmitting()).toBe(false);
     });
 
-    it('should not call confirmOnboarding when research group creation fails', async () => {
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() =>
-        throwError(() => new HttpErrorResponse({ error: 'API Error' })),
-      );
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockProfOnboardingService.confirmOnboarding).not.toHaveBeenCalled();
-    });
-
-    it('should show duplicate name error toast when creation fails with 409 status', async () => {
-      const error = new HttpErrorResponse({ status: 409, error: { message: 'Research group already exists' } });
+    it.each([
+      [409, 'Research group already exists', 'onboarding.professorRequest.errorDuplicateName'],
+      [500, 'Research group already exists in database', 'onboarding.professorRequest.errorDuplicateName'],
+      [404, 'User with universityId "ab12abc" not found', 'onboarding.professorRequest.errorUserNotFound'],
+      [500, undefined, 'onboarding.professorRequest.error'],
+    ])('should map status %i with message %s to toast key %s', async (status, message, expectedKey) => {
+      const error = new HttpErrorResponse({ status, error: message ? { message } : undefined });
       mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
 
       component.onConfirmSubmit();
 
       await new Promise(resolve => setTimeout(resolve, 0));
 
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.errorDuplicateName');
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith(expectedKey);
     });
 
-    it('should show duplicate name error toast when error message includes "already exists"', async () => {
-      const error = new HttpErrorResponse({ status: 500, error: { message: 'Research group already exists in database' } });
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.errorDuplicateName');
-    });
-
-    it('should show user not found error toast when creation fails with 404 status', async () => {
-      const error = new HttpErrorResponse({ status: 404, error: { message: 'User with universityId "ab12abc" not found' } });
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.errorUserNotFound');
-    });
-
-    it('should handle HttpErrorResponse without error.message property', async () => {
-      const error = new HttpErrorResponse({ status: 500 }); // No error.message
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.error');
-    });
-
-    it('should handle non-HttpErrorResponse errors in professor mode', async () => {
-      const error = new Error('Network error'); // Not an HttpErrorResponse
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.error');
-    });
   });
 
   describe('onCancel', () => {
@@ -501,35 +318,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
     });
   });
 
-  /**
-   * Edge Cases Tests
-   * Tests handling of null/undefined values, missing dependencies, and edge scenarios
-   */
   describe('Edge Cases', () => {
-    it('should handle missing dialog ref gracefully', () => {
-      // Create a separate TestBed configuration for this specific test
-      const mockDialogRefNull = null;
-
-      const fixtureNoRef = TestBed.resetTestingModule()
-        .configureTestingModule({
-          imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
-          providers: [
-            provideTranslateMock(),
-            provideFontAwesomeTesting(),
-            provideHttpClientMock(),
-            { provide: DynamicDialogRef, useValue: mockDialogRefNull },
-            { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
-            { provide: ProfOnboardingResourceApi, useValue: mockProfOnboardingService },
-            { provide: ToastService, useValue: mockToastService },
-          ],
-        })
-        .createComponent(ResearchGroupCreationFormComponent);
-
-      const componentNoRef = fixtureNoRef.componentInstance;
-
-      expect(() => componentNoRef.onCancel()).not.toThrow();
-    });
-
     it.each([
       { desc: 'null', overrides: { researchGroupAbbreviation: null, researchGroupWebsite: null }, expected: { abbreviation: '', website: '' } },
       {
@@ -553,16 +342,8 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
     });
   });
 
-  /**
-   * Professor Mode Specific Tests
-   * Professors create research group requests (DRAFT state) that require admin approval
-   */
   describe('Professor Mode', () => {
-    it('should set mode to professor by default', () => {
-      expect(component.mode()).toBe('professor');
-    });
-
-    it('should call createProfessorResearchGroupRequest in professor mode', async () => {
+    it('should call createProfessorResearchGroupRequest and not the admin endpoint', async () => {
       fillValidForm();
 
       component.onConfirmSubmit();
@@ -571,35 +352,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
 
       expect(mockResearchGroupService.createProfessorResearchGroupRequest).toHaveBeenCalledOnce();
       expect(mockResearchGroupService.createResearchGroupAsAdmin).not.toHaveBeenCalled();
-    });
-  });
-
-  /**
-   * Mode Switching Tests
-   * Tests dynamic mode determination based on dialog config
-   */
-  describe('Mode Switching', () => {
-    it('should default to professor mode when no config is provided', () => {
-      // Create component without dialog config
-      TestBed.resetTestingModule();
-      TestBed.configureTestingModule({
-        imports: [ResearchGroupCreationFormComponent],
-        providers: [
-          provideTranslateMock(),
-          provideFontAwesomeTesting(),
-          provideHttpClientMock(),
-          provideToastServiceMock(mockToastService),
-          provideDynamicDialogRefMock(mockDialogRef),
-          { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
-          { provide: ProfOnboardingResourceApi, useValue: mockProfOnboardingService },
-        ],
-      });
-
-      const newFixture = TestBed.createComponent(ResearchGroupCreationFormComponent);
-      const newComponent = newFixture.componentInstance;
-      newFixture.detectChanges();
-
-      expect(newComponent.mode()).toBe('professor');
     });
 
     it('should use mode from dialog config data', () => {

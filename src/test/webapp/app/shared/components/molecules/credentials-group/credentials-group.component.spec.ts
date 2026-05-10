@@ -77,33 +77,16 @@ describe('CredentialsGroupComponent', () => {
     expect(otpControl.valid).toBe(true);
   });
 
-  it('should compute submitLabel for login with password', () => {
+  it.each<[boolean, boolean, string]>([
+    [true, true, 'auth.login.buttons.signIn'],
+    [true, false, 'auth.login.buttons.continue'],
+    [false, false, 'auth.register.buttons.continue'],
+  ])('should compute submitLabel for isLogin=%s showPassword=%s', (isLogin, showPassword, expected) => {
     const fixture = createComponent();
-    const component = fixture.componentInstance;
+    fixture.componentRef.setInput('isLogin', isLogin);
+    fixture.componentRef.setInput('showPassword', showPassword);
 
-    fixture.componentRef.setInput('isLogin', true);
-    fixture.componentRef.setInput('showPassword', true);
-
-    expect(component.submitLabel()).toBe('auth.login.buttons.signIn');
-  });
-
-  it('should compute submitLabel for login without password', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    fixture.componentRef.setInput('isLogin', true);
-    fixture.componentRef.setInput('showPassword', false);
-
-    expect(component.submitLabel()).toBe('auth.login.buttons.continue');
-  });
-
-  it('should compute submitLabel for registration', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    fixture.componentRef.setInput('isLogin', false);
-
-    expect(component.submitLabel()).toBe('auth.register.buttons.continue');
+    expect(fixture.componentInstance.submitLabel()).toBe(expected);
   });
 
   it('should compute dividerLabel based on isLogin', () => {
@@ -156,51 +139,30 @@ describe('CredentialsGroupComponent', () => {
     expect(component.form.controls.otp.value).toBeNull();
   });
 
-  it('should set submitError and keep values when submitHandler returns false', async () => {
+  it.each<['returns false' | 'throws', () => Promise<boolean>]>([
+    ['returns false', async () => false],
+    [
+      'throws',
+      async () => {
+        throw new Error('submit failed');
+      },
+    ],
+  ])('should set submitError and keep values when submitHandler %s', async (_desc, handler) => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
 
-    const submitHandler = vi.fn(async () => false);
+    const submitHandler = vi.fn(handler);
     fixture.componentRef.setInput('submitHandler', submitHandler);
 
-    const email = 'fail@example.com';
-    const testPwd = 'test-password';
-
-    component.form.controls.email.setValue(email);
-    component.form.controls.password.setValue(testPwd);
-    expect(component.form.valid).toBe(true);
+    component.form.controls.email.setValue('fail@example.com');
+    component.form.controls.password.setValue('test-password');
 
     await component.onSubmit();
 
-    expect(submitHandler).toHaveBeenCalledExactlyOnceWith(email, testPwd);
+    expect(submitHandler).toHaveBeenCalledOnce();
     expect(component.submitError()).toBe(true);
     expect(component.form.pristine).toBe(true);
-    expect(component.form.controls.email.value).toBe(email);
-    expect(component.form.controls.password.value).toBe(testPwd);
-  });
-
-  it('should set submitError and mark form as pristine when submitHandler throws', async () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    const submitHandler = vi.fn(async () => {
-      throw new Error('submit failed');
-    });
-    fixture.componentRef.setInput('submitHandler', submitHandler);
-
-    const email = 'error@example.com';
-    const testPwd = 'test-password';
-
-    component.form.controls.email.setValue(email);
-    component.form.controls.password.setValue(testPwd);
-    expect(component.form.valid).toBe(true);
-
-    await component.onSubmit();
-
-    expect(submitHandler).toHaveBeenCalledExactlyOnceWith(email, testPwd);
-    expect(component.submitError()).toBe(true);
-    expect(component.form.pristine).toBe(true);
-    expect(component.form.controls.email.value).toBe(email);
-    expect(component.form.controls.password.value).toBe(testPwd);
+    expect(component.form.controls.email.value).toBe('fail@example.com');
+    expect(component.form.controls.password.value).toBe('test-password');
   });
 });

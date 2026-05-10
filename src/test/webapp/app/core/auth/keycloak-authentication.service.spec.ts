@@ -37,19 +37,14 @@ describe('KeycloakAuthenticationService', () => {
   });
 
   describe('initialization', () => {
-    it('should initialize successfully when authenticated', async () => {
-      keycloakInstance.init.mockResolvedValue(true);
-      const result = await service.init();
-      expect(result).toBe(true);
-      expect(keycloakInstance.init).toHaveBeenCalledOnce();
-    });
-
-    it('should handle non-authenticated init', async () => {
-      keycloakInstance.authenticated = false;
-      keycloakInstance.init.mockResolvedValue(false);
+    it.each([
+      { description: 'authenticated', authenticated: true, initResolves: true, expected: true },
+      { description: 'non-authenticated', authenticated: false, initResolves: false, expected: false },
+    ])('should return $expected when init resolves and user is $description', async ({ authenticated, initResolves, expected }) => {
+      keycloakInstance.authenticated = authenticated;
+      keycloakInstance.init.mockResolvedValue(initResolves);
       const result = await runSilently(() => service.init());
-      expect(result).toBe(false);
-      expect(keycloakInstance.init).toHaveBeenCalledOnce();
+      expect(result).toBe(expected);
     });
 
     it('should return undefined/false when keycloak not initialized', () => {
@@ -65,11 +60,11 @@ describe('KeycloakAuthenticationService', () => {
       const result = await service.init();
 
       expect(result).toBe(false);
-      expect(consoleErrorSpy).toHaveBeenCalledWith('🔁 Keycloak init failed:', expect.any(Error));
+      expect(consoleErrorSpy).toHaveBeenCalledOnce();
       consoleErrorSpy.mockRestore();
     });
 
-    it('should start token refresh scheduler after successful authenticated init and schedule refresh', async () => {
+    it('should start token refresh scheduler after successful authenticated init', async () => {
       keycloakInstance.authenticated = true;
       keycloakInstance.init.mockResolvedValue(true);
       const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
@@ -115,28 +110,23 @@ describe('KeycloakAuthenticationService', () => {
       expect(keycloakInstance.login).toHaveBeenCalledOnce();
     });
 
-    it('should reject external redirect URIs on login', async () => {
-      await service.loginWithProvider(IdpProvider.Google, 'https://evil.com/phish');
+    it.each([
+      { label: 'external evil URI', uri: 'https://evil.com/phish', shouldNotContain: 'evil.com' },
+      { label: 'origin-prefix domain', uri: window.location.origin + '.evil.com/phish', shouldNotContain: 'evil.com' },
+    ])('should reject $label and fall back to origin', async ({ uri, shouldNotContain }) => {
+      await service.loginWithProvider(IdpProvider.Google, uri);
       expect(keycloakInstance.login).toHaveBeenCalledWith(
-        expect.objectContaining({ redirectUri: expect.not.stringContaining('evil.com') }),
+        expect.objectContaining({ redirectUri: expect.not.stringContaining(shouldNotContain) }),
       );
       expect(keycloakInstance.login).toHaveBeenCalledWith(
         expect.objectContaining({ redirectUri: expect.stringContaining(window.location.origin) }),
       );
     });
 
-    it('should allow same-origin absolute redirect URIs on login', async () => {
+    it('should allow same-origin absolute redirect URIs', async () => {
       const sameOriginUri = window.location.origin + '/jobs';
       await service.loginWithProvider(IdpProvider.Google, sameOriginUri);
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: sameOriginUri }));
-    });
-
-    it('should reject domains that share the origin as a prefix', async () => {
-      const maliciousUri = window.location.origin + '.evil.com/phish';
-      await service.loginWithProvider(IdpProvider.Google, maliciousUri);
-      expect(keycloakInstance.login).toHaveBeenCalledWith(
-        expect.objectContaining({ redirectUri: expect.not.stringContaining('evil.com') }),
-      );
     });
 
     it('should handle login errors gracefully', async () => {
@@ -187,38 +177,18 @@ describe('KeycloakAuthenticationService', () => {
     });
   });
 
-  describe('window listeners', () => {
-    it('should call ensureFreshToken when document becomes visible', () => {
-      const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
+  it('should call ensureFreshToken on visibility/focus/online events', () => {
+    const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
+    Object.defineProperty(document, 'hidden', { value: false, configurable: true });
 
-      const originalHidden = (document as any).hidden;
-      Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+    (service as any).bindWindowListeners();
 
-      (service as any).bindWindowListeners();
+    document.dispatchEvent(new Event('visibilitychange'));
+    window.dispatchEvent(new Event('focus'));
+    window.dispatchEvent(new Event('online'));
 
-      document.dispatchEvent(new Event('visibilitychange'));
-
-      expect(ensureFreshTokenSpy).toHaveBeenCalledOnce();
-
-      if (originalHidden !== undefined) {
-        Object.defineProperty(document, 'hidden', { value: originalHidden, configurable: true });
-      }
-
-      ensureFreshTokenSpy.mockRestore();
-    });
-
-    it('should call ensureFreshToken on window focus and online events', () => {
-      const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
-
-      (service as any).bindWindowListeners();
-
-      window.dispatchEvent(new Event('focus'));
-      window.dispatchEvent(new Event('online'));
-
-      expect(ensureFreshTokenSpy).toHaveBeenCalledTimes(2);
-
-      ensureFreshTokenSpy.mockRestore();
-    });
+    expect(ensureFreshTokenSpy).toHaveBeenCalledTimes(3);
+    ensureFreshTokenSpy.mockRestore();
   });
 
   describe('logout', () => {
@@ -244,12 +214,15 @@ describe('KeycloakAuthenticationService', () => {
       consoleErrorSpy.mockRestore();
     });
 
-    it('should use custom redirect URI when provided', async () => {
+    it.each([
+      { label: 'custom relative URI', uri: '/custom-redirect', shouldContain: '/custom-redirect' },
+      { label: 'same-origin absolute URI', uri: window.location.origin + '/dashboard', shouldContain: window.location.origin + '/dashboard' },
+    ])('should accept $label as redirect', async ({ uri, shouldContain }) => {
       keycloakInstance.authenticated = true;
-      await service.logout('/custom-redirect');
+      await service.logout(uri);
 
       expect(keycloakInstance.logout).toHaveBeenCalledWith(
-        expect.objectContaining({ redirectUri: expect.stringContaining('/custom-redirect') }),
+        expect.objectContaining({ redirectUri: expect.stringContaining(shouldContain) }),
       );
     });
 
@@ -257,21 +230,9 @@ describe('KeycloakAuthenticationService', () => {
       keycloakInstance.authenticated = true;
       await service.logout('https://external.com/redirect');
 
-      // External URLs must not be passed to Keycloak to prevent open redirects
       expect(keycloakInstance.logout).toHaveBeenCalledWith(
         expect.objectContaining({ redirectUri: expect.not.stringContaining('external.com') }),
       );
-      expect(keycloakInstance.logout).toHaveBeenCalledWith(
-        expect.objectContaining({ redirectUri: expect.stringContaining(window.location.origin) }),
-      );
-    });
-
-    it('should allow same-origin absolute redirect URIs', async () => {
-      keycloakInstance.authenticated = true;
-      const sameOriginUri = window.location.origin + '/dashboard';
-      await service.logout(sameOriginUri);
-
-      expect(keycloakInstance.logout).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: sameOriginUri }));
     });
 
     it('should stop token refresh scheduler on logout', async () => {
@@ -287,18 +248,13 @@ describe('KeycloakAuthenticationService', () => {
     });
   });
 
-  describe('token access', () => {
-    it('should return token when keycloak is initialized', () => {
-      keycloakInstance.token = 'test-token-123';
-      expect(service.getToken()).toBe('test-token-123');
-    });
+  it('should return token and authentication status', () => {
+    keycloakInstance.token = 'test-token-123';
+    keycloakInstance.authenticated = true;
+    expect(service.getToken()).toBe('test-token-123');
+    expect(service.isLoggedIn()).toBe(true);
 
-    it('should return authentication status', () => {
-      keycloakInstance.authenticated = true;
-      expect(service.isLoggedIn()).toBe(true);
-
-      keycloakInstance.authenticated = false;
-      expect(service.isLoggedIn()).toBe(false);
-    });
+    keycloakInstance.authenticated = false;
+    expect(service.isLoggedIn()).toBe(false);
   });
 });

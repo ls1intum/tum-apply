@@ -103,12 +103,12 @@ describe('DownloadDataExportComponent', () => {
     expect(toastServiceMock.showErrorKey).not.toHaveBeenCalled();
   });
 
-  it('should fall back to default filename when header misses filename', async () => {
+  it.each([
+    ['header without filename', new HttpHeaders({ 'Content-Disposition': 'attachment' })],
+    ['header missing entirely', undefined],
+  ])('should fall back to default filename when %s', async (_label, headers) => {
     const blob = new Blob(['data']);
-    const response = new HttpResponse({
-      body: blob,
-      headers: new HttpHeaders({ 'Content-Disposition': 'attachment' }),
-    });
+    const response = new HttpResponse(headers ? { body: blob, headers } : { body: blob });
     exportServiceMock.downloadDataExport.mockReturnValue(of(response));
     routeMock.setParams({ token: 'token-abc' });
 
@@ -116,20 +116,6 @@ describe('DownloadDataExportComponent', () => {
 
     expect(anchor.download).toBe('data-export.zip');
     expect(component.downloadSuccess()).toBe(true);
-    expect(component.isDownloading()).toBe(false);
-  });
-
-  it('should fall back to default filename when header is missing', async () => {
-    const blob = new Blob(['data']);
-    const response = new HttpResponse({ body: blob });
-    exportServiceMock.downloadDataExport.mockReturnValue(of(response));
-    routeMock.setParams({ token: 'token-no-header' });
-
-    await createComponent();
-
-    expect(anchor.download).toBe('data-export.zip');
-    expect(component.downloadSuccess()).toBe(true);
-    expect(component.isDownloading()).toBe(false);
   });
 
   it('should show error toast when download fails', async () => {

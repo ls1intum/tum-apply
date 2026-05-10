@@ -35,18 +35,14 @@ describe('RatingSection', () => {
     component = fixture.componentInstance;
   });
 
-  // ---------------- INIT ----------------
-  describe('Initialization & Creation', () => {
+  describe('Loading Ratings', () => {
     it('should not call loadRatings when applicationId is undefined', async () => {
       fixture.componentRef.setInput('applicationId', undefined);
       fixture.detectChanges();
       await Promise.resolve();
       expect(mockRatingApi.getRatings).not.toHaveBeenCalled();
     });
-  });
 
-  // ---------------- LOADING RATINGS ----------------
-  describe('Loading Ratings', () => {
     it('should load ratings when applicationId is set', async () => {
       const response: RatingOverviewDTO = {
         currentUserRating: 4,
@@ -87,23 +83,6 @@ describe('RatingSection', () => {
       expect(mockRatingApi.getRatings).toHaveBeenCalledTimes(2);
     });
 
-    it('should set myRating and serverCurrent to undefined when currentUserRating is missing', async () => {
-      const response = {
-        currentUserRating: undefined,
-        otherRatings: [1, 2],
-      } as RatingOverviewDTO;
-
-      mockRatingApi.getRatings.mockReturnValueOnce(of(response));
-
-      fixture.componentRef.setInput('applicationId', 'app-6');
-      fixture.detectChanges();
-
-      await new Promise(r => setTimeout(r, 0));
-
-      expect(component.ratings()).toEqual(response);
-      expect(component['serverCurrent']()).toBeUndefined();
-      expect(component.myRating()).toBeUndefined();
-    });
   });
 
   // ---------------- ERROR HANDLING (LOADING) ----------------
@@ -125,20 +104,14 @@ describe('RatingSection', () => {
 
   // ---------------- UPSERT RATINGS ----------------
   describe('Upserting Ratings', () => {
-    it('should skip upsert when appId undefined', async () => {
-      fixture.componentRef.setInput('applicationId', undefined);
+    it.each<[string | undefined, boolean]>([
+      [undefined, false],
+      ['app-3', true],
+    ])('should skip upsert when applicationId=%s and initializing=%s', async (appId, initializing) => {
+      fixture.componentRef.setInput('applicationId', appId);
       fixture.detectChanges();
 
-      component.myRating.set(3);
-      await Promise.resolve();
-      expect(mockRatingApi.updateRating).not.toHaveBeenCalled();
-    });
-
-    it('should skip upsert when initializing', async () => {
-      fixture.componentRef.setInput('applicationId', 'app-3');
-      fixture.detectChanges();
-
-      component['isInitializing'].set(true);
+      component['isInitializing'].set(initializing);
       component.myRating.set(5);
       await Promise.resolve();
       expect(mockRatingApi.updateRating).not.toHaveBeenCalled();
@@ -207,13 +180,7 @@ describe('RatingSection', () => {
     });
   });
 
-  // ---------------- EDGE CASES & DERIVED VALUES ----------------
   describe('Edge Cases & Derived Values', () => {
-    it('should return [] for otherRatings when ratings is undefined', () => {
-      expect(component.ratings()).toBeUndefined();
-      expect(component.otherRatings()).toEqual([]);
-    });
-
     it('should return [] for otherRatings when ratings has no otherRatings property', () => {
       component.ratings.set({ currentUserRating: 2 } as RatingOverviewDTO);
       expect(component.otherRatings()).toEqual([]);

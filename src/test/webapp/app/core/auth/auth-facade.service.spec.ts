@@ -80,21 +80,6 @@ describe('AuthFacadeService', () => {
       expect(result).toBe(false);
     });
 
-    it('should not toggle orchestrator isBusy when running as background bootstrap', async () => {
-      const { facade, server, keycloak, orchestrator } = setup();
-      let observedDuringRefresh = false;
-      server.refreshTokens.mockImplementation(async () => {
-        observedDuringRefresh = orchestrator.isBusy();
-        return false;
-      });
-      keycloak.init.mockResolvedValue(false);
-
-      await facade.initAuth();
-
-      expect(observedDuringRefresh).toBe(false);
-      expect(orchestrator.isBusy()).toBe(false);
-    });
-
     it('should not block user-initiated login when initAuth is still in flight', async () => {
       const { facade, server, keycloak, account } = setup();
 

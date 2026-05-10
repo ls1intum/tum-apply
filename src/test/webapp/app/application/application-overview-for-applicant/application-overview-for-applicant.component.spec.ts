@@ -55,61 +55,31 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     vi.resetAllMocks();
   });
 
-  it('should initialize with default values', async () => {
-    await comp.loadPage({ first: 0, rows: 10 });
-    await fixture.whenStable();
-    fixture.detectChanges();
-
-    expect(comp.loading()).toBe(false);
-    expect(comp.pageData()).toEqual(createMockApplicationOverviewPages());
-    expect(comp.pageSize()).toBe(10);
-    expect(comp.total()).toBe(2);
-  });
-
   describe('loadPage', () => {
-    const mockLazyLoadEvent: TableLazyLoadEvent = {
-      first: 0,
-      rows: 10,
-    };
-
-    it('should load page data successfully', async () => {
-      await comp.loadPage(mockLazyLoadEvent);
-
+    it('should load page data and update state', async () => {
+      const event: TableLazyLoadEvent = { first: 0, rows: 10 };
+      await comp.loadPage(event);
       expect(comp.loading()).toBe(false);
-      expect(comp.lastLazyLoadEvent()).toEqual(mockLazyLoadEvent);
+      expect(comp.lastLazyLoadEvent()).toEqual(event);
       expect(applicationApi.getApplicationPages).toHaveBeenCalledWith(comp.pageSize(), 0, comp.sortBy(), comp.sortDirection());
       expect(comp.pageData()).toEqual(createMockApplicationOverviewPages());
+      expect(comp.total()).toBe(2);
     });
 
-    it('should calculate page number from first and rows', async () => {
-      const event: TableLazyLoadEvent = {
-        first: 20,
-        rows: 10,
-      };
+    it.each([
+      [{ first: 20, rows: 10 } as TableLazyLoadEvent, [10, 2, 'createdAt', 'DESC']],
+      [{} as TableLazyLoadEvent, [10, 0, 'createdAt', 'DESC']],
+    ])('should compute paging args from event', async (event, expectedArgs) => {
       applicationApi.getApplicationPages = vi.fn().mockReturnValue(of([]));
-
       await comp.loadPage(event);
-
-      expect(applicationApi.getApplicationPages).toHaveBeenCalledWith(10, 2, comp.sortBy(), comp.sortDirection());
+      expect(applicationApi.getApplicationPages).toHaveBeenCalledWith(...expectedArgs);
     });
 
-    it('should use default values when first and rows are undefined', async () => {
-      const event: TableLazyLoadEvent = {};
-      applicationApi.getApplicationPages = vi.fn().mockReturnValue(of([]));
-
-      await comp.loadPage(event);
-
-      expect(applicationApi.getApplicationPages).toHaveBeenCalledWith(10, 0, 'createdAt', 'DESC');
-    });
-
-    it('should handle error when loading page fails', async () => {
+    it('should log error when API fails', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       applicationApi.getApplicationPages = vi.fn().mockReturnValue(throwError(() => new Error('Load failed')));
-
-      await comp.loadPage(mockLazyLoadEvent);
-
+      await comp.loadPage({ first: 0, rows: 10 });
       expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load applications:', expect.any(Error));
-      expect(comp.loading()).toBe(false);
       consoleErrorSpy.mockRestore();
     });
   });

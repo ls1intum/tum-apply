@@ -51,21 +51,18 @@ describe('ConfirmDialog', () => {
   });
 
   describe('Open Button Behaviour', () => {
-    it('should hide open button when showOpenButton is false', () => {
+    it('should hide open button when showOpenButton is false and call confirm() when shown and clicked', () => {
       const fixture = createFixture();
+      const comp = fixture.componentInstance;
+
       fixture.componentRef.setInput('showOpenButton', false);
       fixture.detectChanges();
       expect(fixture.nativeElement.querySelector('jhi-button')).toBeFalsy();
-    });
 
-    it('should call confirm() when open button is clicked', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
       fixture.componentRef.setInput('showOpenButton', true);
       fixture.detectChanges();
       const confirmSpy = vi.spyOn(comp, 'confirm');
-      const button = fixture.nativeElement.querySelector('jhi-button');
-      button.click();
+      fixture.nativeElement.querySelector('jhi-button').click();
       expect(confirmSpy).toHaveBeenCalledOnce();
     });
   });
@@ -91,54 +88,29 @@ describe('ConfirmDialog', () => {
   });
 
   describe('Accept and Reject Behaviour', () => {
-    it('should emit confirmed event with data when accept is called', () => {
+    it.each<[string | undefined]>([['test-data-123'], [undefined]])('should emit confirmed event with data %s when accept is called', data => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      fixture.componentRef.setInput('data', 'test-data-123');
-
+      if (data !== undefined) {
+        fixture.componentRef.setInput('data', data);
+      }
       const emitSpy = vi.spyOn(comp.confirmed, 'emit');
 
       comp.confirm();
+      (mockConfirmationService.confirm.mock.calls[0][0] as ConfirmArgs).accept?.();
 
-      const confirmCall = mockConfirmationService.confirm.mock.calls[0][0] as ConfirmArgs;
-      confirmCall.accept?.();
-
-      expect(emitSpy).toHaveBeenCalledWith('test-data-123');
+      expect(emitSpy).toHaveBeenCalledWith(data);
     });
 
-    it('should emit confirmed event with undefined when no data is provided', () => {
+    it('should not emit confirmed when accept is never called or dialog is rejected', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       const emitSpy = vi.spyOn(comp.confirmed, 'emit');
 
       comp.confirm();
-
-      const confirmCall = mockConfirmationService.confirm.mock.calls[0][0] as ConfirmArgs;
-      confirmCall.accept?.();
-
-      expect(emitSpy).toHaveBeenCalledWith(undefined);
-    });
-
-    it('should not emit confirmed when accept is not called', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      const emitSpy = vi.spyOn(comp.confirmed, 'emit');
-
-      comp.confirm();
-
       expect(emitSpy).not.toHaveBeenCalled();
-    });
 
-    it('should not emit confirmed when dialog is rejected', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      const emitSpy = vi.spyOn(comp.confirmed, 'emit');
-
-      comp.confirm();
-
-      const confirmCall = mockConfirmationService.confirm.mock.calls[0][0] as ConfirmArgs;
-      confirmCall.reject?.();
-
+      (mockConfirmationService.confirm.mock.calls[0][0] as ConfirmArgs).reject?.();
       expect(emitSpy).not.toHaveBeenCalled();
     });
   });

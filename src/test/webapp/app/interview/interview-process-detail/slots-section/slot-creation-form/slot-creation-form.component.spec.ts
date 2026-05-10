@@ -53,35 +53,27 @@ describe('SlotCreationFormComponent', () => {
   });
 
   describe('Duration Selection', () => {
-    it.each([
-      { value: 30, expectedDuration: 30 },
-      { value: 45, expectedDuration: 45 },
-      { value: 60, expectedDuration: 60 },
-      { value: 90, expectedDuration: 90 },
-    ])('should set duration to $expectedDuration when selecting preset $value', ({ value, expectedDuration }) => {
-      component.selectDuration(value);
+    it('should set duration when selecting a preset', () => {
+      component.selectDuration(45);
 
-      expect(component['duration']()).toBe(expectedDuration);
+      expect(component['duration']()).toBe(45);
       expect(component['isCustomDurationMode']()).toBe(false);
     });
 
-    it('should switch to custom duration mode when selecting -1', () => {
-      component.selectDuration(-1);
-
-      expect(component['isCustomDurationMode']()).toBe(true);
-    });
-
-    it('should preserve current duration as custom when switching to custom mode', () => {
+    it('should switch to custom duration mode and preserve current duration', () => {
       component.selectDuration(45);
       component.selectDuration(-1);
 
+      expect(component['isCustomDurationMode']()).toBe(true);
       expect(component['customDuration']()).toBe(45);
     });
 
-    it('should set duration error when custom value is 0', () => {
-      component.onCustomDurationInput(0);
-
-      expect(component['durationError']()).toBe('interview.slots.create.validation.durationPositive');
+    it.each([
+      { value: 0, expectedError: 'interview.slots.create.validation.durationPositive' },
+      { value: undefined, expectedError: 'interview.slots.create.validation.durationPositive' },
+    ])('should set duration error when custom value is $value', ({ value, expectedError }) => {
+      component.onCustomDurationInput(value);
+      expect(component['durationError']()).toBe(expectedError);
     });
 
     it('should clear duration error and update duration for valid custom value', () => {
@@ -91,32 +83,10 @@ describe('SlotCreationFormComponent', () => {
       expect(component['durationError']()).toBeNull();
       expect(component['duration']()).toBe(25);
     });
-
-    it('should handle undefined custom duration input', () => {
-      component.onCustomDurationInput(undefined);
-
-      expect(component['durationError']()).toBe('interview.slots.create.validation.durationPositive');
-    });
   });
 
   describe('Date Selection', () => {
-    it('should add a date to selection', () => {
-      const date = new Date(2026, 3, 10);
-      component.onDateSelect(date);
-
-      expect(component['selectedDatesSignal']()).toHaveLength(1);
-      expect(component['selectedDatesSignal']()[0].getTime()).toBe(date.getTime());
-    });
-
-    it('should deselect a date when clicked again', () => {
-      const date = new Date(2026, 3, 10);
-      component.onDateSelect(date);
-      component.onDateSelect(date);
-
-      expect(component['selectedDatesSignal']()).toHaveLength(0);
-    });
-
-    it('should sort dates chronologically', () => {
+    it('should add, deselect, and sort dates chronologically', () => {
       const date1 = new Date(2026, 3, 15);
       const date2 = new Date(2026, 3, 10);
       component.onDateSelect(date1);
@@ -124,21 +94,17 @@ describe('SlotCreationFormComponent', () => {
 
       expect(component['sortedDates']()[0].getTime()).toBe(date2.getTime());
       expect(component['sortedDates']()[1].getTime()).toBe(date1.getTime());
+      expect(mockInterviewService.getConflictDataForDate).toHaveBeenCalled();
+
+      component.onDateSelect(date1);
+      expect(component['selectedDatesSignal']()).toHaveLength(1);
     });
 
     it('should clear all dates when null is passed', () => {
-      const date = new Date(2026, 3, 10);
-      component.onDateSelect(date);
+      component.onDateSelect(new Date(2026, 3, 10));
       component.onDateSelect(null);
 
       expect(component['selectedDatesSignal']()).toHaveLength(0);
-    });
-
-    it('should load conflict data for each selected date', () => {
-      const date = new Date(2026, 3, 10);
-      component.onDateSelect(date);
-
-      expect(mockInterviewService.getConflictDataForDate).toHaveBeenCalledOnce();
     });
 
     it('should remove a date from selection', () => {
@@ -151,23 +117,6 @@ describe('SlotCreationFormComponent', () => {
 
       expect(component['selectedDatesSignal']()).toHaveLength(1);
       expect(component['selectedDatesSignal']()[0].getTime()).toBe(date2.getTime());
-    });
-  });
-
-  describe('Slots Management', () => {
-    it('should update slots for a specific date', () => {
-      const date = new Date(2026, 3, 10);
-      const slots: InterviewSlotDTO[] = [
-        {
-          startDateTime: '2026-04-10T09:00:00',
-          endDateTime: '2026-04-10T09:30:00',
-          location: 'Room 1',
-        },
-      ];
-
-      component.updateSlotsForDate(date, slots);
-
-      expect(component['slotsByDate']().size).toBe(1);
     });
   });
 

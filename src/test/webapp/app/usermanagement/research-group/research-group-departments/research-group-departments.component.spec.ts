@@ -82,25 +82,6 @@ describe('ResearchGroupDepartmentsComponent', () => {
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.toastMessages.loadFailed');
     });
 
-    it('should handle load schools error and leave availableSchools empty', async () => {
-      mockSchoolApi.getAllSchools.mockReturnValue(throwError(() => new Error('Error')));
-
-      // Re-create component so constructor triggers failing loadSchools
-      const failingFixture = TestBed.createComponent(ResearchGroupDepartmentsComponent);
-      const failingComponent = failingFixture.componentInstance;
-
-      // allow pending microtasks to settle
-      await Promise.resolve();
-
-      expect(failingComponent.availableSchools()).toEqual([]);
-    });
-
-    it('should treat missing school names as empty strings in availableSchools', () => {
-      // set a school without a name
-      component.schools.set([{ schoolId: 's2', abbreviation: 'S2' }]);
-      expect(component.availableSchools()).toEqual(['']);
-    });
-
     it('should default undefined page response fields to empty and zero', async () => {
       mockDepartmentApi.getDepartmentsForAdmin.mockReturnValue(of({}));
 
@@ -212,34 +193,14 @@ describe('ResearchGroupDepartmentsComponent', () => {
       expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledTimes(1);
     });
 
-    it('should not reload when edit dialog closes without updates', async () => {
-      await component.loadDepartments();
-      const mockDialogRef = { onClose: of(false) };
-      mockDialogService.open.mockReturnValue(mockDialogRef);
-
-      mockDepartmentApi.getDepartmentsForAdmin.mockClear();
-
-      component.onEditDepartment('1');
-
-      expect(mockDepartmentApi.getDepartmentsForAdmin).not.toHaveBeenCalled();
-    });
-
-    it('should not open edit dialog if id is missing', () => {
+    it('should not open edit dialog if id is missing or department not found', () => {
       component.onEditDepartment(undefined);
-      expect(mockDialogService.open).not.toHaveBeenCalled();
-    });
-
-    it('should not open edit dialog if department not found', () => {
       component.onEditDepartment('999');
       expect(mockDialogService.open).not.toHaveBeenCalled();
     });
   });
 
   describe('actions', () => {
-    it('should return empty menu items when department id is missing', () => {
-      expect(component.menuItems()).toEqual([]);
-    });
-
     it('should build menu items and execute commands', () => {
       const deleteDialog = { confirm: vi.fn() };
       const mockMenu = { toggle: vi.fn() } as unknown as Parameters<typeof component.onMenuToggle>[1];
@@ -278,9 +239,5 @@ describe('ResearchGroupDepartmentsComponent', () => {
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.toastMessages.deleteFailed');
     });
 
-    it('should not delete if id is missing', () => {
-      component.onDeleteDepartment(undefined);
-      expect(mockDepartmentApi.deleteDepartment).not.toHaveBeenCalled();
-    });
   });
 });

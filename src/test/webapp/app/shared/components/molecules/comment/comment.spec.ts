@@ -49,47 +49,18 @@ describe('Comment', () => {
     expect(component['canSave']()).toBe(true);
   });
 
-  // ---------------- UPDATE DRAFT EFFECT ----------------
-  it('should update draft when creating', () => {
-    fixture.componentRef.setInput('isCreate', true);
-    component.text.set('draftText');
+
+  it.each<[boolean, string, string]>([
+    [true, 'hello', 'hello'],
+    [false, 'world', ''],
+  ])('should update draft and text=%s on input when isCreate=%s', (isCreate, draftValue, textValue) => {
+    fixture.componentRef.setInput('isCreate', isCreate);
     fixture.detectChanges();
 
-    expect(component['draft']()).toBe('draftText');
-  });
+    component.onInput({ target: { value: draftValue } } as unknown as InputEvent);
 
-  it('should update draft when not editing', () => {
-    fixture.componentRef.setInput('isCreate', false);
-    fixture.componentRef.setInput('editingId', 'x');
-    fixture.componentRef.setInput('commentId', 'y');
-    component.text.set('abc');
-    fixture.detectChanges();
-
-    expect(component['isEdit']()).toBe(false);
-    expect(component['draft']()).toBe('abc');
-  });
-
-  // ---------------- ONINPUT ----------------
-  it('should update draft and text in create mode on input', () => {
-    fixture.componentRef.setInput('isCreate', true);
-    fixture.detectChanges();
-
-    const event = { target: { value: 'hello' } } as unknown as InputEvent;
-    component.onInput(event);
-
-    expect(component['draft']()).toBe('hello');
-    expect(component.text()).toBe('hello');
-  });
-
-  it('should update only draft when not in create mode on input', () => {
-    fixture.componentRef.setInput('isCreate', false);
-    fixture.detectChanges();
-
-    const event = { target: { value: 'world' } } as unknown as InputEvent;
-    component.onInput(event);
-
-    expect(component['draft']()).toBe('world');
-    expect(component.text()).toBe('');
+    expect(component['draft']()).toBe(draftValue);
+    expect(component.text()).toBe(textValue);
   });
 
   // ---------------- START / CANCEL / SAVE ----------------

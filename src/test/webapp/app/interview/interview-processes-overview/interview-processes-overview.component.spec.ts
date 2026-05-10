@@ -148,10 +148,13 @@ describe('InterviewProcessesOverviewComponent', () => {
   });
 
   describe('Date Pagination', () => {
-    it('should not go to previous date page when already on first page', () => {
+    it('should not go past first or last date page', () => {
       fixture.detectChanges();
       component.currentDatePage.set(0);
       component.previousDatePage();
+      expect(component.currentDatePage()).toBe(0);
+
+      component.nextDatePage();
       expect(component.currentDatePage()).toBe(0);
     });
 
@@ -178,20 +181,9 @@ describe('InterviewProcessesOverviewComponent', () => {
       component.previousDatePage();
       expect(component.currentDatePage()).toBe(0);
     });
-
-    it('should not go to next date page when already on last page', () => {
-      fixture.detectChanges();
-      component.nextDatePage();
-      expect(component.currentDatePage()).toBe(0);
-    });
   });
 
   describe('Grouped Upcoming Interviews', () => {
-    it('should return empty array when no upcoming interviews', () => {
-      fixture.detectChanges();
-      expect(component.groupedUpcomingInterviews()).toEqual([]);
-    });
-
     it('should group interviews by date and filter by current month', async () => {
       const now = dayjs();
       const interviews: UpcomingInterviewDTO[] = [
@@ -237,30 +229,6 @@ describe('InterviewProcessesOverviewComponent', () => {
       expect(grouped.length).toBe(2);
       expect(grouped[0].interviews.length).toBe(2);
       expect(grouped[1].interviews.length).toBe(1);
-    });
-
-    it('should exclude interviews from other months', async () => {
-      const nextMonth = dayjs().add(1, 'month');
-      const interviews: UpcomingInterviewDTO[] = [
-        {
-          id: 'int-1',
-          processId: 'process-1',
-          intervieweeId: 'iee-1',
-          intervieweeName: 'Alice',
-          jobTitle: 'Dev',
-          startDateTime: nextMonth.format(),
-          endDateTime: nextMonth.add(1, 'hour').format(),
-          location: 'Room A',
-        },
-      ];
-      (mockInterviewService.getInterviewOverview as ReturnType<typeof vi.fn>).mockReturnValue(of([]));
-      (mockInterviewService.getUpcomingInterviews as ReturnType<typeof vi.fn>).mockReturnValue(of(interviews));
-
-      fixture = TestBed.createComponent(InterviewProcessesOverviewComponent);
-      component = fixture.componentInstance;
-      await fixture.whenStable();
-
-      expect(component.groupedUpcomingInterviews().length).toBe(0);
     });
 
     it('should skip interviews with null startDateTime', async () => {

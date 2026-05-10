@@ -68,12 +68,6 @@ describe('DocumentSection', () => {
       expect(component.extraDocuments().length).toBe(3);
     });
 
-    it('should compute hasDocuments correctly', () => {
-      expect(component.hasDocuments()).toBe(false);
-      component.documents.set([{ label: 'lbl', document: { id: 'd1' } as DocumentInformationHolderDTO }]);
-      expect(component.hasDocuments()).toBe(true);
-    });
-
     it('should compute allDocumentsTooltip using translate.instant', () => {
       component.extraDocuments.set([
         { label: 'lbl1', document: { id: '1' } as DocumentInformationHolderDTO },

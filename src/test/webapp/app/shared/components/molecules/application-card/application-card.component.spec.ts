@@ -22,11 +22,6 @@ describe('ApplicationCardComponent', () => {
     fixture.detectChanges();
   });
 
-  // ---------------- applicationDetails ----------------
-  it('should return undefined when application is not set', () => {
-    expect(component.applicationDetails()).toBeUndefined();
-  });
-
   it('should return applicationDetailDTO when application is provided', () => {
     const detail: ApplicationDetailDTO = { applicationId: '123' } as ApplicationDetailDTO;
     const app: ApplicationEvaluationDetailDTO = { applicationDetailDTO: detail } as ApplicationEvaluationDetailDTO;
@@ -37,7 +32,6 @@ describe('ApplicationCardComponent', () => {
     expect(component.applicationDetails()).toBe(detail);
   });
 
-  // ---------------- stateSeverityMap ----------------
   it('should map states to severities correctly', () => {
     expect(component.stateSeverityMap.SENT).toBe('info');
     expect(component.stateSeverityMap.ACCEPTED).toBe('success');

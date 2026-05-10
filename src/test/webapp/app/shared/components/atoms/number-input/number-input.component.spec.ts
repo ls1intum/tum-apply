@@ -57,44 +57,17 @@ describe('NumberInputComponent', () => {
     expect(comp.largerThanMax()).toBe(true);
   });
 
-  it('should validate value below min', () => {
+  it.each<[number | null | undefined, Record<string, unknown> | null]>([
+    [-2, { min: { min: 0, actual: -2 } }],
+    [20, { max: { max: 10, actual: 20 } }],
+    [5, null],
+    [null, null],
+    [undefined, null],
+  ])('should validate value %s', (value, expectedErrors) => {
     const fixture = createFixture();
-    const comp = fixture.componentInstance;
     const ctrl = new FormControl(0);
-    comp['validateMinMax'](-2, ctrl);
-    expect(ctrl.errors?.min).toEqual({ min: 0, actual: -2 });
-  });
-
-  it('should validate value above max', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-    const ctrl = new FormControl(0);
-    comp['validateMinMax'](20, ctrl);
-    expect(ctrl.errors?.max).toEqual({ max: 10, actual: 20 });
-  });
-
-  it('should clear validation errors when value within range', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-    const ctrl = new FormControl(0);
-    comp['validateMinMax'](5, ctrl);
-    expect(ctrl.errors).toBeNull();
-  });
-
-  it('should handle null value gracefully', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-    const ctrl = new FormControl(null);
-    comp['validateMinMax'](null, ctrl);
-    expect(ctrl.errors).toBeNull();
-  });
-
-  it('should handle undefined value gracefully', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-    const ctrl = new FormControl(undefined);
-    comp['validateMinMax'](undefined, ctrl);
-    expect(ctrl.errors).toBeNull();
+    fixture.componentInstance['validateMinMax'](value, ctrl);
+    expect(ctrl.errors).toEqual(expectedErrors);
   });
 
   it('should not show validation errors when model is undefined', () => {

@@ -95,28 +95,23 @@ describe('MenuComponent', () => {
   });
 
   describe('Public API forwarding', () => {
-    it.each([
-      ['toggle', (component: MenuComponent, event: Event) => component.toggle(event)],
-      ['show', (component: MenuComponent, event: Event) => component.show(event)],
-    ] as const)('should forward %s() to the underlying PrimeNG menu', (method, invoke) => {
+    it.each<['toggle' | 'show' | 'hide', boolean]>([
+      ['toggle', true],
+      ['show', true],
+      ['hide', false],
+    ])('should forward %s() to the underlying PrimeNG menu', (method, withEvent) => {
       const fixture = createMenuFixture({ items: [] });
       const menuComponent = fixture.componentInstance.menu();
       const spy = vi.spyOn(menuComponent, method);
       const event = new Event('click');
 
-      invoke(fixture.componentInstance, event);
-
-      expect(spy).toHaveBeenCalledWith(event);
-    });
-
-    it('should forward hide() to the underlying PrimeNG menu', () => {
-      const fixture = createMenuFixture({ items: [] });
-      const menuComponent = fixture.componentInstance.menu();
-      const hideSpy = vi.spyOn(menuComponent, 'hide');
-
-      fixture.componentInstance.hide();
-
-      expect(hideSpy).toHaveBeenCalledOnce();
+      if (withEvent) {
+        (fixture.componentInstance as any)[method](event);
+        expect(spy).toHaveBeenCalledWith(event);
+      } else {
+        fixture.componentInstance.hide();
+        expect(spy).toHaveBeenCalledOnce();
+      }
     });
   });
 });

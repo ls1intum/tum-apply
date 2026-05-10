@@ -82,34 +82,22 @@ describe('AdminSystemSettingsComponent', () => {
     });
   });
 
-  describe('Computed Signals', () => {
-    it('should derive aiEnabled from status', async () => {
-      await Promise.resolve();
+  it('should derive computed signals from status and default safely when undefined', async () => {
+    await Promise.resolve();
+    expect(component.aiEnabled()).toBe(true);
 
-      expect(component.aiEnabled()).toBe(true);
-    });
+    mockApi.getAiStatus.mockReturnValue(of(disabledStatus));
+    await component.loadStatus();
+    expect(component.manuallyDisabled()).toBe(true);
 
-    it('should derive manuallyDisabled from status', async () => {
-      mockApi.getAiStatus.mockReturnValue(of(disabledStatus));
-      await component.loadStatus();
+    mockApi.getAiStatus.mockReturnValue(of(circuitBreakerOpenStatus));
+    await component.loadStatus();
+    expect(component.circuitBreakerOpen()).toBe(true);
 
-      expect(component.manuallyDisabled()).toBe(true);
-    });
-
-    it('should derive circuitBreakerOpen from status', async () => {
-      mockApi.getAiStatus.mockReturnValue(of(circuitBreakerOpenStatus));
-      await component.loadStatus();
-
-      expect(component.circuitBreakerOpen()).toBe(true);
-    });
-
-    it('should default to safe values when status is undefined', () => {
-      component.aiStatus.set(undefined);
-
-      expect(component.aiEnabled()).toBe(true);
-      expect(component.manuallyDisabled()).toBe(false);
-      expect(component.circuitBreakerOpen()).toBe(false);
-    });
+    component.aiStatus.set(undefined);
+    expect(component.aiEnabled()).toBe(true);
+    expect(component.manuallyDisabled()).toBe(false);
+    expect(component.circuitBreakerOpen()).toBe(false);
   });
 
   describe('Toggle AI', () => {

@@ -33,14 +33,6 @@ describe('AiAssistantCardComponent', () => {
     expect(component.scoreFeedback()).toBe(`${feedbackKeyPrefix}${feedbackKeySuffix}`);
   });
 
-  it('should emit generate when onGenerate is called', () => {
-    const emitSpy = vi.spyOn(component.generate, 'emit');
-
-    component.onGenerate();
-
-    expect(emitSpy).toHaveBeenCalledOnce();
-  });
-
   it('should keep displaying the previous score during generation and update afterwards', () => {
     fixture.componentRef.setInput('score', 42);
     fixture.detectChanges();

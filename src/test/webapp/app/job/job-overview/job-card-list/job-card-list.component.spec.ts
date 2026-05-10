@@ -132,33 +132,30 @@ describe('JobCardListComponent', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should handle filter changes for subjectArea', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
-
-    component.onFilterEmit({ filterId: 'subjectArea', selectedValues: [DropdownOptions.subjectAreas[0].name] });
-    fixture.detectChanges();
-    expect(component.selectedSubjectAreaFilters()).toEqual([DropdownOptions.subjectAreas[0].value]);
-    expect(spy).toHaveBeenCalledOnce();
-  });
-
-  it('should handle filter changes for location', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
-
-    component.onFilterEmit({
+  it.each([
+    {
+      filterId: 'subjectArea',
+      values: [DropdownOptions.subjectAreas[0].name],
+      selector: 'selectedSubjectAreaFilters',
+      expected: [DropdownOptions.subjectAreas[0].value],
+    },
+    {
       filterId: 'location',
-      selectedValues: ['jobCreationForm.basicInformationSection.locations.Munich'],
-    });
-    fixture.detectChanges();
-    expect(component.selectedLocationFilters()).toEqual(['MUNICH']);
-    expect(spy).toHaveBeenCalledOnce();
-  });
-
-  it('should handle filter changes for supervisor', async () => {
+      values: ['jobCreationForm.basicInformationSection.locations.Munich'],
+      selector: 'selectedLocationFilters',
+      expected: ['MUNICH'],
+    },
+    {
+      filterId: 'supervisor',
+      values: ['Prof. X'],
+      selector: 'selectedSupervisorFilters',
+      expected: ['Prof. X'],
+    },
+  ])('should handle filter changes for $filterId', ({ filterId, values, selector, expected }) => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
-
-    component.onFilterEmit({ filterId: 'supervisor', selectedValues: ['Prof. X'] });
+    component.onFilterEmit({ filterId, selectedValues: values });
     fixture.detectChanges();
-    expect(component.selectedSupervisorFilters()).toEqual(['Prof. X']);
+    expect((component as any)[selector]()).toEqual(expected);
     expect(spy).toHaveBeenCalledOnce();
   });
 

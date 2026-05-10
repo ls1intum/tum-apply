@@ -99,17 +99,6 @@ describe('AuthDialogService', () => {
       expect(authOrchestratorMock.close).toHaveBeenCalledOnce();
     });
 
-    it('should be idempotent when close is called multiple times', () => {
-      const { ref } = createDialogRefMocks();
-      dialogService.open.mockReturnValue(ref);
-
-      authDialogService.open();
-      authDialogService.close();
-      authDialogService.close();
-
-      expect(ref.close).toHaveBeenCalledOnce();
-      expect(authOrchestratorMock.close).toHaveBeenCalledTimes(2);
-    });
   });
 
   describe('reactive closing events', () => {

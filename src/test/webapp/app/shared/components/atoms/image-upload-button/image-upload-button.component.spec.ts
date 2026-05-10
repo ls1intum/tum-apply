@@ -76,17 +76,14 @@ describe('ImageUploadButtonComponent', () => {
     svgFile = createMockFile('test.svg', 'image/svg+xml', SMALL_FILE_SIZE);
   });
 
-  describe('Component Initialization', () => {
-    it('should compute accepted image types from config', () => {
-      fixture.componentRef.setInput('config', { acceptedTypes: ['image/png', 'image/webp'] });
+  describe('acceptedImageTypes', () => {
+    it.each([
+      [{ acceptedTypes: ['image/png', 'image/webp'] }, 'image/png,image/webp'],
+      [{}, 'image/jpeg,image/jpg,image/png'],
+    ])('should compute accepted image types from %o', (config, expected) => {
+      fixture.componentRef.setInput('config', config);
       fixture.detectChanges();
-      expect(component.acceptedImageTypes()).toBe('image/png,image/webp');
-    });
-
-    it('should use default accepted types when config is empty', () => {
-      fixture.componentRef.setInput('config', {});
-      fixture.detectChanges();
-      expect(component.acceptedImageTypes()).toBe('image/jpeg,image/jpg,image/png');
+      expect(component.acceptedImageTypes()).toBe(expected);
     });
   });
 
@@ -183,15 +180,14 @@ describe('ImageUploadButtonComponent', () => {
   });
 
   describe('Custom Configuration', () => {
-    it('should respect custom max file size', async () => {
-      const customConfig: ImageUploadConfig = {
-        maxFileSizeBytes: CUSTOM_MAX_FILE_SIZE,
-      };
-      fixture.componentRef.setInput('config', customConfig);
+    it.each<[ImageUploadConfig, () => File, ImageUploadError['type']]>([
+      [{ maxFileSizeBytes: CUSTOM_MAX_FILE_SIZE }, () => createMockFile('large.jpg', 'image/jpeg', OVERSIZED_FILE_SIZE), 'fileTooLarge'],
+      [{ acceptedTypes: ['image/png'] }, () => createMockFile('test.jpg', 'image/jpeg', SMALL_FILE_SIZE), 'invalidFileType'],
+    ])('should respect custom config %o and emit error %s', async (config, getFile, expectedType) => {
+      fixture.componentRef.setInput('config', config);
       fixture.detectChanges();
 
-      const largeFile = createMockFile('large.jpg', 'image/jpeg', OVERSIZED_FILE_SIZE);
-      const mockEvent = createMockFileEvent(largeFile);
+      const mockEvent = createMockFileEvent(getFile());
 
       let emittedError: ImageUploadError | undefined;
       const subscription = component.uploadError.subscribe(error => {
@@ -200,29 +196,7 @@ describe('ImageUploadButtonComponent', () => {
 
       await component.onImageSelected(mockEvent);
 
-      expect(emittedError?.type).toBe('fileTooLarge');
-
-      subscription.unsubscribe();
-    });
-
-    it('should respect custom accepted types', async () => {
-      const customConfig: ImageUploadConfig = {
-        acceptedTypes: ['image/png'],
-      };
-      fixture.componentRef.setInput('config', customConfig);
-      fixture.detectChanges();
-
-      const jpegFile = createMockFile('test.jpg', 'image/jpeg', SMALL_FILE_SIZE);
-      const mockEvent = createMockFileEvent(jpegFile);
-
-      let emittedError: ImageUploadError | undefined;
-      const subscription = component.uploadError.subscribe(error => {
-        emittedError = error;
-      });
-
-      await component.onImageSelected(mockEvent);
-
-      expect(emittedError?.type).toBe('invalidFileType');
+      expect(emittedError?.type).toBe(expectedType);
 
       subscription.unsubscribe();
     });

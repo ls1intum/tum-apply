@@ -43,8 +43,6 @@ describe('SidebarComponent', () => {
 
   it('should emit sidebarCollapsedChange with the opposite value when toggleSidebar called', () => {
     const emitSpy = vi.spyOn(component.sidebarCollapsedChange, 'emit');
-    fixture.componentRef.setInput('isSidebarCollapsed', false);
-    fixture.detectChanges();
 
     component.toggleSidebar();
 
@@ -58,18 +56,13 @@ describe('SidebarComponent', () => {
       expect(component.categories).toBeUndefined();
     });
 
-    it('should return categories for APPLICANT role', () => {
-      accountService.user.set({ authorities: [UserShortDTORolesEnum.Applicant] } as User);
+    it.each<[UserShortDTORolesEnum, number]>([
+      [UserShortDTORolesEnum.Applicant, 2],
+      [UserShortDTORolesEnum.Professor, 3],
+    ])('should return %i categories for role %s', (role, expectedLength) => {
+      accountService.user.set({ authorities: [role] } as User);
       fixture.detectChanges();
-      expect(component.categories).toHaveLength(2);
-      expect(component.categories?.[0].title).toBe('sidebar.dashboard.dashboard');
-      expect(component.categories?.[1].title).toBe('sidebar.applications.title');
-    });
-
-    it('should return categories for PROFESSOR role', () => {
-      accountService.user.set({ authorities: [UserShortDTORolesEnum.Professor] } as User);
-      fixture.detectChanges();
-      expect(component.categories).toHaveLength(3);
+      expect(component.categories).toHaveLength(expectedLength);
     });
   });
 

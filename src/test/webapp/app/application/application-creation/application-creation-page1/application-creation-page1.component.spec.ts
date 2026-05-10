@@ -59,62 +59,28 @@ describe('ApplicationPage1Component', () => {
     fixture.detectChanges();
   });
 
-  it('should be invalid initially when required fields are empty', () => {
+  it('should be invalid initially when required fields empty', () => {
     expect(comp.page1Form().valid).toBe(false);
   });
 
-  it('should become valid when all required fields are filled and postal code passes validation', () => {
-    const countryOption = { value: 'DE', name: 'Germany' };
-    comp.data.set({
-      ...comp.data(),
-      firstName: '',
-      lastName: '',
-      email: '',
-      phoneNumber: '',
-      street: '',
-      city: '',
-      country: countryOption,
-      postcode: '',
-      gender: undefined,
-      nationality: undefined,
-      dateOfBirth: '',
-      website: '',
-      linkedIn: '',
-    });
-
-    const form = comp.page1Form();
-
-    // Set required values
-    form.controls.firstName.setValue('Alice');
-    form.controls.lastName.setValue('Smith');
-    form.controls.email.setValue('alice@example.com');
-    form.controls.phoneNumber.setValue('123456');
-    form.controls.street.setValue('Main St');
-    form.controls.city.setValue('Munich');
-    form.controls.postcode.setValue('80331'); // Valid German postcode
-
-    form.updateValueAndValidity();
-
-    expect(form.valid).toBe(true);
-  });
-
-  it('should mark invalidPostalCode error when country is set and postal code is invalid', () => {
-    const form = comp.page1Form();
-    form.controls.firstName.setValue('Alice');
-    form.controls.lastName.setValue('Smith');
-    form.controls.email.setValue('alice@example.com');
-    form.controls.phoneNumber.setValue('123456');
-    form.controls.street.setValue('Main St');
-    form.controls.city.setValue('Munich');
-
+  it.each([
+    { postcode: '80331', valid: true },
+    { postcode: '987877', valid: false },
+  ])('postcode=$postcode -> valid=$valid for German country', ({ postcode, valid }) => {
     const countryOption = { value: 'DE', name: 'Germany' };
     comp.data.set({ ...comp.data(), country: countryOption });
-
-    form.controls.postcode.setValue('987877');
+    const form = comp.page1Form();
+    form.controls.firstName.setValue('Alice');
+    form.controls.lastName.setValue('Smith');
+    form.controls.email.setValue('alice@example.com');
+    form.controls.phoneNumber.setValue('123456');
+    form.controls.street.setValue('Main St');
+    form.controls.city.setValue('Munich');
+    form.controls.postcode.setValue(postcode);
     form.updateValueAndValidity();
 
-    expect(form.valid).toBe(false);
-    expect(form.controls.postcode.errors).toHaveProperty('invalidPostalCode');
+    expect(form.valid).toBe(valid);
+    if (!valid) expect(form.controls.postcode.errors).toHaveProperty('invalidPostalCode');
   });
 
   it('getPage1FromApplication maps fields properly', () => {
@@ -182,25 +148,13 @@ describe('ApplicationPage1Component', () => {
     expect(changedSpy).toHaveBeenCalled();
   });
 
-  it('should not return an error when country is undefined in postalCodeValidator', () => {
-    const validator = postalCodeValidator(() => undefined);
-    const control = { value: '12345' } as AbstractControl;
-    const result = validator(control);
-    expect(result).toEqual({}); // No validation error
-  });
-
-  it('should not return an error when postal code is empty', () => {
-    const validator = postalCodeValidator(() => 'DE');
-    const control = { value: '' } as AbstractControl;
-    const result = validator(control);
-    expect(result).toEqual({}); // No error when value is empty
-  });
-
-  it('should return an error when country code is invalid or unsupported', () => {
-    const validator = postalCodeValidator(() => 'ZZ'); // ZZ is unsupported
-    const control = { value: '12345' } as AbstractControl;
-    const result = validator(control);
-    expect(result).toEqual({ invalidPostalCode: 'entity.applicationPage1.validation.postalCode' });
+  it.each([
+    [() => undefined, '12345', {}],
+    [() => 'DE', '', {}],
+    [() => 'ZZ', '12345', { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' }],
+  ])('postalCodeValidator with country/value -> result', (countryFn, value, expected) => {
+    const validator = postalCodeValidator(countryFn as () => string | undefined);
+    expect(validator({ value } as AbstractControl)).toEqual(expected);
   });
 
   it('updateSelect should allow setting undefined value', () => {
@@ -235,19 +189,13 @@ describe('ApplicationPage1Component', () => {
     expect(page1.gender).toBeUndefined();
   });
 
-  describe('CV Validation', () => {
-    it('should set cvValid to false when cvDocs is undefined or empty', () => {
-      comp.cvDocsSetValidity(undefined);
-      expect(comp.cvValid()).toBe(false);
-
-      comp.cvDocsSetValidity([]);
-      expect(comp.cvValid()).toBe(false);
-    });
-
-    it('should set cvValid to true when cvDocs is provided', () => {
-      comp.cvDocsSetValidity([{ id: '1', size: 1 }]);
-      expect(comp.cvValid()).toBe(true);
-    });
+  it.each([
+    [undefined, false],
+    [[], false],
+    [[{ id: '1', size: 1 }], true],
+  ])('cvDocsSetValidity(%j) -> cvValid=%s', (docs, expected) => {
+    comp.cvDocsSetValidity(docs as any);
+    expect(comp.cvValid()).toBe(expected);
   });
 
   describe('onAiDataExtracted', () => {
@@ -286,21 +234,12 @@ describe('ApplicationPage1Component', () => {
     });
   });
 
-  describe('Document Input Handling', () => {
-    it('should return array with doc if documentIdsCv is defined', () => {
-      const doc = { id: '1', size: 1 };
-
-      fixture.componentRef.setInput('documentIdsCv', doc);
-      fixture.detectChanges();
-
-      expect(comp.computedDocumentIdsCvSet()).toEqual([doc]);
-    });
-
-    it('should return undefined if documentIdsCv is undefined', () => {
-      fixture.componentRef.setInput('documentIdsCv', undefined);
-      fixture.detectChanges();
-
-      expect(comp.computedDocumentIdsCvSet()).toBeUndefined();
-    });
+  it.each([
+    [{ id: '1', size: 1 }, [{ id: '1', size: 1 }]],
+    [undefined, undefined],
+  ])('computedDocumentIdsCvSet(%j) -> %j', (doc, expected) => {
+    fixture.componentRef.setInput('documentIdsCv', doc);
+    fixture.detectChanges();
+    expect(comp.computedDocumentIdsCvSet()).toEqual(expected as any);
   });
 });

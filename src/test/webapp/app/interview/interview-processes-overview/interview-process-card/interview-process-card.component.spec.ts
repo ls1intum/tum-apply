@@ -69,18 +69,13 @@ describe('InterviewProcessCardComponent', () => {
   });
 
   describe('Warning Message', () => {
-    it('should return undefined when process is closed', () => {
-      fixture.componentRef.setInput('process', closedProcess);
+    it.each([
+      { description: 'process is closed', process: closedProcess, expected: undefined },
+      { description: 'invited count <= total slots', process: activeProcess, expected: undefined },
+    ])('should return undefined when $description', ({ process, expected }) => {
+      fixture.componentRef.setInput('process', process);
       fixture.detectChanges();
-
-      expect(component.warningMessage()).toBeUndefined();
-    });
-
-    it('should return undefined when invited count is less than or equal to total slots', () => {
-      fixture.componentRef.setInput('process', activeProcess);
-      fixture.detectChanges();
-
-      expect(component.warningMessage()).toBeUndefined();
+      expect(component.warningMessage()).toBe(expected);
     });
 
     it.each([

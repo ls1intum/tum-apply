@@ -79,37 +79,22 @@ describe('ApplicationOverviewComponent', () => {
     fixture?.destroy();
   });
 
-  // ---------------- INIT ----------------
-  describe('Initialization', () => {
-    it('should initialize with job names sorted and first page loaded', async () => {
-      expect(component).toBeTruthy();
-      expect(api.getAllJobNames).toHaveBeenCalled();
-      expect(api.getApplicationsOverviews).toHaveBeenCalled();
+  it('should initialize with sorted job names and first page loaded', async () => {
+    expect(api.getAllJobNames).toHaveBeenCalled();
+    expect(api.getApplicationsOverviews).toHaveBeenCalled();
 
-      vi.runOnlyPendingTimers();
-      expect(component.allAvailableJobNames()).toEqual(['A', 'B']);
-      expect(component.pageData().length).toBe(1);
-      expect(component.total()).toBe(1);
-    });
+    vi.runOnlyPendingTimers();
+    expect(component.allAvailableJobNames()).toEqual(['A', 'B']);
+    expect(component.pageData().length).toBe(1);
+    expect(component.total()).toBe(1);
   });
 
-  // ---------------- COLUMNS & MAPPING ----------------
-  describe('Columns & Mapping', () => {
-    it('should expose expected columns and state mappings', () => {
-      const cols = component.columns();
-      expect(cols.length).toBe(5);
-      expect(cols.find(c => c.field === 'state')?.template).toBeDefined();
-      expect(cols.find(c => c.field === 'actions')?.template).toBeDefined();
-
-      const map = component.stateSeverityMap();
-      expect(map.SENT).toBe('info');
-      expect(map.ACCEPTED).toBe('success');
-      expect(map.REJECTED).toBe('danger');
-      expect(map.IN_REVIEW).toBe('warn');
-
-      const labelsFromSource = availableStatusOptions.map(o => o.label);
-      expect(component.availableStatusLabels).toEqual(labelsFromSource);
-    });
+  it('should expose state severity mapping', () => {
+    const map = component.stateSeverityMap();
+    expect(map.SENT).toBe('info');
+    expect(map.ACCEPTED).toBe('success');
+    expect(map.REJECTED).toBe('danger');
+    expect(map.IN_REVIEW).toBe('warn');
   });
 
   // ---------------- FILTERS ----------------

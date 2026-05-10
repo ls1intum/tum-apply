@@ -118,38 +118,30 @@ describe('PrivacyPageComponent', () => {
   });
 
   describe('Tooltip Behavior', () => {
-    it('should keep button enabled before request', () => {
-      expect(componentAccess.exportButtonDisabled()).toBe(false);
-    });
-
-    it('should show notLoggedIn tooltip when user not signed in', () => {
+    it('should disable button and show notLoggedIn tooltip when user not signed in', () => {
       (accountServiceMock.signedIn as WritableSignal<boolean>).set(false);
 
       expect(componentAccess.exportButtonDisabled()).toBe(true);
       expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.notLoggedIn');
     });
 
-    it('should show cooldown tooltip when disabled due to cooldown', () => {
-      component.cooldownSeconds.set(86400); // 1 day in seconds
+    it('should show cooldown tooltip with days param and disable button', () => {
+      component.cooldownSeconds.set(90000);
       expect(componentAccess.exportButtonDisabled()).toBe(true);
       expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.cooldown');
+      expect(componentAccess.tooltipParams()).toEqual({ days: '2' });
     });
 
     it('should return undefined tooltip when button is enabled', () => {
       componentAccess.currentExportStatus.set(undefined);
       componentAccess.cooldownSeconds.set(0);
+      expect(componentAccess.exportButtonDisabled()).toBe(false);
       expect(componentAccess.tooltip()).toBeUndefined();
     });
 
-    it('should return the inCreation tooltip key when an export is in creation', () => {
+    it('should return inCreation tooltip when an export is in creation', () => {
       componentAccess.currentExportStatus.set(DataExportStatusDTOStatusEnum.InCreation);
       expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.inCreation');
-    });
-
-    it('should expose the days parameter in tooltipParams for the cooldown tooltip', () => {
-      componentAccess.cooldownSeconds.set(90000); // 25 hours in seconds
-      expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.cooldown');
-      expect(componentAccess.tooltipParams()).toEqual({ days: '2' });
     });
 
     it('should update currentLang when TranslateService emits onLangChange', () => {
@@ -158,7 +150,6 @@ describe('PrivacyPageComponent', () => {
     });
 
     it('should set cooldownSeconds to 0 when API returns explicit undefined cooldownSeconds', async () => {
-      // API returns cooldownSeconds explicitly set to undefined
       serviceMocks.getDataExportStatus.mockReturnValue(
         of({ status: DataExportStatusDTOStatusEnum.EmailSent, cooldownSeconds: undefined } as any),
       );

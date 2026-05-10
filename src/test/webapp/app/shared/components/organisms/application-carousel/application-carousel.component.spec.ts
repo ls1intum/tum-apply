@@ -151,41 +151,28 @@ describe('ApplicationCarouselComponent', () => {
     });
   });
 
-  // ---------------- OUTPUT EVENTS ----------------
   describe('output events', () => {
-    it('should emit next event when loadNext is called', () => {
+    it.each<['next' | 'prev', 'loadNext' | 'loadPrev']>([
+      ['next', 'loadNext'],
+      ['prev', 'loadPrev'],
+    ])('should emit %s event when %s is called', (event, method) => {
       const spy = vi.fn();
-      component.next.subscribe(spy);
+      component[event].subscribe(spy);
 
-      component.loadNext();
-
-      expect(spy).toHaveBeenCalledOnce();
-    });
-
-    it('should emit prev event when loadPrev is called', () => {
-      const spy = vi.fn();
-      component.prev.subscribe(spy);
-
-      component.loadPrev();
+      component[method]();
 
       expect(spy).toHaveBeenCalledOnce();
     });
   });
 
-  // ---------------- KEYBOARD HANDLING ----------------
   describe('keyboard handling', () => {
-    it('should call loadNext when ArrowRight is pressed', () => {
-      const spy = vi.spyOn(component, 'loadNext');
+    it.each<['ArrowRight' | 'ArrowLeft', 'loadNext' | 'loadPrev']>([
+      ['ArrowRight', 'loadNext'],
+      ['ArrowLeft', 'loadPrev'],
+    ])('should call %s when %s is pressed', (key, method) => {
+      const spy = vi.spyOn(component, method);
 
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-
-      expect(spy).toHaveBeenCalledOnce();
-    });
-
-    it('should call loadPrev when ArrowLeft is pressed', () => {
-      const spy = vi.spyOn(component, 'loadPrev');
-
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
+      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key }));
 
       expect(spy).toHaveBeenCalledOnce();
     });
@@ -200,51 +187,33 @@ describe('ApplicationCarouselComponent', () => {
       expect(spyPrev).not.toHaveBeenCalled();
     });
 
-    it('should not navigate when focus is inside a textarea', () => {
-      const textarea = document.createElement('textarea');
-      document.body.appendChild(textarea);
-      textarea.focus();
+    it.each<['textarea' | 'input' | 'div', boolean]>([
+      ['textarea', false],
+      ['input', false],
+      ['div', true],
+    ])('should not navigate when focus is inside %s', (tag, contenteditable) => {
+      const el = document.createElement(tag);
+      if (contenteditable) {
+        el.setAttribute('contenteditable', 'true');
+      }
+      document.body.appendChild(el);
+      el.focus();
 
       const spyNext = vi.spyOn(component, 'loadNext');
       component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
 
       expect(spyNext).not.toHaveBeenCalled();
 
-      document.body.removeChild(textarea);
+      document.body.removeChild(el);
     });
 
-    it('should not navigate when focus is inside an input', () => {
-      const input = document.createElement('input');
-      document.body.appendChild(input);
-      input.focus();
-
-      const spyPrev = vi.spyOn(component, 'loadPrev');
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
-
-      expect(spyPrev).not.toHaveBeenCalled();
-
-      document.body.removeChild(input);
-    });
-
-    it('should not navigate when an element with contenteditable is focused', () => {
-      const div = document.createElement('div');
-      div.setAttribute('contenteditable', 'true');
-      document.body.appendChild(div);
-      div.focus();
-
+    it.each([
+      ['ctrlKey', { ctrlKey: true }],
+      ['metaKey', { metaKey: true }],
+      ['altKey', { altKey: true }],
+    ])('should not navigate when %s modifier is pressed', (_desc, modifiers) => {
       const spyNext = vi.spyOn(component, 'loadNext');
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-
-      expect(spyNext).not.toHaveBeenCalled();
-
-      document.body.removeChild(div);
-    });
-
-    it('should not navigate when modifier keys are pressed', () => {
-      const spyNext = vi.spyOn(component, 'loadNext');
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight', ctrlKey: true }));
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight', metaKey: true }));
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight', altKey: true }));
+      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight', ...modifiers }));
 
       expect(spyNext).not.toHaveBeenCalled();
     });

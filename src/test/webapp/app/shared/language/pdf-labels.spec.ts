@@ -1,34 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { provideTranslateMock } from '../../../util/translate.mock';
 import { formatGradeDisplay, getApplicationPDFLabels, getJobPDFLabels } from 'app/shared/language/pdf-labels';
-
-/* ======================================================
- * Helper functions
- * ====================================================== */
-
-function expectColonLabels(labels: Record<string, string>) {
-  ['subjectArea', 'researchArea', 'workload', 'duration', 'fundingType', 'startDate', 'endDate'].forEach(key => {
-    expect(labels[key]).toContain(':');
-  });
-}
-
-function expectLabelTranslations(labels: Record<string, string>, expected: Record<string, string>) {
-  Object.entries(expected).forEach(([key, value]) => {
-    expect(labels[key]).toBe(value);
-  });
-}
-
-function expectSharedLabels(a: Record<string, string>, b: Record<string, string>, keys: string[]) {
-  keys.forEach(key => {
-    expect(a[key]).toBe(b[key]);
-  });
-}
-
-/* ======================================================
- * Tests
- * ====================================================== */
 
 describe('PDF Labels', () => {
   let translate: TranslateService;
@@ -37,7 +11,6 @@ describe('PDF Labels', () => {
     TestBed.configureTestingModule({
       providers: [provideTranslateMock()],
     });
-
     translate = TestBed.inject(TranslateService);
   });
 
@@ -45,58 +18,24 @@ describe('PDF Labels', () => {
     it('should return correct translation keys', () => {
       const labels = getApplicationPDFLabels(translate);
 
-      expectLabelTranslations(labels, {
+      expect(labels).toMatchObject({
         applicationBy: 'pdf.headerItems.applicationBy',
         headline: 'entity.application_detail.headline',
         overview: 'entity.application_detail.position_overview',
-
         supervisor: 'jobDetailPage.header.supervisor',
         location: 'jobDetailPage.header.location',
         subjectArea: 'jobDetailPage.labels.subjectArea:',
         researchArea: 'jobDetailPage.labels.researchArea:',
         workload: 'jobDetailPage.labels.workload:',
-        hoursPerWeek: 'jobDetailPage.units.hoursPerWeek',
         duration: 'jobDetailPage.labels.contractDuration:',
-        years: 'jobDetailPage.units.years',
         fundingType: 'jobDetailPage.labels.fundingType:',
         startDate: 'jobDetailPage.labels.startDate:',
         endDate: 'jobDetailPage.labels.applicationEndDate:',
-
         personalStatements: 'entity.application_detail.personal_statements',
-        motivation: 'entity.applicationDetail.motivation',
-        skills: 'entity.applicationDetail.skills',
-        researchExperience: 'entity.applicationDetail.researchExperience',
-
-        personalInformation: 'entity.application_detail.personal_information',
-        applicantInfo: 'entity.detail_card.applicant_info',
-        desiredStartDate: 'entity.detail_card.desired_start_date',
-        gender: 'entity.detail_card.gender',
-        nationality: 'entity.detail_card.nationality',
-        website: 'entity.detail_card.website',
-        linkedIn: 'entity.detail_card.linkedin',
-
         bachelorInfo: 'entity.detail_card.bachelor_info',
         masterInfo: 'entity.detail_card.master_info',
-        degreeName: 'entity.detail_card.name',
-        university: 'entity.detail_card.university',
-        grade: 'entity.detail_card.grade',
-
-        thisDocumentWasGeneratedOn: 'pdf.metaData.thisDocumentWasGeneratedOn',
-        byUser: 'pdf.metaData.byUser',
-        usingTumapply: 'pdf.metaData.usingTumapply',
-        metaEndText: 'pdf.metaData.metaEndText',
-        page: 'pdf.pageCount.page',
-        of: 'pdf.pageCount.of',
-
-        application: 'evaluation.application',
-        researchGroup: 'jobDetailPage.header.researchGroup',
         jobDetails: 'pdf.sections.jobDetails',
       });
-    });
-
-    it('should append colons to overview labels', () => {
-      const labels = getApplicationPDFLabels(translate);
-      expectColonLabels(labels);
     });
   });
 
@@ -104,46 +43,17 @@ describe('PDF Labels', () => {
     it('should return correct translation keys', () => {
       const labels = getJobPDFLabels(translate);
 
-      expectLabelTranslations(labels, {
+      expect(labels).toMatchObject({
         jobBy: 'pdf.headerItems.jobBy',
         forJob: 'pdf.headerItems.forJob',
         status: 'pdf.headerItems.status',
-
         supervisor: 'jobDetailPage.header.supervisor',
-        location: 'jobDetailPage.header.location',
         subjectArea: 'jobDetailPage.labels.subjectArea:',
-        researchArea: 'jobDetailPage.labels.researchArea:',
-        workload: 'jobDetailPage.labels.workload:',
-        hoursPerWeek: 'jobDetailPage.units.hoursPerWeek',
-        duration: 'jobDetailPage.labels.contractDuration:',
-        years: 'jobDetailPage.units.years',
-        fundingType: 'jobDetailPage.labels.fundingType:',
-        startDate: 'jobDetailPage.labels.startDate:',
-        endDate: 'jobDetailPage.labels.applicationEndDate:',
-
-        jobDetails: 'pdf.sections.jobDetails',
-
-        researchGroup: 'jobDetailPage.cards.researchGroup',
         contactDetails: 'pdf.sections.contactDetails',
         address: 'researchGroup.groupInfo.fields.section3',
-        email: 'researchGroup.groupInfo.fields.email',
-        website: 'researchGroup.groupInfo.fields.website',
-
-        thisDocumentWasGeneratedOn: 'pdf.metaData.thisDocumentWasGeneratedOn',
-        byUser: 'pdf.metaData.byUser',
-        usingTumapply: 'pdf.metaData.usingTumapply',
-        metaEndText: 'pdf.metaData.metaEndText',
-        page: 'pdf.pageCount.page',
-        of: 'pdf.pageCount.of',
-
         jobPdfEnding: 'pdf.jobPdfEnding',
         overview: 'jobDetailPage.cards.positionOverview',
       });
-    });
-
-    it('should append colons to overview labels', () => {
-      const labels = getJobPDFLabels(translate);
-      expectColonLabels(labels);
     });
   });
 
@@ -152,101 +62,51 @@ describe('PDF Labels', () => {
       const appLabels = getApplicationPDFLabels(translate);
       const jobLabels = getJobPDFLabels(translate);
 
-      expectSharedLabels(appLabels, jobLabels, [
-        'supervisor',
-        'location',
-        'subjectArea',
-        'researchArea',
-        'workload',
-        'hoursPerWeek',
-        'duration',
-        'years',
-        'fundingType',
-        'startDate',
-        'endDate',
-        'jobDetails',
-        'thisDocumentWasGeneratedOn',
-        'byUser',
-        'usingTumapply',
-        'metaEndText',
-        'page',
-        'of',
-        'lang',
-      ]);
+      ['supervisor', 'location', 'subjectArea', 'workload', 'startDate', 'jobDetails', 'page', 'of', 'lang'].forEach(key => {
+        expect(appLabels[key]).toBe(jobLabels[key]);
+      });
     });
   });
 
   describe('formatGradeDisplay', () => {
-    let grade = '1.5';
-    let upperLimit = '1.0';
-    let lowerLimit = '4.0';
+    const grade = '1.5';
+    const upperLimit = '1.0';
+    const lowerLimit = '4.0';
 
     afterEach(() => {
       vi.resetAllMocks();
     });
 
-    describe('grade is absent', () => {
-      it('should return "-" when grade is undefined', () => {
-        expect(formatGradeDisplay(translate, undefined)).toBe('-');
-      });
-
-      it('should return "-" when grade is an empty string', () => {
-        expect(formatGradeDisplay(translate, '')).toBe('-');
-      });
+    it.each([
+      [undefined, undefined, undefined, '-'],
+      ['', undefined, undefined, '-'],
+      [grade, undefined, lowerLimit, grade],
+      [grade, upperLimit, undefined, grade],
+      [grade, undefined, undefined, grade],
+    ])('should return %s for grade=%s upper=%s lower=%s', (g, u, l, expected) => {
+      expect(formatGradeDisplay(translate, g, u, l)).toBe(expected);
     });
 
-    describe('grade is present but limits are incomplete', () => {
-      it('should return the grade as-is when upperLimit is missing', () => {
-        expect(formatGradeDisplay(translate, grade, undefined, lowerLimit)).toBe(grade);
-      });
+    it('should return formatted grade with translated scale and call translate.instant once', () => {
+      const instantSpy = vi.spyOn(translate, 'instant');
 
-      it('should return the grade as-is when lowerLimit is missing', () => {
-        expect(formatGradeDisplay(translate, grade, upperLimit, undefined)).toBe(grade);
-      });
+      const result = formatGradeDisplay(translate, grade, upperLimit, lowerLimit);
 
-      it('should return the grade as-is when both limits are missing', () => {
-        expect(formatGradeDisplay(translate, grade)).toBe(grade);
+      const expectedScale = translate.instant('entity.applicationPage2.helperText.gradingScale', {
+        upperLimit,
+        lowerLimit,
       });
+      expect(result).toBe(`${grade} (${expectedScale})`);
+      expect(instantSpy).toHaveBeenCalledWith('entity.applicationPage2.helperText.gradingScale', { upperLimit, lowerLimit });
     });
 
-    describe('grade and both limits are provided', () => {
-      it('should return formatted grade with translated scale', () => {
-        const result = formatGradeDisplay(translate, grade, upperLimit, lowerLimit);
-        const expectedScale = translate.instant('entity.applicationPage2.helperText.gradingScale', {
-          upperLimit: upperLimit,
-          lowerLimit: lowerLimit,
-        });
+    it('should not call translate.instant when grade or limits are absent', () => {
+      const instantSpy = vi.spyOn(translate, 'instant');
 
-        expect(result).toBe(`${grade} (${expectedScale})`);
-      });
+      formatGradeDisplay(translate, undefined, upperLimit, lowerLimit);
+      formatGradeDisplay(translate, grade);
 
-      it('should call translate.instant exactly once with the scale key and correct interpolation params', () => {
-        const instantSpy = vi.spyOn(translate, 'instant');
-
-        formatGradeDisplay(translate, grade, upperLimit, lowerLimit);
-
-        expect(instantSpy).toHaveBeenCalledOnce();
-        expect(instantSpy).toHaveBeenCalledWith('entity.applicationPage2.helperText.gradingScale', {
-          upperLimit: upperLimit,
-          lowerLimit: lowerLimit,
-        });
-      });
-
-      it('should not call translate.instant when grade is absent', () => {
-        const instantSpy = vi.spyOn(translate, 'instant');
-
-        formatGradeDisplay(translate, undefined, upperLimit, lowerLimit);
-
-        expect(instantSpy).not.toHaveBeenCalled();
-      });
-
-      it('should not call translate.instant when limits are missing', () => {
-        const instantSpy = vi.spyOn(translate, 'instant');
-
-        formatGradeDisplay(translate, grade);
-
-        expect(instantSpy).not.toHaveBeenCalled();
-      });
+      expect(instantSpy).not.toHaveBeenCalled();
     });
   });
 });

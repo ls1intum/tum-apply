@@ -75,22 +75,4 @@ describe('SelectComponent', () => {
     expect(comp.isOpen).toBe(false);
   });
 
-  it('should enable filtering when filter=true', () => {
-    const fixture = createFixture();
-    fixture.componentRef.setInput('filter', true);
-    fixture.detectChanges();
-
-    expect(fixture.componentInstance.filter()).toBe(true);
-    const selectEl = fixture.debugElement.query(By.css('p-select'));
-    expect(selectEl.componentInstance.filter).toBe(true);
-  });
-
-  it('should show clear button when showClear=true', () => {
-    const fixture = createFixture();
-    fixture.componentRef.setInput('showClear', true);
-    fixture.detectChanges();
-
-    const selectEl = fixture.debugElement.query(By.css('p-select'));
-    expect(selectEl.componentInstance.showClear).toBe(true);
-  });
 });

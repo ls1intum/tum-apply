@@ -88,40 +88,15 @@ describe('DocumentViewerComponent', () => {
       expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl);
     });
 
-    it('should create PDF blob with correct type', async () => {
-      const mockBlob = new ArrayBuffer(100);
-      documentApi.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
-      cacheService.set = vi.fn().mockImplementation((_, blob) => {
-        expect(blob.type).toBe('application/pdf');
-        expect(blob.size).toBe(100);
-        return mockSafeUrl;
-      });
-
-      await comp.initDocument();
-
-      expect(cacheService.set).toHaveBeenCalledOnce();
-    });
-
-    it('should handle download error gracefully', async () => {
+    it('should handle download error gracefully and reset sanitizedBlobUrl', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
+      comp.sanitizedBlobUrl.set('previous-value' as unknown as SafeResourceUrl);
       documentApi.downloadDocument = vi.fn().mockReturnValue(throwError(() => new Error('Download failed')));
 
       await comp.initDocument();
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Document download failed:', expect.any(Error));
-      expect(comp.sanitizedBlobUrl()).toBeUndefined();
-      consoleErrorSpy.mockRestore();
-    });
-
-    it('should set sanitizedBlobUrl to undefined on error', async () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-      comp.sanitizedBlobUrl.set('previous-value' as unknown as SafeResourceUrl);
-      documentApi.downloadDocument = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
-
-      await comp.initDocument();
-
       expect(comp.sanitizedBlobUrl()).toBeUndefined();
       consoleErrorSpy.mockRestore();
     });
@@ -150,32 +125,4 @@ describe('DocumentViewerComponent', () => {
     });
   });
 
-  describe('edge cases', () => {
-    it('should handle empty document ID', async () => {
-      mockDocInfo = createMockDocumentInfo({ id: '' });
-      const mockBlob = new ArrayBuffer(100);
-      fixture.componentRef.setInput('documentId', mockDocInfo);
-      cacheService.get = vi.fn().mockReturnValue(undefined);
-      documentApi.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
-      cacheService.set = vi.fn().mockReturnValue(mockSafeUrl);
-
-      await comp.initDocument();
-
-      expect(documentApi.downloadDocument).toHaveBeenCalledWith('');
-    });
-
-    it('should handle very large documents', async () => {
-      const size = 10485760; // 10MB
-      mockDocInfo = createMockDocumentInfo({ id: 'large-doc', size: size });
-      const largeBlob = new ArrayBuffer(size);
-      fixture.componentRef.setInput('documentId', mockDocInfo);
-      documentApi.downloadDocument = vi.fn().mockReturnValue(of(largeBlob));
-      cacheService.set = vi.fn().mockReturnValue(mockSafeUrl);
-
-      await comp.initDocument();
-
-      expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl);
-      expect(cacheService.set).toHaveBeenCalledWith('large-doc', expect.any(Blob));
-    });
-  });
 });

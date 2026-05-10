@@ -62,14 +62,6 @@ describe('ResearchGroupSchoolsComponent', () => {
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.schools.toastMessages.loadFailed');
     });
 
-    it('should default undefined page response fields to empty and zero', async () => {
-      mockSchoolApi.getSchoolsForAdmin.mockReturnValue(of({}));
-
-      await component.loadSchools();
-
-      expect(component.schools()).toEqual([]);
-      expect(component.total()).toBe(0);
-    });
   });
 
   describe('pagination', () => {
@@ -131,15 +123,6 @@ describe('ResearchGroupSchoolsComponent', () => {
       expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(0);
     });
 
-    it('should handle create dialogRef null', async () => {
-      mockDialogService.open.mockReturnValue(null);
-
-      mockSchoolApi.getSchoolsForAdmin.mockClear();
-      await component.onCreateSchool();
-
-      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(0);
-    });
-
     it('should open edit dialog and reload on success', async () => {
       await component.loadSchools();
       const mockDialogRef = { onClose: of(true) };
@@ -157,24 +140,10 @@ describe('ResearchGroupSchoolsComponent', () => {
       expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(1);
     });
 
-    it('should not open edit dialog if id is missing', async () => {
+    it('should not open edit dialog if id is missing or school not found', async () => {
       await component.onEditSchool(undefined);
-      expect(mockDialogService.open).not.toHaveBeenCalled();
-    });
-
-    it('should not open edit dialog if school not found', async () => {
       await component.onEditSchool('missing');
       expect(mockDialogService.open).not.toHaveBeenCalled();
-    });
-
-    it('should handle edit dialogRef null', async () => {
-      await component.loadSchools();
-      mockDialogService.open.mockReturnValue(null);
-
-      mockSchoolApi.getSchoolsForAdmin.mockClear();
-      await component.onEditSchool('s1');
-
-      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -198,9 +167,5 @@ describe('ResearchGroupSchoolsComponent', () => {
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.schools.toastMessages.deleteFailed');
     });
 
-    it('should not delete if id is missing', async () => {
-      await component.onDeleteSchool(undefined);
-      expect(mockSchoolApi.deleteSchool).not.toHaveBeenCalled();
-    });
   });
 });

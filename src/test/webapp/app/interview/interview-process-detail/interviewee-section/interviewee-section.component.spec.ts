@@ -102,31 +102,16 @@ describe('IntervieweeSectionComponent', () => {
   });
 
   describe('Filter Tabs', () => {
-    it('should compute filter tabs with correct counts', async () => {
+    it('should compute filter tabs and apply active filter', async () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
       const tabs = component.filterTabs();
       expect(tabs.length).toBe(5);
-      expect(tabs[0].count).toBe(3); // ALL
-      expect(tabs[1].count).toBe(1); // UNCONTACTED
-      expect(tabs[2].count).toBe(1); // INVITED
-      expect(tabs[3].count).toBe(1); // SCHEDULED
-      expect(tabs[4].count).toBe(0); // COMPLETED
-    });
-
-    it('should filter interviewees by active filter', async () => {
-      fixture.detectChanges();
-      await fixture.whenStable();
+      expect(tabs.map(t => t.count)).toEqual([3, 1, 1, 1, 0]);
 
       component.setFilter(IntervieweeDTOStateEnum.Uncontacted);
       expect(component.filteredInterviewees().length).toBe(1);
-      expect(component.filteredInterviewees()[0].state).toBe(IntervieweeDTOStateEnum.Uncontacted);
-    });
-
-    it('should return all interviewees when filter is ALL', async () => {
-      fixture.detectChanges();
-      await fixture.whenStable();
 
       component.setFilter('ALL');
       expect(component.filteredInterviewees().length).toBe(3);
@@ -147,25 +132,16 @@ describe('IntervieweeSectionComponent', () => {
     });
   });
 
-  describe('Modal Control', () => {
-    it('should open add modal and load applicants', () => {
-      fixture.detectChanges();
+  it('should open and close add modal', () => {
+    fixture.detectChanges();
+    component.openAddModal();
+    expect(component.showAddModal()).toBe(true);
+    expect(mockApplicationService.getApplicationsDetails).toHaveBeenCalledOnce();
 
-      component.openAddModal();
-
-      expect(component.showAddModal()).toBe(true);
-      expect(mockApplicationService.getApplicationsDetails).toHaveBeenCalledOnce();
-    });
-
-    it('should close add modal and clear selections', () => {
-      fixture.detectChanges();
-      component.selectedIds.set(new Set(['app-1', 'app-2']));
-
-      component.closeAddModal();
-
-      expect(component.showAddModal()).toBe(false);
-      expect(component.selectedCount()).toBe(0);
-    });
+    component.selectedIds.set(new Set(['app-1', 'app-2']));
+    component.closeAddModal();
+    expect(component.showAddModal()).toBe(false);
+    expect(component.selectedCount()).toBe(0);
   });
 
   describe('Add Interviewees', () => {
@@ -307,23 +283,12 @@ describe('IntervieweeSectionComponent', () => {
     });
   });
 
-  describe('Computed: uncontactedCount', () => {
-    it('should count uncontacted interviewees', async () => {
-      fixture.detectChanges();
-      await fixture.whenStable();
+  it('should update page number and size on table emit', () => {
+    fixture.detectChanges();
 
-      expect(component.uncontactedCount()).toBe(1);
-    });
-  });
+    component.loadOnTableEmit({ first: 20, rows: 10 });
 
-  describe('Table Pagination', () => {
-    it('should update page number and size on table emit', () => {
-      fixture.detectChanges();
-
-      component.loadOnTableEmit({ first: 20, rows: 10 });
-
-      expect(component.pageNumber()).toBe(2);
-      expect(component.pageSize()).toBe(10);
-    });
+    expect(component.pageNumber()).toBe(2);
+    expect(component.pageSize()).toBe(10);
   });
 });

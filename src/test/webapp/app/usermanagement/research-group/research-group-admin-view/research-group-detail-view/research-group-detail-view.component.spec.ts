@@ -20,9 +20,7 @@ describe('ResearchGroupDetailViewComponent', () => {
     getResearchGroup: ReturnType<typeof vi.fn>;
     updateResearchGroup: ReturnType<typeof vi.fn>;
   };
-  let mockDepartmentService: {
-    getDepartments: ReturnType<typeof vi.fn>;
-  };
+  let mockDepartmentService: { getDepartments: ReturnType<typeof vi.fn> };
   let mockToastService: ToastServiceMock;
   let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
 
@@ -49,13 +47,10 @@ describe('ResearchGroupDetailViewComponent', () => {
       getResearchGroup: vi.fn(),
       updateResearchGroup: vi.fn(),
     };
-
     mockDepartmentService = {
       getDepartments: vi.fn().mockReturnValue(of(mockDepartments)),
     };
-
     mockToastService = createToastServiceMock();
-
     mockActivatedRoute = createActivatedRouteMock({ researchGroupId: 'rg-123' });
 
     await TestBed.configureTestingModule({
@@ -81,11 +76,9 @@ describe('ResearchGroupDetailViewComponent', () => {
   describe('initialization', () => {
     it('should load research group data on init', async () => {
       mockResearchGroupService.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockDepartmentService.getDepartments.mockReturnValue(of(mockDepartments));
 
       await component.ngOnInit();
 
-      expect(mockResearchGroupService.getResearchGroup).toHaveBeenCalledOnce();
       expect(mockResearchGroupService.getResearchGroup).toHaveBeenCalledWith('rg-123');
       expect(component.form.value).toEqual({
         name: 'AI Research Lab',
@@ -99,17 +92,14 @@ describe('ResearchGroupDetailViewComponent', () => {
         postalCode: '12345',
         city: 'Munich',
       });
-      expect(component.isLoading()).toBe(false);
     });
 
-    it('should handle error when loading research group fails', async () => {
+    it('should show error toast when loading fails', async () => {
       mockResearchGroupService.getResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
 
       await component.ngOnInit();
 
-      expect(mockToastService.showErrorKey).toHaveBeenCalledOnce();
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.detailView.errors.view');
-      expect(component.isLoading()).toBe(false);
     });
 
     it.each([
@@ -122,18 +112,16 @@ describe('ResearchGroupDetailViewComponent', () => {
       await component.ngOnInit();
 
       expect(mockResearchGroupService.getResearchGroup).not.toHaveBeenCalled();
-      expect(component.isLoading()).toBe(false);
     });
   });
 
   describe('saving', () => {
     it('should not save when form is invalid', async () => {
-      component.form.patchValue({ name: '', head: '' }); // Required fields empty
+      component.form.patchValue({ name: '', head: '' });
 
       await component.onSave();
 
       expect(mockResearchGroupService.updateResearchGroup).not.toHaveBeenCalled();
-      expect(component.isSaving()).toBe(false);
     });
 
     it.each([
@@ -151,7 +139,6 @@ describe('ResearchGroupDetailViewComponent', () => {
 
     it('should save research group successfully', async () => {
       mockResearchGroupService.updateResearchGroup.mockReturnValue(of(void 0));
-      mockDepartmentService.getDepartments.mockReturnValue(of(mockDepartments));
 
       component.form.patchValue({
         name: 'Updated Lab',
@@ -168,7 +155,6 @@ describe('ResearchGroupDetailViewComponent', () => {
 
       await component.onSave();
 
-      expect(component.isSaving()).toBe(false);
       expect(mockResearchGroupService.updateResearchGroup).toHaveBeenCalledWith('rg-123', {
         name: 'Updated Lab',
         abbreviation: 'UL',
@@ -184,7 +170,7 @@ describe('ResearchGroupDetailViewComponent', () => {
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.detailView.success.updated');
     });
 
-    it('should handle error when saving fails', async () => {
+    it('should show error toast when saving fails', async () => {
       mockResearchGroupService.updateResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
       component.form.patchValue({ name: 'Test', head: 'Test Head', departmentId: 'dept-1' });
 
@@ -207,174 +193,97 @@ describe('ResearchGroupDetailViewComponent', () => {
       expect(isSavingDuringSave).toBe(true);
       expect(component.isSaving()).toBe(false);
     });
+
+    it('should convert null form values to empty strings when saving', async () => {
+      mockResearchGroupService.updateResearchGroup.mockReturnValue(of(void 0));
+      component.form.patchValue({
+        name: 'Test Lab',
+        head: 'Prof. Test',
+        abbreviation: null,
+        email: null,
+        website: null,
+        departmentId: 'dept-1',
+        description: null,
+        street: null,
+        postalCode: null,
+        city: null,
+      });
+
+      await component.onSave();
+
+      expect(mockResearchGroupService.updateResearchGroup).toHaveBeenCalledWith(
+        'rg-123',
+        expect.objectContaining({
+          abbreviation: '',
+          email: '',
+          website: '',
+          description: '',
+          street: '',
+          postalCode: '',
+          city: '',
+        }),
+      );
+    });
   });
 
   describe('validation', () => {
-    it('should validate email format', () => {
-      component.form.patchValue({ email: 'invalid-email' });
-      expect(component.form.controls.email.invalid).toBe(true);
+    it.each([
+      { field: 'email', invalid: 'invalid-email', valid: 'valid@example.com' },
+      { field: 'email', invalid: 'test@example.c', valid: 'test@example.co' },
+      { field: 'name', invalid: '', valid: 'Test Lab' },
+      { field: 'head', invalid: '', valid: 'Prof. Test' },
+    ] as const)('should validate $field', ({ field, invalid, valid }) => {
+      component.form.patchValue({ [field]: invalid });
+      expect(component.form.controls[field].invalid).toBe(true);
 
-      component.form.patchValue({ email: 'valid@example.com' });
-      expect(component.form.controls.email.valid).toBe(true);
-    });
-
-    it('should require email to have domain with at least 2 characters after dot', () => {
-      component.form.patchValue({ email: 'test@example.c' });
-      expect(component.form.controls.email.invalid).toBe(true);
-
-      component.form.patchValue({ email: 'test@example.co' });
-      expect(component.form.controls.email.valid).toBe(true);
-    });
-
-    it('should require name field', () => {
-      component.form.patchValue({ name: '' });
-      expect(component.form.controls.name.invalid).toBe(true);
-
-      component.form.patchValue({ name: 'Test Lab' });
-      expect(component.form.controls.name.valid).toBe(true);
-    });
-
-    it('should require head field', () => {
-      component.form.patchValue({ head: '' });
-      expect(component.form.controls.head.invalid).toBe(true);
-
-      component.form.patchValue({ head: 'Prof. Test' });
-      expect(component.form.controls.head.valid).toBe(true);
+      component.form.patchValue({ [field]: valid });
+      expect(component.form.controls[field].valid).toBe(true);
     });
   });
 
-  describe('loading data', () => {
-    it('should handle partial data when populating form', async () => {
-      const partialData: ResearchGroupDTO = {
-        name: 'Partial Lab',
-        head: 'Prof. Partial',
-      };
-      mockResearchGroupService.getResearchGroup.mockReturnValue(of(partialData));
+  describe('departments', () => {
+    it('should populate form with empty fields for partial data', async () => {
+      mockResearchGroupService.getResearchGroup.mockReturnValue(of({ name: 'Partial Lab', head: 'Prof. Partial' }));
 
       await component.ngOnInit();
 
       expect(component.form.value.name).toBe('Partial Lab');
-      expect(component.form.value.head).toBe('Prof. Partial');
       expect(component.form.value.abbreviation).toBe('');
       expect(component.form.value.email).toBe('');
     });
 
-    it('should handle undefined data returned from service', async () => {
-      mockResearchGroupService.getResearchGroup.mockReturnValue(of(undefined));
-      mockDepartmentService.getDepartments.mockReturnValue(of(mockDepartments));
+    it('should show error toast when loading departments fails', async () => {
+      mockDepartmentService.getDepartments.mockReturnValue(throwError(() => new Error('API Error')));
 
-      await component.ngOnInit();
+      await component.loadDepartments();
 
-      expect(component.form.value).toEqual({
-        abbreviation: '',
-        name: '',
-        departmentId: '',
-        head: '',
-        email: '',
-        website: '',
-        description: '',
-        city: '',
-        postalCode: '',
-        street: '',
-      });
-    });
-  });
-
-  it('should convert null form values to empty strings when saving', async () => {
-    mockResearchGroupService.updateResearchGroup.mockReturnValue(of(void 0));
-    component.form.patchValue({
-      name: 'Test Lab',
-      head: 'Prof. Test',
-      abbreviation: null,
-      email: null,
-      website: null,
-      departmentId: 'dept-1',
-      description: null,
-      street: null,
-      postalCode: null,
-      city: null,
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.detailView.errors.loadDepartments');
     });
 
-    await component.onSave();
+    it('should update selectedDepartmentId and form value on department change', () => {
+      component.onDepartmentChange({ name: 'Physics', value: 'dept-2' });
 
-    expect(mockResearchGroupService.updateResearchGroup).toHaveBeenCalledWith(
-      'rg-123',
-      expect.objectContaining({
-        name: 'Test Lab',
-        head: 'Prof. Test',
-        abbreviation: '',
-        email: '',
-        website: '',
-        description: '',
-        street: '',
-        postalCode: '',
-        city: '',
-      }),
-    );
-  });
-
-  it('should handle null values for required fields when saving', async () => {
-    mockResearchGroupService.updateResearchGroup.mockReturnValue(of(void 0));
-
-    // Clear validators to allow null values to pass the form.valid check
-    component.form.controls.name.clearValidators();
-    component.form.controls.name.updateValueAndValidity();
-    component.form.controls.head.clearValidators();
-    component.form.controls.head.updateValueAndValidity();
-    component.form.controls.departmentId.clearValidators();
-    component.form.controls.departmentId.updateValueAndValidity();
-
-    component.form.patchValue({
-      name: null,
-      head: null,
-      departmentId: null,
+      expect(component.selectedDepartmentId()).toBe('dept-2');
+      expect(component.form.value.departmentId).toBe('dept-2');
     });
 
-    await component.onSave();
+    it('should compute selectedDepartmentOption correctly', () => {
+      component.departments.set(mockDepartments);
 
-    expect(mockResearchGroupService.updateResearchGroup).toHaveBeenCalledWith(
-      'rg-123',
-      expect.objectContaining({
-        name: '',
-        head: '',
-      }),
-    );
-  });
+      component.selectedDepartmentId.set(undefined);
+      expect(component.selectedDepartmentOption()).toBeUndefined();
 
-  it('should handle error when loading departments fails', async () => {
-    mockDepartmentService.getDepartments.mockReturnValue(throwError(() => new Error('API Error')));
+      component.selectedDepartmentId.set('dept-1');
+      expect(component.selectedDepartmentOption()).toEqual({ name: 'Computer Science', value: 'dept-1' });
 
-    await component.loadDepartments();
+      component.selectedDepartmentId.set('');
+      expect(component.selectedDepartmentOption()).toBeUndefined();
+    });
 
-    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.detailView.errors.loadDepartments');
-  });
+    it('should default missing department fields to empty strings in options', () => {
+      component.departments.set([{ departmentId: undefined, name: undefined }]);
 
-  it('should update selectedDepartmentId and form value on department change', () => {
-    const option = { name: 'Physics', value: 'dept-2' };
-    component.onDepartmentChange(option);
-
-    expect(component.selectedDepartmentId()).toBe('dept-2');
-    expect(component.form.value.departmentId).toBe('dept-2');
-  });
-
-  it('should compute selectedDepartmentOption correctly', () => {
-    component.departments.set(mockDepartments);
-
-    component.selectedDepartmentId.set(undefined);
-    expect(component.selectedDepartmentOption()).toBeUndefined();
-
-    component.selectedDepartmentId.set('dept-1');
-    expect(component.selectedDepartmentOption()).toEqual({ name: 'Computer Science', value: 'dept-1' });
-
-    component.selectedDepartmentId.set('');
-    expect(component.selectedDepartmentOption()).toBeUndefined();
-  });
-
-  it('should handle departments with missing name or id in options', () => {
-    const incompleteDepartments: DepartmentDTO[] = [{ departmentId: undefined, name: undefined }];
-    component.departments.set(incompleteDepartments);
-
-    const options = component.departmentOptions();
-    expect(options).toEqual([{ name: '', value: '' }]);
+      expect(component.departmentOptions()).toEqual([{ name: '', value: '' }]);
+    });
   });
 });

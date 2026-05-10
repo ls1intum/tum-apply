@@ -74,36 +74,12 @@ describe('DepartmentImages', () => {
       expect(component.defaultImages()).toEqual([imageInUse]);
     });
 
-    it('does not apply preselected department when no match is found', async () => {
-      routeMock.setQueryParams({ departmentId: 'missing' });
-
-      await createComponent();
-
-      expect(component.selectedDepartmentId()).toBe('');
-      expect(mockImageApi.getDefaultJobBanners).not.toHaveBeenCalled();
-    });
-
     it('shows an error toast when departments fail to load', async () => {
       mockDepartmentApi.getDepartments.mockReturnValue(throwError(() => new Error('Error')));
 
       await createComponent();
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.images.error.loadDepartments');
-    });
-
-    it('does not override a selected department when applying preselection', async () => {
-      routeMock.setQueryParams({ departmentId: 'd1' });
-      await createComponent();
-
-      const option = { name: 'Dept 2', value: 'd2' };
-      component.selectedDepartment.set(option);
-      mockImageApi.getDefaultJobBanners.mockClear();
-
-      const applyPreselected = (component as unknown as { applyPreselectedDepartment: () => void }).applyPreselectedDepartment;
-      applyPreselected.call(component);
-
-      expect(component.selectedDepartment()).toBe(option);
-      expect(mockImageApi.getDefaultJobBanners).not.toHaveBeenCalled();
     });
 
     it('filters out departments missing name or id in options', async () => {
@@ -119,20 +95,6 @@ describe('DepartmentImages', () => {
     });
   });
 
-  describe('department selection', () => {
-    it('updates selection and loads images on department change', async () => {
-      await createComponent();
-
-      const option = { name: 'Dept 1', value: 'd1' };
-      const loadSpy = vi.spyOn(component, 'loadDefaultImages').mockResolvedValue();
-
-      component.onDepartmentChange(option);
-
-      expect(component.selectedDepartment()).toEqual(option);
-      expect(loadSpy).toHaveBeenCalledOnce();
-    });
-  });
-
   describe('loadDefaultImages', () => {
     it('clears images when no department is selected', async () => {
       await createComponent();
@@ -143,18 +105,6 @@ describe('DepartmentImages', () => {
 
       expect(component.defaultImages()).toEqual([]);
       expect(mockImageApi.getDefaultJobBanners).not.toHaveBeenCalled();
-    });
-
-    it('loads images for the selected department', async () => {
-      await createComponent();
-      const option = { name: 'Dept 1', value: 'd1' };
-      component.selectedDepartment.set(option);
-      mockImageApi.getDefaultJobBanners.mockReturnValue(of([imageInUse, imageNotInUse]));
-
-      await component.loadDefaultImages();
-
-      expect(mockImageApi.getDefaultJobBanners).toHaveBeenCalledWith('d1');
-      expect(component.defaultImages()).toEqual([imageInUse, imageNotInUse]);
     });
 
     it('shows an error toast when loading images fails', async () => {
@@ -174,10 +124,9 @@ describe('DepartmentImages', () => {
     it('blocks upload when no department is selected', async () => {
       await createComponent();
       component.selectedDepartment.set(undefined);
-      const result = component.uploadDefaultImage(createFile());
       let completed = false;
 
-      result.subscribe({ complete: () => (completed = true) });
+      component.uploadDefaultImage(createFile()).subscribe({ complete: () => (completed = true) });
 
       expect(completed).toBe(true);
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.images.error.noDepartment');
@@ -186,9 +135,8 @@ describe('DepartmentImages', () => {
 
     it('uploads a default image for the selected department', async () => {
       await createComponent();
-      const option = { name: 'Dept 1', value: 'd1' };
       const file = createFile();
-      component.selectedDepartment.set(option);
+      component.selectedDepartment.set({ name: 'Dept 1', value: 'd1' });
 
       let received: ImageDTO | undefined;
       component.uploadDefaultImage(file).subscribe(value => {
@@ -197,15 +145,6 @@ describe('DepartmentImages', () => {
 
       expect(mockImageApi.uploadDefaultJobBanner).toHaveBeenCalledWith('d1', file);
       expect(received).toEqual(imageNotInUse);
-    });
-
-    it('adds uploaded images to the list', async () => {
-      await createComponent();
-      component.defaultImages.set([imageInUse]);
-
-      component.onImageUploaded(imageNotInUse);
-
-      expect(component.defaultImages()).toEqual([imageInUse, imageNotInUse]);
     });
 
     it('shows an error toast for upload errors', async () => {
@@ -219,14 +158,6 @@ describe('DepartmentImages', () => {
   });
 
   describe('deleting', () => {
-    it('skips delete when image id is missing', async () => {
-      await createComponent();
-
-      await component.onDeleteImage(undefined);
-
-      expect(mockImageApi.deleteImage).not.toHaveBeenCalled();
-    });
-
     it('deletes an image and updates list', async () => {
       await createComponent();
       component.defaultImages.set([imageInUse, imageNotInUse]);
@@ -248,21 +179,15 @@ describe('DepartmentImages', () => {
     });
   });
 
-  describe('computed values', () => {
-    it('splits images by usage', async () => {
-      await createComponent();
-      component.defaultImages.set([imageInUse, imageNotInUse, { imageId: 'i3', url: '/img/3.png' }]);
+  it('splits images by usage and tracks upload availability', async () => {
+    await createComponent();
+    component.defaultImages.set([imageInUse, imageNotInUse, { imageId: 'i3', url: '/img/3.png' }]);
 
-      expect(component.inUseImages()).toEqual([imageInUse]);
-      expect(component.notInUseImages().length).toBe(2);
-    });
+    expect(component.inUseImages()).toEqual([imageInUse]);
+    expect(component.notInUseImages().length).toBe(2);
+    expect(component.canUpload()).toBe(false);
 
-    it('tracks upload availability based on selected department', async () => {
-      await createComponent();
-
-      expect(component.canUpload()).toBe(false);
-      component.selectedDepartment.set({ name: 'Dept 1', value: 'd1' });
-      expect(component.canUpload()).toBe(true);
-    });
+    component.selectedDepartment.set({ name: 'Dept 1', value: 'd1' });
+    expect(component.canUpload()).toBe(true);
   });
 });

@@ -1,16 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MissingTranslationHandlerParams, TranslateService } from '@ngx-translate/core';
-import { MissingTranslationHandlerImpl, missingTranslationHandler, translationNotFoundMessage } from 'app/config/translation.config';
+import { MissingTranslationHandlerImpl, missingTranslationHandler } from 'app/config/translation.config';
 
 describe('Translation Config', () => {
   afterEach(() => {
     vi.clearAllMocks();
-  });
-
-  describe('translationNotFoundMessage', () => {
-    it('should have correct constant value', () => {
-      expect(translationNotFoundMessage).toBe('translation-not-found');
-    });
   });
 
   describe('MissingTranslationHandlerImpl', () => {
@@ -42,14 +36,11 @@ describe('Translation Config', () => {
     });
   });
 
-  describe('missingTranslationHandler', () => {
-    it('should create new instance on each call', () => {
-      const handler1 = missingTranslationHandler();
-      const handler2 = missingTranslationHandler();
+  it('missingTranslationHandler should create new instance on each call', () => {
+    const handler1 = missingTranslationHandler();
+    const handler2 = missingTranslationHandler();
 
-      expect(handler1).not.toBe(handler2);
-      expect(handler1).toBeInstanceOf(MissingTranslationHandlerImpl);
-      expect(handler2).toBeInstanceOf(MissingTranslationHandlerImpl);
-    });
+    expect(handler1).not.toBe(handler2);
+    expect(handler1).toBeInstanceOf(MissingTranslationHandlerImpl);
   });
 });

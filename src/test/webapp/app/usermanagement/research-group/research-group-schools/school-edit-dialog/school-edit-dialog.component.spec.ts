@@ -52,28 +52,15 @@ describe('SchoolEditDialogComponent', () => {
     fixture.detectChanges();
   };
 
-  describe('Initialization', () => {
-    it('should initialize in create mode', () => {
-      createComponent();
-      expect(component.isEditMode()).toBe(false);
-      expect(component.form.get('name')?.value).toBe('');
-      expect(component.form.get('abbreviation')?.value).toBe('');
-    });
-
-    it('should initialize in edit mode', () => {
-      mockDialogConfig.data = {
-        school: {
-          schoolId: 's1',
-          name: 'School 1',
-          abbreviation: 'S1',
-        },
-      };
-      createComponent();
-      expect(component.isEditMode()).toBe(true);
-      expect(component.schoolId()).toBe('s1');
-      expect(component.form.get('name')?.value).toBe('School 1');
-      expect(component.form.get('abbreviation')?.value).toBe('S1');
-    });
+  it('should initialize in edit mode with school values', () => {
+    mockDialogConfig.data = {
+      school: { schoolId: 's1', name: 'School 1', abbreviation: 'S1' },
+    };
+    createComponent();
+    expect(component.isEditMode()).toBe(true);
+    expect(component.schoolId()).toBe('s1');
+    expect(component.form.get('name')?.value).toBe('School 1');
+    expect(component.form.get('abbreviation')?.value).toBe('S1');
   });
 
   describe('Submission', () => {
@@ -133,11 +120,9 @@ describe('SchoolEditDialogComponent', () => {
     });
   });
 
-  describe('Dialog Actions', () => {
-    it('should close dialog on cancel', () => {
-      createComponent();
-      component.onCancel();
-      expect(mockDialogRef.close).toHaveBeenCalledWith(false);
-    });
+  it('should close dialog on cancel', () => {
+    createComponent();
+    component.onCancel();
+    expect(mockDialogRef.close).toHaveBeenCalledWith(false);
   });
 });

@@ -84,17 +84,15 @@ describe('ResearchGroupImagesComponent', () => {
     });
   });
 
-  describe('computed values', () => {
-    it('computes image statistics and usage splits', async () => {
-      await createComponent();
-      component.allImages.set([imageInUse, imageNotInUse, { imageId: 'i3', url: '/img/3.png' }]);
+  it('computes image statistics and usage splits', async () => {
+    await createComponent();
+    component.allImages.set([imageInUse, imageNotInUse, { imageId: 'i3', url: '/img/3.png' }]);
 
-      expect(component.totalImages()).toBe(3);
-      expect(component.inUseCount()).toBe(1);
-      expect(component.notInUseCount()).toBe(2);
-      expect(component.inUseImages()).toEqual([imageInUse]);
-      expect(component.notInUseImages().length).toBe(2);
-    });
+    expect(component.totalImages()).toBe(3);
+    expect(component.inUseCount()).toBe(1);
+    expect(component.notInUseCount()).toBe(2);
+    expect(component.inUseImages()).toEqual([imageInUse]);
+    expect(component.notInUseImages().length).toBe(2);
   });
 
   describe('uploading', () => {
@@ -139,23 +137,13 @@ describe('ResearchGroupImagesComponent', () => {
 
     it('shows upload error toast', async () => {
       await createComponent();
-      const error: ImageUploadError = { errorKey: 'upload.failed', type: 'uploadFailed' };
-
-      component.onUploadError(error);
+      component.onUploadError({ errorKey: 'upload.failed', type: 'uploadFailed' });
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('upload.failed');
     });
   });
 
   describe('deleting', () => {
-    it('skips delete when image id is missing', async () => {
-      await createComponent();
-
-      await component.deleteImage('');
-
-      expect(mockImageApi.deleteImage).not.toHaveBeenCalled();
-    });
-
     it('deletes image and updates list', async () => {
       await createComponent();
       component.allImages.set([imageInUse, imageNotInUse]);

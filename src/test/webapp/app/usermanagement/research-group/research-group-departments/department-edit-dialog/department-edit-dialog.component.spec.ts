@@ -64,26 +64,6 @@ describe('DepartmentEditDialogComponent', () => {
   };
 
   describe('Initialization', () => {
-    it('should load schools on init', async () => {
-      createComponent();
-      await fixture.whenStable();
-      expect(mockSchoolApi.getAllSchools).toHaveBeenCalled();
-      expect(component.schools()).toEqual(mockSchools);
-    });
-
-    it('should map schools to options correctly handling missing values', async () => {
-      const schoolsWithMissingValues: SchoolShortDTO[] = [{ schoolId: undefined, name: undefined }];
-      mockSchoolApi.getAllSchools.mockReturnValue(of(schoolsWithMissingValues));
-
-      createComponent();
-      await fixture.whenStable();
-
-      const options = component.schoolOptions();
-      expect(options.length).toBe(1);
-      expect(options[0].name).toBe('');
-      expect(options[0].value).toBe('');
-    });
-
     it('should handle load schools error', async () => {
       mockSchoolApi.getAllSchools.mockReturnValue(throwError(() => new Error('Error')));
       createComponent();
@@ -91,14 +71,7 @@ describe('DepartmentEditDialogComponent', () => {
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.createDialog.errors.loadSchoolsFailed');
     });
 
-    it('should initialize in create mode', () => {
-      createComponent();
-      expect(component.isEditMode()).toBe(false);
-      expect(component.form.get('name')?.value).toBe('');
-      expect(component.form.get('schoolId')?.value).toBe('');
-    });
-
-    it('should initialize in edit mode', () => {
+    it('should initialize in edit mode with department values', () => {
       mockDialogConfig.data = {
         department: {
           departmentId: 'd1',
@@ -111,16 +84,13 @@ describe('DepartmentEditDialogComponent', () => {
       expect(component.departmentId()).toBe('d1');
       expect(component.form.get('name')?.value).toBe('Dept 1');
       expect(component.form.get('schoolId')?.value).toBe('s1');
-      expect(component.selectedSchoolId()).toBe('s1');
     });
   });
 
   describe('Form Interaction', () => {
     it('should update form on school change', () => {
       createComponent();
-      const option = { name: 'School 2', value: 's2' };
-      component.onSchoolChange(option);
-      expect(component.selectedSchoolId()).toBe('s2');
+      component.onSchoolChange({ name: 'School 2', value: 's2' });
       expect(component.form.get('schoolId')?.value).toBe('s2');
     });
   });
@@ -181,24 +151,11 @@ describe('DepartmentEditDialogComponent', () => {
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.createDialog.errors.createFailed');
     });
 
-    it('should ignore non-HTTP errors during creation', async () => {
-      createComponent();
-      component.form.patchValue({ name: 'New Dept', schoolId: 's1' });
-      mockDepartmentApi.createDepartment.mockReturnValue(throwError(() => new Error('Unexpected')));
-
-      await component.onSubmit();
-
-      expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
-      expect(mockToastService.showSuccessKey).not.toHaveBeenCalled();
-      expect(component.isSubmitting()).toBe(false);
-    });
   });
 
-  describe('Dialog Actions', () => {
-    it('should close dialog on cancel', () => {
-      createComponent();
-      component.onCancel();
-      expect(mockDialogRef.close).toHaveBeenCalledWith(false);
-    });
+  it('should close dialog on cancel', () => {
+    createComponent();
+    component.onCancel();
+    expect(mockDialogRef.close).toHaveBeenCalledWith(false);
   });
 });

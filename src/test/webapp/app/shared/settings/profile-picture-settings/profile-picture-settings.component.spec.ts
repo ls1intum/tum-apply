@@ -232,27 +232,15 @@ describe('ProfilePictureSettingsComponent', () => {
   it('should not upload without a cropped blob and should show an error when upload fails', async () => {
     setImageCropper(undefined);
     await component.onSave();
-
-    setImageCropper({
-      crop: vi.fn().mockResolvedValue(undefined),
-    });
-    await component.onSave();
-
-    setImageCropper({
-      crop: vi.fn().mockResolvedValue({ blob: undefined }),
-    });
+    setImageCropper({ crop: vi.fn().mockResolvedValue(undefined) });
     await component.onSave();
 
     const blob = new Blob(['cropped'], { type: 'image/jpeg' });
-    setImageCropper({
-      crop: vi.fn().mockResolvedValue({ blob }),
-    });
+    setImageCropper({ crop: vi.fn().mockResolvedValue({ blob }) });
+
     imageApiMock.uploadProfilePicture.mockReturnValue(of({ imageId: 'img-1', url: '   ' }));
-
     await component.onSave();
-
     imageApiMock.uploadProfilePicture.mockReturnValue(throwError(() => new Error('upload failed')));
-
     await component.onSave();
 
     expect(imageApiMock.uploadProfilePicture).toHaveBeenCalledTimes(2);
