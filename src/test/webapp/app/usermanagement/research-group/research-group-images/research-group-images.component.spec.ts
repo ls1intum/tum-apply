@@ -57,7 +57,7 @@ describe('ResearchGroupImagesComponent', () => {
       await createComponent();
 
       expect(component.selectedResearchGroupId()).toBe('');
-      expect(mockImageApi.getResearchGroupJobBanners).toHaveBeenCalled();
+      expect(mockImageApi.getResearchGroupJobBanners).toHaveBeenCalledOnce();
       expect(mockImageApi.getResearchGroupJobBannersByResearchGroup).not.toHaveBeenCalled();
       expect(component.allImages()).toEqual([imageInUse, imageNotInUse]);
       expect(component.isLoading()).toBe(false);

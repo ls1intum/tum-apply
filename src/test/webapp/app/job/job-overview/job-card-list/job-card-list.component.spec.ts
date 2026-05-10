@@ -78,7 +78,7 @@ describe('JobCardListComponent', () => {
   it('should load filters successfully', async () => {
     await component.loadAllFilter();
 
-    expect(jobApi.getAllFilters).toHaveBeenCalled();
+    expect(jobApi.getAllFilters).toHaveBeenCalledTimes(2);
     // allSubjectAreas is a static list of i18n keys from DropdownOptions
     expect(component.allSubjectAreas).toEqual(DropdownOptions.subjectAreas.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual(['Prof. X']);
@@ -96,7 +96,7 @@ describe('JobCardListComponent', () => {
   it('should load jobs successfully', async () => {
     await component.loadJobs();
 
-    expect(jobApi.getAvailableJobs).toHaveBeenCalled();
+    expect(jobApi.getAvailableJobs).toHaveBeenCalledTimes(2);
     expect(component.jobs().length).toBe(1);
     expect(component.totalRecords()).toBe(1);
   });
@@ -132,7 +132,12 @@ describe('JobCardListComponent', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it.each([
+  it.each<{
+    filterId: string;
+    values: string[];
+    selector: 'selectedSubjectAreaFilters' | 'selectedLocationFilters' | 'selectedSupervisorFilters';
+    expected: string[];
+  }>([
     {
       filterId: 'subjectArea',
       values: [DropdownOptions.subjectAreas[0].name],
@@ -155,7 +160,7 @@ describe('JobCardListComponent', () => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
     component.onFilterEmit({ filterId, selectedValues: values });
     fixture.detectChanges();
-    expect((component as any)[selector]()).toEqual(expected);
+    expect(component[selector]()).toEqual(expected);
     expect(spy).toHaveBeenCalledOnce();
   });
 
@@ -318,7 +323,7 @@ describe('JobCardListComponent', () => {
     fixture.detectChanges();
     expect(component.page()).toBe(0);
     expect(component.pageSize()).toBe(20);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should default initial language to EN when translateService.currentLang is undefined', () => {

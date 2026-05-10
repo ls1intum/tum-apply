@@ -6,6 +6,7 @@ import { convertToParamMap, Params, Router } from '@angular/router';
 import { ApplicationOverviewComponent } from 'app/evaluation/application-overview/application-overview.component';
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
 import { ApplicationEvaluationOverviewDTO } from 'app/generated/model/application-evaluation-overview-dto';
+import { ApplicationEvaluationOverviewListDTO } from 'app/generated/model/application-evaluation-overview-list-dto';
 import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { availableStatusOptions, sortableFields } from 'app/evaluation/filterSortOptions';
@@ -130,20 +131,20 @@ describe('ApplicationOverviewComponent', () => {
   // ---------------- SEARCH ----------------
   describe('Search', () => {
     it('should include search in URL only when non-empty', async () => {
-      (router.navigate as any).mockClear();
+      vi.mocked(router.navigate).mockClear();
       api.getApplicationsOverviews.mockClear();
 
       component.loadOnSearchEmit('');
       vi.runOnlyPendingTimers();
       await fixture.whenStable();
-      let nav = (router.navigate as any).mock.calls.at(-1) as [unknown[], { queryParams: Params; replaceUrl: boolean }];
+      let nav = vi.mocked(router.navigate).mock.calls.at(-1) as unknown as [unknown[], { queryParams: Params; replaceUrl: boolean }];
       expect(nav[1].queryParams.search).toBeUndefined();
 
-      (router.navigate as any).mockClear();
+      vi.mocked(router.navigate).mockClear();
       component.loadOnSearchEmit('abc');
       vi.runOnlyPendingTimers();
       await fixture.whenStable();
-      nav = (router.navigate as any).mock.calls.at(-1) as [unknown[], { queryParams: Params; replaceUrl: boolean }];
+      nav = vi.mocked(router.navigate).mock.calls.at(-1) as unknown as [unknown[], { queryParams: Params; replaceUrl: boolean }];
       expect(nav[1].queryParams.search).toBe('abc');
     });
   });
@@ -187,14 +188,14 @@ describe('ApplicationOverviewComponent', () => {
   // ---------------- NAVIGATION ----------------
   describe('Navigation', () => {
     it('should navigate to detail with current sort params and applicationId', async () => {
-      (router.navigate as any).mockClear();
+      vi.mocked(router.navigate).mockClear();
       component.sortBy.set('name');
       component.sortDirection.set('DESC');
 
       const app = makeOverview('abc');
       component.navigateToDetail(app);
 
-      const call = (router.navigate as any).mock.calls.at(-1) as [string[], { queryParams: Params }];
+      const call = vi.mocked(router.navigate).mock.calls.at(-1) as unknown as [string[], { queryParams: Params }];
       expect(call[0]).toEqual(['/evaluation/application']);
       expect(call[1].queryParams.applicationId).toBe('abc');
       expect(call[1].queryParams.sortBy).toBe('name');
@@ -228,8 +229,8 @@ describe('ApplicationOverviewComponent', () => {
   describe('API Result Normalization', () => {
     it('should normalize missing properties from API responses', async () => {
       api.getApplicationsOverviews
-        .mockReturnValueOnce(of({} as any))
-        .mockReturnValueOnce(of({ applications: undefined, totalRecords: 7 } as any));
+        .mockReturnValueOnce(of({} as unknown as ApplicationEvaluationOverviewListDTO))
+        .mockReturnValueOnce(of({ applications: undefined, totalRecords: 7 } as unknown as ApplicationEvaluationOverviewListDTO));
 
       await component.loadPage();
       await vi.runAllTimersAsync();
@@ -246,7 +247,7 @@ describe('ApplicationOverviewComponent', () => {
   // ---------------- TABLE PAGING EVENTS ----------------
   describe('Table Paging Events', () => {
     it('should default first=0 and rows=10 when table event fields are undefined', async () => {
-      component.loadOnTableEmit({ first: undefined, rows: undefined } as any);
+      component.loadOnTableEmit({ first: undefined, rows: undefined });
       expect(component.page()).toBe(0);
       expect(component.pageSize()).toBe(10);
     });

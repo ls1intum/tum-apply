@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { PrivacyPageComponent } from 'app/shared/pages/privacy-page/privacy-page.component';
 import { UserDataExportResourceApi } from 'app/generated/api/user-data-export-resource-api';
-import { DataExportStatusDTOStatusEnum } from 'app/generated/model/data-export-status-dto';
+import { DataExportStatusDTO, DataExportStatusDTOStatusEnum } from 'app/generated/model/data-export-status-dto';
 
 import { createToastServiceMock, provideToastServiceMock } from 'src/test/webapp/util/toast-service.mock';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
@@ -89,7 +89,7 @@ describe('PrivacyPageComponent', () => {
       const prevCalls = serviceMocks.getDataExportStatus.mock.calls.length;
       vi.spyOn(accountServiceMock, 'signedIn').mockReturnValue(false);
 
-      await (component as any).refreshStatus();
+      await component['refreshStatus']();
 
       expect(serviceMocks.getDataExportStatus).toHaveBeenCalledTimes(prevCalls);
     });
@@ -151,11 +151,11 @@ describe('PrivacyPageComponent', () => {
 
     it('should set cooldownSeconds to 0 when API returns explicit undefined cooldownSeconds', async () => {
       serviceMocks.getDataExportStatus.mockReturnValue(
-        of({ status: DataExportStatusDTOStatusEnum.EmailSent, cooldownSeconds: undefined } as any),
+        of({ status: DataExportStatusDTOStatusEnum.EmailSent, cooldownSeconds: undefined } as unknown as DataExportStatusDTO),
       );
       (accountServiceMock.signedIn as WritableSignal<boolean>).set(true);
 
-      await (component as any).refreshStatus();
+      await component['refreshStatus']();
 
       expect(componentAccess.currentExportStatus()).toBe(DataExportStatusDTOStatusEnum.EmailSent);
       expect(componentAccess.cooldownSeconds()).toBe(0);

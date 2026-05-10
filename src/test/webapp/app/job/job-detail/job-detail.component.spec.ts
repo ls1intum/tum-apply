@@ -145,7 +145,7 @@ describe('JobDetailComponent', () => {
       component.jobId.set('');
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       component.onEditJob();
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalledOnce();
     });
 
     it('should navigate to research group info on onEditResearchGroup', () => {
@@ -525,7 +525,7 @@ describe('JobDetailComponent', () => {
       pdfExportApi.exportJobPreviewToPDF.mockReturnValue(of(makePdfResponse('attachment; filename="preview.pdf"')));
       fixture.componentRef.setInput('previewData', signal({ title: 'Preview', supervisingProfessor: 'u1' } as JobFormDTO));
       await component.onDownloadPDF();
-      expect(pdfExportApi.exportJobPreviewToPDF).toHaveBeenCalled();
+      expect(pdfExportApi.exportJobPreviewToPDF).toHaveBeenCalledOnce();
     });
 
     it.each([

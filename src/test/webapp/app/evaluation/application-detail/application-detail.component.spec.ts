@@ -25,7 +25,7 @@ function makeDetailApp(id: string, state: string = ApplicationDetailDTOApplicati
       jobId: 'job-1',
       supervisingProfessorName: 'Prof. Test',
       researchGroup: 'AI Lab',
-      applicationState: state as any,
+      applicationState: state as ApplicationDetailDTOApplicationStateEnum,
     },
   } as ApplicationEvaluationDetailDTO;
 }
@@ -102,12 +102,12 @@ describe('ApplicationDetailComponent', () => {
       },
       {
         name: 'job filter change',
-        call: () => component.onFilterEmit({ filterId: 'jobTitle', selectedValues: ['Job A'] } as any),
+        call: () => component.onFilterEmit({ filterId: 'jobTitle', selectedValues: ['Job A'] }),
         assert: () => expect(component.selectedJobFilters()).toEqual(['Job A']),
       },
       {
         name: 'status filter change',
-        call: () => component.onFilterEmit({ filterId: 'status', selectedValues: [availableStatusOptions[0].label] } as any),
+        call: () => component.onFilterEmit({ filterId: 'status', selectedValues: [availableStatusOptions[0].label] }),
         assert: () => expect(component.selectedStatusFilters()).toContain(availableStatusOptions[0].key),
       },
     ])('should trigger loadInitialPage on $name', async ({ call, assert }) => {
@@ -116,17 +116,17 @@ describe('ApplicationDetailComponent', () => {
         .mockResolvedValue(undefined);
       call();
       assert();
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledOnce();
     });
 
     it('should handle sort change correctly', async () => {
       const spy = vi
         .spyOn(component as unknown as { loadInitialPage: () => Promise<void> }, 'loadInitialPage')
         .mockResolvedValue(undefined);
-      component.loadOnSortEmit({ field: 'name', direction: 'ASC' } as any);
+      component.loadOnSortEmit({ field: 'name', direction: 'ASC' });
       expect(component.sortBy()).toBe('name');
       expect(component.sortDirection()).toBe('ASC');
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledOnce();
     });
   });
 
@@ -151,7 +151,7 @@ describe('ApplicationDetailComponent', () => {
       await act();
       expect(component.currentApplication()?.applicationDetailDTO.applicationState).toBe(expectState);
       expect(component.reviewDialogVisible()).toBe(false);
-      expect(apiSpy()).toHaveBeenCalled();
+      expect(apiSpy()).toHaveBeenCalledOnce();
     });
 
     it('should open accept and reject dialogs', () => {
@@ -184,7 +184,7 @@ describe('ApplicationDetailComponent', () => {
       [ApplicationDetailDTOApplicationStateEnum.Sent, true],
       [ApplicationDetailDTOApplicationStateEnum.InReview, true],
     ])('canReview for %s -> %s', (state, expected) => {
-      component.currentApplication.set(makeDetailApp('x', state as any));
+      component.currentApplication.set(makeDetailApp('x', state));
       expect(component.canReview()).toBe(expected);
     });
   });
@@ -295,7 +295,7 @@ describe('ApplicationDetailComponent', () => {
       expect(component.applications().length).toBe(2);
       expect(component.currentApplication()?.applicationDetailDTO.applicationId).toBe('2');
       expect(updateDocSpy).toHaveBeenCalledWith('2');
-      expect(markSpy).toHaveBeenCalled();
+      expect(markSpy).toHaveBeenCalledOnce();
     });
 
     it('should toast error in loadCarousel on failure', async () => {
@@ -318,7 +318,7 @@ describe('ApplicationDetailComponent', () => {
 
       expect(component.applications().length).toBeLessThanOrEqual(7);
       expect(component.carouselIndex()).toBeLessThan(5);
-      expect(updateDocSpy).toHaveBeenCalled();
+      expect(updateDocSpy).toHaveBeenCalledOnce();
     });
 
     it('should build query params and updateUrl', async () => {
@@ -357,7 +357,7 @@ describe('ApplicationDetailComponent', () => {
         pre: {},
         expect: (c: ApplicationDetailComponent, s: any, w: any) => {
           expect(c.sortDirection()).toBe('DESC');
-          expect(s).toHaveBeenCalled();
+          expect(s).toHaveBeenCalledOnce();
           expect(w).not.toHaveBeenCalled();
         },
       },
@@ -366,7 +366,7 @@ describe('ApplicationDetailComponent', () => {
         pre: { sortBy: 'manualField', isSortInitiatedByUser: true },
         expect: (c: ApplicationDetailComponent, s: any) => {
           expect(c.sortBy()).toBe('manualField');
-          expect(s).toHaveBeenCalled();
+          expect(s).toHaveBeenCalledOnce();
         },
       },
       {

@@ -106,7 +106,7 @@ describe('MenuComponent', () => {
       const event = new Event('click');
 
       if (withEvent) {
-        (fixture.componentInstance as any)[method](event);
+        (fixture.componentInstance[method] as (e: Event) => void)(event);
         expect(spy).toHaveBeenCalledWith(event);
       } else {
         fixture.componentInstance.hide();

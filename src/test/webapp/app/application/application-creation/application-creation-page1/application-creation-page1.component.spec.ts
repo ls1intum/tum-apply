@@ -19,6 +19,7 @@ import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated
 import { provideHttpClientMock } from 'util/http-client.mock';
 import { provideToastServiceMock } from 'util/toast-service.mock';
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 
 describe('ApplicationPage1Component', () => {
   let accountService: Pick<AccountService, 'signedIn'>;
@@ -125,8 +126,8 @@ describe('ApplicationPage1Component', () => {
     comp.changed.subscribe(changedSpy);
     comp.valid.subscribe(validSpy);
     form.controls.firstName.setValue('Bob');
-    expect(changedSpy).toHaveBeenCalled();
-    expect(validSpy).toHaveBeenCalled();
+    expect(changedSpy).toHaveBeenCalledOnce();
+    expect(validSpy).toHaveBeenCalledTimes(2);
   });
 
   it('setDateOfBirth should update data and emit changed', () => {
@@ -135,7 +136,7 @@ describe('ApplicationPage1Component', () => {
 
     comp.setDateOfBirth('2000-12-31');
     expect(comp.data().dateOfBirth).toBe('2000-12-31');
-    expect(changedSpy).toHaveBeenCalled();
+    expect(changedSpy).toHaveBeenCalledOnce();
   });
 
   it('updateSelect should update select fields and emit changed', () => {
@@ -145,7 +146,7 @@ describe('ApplicationPage1Component', () => {
     const nationalityOption = { value: 'FR', name: 'France' };
     comp.updateSelect('nationality', nationalityOption);
     expect(comp.data().nationality).toBe(nationalityOption);
-    expect(changedSpy).toHaveBeenCalled();
+    expect(changedSpy).toHaveBeenCalledOnce();
   });
 
   it.each([
@@ -162,7 +163,7 @@ describe('ApplicationPage1Component', () => {
     comp.changed.subscribe(changedSpy);
     comp.updateSelect('gender', undefined);
     expect(comp.data().gender).toBeUndefined();
-    expect(changedSpy).toHaveBeenCalled();
+    expect(changedSpy).toHaveBeenCalledOnce();
   });
 
   it('setDateOfBirth should handle undefined input', () => {
@@ -170,7 +171,7 @@ describe('ApplicationPage1Component', () => {
     comp.changed.subscribe(changedSpy);
     comp.setDateOfBirth(undefined);
     expect(comp.data().dateOfBirth).toBe('');
-    expect(changedSpy).toHaveBeenCalled();
+    expect(changedSpy).toHaveBeenCalledOnce();
   });
 
   it('getPage1FromApplication handles missing fields gracefully', () => {
@@ -194,7 +195,7 @@ describe('ApplicationPage1Component', () => {
     [[], false],
     [[{ id: '1', size: 1 }], true],
   ])('cvDocsSetValidity(%j) -> cvValid=%s', (docs, expected) => {
-    comp.cvDocsSetValidity(docs as any);
+    comp.cvDocsSetValidity(docs as DocumentInformationHolderDTO[] | undefined);
     expect(comp.cvValid()).toBe(expected);
   });
 
@@ -240,6 +241,6 @@ describe('ApplicationPage1Component', () => {
   ])('computedDocumentIdsCvSet(%j) -> %j', (doc, expected) => {
     fixture.componentRef.setInput('documentIdsCv', doc);
     fixture.detectChanges();
-    expect(comp.computedDocumentIdsCvSet()).toEqual(expected as any);
+    expect(comp.computedDocumentIdsCvSet()).toEqual(expected);
   });
 });

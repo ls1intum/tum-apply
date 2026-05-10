@@ -231,7 +231,7 @@ describe('HeaderComponent', () => {
     });
 
     it('should not throw when profileMenu is undefined', () => {
-      vi.spyOn(component as any, 'profileMenu').mockReturnValue(undefined);
+      vi.spyOn(component, 'profileMenu').mockReturnValue(undefined);
 
       expect(() => component.toggleProfileMenu(new MouseEvent('click'))).not.toThrow();
     });

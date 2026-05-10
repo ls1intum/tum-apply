@@ -48,7 +48,7 @@ describe('ApplicationPage3Component', () => {
     fixture.detectChanges();
     expect(comp.hasInitialized()).toBe(true);
 
-    comp.data.set(undefined as any);
+    comp.data.set(undefined);
     comp.hasInitialized.set(false);
     fixture.detectChanges();
     expect(comp.hasInitialized()).toBe(false);

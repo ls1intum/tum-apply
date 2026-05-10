@@ -71,7 +71,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
       ['empty', 'genderDecoder.formulationTexts.neutral'],
       ['unknown-type', 'genderDecoder.formulationTexts.neutral'],
     ])('should map coding %s to coding key %s', (coding, expected) => {
-      const { component } = createComponentWithInputs(true, { coding: coding as any, biasedWords: [] });
+      const { component } = createComponentWithInputs(true, { coding, biasedWords: [] });
       expect(component.codingTranslationKey()).toBe(expected);
     });
 
@@ -82,7 +82,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
       ['empty', 'genderDecoder.explanations.empty'],
       ['unknown-type', 'genderDecoder.explanations.neutral'],
     ])('should map coding %s to explanation key %s', (coding, expected) => {
-      const { component } = createComponentWithInputs(true, { coding: coding as any, biasedWords: [] });
+      const { component } = createComponentWithInputs(true, { coding, biasedWords: [] });
       expect(component.explanationTranslationKey()).toBe(expected);
     });
 

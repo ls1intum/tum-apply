@@ -149,7 +149,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
         } as UserShortDTO),
       );
 
-      await (component as any).prefillProfessorData();
+      await component['prefillProfessorData']();
 
       expect(component.form.get('firstName')?.value).toBe('Anna');
       expect(component.form.get('researchGroupHead')?.value).toBe('Anna Muster');
@@ -160,7 +160,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
         of({ firstName: 'OtherFirst', email: 'other@tum.de', universityId: 'ab12cde' } as UserShortDTO),
       );
 
-      await (component as any).prefillProfessorData();
+      await component['prefillProfessorData']();
 
       expect(component.form.get('firstName')?.value).toBe('ManualFirst');
       expect(component.form.get('researchGroupContactEmail')?.value).toBe('manual@tum.de');

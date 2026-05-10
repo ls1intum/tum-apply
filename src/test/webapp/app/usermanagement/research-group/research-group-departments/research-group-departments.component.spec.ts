@@ -159,7 +159,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
         }),
       );
       // Should reload departments once after dialog closed with true
-      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledTimes(1);
+      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should not reload if create dialog cancelled', () => {
@@ -190,7 +190,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
           data: { department: mockDepartments[0] },
         }),
       );
-      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledTimes(1);
+      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should not open edit dialog if id is missing or department not found', () => {
@@ -228,7 +228,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
 
       expect(mockDepartmentApi.deleteDepartment).toHaveBeenCalledWith('1');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.departments.toastMessages.deleteSuccess');
-      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledTimes(1);
+      expect(mockDepartmentApi.getDepartmentsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should handle delete error', () => {

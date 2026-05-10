@@ -94,7 +94,7 @@ describe('SlotCreationFormComponent', () => {
 
       expect(component['sortedDates']()[0].getTime()).toBe(date2.getTime());
       expect(component['sortedDates']()[1].getTime()).toBe(date1.getTime());
-      expect(mockInterviewService.getConflictDataForDate).toHaveBeenCalled();
+      expect(mockInterviewService.getConflictDataForDate).toHaveBeenCalledTimes(3);
 
       component.onDateSelect(date1);
       expect(component['selectedDatesSignal']()).toHaveLength(1);

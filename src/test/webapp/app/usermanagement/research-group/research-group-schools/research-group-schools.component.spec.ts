@@ -110,7 +110,7 @@ describe('ResearchGroupSchoolsComponent', () => {
           header: expect.any(String),
         }),
       );
-      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(1);
+      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should not reload if create dialog cancelled', async () => {
@@ -137,7 +137,7 @@ describe('ResearchGroupSchoolsComponent', () => {
           data: { school: mockSchools[0] },
         }),
       );
-      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(1);
+      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should not open edit dialog if id is missing or school not found', async () => {
@@ -156,7 +156,7 @@ describe('ResearchGroupSchoolsComponent', () => {
 
       expect(mockSchoolApi.deleteSchool).toHaveBeenCalledWith('s1');
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.schools.toastMessages.deleteSuccess');
-      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledTimes(1);
+      expect(mockSchoolApi.getSchoolsForAdmin).toHaveBeenCalledOnce();
     });
 
     it('should handle delete error', async () => {

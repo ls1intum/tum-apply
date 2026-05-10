@@ -79,7 +79,7 @@ describe('DocumentCacheService', () => {
   it('should enforce max size limit and evict oldest entry', () => {
     // Set maxSize to a small number for testing
     const maxSize = 3;
-    (service as any).maxSize = maxSize;
+    (service as unknown as { maxSize: number }).maxSize = maxSize;
 
     const documentIds = ['doc-1', 'doc-2', 'doc-3', 'doc-4'];
     const mockUrls = ['blob:url-1', 'blob:url-2', 'blob:url-3', 'blob:url-4'];

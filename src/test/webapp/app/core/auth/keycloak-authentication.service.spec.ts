@@ -181,7 +181,7 @@ describe('KeycloakAuthenticationService', () => {
     const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
     Object.defineProperty(document, 'hidden', { value: false, configurable: true });
 
-    (service as any).bindWindowListeners();
+    (service as unknown as { bindWindowListeners(): void }).bindWindowListeners();
 
     document.dispatchEvent(new Event('visibilitychange'));
     window.dispatchEvent(new Event('focus'));

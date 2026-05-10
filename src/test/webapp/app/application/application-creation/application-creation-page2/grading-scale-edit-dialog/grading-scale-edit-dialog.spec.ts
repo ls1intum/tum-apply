@@ -12,6 +12,11 @@ import { createTranslateServiceMock, provideTranslateMock } from 'util/translate
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { GradingScaleEditDialogComponent } from 'app/application/application-creation/application-creation-page2/grading-scale-edit-dialog/grading-scale-edit-dialog';
 
+type GradingScaleEditDialogTestable = Omit<GradingScaleEditDialogComponent, 'isValid' | 'isPercentageGrade'> & {
+  isValid: () => boolean;
+  isPercentageGrade: () => boolean;
+};
+
 async function configureTestBed(dialogConfig: DynamicDialogConfig, dialogRef: DynamicDialogRefMock): Promise<void> {
   await TestBed.configureTestingModule({
     imports: [GradingScaleEditDialogComponent],
@@ -168,8 +173,8 @@ describe('GradingScaleEditDialogComponent', () => {
 
     it('should add % to both limits when grade is percentage type and values have no % sign', () => {
       comp.data.set({ upperLimit: '90', lowerLimit: '50', isPercentage: true });
-      (comp as any).isValid = () => true;
-      (comp as any).isPercentageGrade = () => true;
+      (comp as unknown as GradingScaleEditDialogTestable).isValid = () => true;
+      (comp as unknown as GradingScaleEditDialogTestable).isPercentageGrade = () => true;
 
       comp.onSave();
 
@@ -179,8 +184,8 @@ describe('GradingScaleEditDialogComponent', () => {
 
     it('should normalize percentage values (strip and re-add %) when limits already contain %', () => {
       comp.data.set({ upperLimit: '90%', lowerLimit: '50%', isPercentage: true });
-      (comp as any).isValid = () => true;
-      (comp as any).isPercentageGrade = () => true;
+      (comp as unknown as GradingScaleEditDialogTestable).isValid = () => true;
+      (comp as unknown as GradingScaleEditDialogTestable).isPercentageGrade = () => true;
 
       comp.onSave();
 
@@ -190,8 +195,8 @@ describe('GradingScaleEditDialogComponent', () => {
 
     it('should not modify limit values when grade is non-percentage type, even if values contain %', () => {
       comp.data.set({ upperLimit: originalUpperLimitPercentage, lowerLimit: originalLowerLimitPercentage, isPercentage: false });
-      (comp as any).isValid = () => true;
-      (comp as any).isPercentageGrade = () => false;
+      (comp as unknown as GradingScaleEditDialogTestable).isValid = () => true;
+      (comp as unknown as GradingScaleEditDialogTestable).isPercentageGrade = () => false;
 
       comp.onSave();
 

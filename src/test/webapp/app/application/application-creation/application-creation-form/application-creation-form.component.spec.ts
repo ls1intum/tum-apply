@@ -36,11 +36,14 @@ import { createUserResourceApiMock, provideUserResourceApiMock, UserResourceApiM
 import { ActivatedRouteMock, createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 
 function spyOnPrivate<T extends object>(obj: T, methodName: string) {
-  return vi.spyOn(obj as any, methodName);
+  return vi.spyOn(obj as unknown as Record<string, (...args: unknown[]) => unknown>, methodName);
 }
 
-function mockReturnValuePrivate<R>(spy: MockInstance<(this: unknown, ...args: unknown[]) => unknown> | MockInstance<any>, mockValue: R) {
-  return spy.mockReturnValue(mockValue as any);
+function mockReturnValuePrivate<R>(
+  spy: { mockReturnValue: (value: unknown) => MockInstance<(...args: never[]) => unknown> },
+  mockValue: R,
+) {
+  return spy.mockReturnValue(mockValue);
 }
 
 type MockDialogRef = Pick<DynamicDialogRef, 'close'>;
@@ -73,7 +76,7 @@ async function configureTestBed(config: TestBedConfig) {
   return await TestBed.configureTestingModule({
     imports: [ApplicationCreationFormComponent],
     providers: [
-      provideAccountServiceMock(config.accountService as any),
+      provideAccountServiceMock(config.accountService),
       provideApplicationResourceApiMock(config.applicationApi),
       provideRouterMock(config.router),
       provideLocationMock(config.location),
@@ -384,7 +387,7 @@ describe('ApplicationForm', () => {
       const result = await comp.sendCreateApplicationData(ApplicationForApplicantDTOApplicationStateEnum.Sent, true);
 
       expect(applicationApi.updateApplication).toHaveBeenCalledWith(mockUpdateDTO);
-      expect(clearLocalStorageSpy).toHaveBeenCalled();
+      expect(clearLocalStorageSpy).toHaveBeenCalledOnce();
       expect(toast.showSuccessKey).toHaveBeenCalledWith('entity.toast.applyFlow.submitted');
       expect(router.navigate).toHaveBeenCalledWith(['/application/overview']);
       expect(result).toBe(true);
@@ -497,7 +500,7 @@ describe('ApplicationForm', () => {
       comp.applicationState.set('SAVED');
       const result = comp['mapPagesToDTO'](undefined);
       expect(result.applicationState).toBe('SAVED');
-      expect((result.applicant as any)?.city).toBeUndefined();
+      expect(result.applicant?.city).toBeUndefined();
     });
   });
 
@@ -637,7 +640,7 @@ describe('ApplicationForm', () => {
       expect(openOtpSpy).toHaveBeenCalledWith('test@example.com', 'Jane', 'Smith');
       expect(comp.applicantId()).toBe('');
       expect(migrateDraftSpy).not.toHaveBeenCalled();
-      expect((progressStepperMock as any).goToStep).not.toHaveBeenCalled();
+      expect(vi.mocked(progressStepperMock.goToStep)).not.toHaveBeenCalled();
     });
 
     it('should set applicantId, migrate draft, and step forward on successful auth', async () => {
@@ -656,8 +659,8 @@ describe('ApplicationForm', () => {
 
       expect(openOtpSpy).toHaveBeenCalledWith('test@example.com', 'Jane', 'Smith');
       expect(comp.applicantId()).toBe('valid-user-789');
-      expect(migrateDraftSpy).toHaveBeenCalled();
-      expect((progressStepperMock as any).goToStep).toHaveBeenCalledWith(2);
+      expect(migrateDraftSpy).toHaveBeenCalledOnce();
+      expect(vi.mocked(progressStepperMock.goToStep)).toHaveBeenCalledWith(2);
     });
   });
 
@@ -676,13 +679,13 @@ describe('ApplicationForm', () => {
       steps[0].buttonGroupPrev[0].onClick();
       await new Promise(resolve => setTimeout(resolve, 10));
       expect(flushSpy).toHaveBeenCalledOnce();
-      expect(location.back).toHaveBeenCalled();
+      expect(location.back).toHaveBeenCalledOnce();
     });
 
     it('should call handleNextFromStep1 on personalInfo next button', () => {
       const handleNextSpy = spyOnPrivate(comp, 'handleNextFromStep1').mockImplementation(() => {});
       comp.stepData()[0].buttonGroupNext[0].onClick();
-      expect(handleNextSpy).toHaveBeenCalled();
+      expect(handleNextSpy).toHaveBeenCalledOnce();
     });
 
     it('should set showSendDialog true on summary send button', () => {
@@ -710,7 +713,7 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(true);
       const saveToLocalStorageSpy = spyOnPrivate(comp, 'saveToLocalStorage').mockReturnValue(true);
       const saved = await comp.executeAutoSave();
-      expect(saveToLocalStorageSpy).toHaveBeenCalled();
+      expect(saveToLocalStorageSpy).toHaveBeenCalledOnce();
       expect(saved).toBe(true);
     });
 

@@ -292,12 +292,14 @@ describe('ApplicationPage2Component', () => {
 
       const upperKey = `${gradeType}GradeUpperLimit`;
       const lowerKey = `${gradeType}GradeLowerLimit`;
-      const limitsKey = gradeType === 'bachelor' ? 'bachelorGradeLimits' : 'masterGradeLimits';
-      const manuallyKey = gradeType === 'bachelor' ? 'bachelorLimitsManuallySet' : 'masterLimitsManuallySet';
+      const limitsKey: 'bachelorGradeLimits' | 'masterGradeLimits' =
+        gradeType === 'bachelor' ? 'bachelorGradeLimits' : 'masterGradeLimits';
+      const manuallyKey: 'bachelorLimitsManuallySet' | 'masterLimitsManuallySet' =
+        gradeType === 'bachelor' ? 'bachelorLimitsManuallySet' : 'masterLimitsManuallySet';
       expect(componentInstance.page2Form.get(upperKey)?.value).toBe('5.0');
       expect(componentInstance.page2Form.get(lowerKey)?.value).toBe('1.0');
-      expect((componentInstance as any)[limitsKey]()).toEqual({ upperLimit: '5.0', lowerLimit: '1.0' });
-      expect((componentInstance as any)[manuallyKey]()).toBe(true);
+      expect(componentInstance[limitsKey]()).toEqual({ upperLimit: '5.0', lowerLimit: '1.0' });
+      expect(componentInstance[manuallyKey]()).toBe(true);
     });
 
     it('should not update limits when dialog closes without result', async () => {

@@ -16,6 +16,8 @@ import {
 } from '../../../util/auth-orchestrator.service.mock';
 import { createRouterMock, provideRouterMock, RouterMock } from '../../../util/router.mock';
 
+type AuthFacadeInternals = { authMethod: 'none' | 'server' | 'keycloak' };
+
 function setup() {
   const server = { refreshTokens: vi.fn(), login: vi.fn(), sendOtp: vi.fn(), verifyOtp: vi.fn(), logout: vi.fn() };
   const keycloak = Object.assign(createKeycloakMock(), {
@@ -102,7 +104,7 @@ describe('AuthFacadeService', () => {
       // Finish the slow init; it must not overwrite the server-established session.
       resolveKeycloakInit(true);
       await initPromise;
-      expect((facade as any).authMethod).toBe('server');
+      expect((facade as unknown as AuthFacadeInternals).authMethod).toBe('server');
     });
   });
 
@@ -175,7 +177,7 @@ describe('AuthFacadeService', () => {
   describe('logout', () => {
     it('server path', async () => {
       const { facade, server, account, router, docCache } = setup();
-      (facade as any).authMethod = 'server';
+      (facade as unknown as AuthFacadeInternals).authMethod = 'server';
       account.user.set({ id: 'id-2', name: 'User', email: 'user@test.com', authorities: ['PROFESSOR'] });
       account.loaded.set(true);
       account.loaded.set(true);
@@ -190,7 +192,7 @@ describe('AuthFacadeService', () => {
 
     it('keycloak path', async () => {
       const { facade, keycloak, account, docCache } = setup();
-      (facade as any).authMethod = 'keycloak';
+      (facade as unknown as AuthFacadeInternals).authMethod = 'keycloak';
       account.user.set({ id: 'id-2', name: 'User', email: 'user@test.com', authorities: ['ROLE_USER'] });
       await facade.logout();
       expect(docCache.clear).toHaveBeenCalledOnce();

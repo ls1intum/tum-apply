@@ -48,7 +48,7 @@ describe('OtpInput', () => {
 
   const getIsRegistration = (component: OtpInput): boolean => component.getRegistrationFlag();
 
-  const getFormControl = (component: OtpInput) => (component as any).formControl();
+  const getFormControl = (component: OtpInput) => component.formControl();
 
   function createComponent() {
     const fixture = TestBed.createComponent(OtpInput);
@@ -110,12 +110,12 @@ describe('OtpInput', () => {
     expect(fixture.componentInstance.otpSize()).toBe(expected);
   });
 
-  it.each<[any, boolean, boolean]>([
+  it.each<[unknown, boolean, boolean]>([
     [{ registration: true }, false, true],
     [{}, true, true],
     [undefined, true, true],
   ])('should resolve registration flag from dialog data %o vs input %s', (dialogData, inputFlag, expected) => {
-    (dynamicDialogConfigMock as any).data = dialogData;
+    dynamicDialogConfigMock.data = dialogData;
     const fixture = createComponent();
     fixture.componentRef.setInput('registration', inputFlag);
     fixture.detectChanges();
@@ -234,7 +234,7 @@ describe('OtpInput', () => {
 
   it('should allow submit when OTP length is correct even if an error is present', () => {
     authOrchestratorServiceMock.isBusy.set(false);
-    authOrchestratorServiceMock.error.set({ message: 'error' } as any);
+    authOrchestratorServiceMock.error.set({ message: 'error' } as unknown as string);
 
     const fixture = createComponent();
     const component = fixture.componentInstance;

@@ -31,11 +31,11 @@ describe('EmployeeRequestAccessFormComponent', () => {
     mockToastService = createToastServiceMock();
 
     mockResearchGroupService = {
-      createEmployeeResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as any)),
+      createEmployeeResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as unknown as void)),
     };
 
     mockProfOnboardingService = {
-      confirmOnboarding: vi.fn(() => of(undefined)) as any,
+      confirmOnboarding: vi.fn(() => of(undefined)),
     };
 
     await TestBed.configureTestingModule({
