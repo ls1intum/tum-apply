@@ -1,5 +1,5 @@
 <header
-  class="flex items-center justify-between gap-1 sm:gap-0 px-0 sm:px-6 sticky top-0 z-20 overflow-x-auto h-12 border-b transition-colors duration-300"
+  class="flex items-center justify-between gap-1 sm:gap-0 px-3 sm:px-6 sticky top-0 z-20 overflow-x-auto h-12 border-b transition-colors duration-300"
   [class.border-border-default]="showBorder()"
   [class.border-transparent]="!showBorder()"
   [class.shadow-sm]="showBorder()"
@@ -33,7 +33,7 @@
       }
     </div>
 
-    <div class="relative -mx-1">
+    <div class="relative">
       <jhi-button
         class="[&_.p-button]:w-8 [&_.p-button]:h-8 [&_.p-button]:rounded-md"
         (click)="toggleTheme()"
@@ -86,26 +86,6 @@
       }
 
       <div class="h-4 mx-0.5 w-px bg-primary-default self-center"></div>
-
-      <span class="hidden sm:inline-flex">
-        <jhi-button
-          [class]="headerButtonClass"
-          (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
-          label="auth.passkey.buttons.passkey"
-          icon="lock"
-          severity="primary"
-          variant="text"
-        />
-      </span>
-      <span class="inline-flex sm:hidden">
-        <jhi-button
-          [class]="headerButtonClass"
-          (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
-          label="auth.passkey.buttons.passkeyShort"
-          severity="primary"
-          variant="text"
-        />
-      </span>
 
       <jhi-button
         [class]="headerButtonClass"

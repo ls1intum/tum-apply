@@ -87,15 +87,23 @@ public class PDFExportService {
                 .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
                 .addOverviewItem(
                     labels.get("duration"),
-                    formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years"))
+                    formatDurationForOverview(
+                        formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years")),
+                        job.contractExtendable(),
+                        labels
+                    )
                 )
                 .addOverviewItem(
                     labels.get("fundingType"),
                     job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-"
                 )
                 .addOverviewItem(labels.get("tvlGrade"), job.tvlGrade() != null ? job.tvlGrade().name() : "-")
-                .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
+                .addOverviewItem(
+                    labels.get("startDate"),
+                    formatStartDateForOverview(formatDate(job.startDate()), job.startDateByArrangement(), labels)
+                )
                 .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
+                .addOverviewItem(labels.get("suitableForDisabled"), formatYesNo(job.suitableForDisabled(), labels))
                 .setOverviewDescriptionTitle(labels.get("jobDetails"))
                 .setOverviewDescription(descriptionForExport);
         }
@@ -202,11 +210,16 @@ public class PDFExportService {
                 job.subjectArea() != null ? job.subjectArea().correctLanguageValue(lang) : "-",
                 job.researchArea(),
                 formatWorkload(job.workload(), labels.get("hoursPerWeek")),
-                formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years")),
+                formatDurationForOverview(
+                    formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years")),
+                    job.contractExtendable(),
+                    labels
+                ),
                 job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-",
                 job.tvlGrade() != null ? job.tvlGrade().name() : "-",
-                formatDate(job.startDate()),
-                formatDate(job.endDate())
+                formatStartDateForOverview(formatDate(job.startDate()), job.startDateByArrangement(), labels),
+                formatDate(job.endDate()),
+                formatYesNo(job.suitableForDisabled(), labels)
             )
         );
 
@@ -268,11 +281,20 @@ public class PDFExportService {
                 jobFormDTO.subjectArea() != null ? jobFormDTO.subjectArea().correctLanguageValue(lang) : "-",
                 jobFormDTO.researchArea(),
                 jobFormDTO.workload() != null ? jobFormDTO.workload() + labels.get("hoursPerWeek") : "-",
-                formatContractDuration(jobFormDTO.contractDuration(), labels.get("year"), labels.get("years")),
+                formatDurationForOverview(
+                    formatContractDuration(jobFormDTO.contractDuration(), labels.get("year"), labels.get("years")),
+                    jobFormDTO.contractExtendable(),
+                    labels
+                ),
                 jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().correctLanguageValue(lang) : "-",
                 jobFormDTO.tvlGrade() != null ? jobFormDTO.tvlGrade().name() : "-",
-                jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
-                jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
+                formatStartDateForOverview(
+                    jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
+                    jobFormDTO.startDateByArrangement(),
+                    labels
+                ),
+                jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-",
+                formatYesNo(jobFormDTO.suitableForDisabled(), labels)
             )
         );
 
@@ -398,7 +420,38 @@ public class PDFExportService {
             .addOverviewItem(labels.get("fundingType"), getValue(data.fundingType()))
             .addOverviewItem(labels.get("tvlGrade"), getValue(data.tvlGrade()))
             .addOverviewItem(labels.get("startDate"), getValue(data.startDate()))
-            .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
+            .addOverviewItem(labels.get("endDate"), getValue(data.endDate()))
+            .addOverviewItem(labels.get("suitableForDisabled"), getValue(data.suitableForDisabled()));
+    }
+
+    /**
+     * Formats a date for PDF rendering. Appends the "Upon agreement" label when the start date is by arrangement.
+     */
+    private String formatStartDateForOverview(String formattedDate, Boolean byArrangement, Map<String, String> labels) {
+        if (Boolean.TRUE.equals(byArrangement)) {
+            return formattedDate + " (" + labels.get("uponAgreement") + ")";
+        }
+        return formattedDate;
+    }
+
+    /**
+     * Formats a contract duration for PDF rendering. Appends the "Extension possible" label when extendable.
+     */
+    private String formatDurationForOverview(String duration, Boolean extendable, Map<String, String> labels) {
+        if (Boolean.TRUE.equals(extendable)) {
+            return duration + " (" + labels.get("extendable") + ")";
+        }
+        return duration;
+    }
+
+    /**
+     * Resolves the boolean field to the localised "Yes"/"No" label.
+     */
+    private String formatYesNo(Boolean value, Map<String, String> labels) {
+        if (value == null) {
+            return "-";
+        }
+        return value ? labels.get("yes") : labels.get("no");
     }
 
     private void addJobDetailsSection(PDFBuilder builder, Map<String, String> labels, String jobDescription) {

@@ -42,7 +42,6 @@ import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
     MenuComponent,
   ],
   templateUrl: './application-detail-for-applicant.component.html',
-  styleUrl: './application-detail-for-applicant.component.scss',
 })
 export default class ApplicationDetailForApplicantComponent {
   showWithdrawDialog = signal(false);
@@ -189,6 +188,8 @@ export default class ApplicationDetailForApplicantComponent {
 
     return `${grade} ${scale}`;
   });
+
+  readonly documentViewerHeightClass = 'h-100 max-lg:h-120 max-md:h-125';
 
   readonly dropDownOptions = DropDownOptions;
   private applicationApi = inject(ApplicationResourceApi);

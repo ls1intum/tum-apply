@@ -9,7 +9,6 @@ import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator
   selector: 'jhi-profile',
   imports: [ButtonComponent, ReactiveFormsModule, StringInputComponent],
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.scss',
 })
 export class ProfileComponent {
   authOrchestrator = inject(AuthOrchestratorService);

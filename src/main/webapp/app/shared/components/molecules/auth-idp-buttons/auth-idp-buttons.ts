@@ -1,4 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map, startWith } from 'rxjs';
 
 import ButtonGroupComponent, { ButtonGroupData } from '../../molecules/button-group/button-group.component';
 import { IdpProvider } from '../../../../core/auth/keycloak-authentication.service';
@@ -14,17 +17,26 @@ import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator
 export class AuthIdpButtons {
   authFacadeService = inject(AuthFacadeService);
   authOrchestratorService = inject(AuthOrchestratorService);
+  breakpointObserver = inject(BreakpointObserver);
   isRegistration = input<boolean>(false);
 
+  readonly onlyIcons = toSignal(
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
+      map(state => state.matches),
+      startWith(false),
+    ),
+    { initialValue: false },
+  );
+
   readonly idpButtons = computed<ButtonGroupData>(() => ({
-    direction: 'vertical',
+    direction: this.onlyIcons() ? 'horizontal' : 'vertical',
     fullWidth: true,
     buttons: [
       {
-        label: 'Apple',
+        label: this.onlyIcons() ? undefined : 'Apple',
         icon: 'apple',
         severity: 'primary',
-        variant: 'outlined',
+        variant: this.onlyIcons() ? 'text' : 'outlined',
         disabled: false,
         fullWidth: true,
         onClick: () => {
@@ -32,10 +44,10 @@ export class AuthIdpButtons {
         },
       },
       {
-        label: 'Google',
+        label: this.onlyIcons() ? undefined : 'Google',
         icon: 'google',
         severity: 'primary',
-        variant: 'outlined',
+        variant: this.onlyIcons() ? 'text' : 'outlined',
         disabled: false,
         fullWidth: true,
         onClick: () => {

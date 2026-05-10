@@ -24,7 +24,7 @@ All TUMApply API endpoints require authentication via a JWT token from Keycloak.
 2. Set the URL to:
 
    ```
-   http://localhost:9080/realms/tumidpldap/protocol/openid-connect/token
+   http://localhost:9080/realms/tumapply/protocol/openid-connect/token
    ```
 
 3. Go to the **Body** tab, select **x-www-form-urlencoded**, and add the following key-value pairs:
@@ -51,16 +51,14 @@ All TUMApply API endpoints require authentication via a JWT token from Keycloak.
 
 ### Available Test Users
 
-| **Realm** | **Username** | **Password** | **Role** |
-|---|---|---|---|
-| `tumidpldap` | `admin1` | `admin` | ADMIN |
-| `tumidpldap` | `professor1` | `professor` | PROFESSOR |
-| `tumidpldap` | `professor2` | `professor` | PROFESSOR |
-| `tumidpldap` | `applicant1` | `applicant` | APPLICANT |
-| `tumidpldap` | `applicant3` | `applicant` | APPLICANT |
-| `tumidpldap` | `employee1` | `employee` | EMPLOYEE |
-| `tumidpldap` | `employee2` | `employee` | EMPLOYEE |
-| `external` | `applicant2` | `applicant` | APPLICANT |
+| **Username** | **Password** | **Role** |
+|---|---|---|
+| `admin1` | `admin` | ADMIN |
+| `professor1` | `professor` | PROFESSOR |
+| `professor2` | `professor` | PROFESSOR |
+| `applicant1` | `applicant` | APPLICANT |
+| `applicant2` | `applicant` | APPLICANT |
+| `applicant3` | `applicant` | APPLICANT |
 
 Use different users to test role-specific endpoints.
 
@@ -107,7 +105,7 @@ Instead of manually copying the token each time, you can configure Postman to ha
    |---|---|
    | Token Name | `TUMApply Local` |
    | Grant Type | `Password Credentials` |
-   | Access Token URL | `http://localhost:9080/realms/tumidpldap/protocol/openid-connect/token` |
+   | Access Token URL | `http://localhost:9080/realms/tumapply/protocol/openid-connect/token` |
    | Client ID | `tumapply-client` |
    | Username | `admin1` |
    | Password | `admin` |

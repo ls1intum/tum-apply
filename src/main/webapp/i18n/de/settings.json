@@ -110,42 +110,6 @@
         "rotate": "Drehen"
       }
     },
-    "passkeys": {
-      "header": "Passkeys",
-      "description": "Erstelle und verwalte die Passkeys, die mit diesem TUMApply-Konto verknüpft sind.",
-      "actions": {
-        "create": "Passkey erstellen"
-      },
-      "createdAt": "Erstellt am {date}",
-      "empty": {
-        "title": "Noch keine Passkeys",
-        "description": "Erstelle einen Passkey, um dich schneller und sicherer bei diesem TUMApply-Konto anzumelden."
-      },
-      "error": {
-        "title": "Passkeys konnten nicht geladen werden",
-        "description": "Deine Passkeys konnten gerade nicht geladen werden. Bitte versuche es in einem Moment erneut."
-      },
-      "unavailable": {
-        "title": "Passkey-Verwaltung nicht verfügbar",
-        "description": "Melde dich an, um Passkeys für dieses Konto zu erstellen, anzusehen oder zu entfernen."
-      },
-      "removeConfirm": {
-        "header": "Passkey entfernen?",
-        "message": "Möchtest du {name} wirklich entfernen?"
-      },
-      "removed": {
-        "summary": "Passkey entfernt",
-        "detail": "Der Passkey wurde erfolgreich entfernt."
-      },
-      "removeFailed": {
-        "summary": "Entfernen fehlgeschlagen",
-        "detail": "Der Passkey konnte nicht entfernt werden. Bitte versuche es erneut."
-      },
-      "loadFailed": {
-        "summary": "Laden fehlgeschlagen",
-        "detail": "Deine Passkeys konnten nicht geladen werden. Bitte versuche es erneut."
-      }
-    },
     "aiFeatures": {
       "header": "KI-Funktionen",
       "description": "Lege fest, ob KI-gestützte Funktionen für dein Konto aktiviert sind.",

@@ -17,7 +17,6 @@ import { NotificationSettingsComponent } from './notifications/notification-sett
 import { ApplicationInformationSettingsComponent } from './application-information-settings';
 import { ProfilePictureSettingsComponent } from './profile-picture-settings/profile-picture-settings.component';
 import { SettingsDocumentsComponent } from './settings-documents/settings-documents.component';
-import { PasskeySettingsComponent } from './passkey-settings/passkey-settings.component';
 
 type SettingsTab = 'general' | 'notifications' | 'application-information' | 'documents';
 @Component({
@@ -28,7 +27,6 @@ type SettingsTab = 'general' | 'notifications' | 'application-information' | 'do
     NotificationSettingsComponent,
     ApplicationInformationSettingsComponent,
     ProfilePictureSettingsComponent,
-    PasskeySettingsComponent,
     SettingsDocumentsComponent,
     SelectComponent,
     TabViewComponent,
