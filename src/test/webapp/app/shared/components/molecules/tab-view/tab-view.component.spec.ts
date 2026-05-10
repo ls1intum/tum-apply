@@ -69,62 +69,35 @@ describe('TabViewComponent', () => {
     }).compileComponents();
   });
 
-  it('should use the provided active tab id when it is not empty', () => {
-    createComponent(DEFAULT_TABS, 'documents');
+  it.each<[TabItem[], string | undefined, string | undefined]>([
+    [DEFAULT_TABS, 'documents', 'documents'],
+    [DEFAULT_TABS, undefined, 'general'],
+    [[], '', undefined],
+  ])('should resolve currentTabValue for tabs=%o activeTabId=%s', (tabs, activeTabId, expected) => {
+    createComponent(tabs, activeTabId);
 
-    expect(component.currentTabValue()).toBe('documents');
+    expect(component.currentTabValue()).toBe(expected);
   });
 
-  it('should default to the first tab when no active tab id is provided', () => {
-    createComponent(DEFAULT_TABS);
-
-    expect(component.currentTabValue()).toBe('general');
-  });
-
-  it('should return undefined as the current tab when there are no tabs', () => {
-    createComponent([], '');
-
-    expect(component.currentTabValue()).toBeUndefined();
-  });
-
-  it('should emit a tab change when the selected tab id is a string', () => {
+  it('should emit tabChange for string ids and ignore non-string values', () => {
     createComponent(DEFAULT_TABS);
 
     const emitSpy = vi.spyOn(component.tabChange, 'emit');
     component.onTabChange('documents');
+    component.onTabChange(1);
+    component.onTabChange(undefined);
 
     expect(emitSpy).toHaveBeenCalledOnce();
     expect(emitSpy).toHaveBeenCalledWith('documents');
   });
 
-  it('should ignore tab change values that are not strings', () => {
+  it('should return matching projected template or null for unknown tab id', () => {
     createComponent(DEFAULT_TABS);
-
-    const emitSpy = vi.spyOn(component.tabChange, 'emit');
-    component.onTabChange(1);
-    component.onTabChange(undefined);
-
-    expect(emitSpy).not.toHaveBeenCalled();
-  });
-
-  it('should return null when no tab panels are projected', () => {
-    createComponent(DEFAULT_TABS);
-
     expect(component.findTemplate('nonexistent')).toBeNull();
-  });
 
-  it('should return the matching projected template for a tab id', () => {
     const hostFixture = createHostComponent();
     const tabViewComponent = getHostTabViewComponent(hostFixture);
-    const expectedTemplate = tabViewComponent.tabPanels()[0]?.template ?? null;
-
-    expect(tabViewComponent.findTemplate('general')).toBe(expectedTemplate);
-  });
-
-  it('should return null when no projected template matches the tab id', () => {
-    const hostFixture = createHostComponent();
-    const tabViewComponent = getHostTabViewComponent(hostFixture);
-
+    expect(tabViewComponent.findTemplate('general')).toBe(tabViewComponent.tabPanels()[0]?.template ?? null);
     expect(tabViewComponent.findTemplate('notifications')).toBeNull();
   });
 });

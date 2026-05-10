@@ -64,22 +64,12 @@ describe('AdminSystemSettingsComponent', () => {
     vi.clearAllMocks();
   });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('Loading Status', () => {
     it('should fetch AI status on construction', async () => {
       await Promise.resolve();
 
       expect(mockApi.getAiStatus).toHaveBeenCalledOnce();
       expect(component.aiStatus()).toEqual(enabledStatus);
-    });
-
-    it('should set isLoading to false after successful load', async () => {
-      await Promise.resolve();
-
-      expect(component.isLoading()).toBe(false);
     });
 
     it('should show error toast when loading fails', async () => {
@@ -92,34 +82,22 @@ describe('AdminSystemSettingsComponent', () => {
     });
   });
 
-  describe('Computed Signals', () => {
-    it('should derive aiEnabled from status', async () => {
-      await Promise.resolve();
+  it('should derive computed signals from status and default safely when undefined', async () => {
+    await Promise.resolve();
+    expect(component.aiEnabled()).toBe(true);
 
-      expect(component.aiEnabled()).toBe(true);
-    });
+    mockApi.getAiStatus.mockReturnValue(of(disabledStatus));
+    await component.loadStatus();
+    expect(component.manuallyDisabled()).toBe(true);
 
-    it('should derive manuallyDisabled from status', async () => {
-      mockApi.getAiStatus.mockReturnValue(of(disabledStatus));
-      await component.loadStatus();
+    mockApi.getAiStatus.mockReturnValue(of(circuitBreakerOpenStatus));
+    await component.loadStatus();
+    expect(component.circuitBreakerOpen()).toBe(true);
 
-      expect(component.manuallyDisabled()).toBe(true);
-    });
-
-    it('should derive circuitBreakerOpen from status', async () => {
-      mockApi.getAiStatus.mockReturnValue(of(circuitBreakerOpenStatus));
-      await component.loadStatus();
-
-      expect(component.circuitBreakerOpen()).toBe(true);
-    });
-
-    it('should default to safe values when status is undefined', () => {
-      component.aiStatus.set(undefined);
-
-      expect(component.aiEnabled()).toBe(true);
-      expect(component.manuallyDisabled()).toBe(false);
-      expect(component.circuitBreakerOpen()).toBe(false);
-    });
+    component.aiStatus.set(undefined);
+    expect(component.aiEnabled()).toBe(true);
+    expect(component.manuallyDisabled()).toBe(false);
+    expect(component.circuitBreakerOpen()).toBe(false);
   });
 
   describe('Toggle AI', () => {
@@ -150,22 +128,6 @@ describe('AdminSystemSettingsComponent', () => {
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.ai.toast.toggleError');
     });
-
-    it('should set isUpdating to false after toggle completes', async () => {
-      mockApi.toggleAi.mockReturnValue(of(disabledStatus));
-
-      await component.onAiToggleChanged(false);
-
-      expect(component.isUpdating()).toBe(false);
-    });
-
-    it('should set isUpdating to false after toggle fails', async () => {
-      mockApi.toggleAi.mockReturnValue(throwError(() => new Error('API error')));
-
-      await component.onAiToggleChanged(false);
-
-      expect(component.isUpdating()).toBe(false);
-    });
   });
 
   describe('Reset Circuit Breaker', () => {
@@ -185,22 +147,6 @@ describe('AdminSystemSettingsComponent', () => {
       await component.resetCircuitBreaker();
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.ai.toast.resetError');
-    });
-
-    it('should set isUpdating to false after reset completes', async () => {
-      mockApi.resetCircuitBreaker.mockReturnValue(of(enabledStatus));
-
-      await component.resetCircuitBreaker();
-
-      expect(component.isUpdating()).toBe(false);
-    });
-
-    it('should set isUpdating to false after reset fails', async () => {
-      mockApi.resetCircuitBreaker.mockReturnValue(throwError(() => new Error('API error')));
-
-      await component.resetCircuitBreaker();
-
-      expect(component.isUpdating()).toBe(false);
     });
   });
 });

@@ -49,26 +49,19 @@ describe('CancelInterviewModalComponent', () => {
   });
 
   describe('onVisibleChange', () => {
-    it('should emit visibleChange with the value', () => {
+    it('should emit visibleChange and reset state on close', () => {
       const visibleChangeSpy = vi.spyOn(component.visibleChange, 'emit');
-
-      component.onVisibleChange(false);
-
-      expect(visibleChangeSpy).toHaveBeenCalledOnce();
-      expect(visibleChangeSpy).toHaveBeenCalledWith(false);
-    });
-
-    it('should reset state when closing (value=false)', () => {
       component.deleteSlot.set(true);
       component.sendReinvite.set(true);
 
       component.onVisibleChange(false);
 
+      expect(visibleChangeSpy).toHaveBeenCalledWith(false);
       expect(component.deleteSlot()).toBe(false);
       expect(component.sendReinvite()).toBe(false);
     });
 
-    it('should not reset state when opening (value=true)', () => {
+    it('should not reset state when opening', () => {
       component.deleteSlot.set(true);
       component.sendReinvite.set(true);
 
@@ -79,14 +72,11 @@ describe('CancelInterviewModalComponent', () => {
     });
   });
 
-  describe('close', () => {
-    it('should call onVisibleChange with false', () => {
-      const visibleChangeSpy = vi.spyOn(component.visibleChange, 'emit');
+  it('close() should emit visibleChange(false)', () => {
+    const visibleChangeSpy = vi.spyOn(component.visibleChange, 'emit');
 
-      component.close();
+    component.close();
 
-      expect(visibleChangeSpy).toHaveBeenCalledOnce();
-      expect(visibleChangeSpy).toHaveBeenCalledWith(false);
-    });
+    expect(visibleChangeSpy).toHaveBeenCalledWith(false);
   });
 });

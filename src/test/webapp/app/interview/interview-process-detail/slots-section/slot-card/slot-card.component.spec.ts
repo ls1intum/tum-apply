@@ -61,42 +61,21 @@ describe('SlotCardComponent', () => {
     vi.restoreAllMocks();
   });
 
-  describe('Computed Properties', () => {
-    it.each([
-      { description: 'unbooked slot', slot: unbookedSlot, expected: false },
-      { description: 'booked slot', slot: bookedSlot, expected: true },
-    ])('should compute isBooked=$expected for $description', ({ slot, expected }) => {
-      fixture.componentRef.setInput('slot', slot);
-      fixture.detectChanges();
+  it.each([
+    { description: 'unbooked future slot', slot: unbookedSlot, isBooked: false, isPast: false, applicantName: '' },
+    { description: 'booked future slot', slot: bookedSlot, isBooked: true, isPast: false, applicantName: 'Jane Doe' },
+    { description: 'past slot', slot: pastSlot, isBooked: false, isPast: true, applicantName: '' },
+  ])('should compute properties for $description', ({ slot, isBooked, isPast, applicantName }) => {
+    fixture.componentRef.setInput('slot', slot);
+    fixture.detectChanges();
 
-      expect(component.isBooked()).toBe(expected);
-    });
-
-    it.each([
-      { description: 'past slot', slot: pastSlot, expected: true },
-      { description: 'future slot', slot: unbookedSlot, expected: false },
-    ])('should compute isPast=$expected for $description', ({ slot, expected }) => {
-      fixture.componentRef.setInput('slot', slot);
-      fixture.detectChanges();
-
-      expect(component.isPast()).toBe(expected);
-    });
-
-    it.each([
-      { description: 'booked slot with interviewee', slot: bookedSlot, expectedContains: ['Jane', 'Doe'] },
-      { description: 'unbooked slot without interviewee', slot: unbookedSlot, expectedContains: [] },
-    ])('should compute applicantName for $description', ({ slot, expectedContains }) => {
-      fixture.componentRef.setInput('slot', slot);
-      fixture.detectChanges();
-
-      if (expectedContains.length === 0) {
-        expect(component.applicantName()).toBe('');
-      } else {
-        for (const name of expectedContains) {
-          expect(component.applicantName()).toContain(name);
-        }
-      }
-    });
+    expect(component.isBooked()).toBe(isBooked);
+    expect(component.isPast()).toBe(isPast);
+    if (applicantName) {
+      expect(component.applicantName()).toContain(applicantName);
+    } else {
+      expect(component.applicantName()).toBe('');
+    }
   });
 
   describe('Menu Items', () => {

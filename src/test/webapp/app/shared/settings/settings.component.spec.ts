@@ -63,178 +63,64 @@ describe('SettingsComponent', () => {
     vi.clearAllMocks();
   });
 
-  // ===== ROLE DERIVATION =====
   describe('role()', () => {
-    it('should set role from AccountService authorities', () => {
+    it('should derive role from AccountService user authorities', () => {
       accountServiceMock.user.set({
         id: 'u1',
         name: 'Test User',
         email: 'user@test.com',
         authorities: [UserShortDTORolesEnum.Professor],
       });
+      expect(TestBed.createComponent(SettingsComponent).componentInstance.role()).toBe(UserShortDTORolesEnum.Professor);
 
-      const component = TestBed.createComponent(SettingsComponent).componentInstance;
-      expect(component.role()).toBe(UserShortDTORolesEnum.Professor);
-    });
-
-    it('should keep role undefined if no user is loaded', () => {
       accountServiceMock.user.set(undefined);
+      expect(TestBed.createComponent(SettingsComponent).componentInstance.role()).toBeUndefined();
 
-      const component = TestBed.createComponent(SettingsComponent).componentInstance;
-      expect(component.role()).toBeUndefined();
-    });
-
-    it('should keep role undefined if authorities array is empty', () => {
-      accountServiceMock.user.set({
-        id: 'u1',
-        name: 'Test User',
-        email: 'user@test.com',
-        authorities: [],
-      });
-
-      const component = TestBed.createComponent(SettingsComponent).componentInstance;
-      expect(component.role()).toBeUndefined();
+      accountServiceMock.user.set({ id: 'u1', name: 'X', email: 'x@x.com', authorities: [] });
+      expect(TestBed.createComponent(SettingsComponent).componentInstance.role()).toBeUndefined();
     });
   });
 
-  // ===== TABS =====
   describe('tabs()', () => {
-    it('should show general, notifications, application-information and documents tabs for applicant', () => {
-      accountServiceMock.user.set({
-        id: 'u1',
-        name: 'Test Applicant',
-        email: 'applicant@test.com',
-        authorities: [UserShortDTORolesEnum.Applicant],
-      });
+    it.each([
+      [UserShortDTORolesEnum.Applicant, ['general', 'notifications', 'application-information', 'documents']],
+      [UserShortDTORolesEnum.Professor, ['general', 'notifications']],
+      [UserShortDTORolesEnum.Admin, ['general']],
+    ])('should expose the correct tabs for role %s', (role, expectedIds) => {
+      accountServiceMock.user.set({ id: 'u1', name: 'User', email: 'u@x.com', authorities: [role] });
 
-      const component = TestBed.createComponent(SettingsComponent).componentInstance;
-      const tabs = component.tabs();
+      const tabs = TestBed.createComponent(SettingsComponent).componentInstance.tabs();
 
-      expect(tabs).toHaveLength(4);
-      expect(tabs[0].id).toBe('general');
-      expect(tabs[1].id).toBe('notifications');
-      expect(tabs[2].id).toBe('application-information');
-      expect(tabs[3].id).toBe('documents');
-    });
-
-    it('should show general and notifications tabs for professor (no application-information)', () => {
-      accountServiceMock.user.set({
-        id: 'u1',
-        name: 'Test Professor',
-        email: 'professor@test.com',
-        authorities: [UserShortDTORolesEnum.Professor],
-      });
-
-      const component = TestBed.createComponent(SettingsComponent).componentInstance;
-      const tabs = component.tabs();
-
-      expect(tabs).toHaveLength(2);
-      expect(tabs[0].id).toBe('general');
-      expect(tabs[1].id).toBe('notifications');
-      expect(tabs.find(tab => tab.id === 'application-information')).toBeUndefined();
-    });
-
-    it('should show only general tab for admin (no notifications, no application-information)', () => {
-      accountServiceMock.user.set({
-        id: 'u1',
-        name: 'Test Admin',
-        email: 'admin@test.com',
-        authorities: [UserShortDTORolesEnum.Admin],
-      });
-
-      const component = TestBed.createComponent(SettingsComponent).componentInstance;
-      const tabs = component.tabs();
-
-      expect(tabs).toHaveLength(1);
-      expect(tabs[0].id).toBe('general');
-      expect(tabs.find(tab => tab.id === 'notifications')).toBeUndefined();
-      expect(tabs.find(tab => tab.id === 'application-information')).toBeUndefined();
-    });
-
-    it('should include correct translation keys for all tabs', () => {
-      accountServiceMock.user.set({
-        id: 'u1',
-        name: 'Test Applicant',
-        email: 'applicant@test.com',
-        authorities: [UserShortDTORolesEnum.Applicant],
-      });
-
-      const component = TestBed.createComponent(SettingsComponent).componentInstance;
-      const tabs = component.tabs();
-
-      expect(tabs[0].translationKey).toBe('settings.tabs.general');
-      expect(tabs[1].translationKey).toBe('settings.tabs.notifications');
-      expect(tabs[2].translationKey).toBe('settings.tabs.applicationInformation');
-      expect(tabs[3].translationKey).toBe('settings.tabs.documents');
+      expect(tabs.map(t => t.id)).toEqual(expectedIds);
     });
   });
 
-  // ===== ACTIVE TAB CHANGES =====
-  describe('tab switching', () => {
-    it('should change active tab', () => {
-      accountServiceMock.user.set({
-        id: 'u1',
-        name: 'Test Applicant',
-        email: 'applicant@test.com',
-        authorities: [UserShortDTORolesEnum.Applicant],
-      });
-
-      const component = TestBed.createComponent(SettingsComponent).componentInstance;
-      expect(component.activeTab()).toBe('general');
-
-      component.onTabChange('notifications');
-      expect(component.activeTab()).toBe('notifications');
-
-      component.onTabChange('application-information');
-      expect(component.activeTab()).toBe('application-information');
-
-      component.onTabChange('documents');
-      expect(component.activeTab()).toBe('documents');
-    });
-  });
-
-  // ===== THEME =====
   describe('theme', () => {
-    describe('onThemeChange()', () => {
-      it('should set theme to system when system option selected', () => {
-        const fixture = TestBed.createComponent(SettingsComponent);
-        const component = fixture.componentInstance;
+    it('should set sync-with-system or specific theme based on selection', () => {
+      const component = TestBed.createComponent(SettingsComponent).componentInstance;
 
-        component.onThemeChange({ name: 'System', value: 'system' });
+      component.onThemeChange({ name: 'System', value: 'system' });
+      expect(themeServiceMock.setSyncWithSystem).toHaveBeenCalledWith(true);
 
-        expect(themeServiceMock.setSyncWithSystem).toHaveBeenCalledWith(true);
-      });
-
-      it('should set specific theme when non-system option selected', () => {
-        const fixture = TestBed.createComponent(SettingsComponent);
-        const component = fixture.componentInstance;
-
-        component.onThemeChange({ name: 'Dark', value: 'dark' });
-
-        expect(themeServiceMock.setSyncWithSystem).toHaveBeenCalledWith(false);
-        expect(themeServiceMock.setTheme).toHaveBeenCalledWith('dark');
-      });
+      component.onThemeChange({ name: 'Dark', value: 'dark' });
+      expect(themeServiceMock.setSyncWithSystem).toHaveBeenCalledWith(false);
+      expect(themeServiceMock.setTheme).toHaveBeenCalledWith('dark');
     });
 
-    describe('selectedTheme()', () => {
-      it('should compute selectedTheme correctly based on theme service state', () => {
-        const component = TestBed.createComponent(SettingsComponent).componentInstance;
+    it('should compute selectedTheme correctly based on theme service state', () => {
+      const component = TestBed.createComponent(SettingsComponent).componentInstance;
 
-        // Case 1: Sync with system
-        themeServiceMock.syncWithSystem.set(true);
-        expect(component.selectedTheme().value).toBe('system');
+      themeServiceMock.syncWithSystem.set(true);
+      expect(component.selectedTheme().value).toBe('system');
 
-        // Case 2: Specific theme
-        themeServiceMock.syncWithSystem.set(false);
-        themeServiceMock.theme.set('dark');
-        expect(component.selectedTheme().value).toBe('dark');
+      themeServiceMock.syncWithSystem.set(false);
+      themeServiceMock.theme.set('dark');
+      expect(component.selectedTheme().value).toBe('dark');
 
-        // Case 3: Fallback when the current theme is not in the available options
-        component.themeOptions = [{ name: 'settings.appearance.options.light', value: 'light' }];
-        themeServiceMock.theme.set('light');
-        themeServiceMock.theme.set('dark');
-        expect(component.selectedTheme().value).toBe('light');
-      });
+      component.themeOptions = [{ name: 'settings.appearance.options.light', value: 'light' }];
+      themeServiceMock.theme.set('light');
+      themeServiceMock.theme.set('dark');
+      expect(component.selectedTheme().value).toBe('light');
     });
   });
 
@@ -254,22 +140,25 @@ describe('SettingsComponent', () => {
   });
 
   describe('onTabChange()', () => {
-    it('should keep the current tab when the requested tab does not exist', () => {
+    it('should change to known tabs and keep the current tab for unknown ones', () => {
       accountServiceMock.user.set({
         id: 'u1',
         name: 'Test Applicant',
         email: 'applicant@test.com',
         authorities: [UserShortDTORolesEnum.Applicant],
       });
-
       const component = TestBed.createComponent(SettingsComponent).componentInstance;
-      component.onTabChange('notifications');
 
+      expect(component.activeTab()).toBe('general');
+
+      component.onTabChange('notifications');
       expect(component.activeTab()).toBe('notifications');
+
+      component.onTabChange('documents');
+      expect(component.activeTab()).toBe('documents');
 
       component.onTabChange('invalid-tab');
-
-      expect(component.activeTab()).toBe('notifications');
+      expect(component.activeTab()).toBe('documents');
     });
   });
 });

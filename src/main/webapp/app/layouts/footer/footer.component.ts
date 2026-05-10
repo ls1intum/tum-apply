@@ -8,7 +8,6 @@ import TranslateDirective from '../../shared/language/translate.directive';
   selector: 'jhi-footer',
   standalone: true,
   templateUrl: './footer.component.html',
-  styleUrl: './footer.component.scss',
   imports: [TranslateDirective],
   encapsulation: ViewEncapsulation.None,
 })

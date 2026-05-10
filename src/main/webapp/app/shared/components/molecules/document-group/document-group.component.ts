@@ -12,9 +12,11 @@ import { ApplicationDocumentIdsDTO } from '../../../../generated/model/applicati
   selector: 'jhi-document-group',
   imports: [TranslateDirective, DocumentViewerComponent],
   templateUrl: './document-group.component.html',
-  styleUrl: './document-group.component.scss',
   standalone: true,
 })
 export default class DocumentGroupComponent {
   documentIds = input.required<ApplicationDocumentIdsDTO>();
+
+  readonly documentSectionClass = 'flex flex-col mb-2 p-4 rounded-lg border border-border-default';
+  readonly documentViewerClass = 'mb-1 h-80 w-full rounded-lg border border-border-default';
 }

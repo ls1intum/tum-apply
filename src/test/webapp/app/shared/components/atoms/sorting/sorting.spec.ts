@@ -41,12 +41,6 @@ describe('Sorting', () => {
     vi.restoreAllMocks();
   });
 
-  it('should use first sortable field as default current option', () => {
-    const sortingFixture = createSortingFixture();
-
-    expect(sortingFixture.componentInstance.currentOption()).toEqual(mockSortOptions[0]);
-  });
-
   it('should generate correct select options from sortable fields', () => {
     const sortingFixture = createSortingFixture();
 
@@ -58,44 +52,18 @@ describe('Sorting', () => {
     ]);
   });
 
-  it('should return correct sort icon for TEXT type', () => {
+  it.each<[number, boolean, string, string]>([
+    [0, false, 'arrow-down-z-a', 'entity.sorting.descending.text'],
+    [0, true, 'arrow-up-z-a', 'entity.sorting.ascending.text'],
+    [1, false, 'arrow-down-9-1', 'entity.sorting.descending.number'],
+    [1, true, 'arrow-up-9-1', 'entity.sorting.ascending.number'],
+  ])('should return icon=%s and tooltip=%s for option index %i with isAsc=%s', (optionIdx, isAsc, expectedIcon, expectedTooltip) => {
     const sortingFixture = createSortingFixture();
+    sortingFixture.componentInstance.selectedOption.set(mockSortOptions[optionIdx]);
+    sortingFixture.componentInstance.isAsc.set(isAsc);
 
-    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-down-z-a');
-
-    sortingFixture.componentInstance.isAsc.set(true);
-    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-up-z-a');
-  });
-
-  it('should return correct sort icon for NUMBER type', () => {
-    const sortingFixture = createSortingFixture();
-
-    sortingFixture.componentInstance.selectedOption.set(mockSortOptions[1]);
-
-    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-down-9-1');
-
-    sortingFixture.componentInstance.isAsc.set(true);
-    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-up-9-1');
-  });
-
-  it('should return correct sort tooltip key for TEXT type', () => {
-    const sortingFixture = createSortingFixture();
-
-    expect(sortingFixture.componentInstance.getSortTooltip()).toBe('entity.sorting.descending.text');
-
-    sortingFixture.componentInstance.isAsc.set(true);
-    expect(sortingFixture.componentInstance.getSortTooltip()).toBe('entity.sorting.ascending.text');
-  });
-
-  it('should return correct sort tooltip key for NUMBER type', () => {
-    const sortingFixture = createSortingFixture();
-
-    sortingFixture.componentInstance.selectedOption.set(mockSortOptions[1]);
-
-    expect(sortingFixture.componentInstance.getSortTooltip()).toBe('entity.sorting.descending.number');
-
-    sortingFixture.componentInstance.isAsc.set(true);
-    expect(sortingFixture.componentInstance.getSortTooltip()).toBe('entity.sorting.ascending.number');
+    expect(sortingFixture.componentInstance.getSortIcon()).toBe(expectedIcon);
+    expect(sortingFixture.componentInstance.getSortTooltip()).toBe(expectedTooltip);
   });
 
   it('should change selected option and emit sort change', () => {

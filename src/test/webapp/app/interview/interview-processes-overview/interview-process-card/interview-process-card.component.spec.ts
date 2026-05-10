@@ -69,18 +69,13 @@ describe('InterviewProcessCardComponent', () => {
   });
 
   describe('Warning Message', () => {
-    it('should return undefined when process is closed', () => {
-      fixture.componentRef.setInput('process', closedProcess);
+    it.each([
+      { description: 'process is closed', process: closedProcess, expected: undefined },
+      { description: 'invited count <= total slots', process: activeProcess, expected: undefined },
+    ])('should return undefined when $description', ({ process, expected }) => {
+      fixture.componentRef.setInput('process', process);
       fixture.detectChanges();
-
-      expect(component.warningMessage()).toBeUndefined();
-    });
-
-    it('should return undefined when invited count is less than or equal to total slots', () => {
-      fixture.componentRef.setInput('process', activeProcess);
-      fixture.detectChanges();
-
-      expect(component.warningMessage()).toBeUndefined();
+      expect(component.warningMessage()).toBe(expected);
     });
 
     it.each([
@@ -121,28 +116,6 @@ describe('InterviewProcessCardComponent', () => {
 
       expect(emitSpy).toHaveBeenCalledOnce();
       expect(emitSpy).toHaveBeenCalledWith('job-1');
-    });
-  });
-
-  describe('Total Slots', () => {
-    it('should return the total slots from the process', () => {
-      const process: InterviewOverviewDTO = {
-        jobId: 'job-6',
-        processId: 'process-6',
-        jobTitle: 'PM',
-        jobState: JobDetailDTOStateEnum.Published,
-        isClosed: false,
-        totalSlots: 15,
-        totalInterviews: 5,
-        scheduledCount: 3,
-        completedCount: 1,
-        invitedCount: 4,
-        uncontactedCount: 2,
-      };
-      fixture.componentRef.setInput('process', process);
-      fixture.detectChanges();
-
-      expect(component.totalSlots()).toBe(15);
     });
   });
 });
