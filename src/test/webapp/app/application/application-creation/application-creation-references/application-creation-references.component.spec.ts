@@ -45,7 +45,7 @@ describe('ApplicationCreationReferencesComponent', () => {
   };
 
   const fillForm = (overrides: Partial<{ title: string; firstName: string; lastName: string; email: string }> = {}) => {
-    const values = { title: 'Prof. Dr.', firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com', ...overrides };
+    const values = Object.assign({ title: 'Prof. Dr.', firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' }, overrides);
     component.addForm.controls.title.setValue(values.title);
     component.addForm.controls.firstName.setValue(values.firstName);
     component.addForm.controls.lastName.setValue(values.lastName);
@@ -226,8 +226,8 @@ describe('ApplicationCreationReferencesComponent', () => {
 
       await component.onAdd();
 
-      expect(emitSpy).toHaveBeenCalled();
-      expect(emitSpy).toHaveBeenLastCalledWith(component.references());
+      expect(emitSpy).toHaveBeenCalledOnce();
+      expect(emitSpy).toHaveBeenCalledWith(component.references());
     });
 
     it('should surface a toast and keep the form values when the API errors', async () => {
@@ -263,12 +263,12 @@ describe('ApplicationCreationReferencesComponent', () => {
 
       await component.onRemove(existing);
 
-      expect(emitSpy).toHaveBeenCalled();
-      expect(emitSpy).toHaveBeenLastCalledWith([]);
+      expect(emitSpy).toHaveBeenCalledOnce();
+      expect(emitSpy).toHaveBeenCalledWith([]);
     });
 
     it('should be a no-op for an entry without an id', async () => {
-      await component.onRemove({ ...existing, referenceRequestId: undefined } as ReferenceRequestDTO);
+      await component.onRemove(Object.assign({}, existing, { referenceRequestId: undefined }));
 
       expect(referenceApi.remove).not.toHaveBeenCalled();
       expect(component.references()).toHaveLength(1);
