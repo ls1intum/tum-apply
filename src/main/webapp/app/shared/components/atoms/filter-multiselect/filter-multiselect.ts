@@ -229,6 +229,7 @@ export class FilterMultiselect {
     const target = event.target;
     if (target instanceof HTMLInputElement) {
       this.searchTerm.set(target.value);
+      this.focusedIndexOptionList.set(-1);
     }
   }
 

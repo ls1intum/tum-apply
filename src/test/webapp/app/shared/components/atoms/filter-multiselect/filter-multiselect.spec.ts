@@ -215,4 +215,17 @@ describe('FilterMultiselect', () => {
     comp.toggleDropdown();
     expect(comp.visibleOptions().map(o => o.value)).toEqual(['Option C', 'Option A', 'Option B', 'Option D']);
   });
+
+  it('should reset the focused option index when the search term changes', () => {
+    const fx = createFilterMultiselectFixture();
+    const comp = fx.componentInstance;
+    comp.toggleDropdown();
+    comp.focusedIndexOptionList.set(2);
+
+    const inputEl = document.createElement('input');
+    inputEl.value = 'opt';
+    comp.onSearchChange({ target: inputEl } as unknown as Event);
+
+    expect(comp.focusedIndexOptionList()).toBe(-1);
+  });
 });
