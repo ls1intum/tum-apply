@@ -95,7 +95,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
         jobWithReferences.setReferenceLettersRequired(1);
         jobWithReferences = jobRepository.save(jobWithReferences);
 
-        application = ApplicationTestData.saved(applicationRepository, jobWithReferences, applicant, ApplicationState.REFERENCES_PENDING);
+        application = ApplicationTestData.saved(applicationRepository, jobWithReferences, applicant, ApplicationState.PENDING);
     }
 
     private ReferenceRequest savedRequestedEntry(String rawToken) {
@@ -170,7 +170,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
             assertThat(persisted.getDocumentId()).isEqualTo(updated.documentId());
 
             // The job required exactly 1 letter and we just uploaded the only request, so the
-            // application should have been promoted from REFERENCES_PENDING back to SENT.
+            // application should have been promoted from PENDING back to SENT.
             Application promoted = applicationRepository.findById(application.getApplicationId()).orElseThrow();
             assertThat(promoted.getState()).isEqualTo(ApplicationState.SENT);
         }

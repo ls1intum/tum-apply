@@ -64,7 +64,7 @@ public class ApplicationEvaluationService {
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
         ApplicationState.SENT,
-        ApplicationState.REFERENCES_PENDING,
+        ApplicationState.PENDING,
         ApplicationState.IN_REVIEW,
         ApplicationState.ACCEPTED,
         ApplicationState.REJECTED,

@@ -25,12 +25,12 @@ export interface ApplicationDetailDTO {
     readonly supervisingProfessorName: string;
 }
 
-export type ApplicationDetailDTOApplicationStateEnum = 'SAVED' | 'SENT' | 'REFERENCES_PENDING' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'JOB_CLOSED_DRAFT' | 'INTERVIEW';
+export type ApplicationDetailDTOApplicationStateEnum = 'SAVED' | 'SENT' | 'PENDING' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'JOB_CLOSED_DRAFT' | 'INTERVIEW';
 
 export const ApplicationDetailDTOApplicationStateEnum = {
     Saved: 'SAVED' as const,
     Sent: 'SENT' as const,
-    ReferencesPending: 'REFERENCES_PENDING' as const,
+    Pending: 'PENDING' as const,
     Accepted: 'ACCEPTED' as const,
     InReview: 'IN_REVIEW' as const,
     Rejected: 'REJECTED' as const,
@@ -40,7 +40,7 @@ export const ApplicationDetailDTOApplicationStateEnum = {
     Interview: 'INTERVIEW' as const,
 } as const;
 
-export const ApplicationDetailDTOApplicationStateEnumValues = ['SAVED', 'SENT', 'REFERENCES_PENDING', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'JOB_CLOSED_DRAFT', 'INTERVIEW'] as const;
+export const ApplicationDetailDTOApplicationStateEnumValues = ['SAVED', 'SENT', 'PENDING', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'JOB_CLOSED_DRAFT', 'INTERVIEW'] as const;
 
 export type ApplicationDetailDTOJobLocationEnum = 'GARCHING' | 'GARCHING_HOCHBRUECK' | 'HEILBRONN' | 'MUNICH' | 'STRAUBING' | 'WEIHENSTEPHAN' | 'SINGAPORE';
 

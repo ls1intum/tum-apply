@@ -184,7 +184,7 @@ public class ReferenceRequestService {
     /**
      * Stores the recommendation letter PDF uploaded by an external referee, links it to the
      * reference request, marks the request {@code SUBMITTED} and — if all required letters are now
-     * in — transitions the application from {@code REFERENCES_PENDING} back to {@code SENT}.
+     * in — transitions the application from {@code PENDING} back to {@code SENT}.
      *
      * @param rawToken the plaintext token from the invitation email
      * @param file     the uploaded PDF
@@ -220,7 +220,7 @@ public class ReferenceRequestService {
 
     /**
      * Returns true when the application has any unsubmitted reference requests required by the job.
-     * Used at submit time to decide between {@code SENT} and {@code REFERENCES_PENDING}.
+     * Used at submit time to decide between {@code SENT} and {@code PENDING}.
      *
      * @param application the application being submitted
      * @return true when at least one required letter is still missing
@@ -266,14 +266,14 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Transitions the owning application from {@code REFERENCES_PENDING} to {@code SENT} once the
+     * Transitions the owning application from {@code PENDING} to {@code SENT} once the
      * number of submitted letters meets the job's requirement. Triggers no additional emails —
      * the professor was already notified at submit time.
      *
      * @param application the application that just received another submitted letter
      */
     private void promoteApplicationToSentIfComplete(Application application) {
-        if (application.getState() != ApplicationState.REFERENCES_PENDING) {
+        if (application.getState() != ApplicationState.PENDING) {
             return;
         }
         int required = application.getJob().getReferenceLettersRequired();

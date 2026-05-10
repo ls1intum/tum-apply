@@ -2821,8 +2821,8 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
-            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+            JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
         jobLocation:
@@ -2880,8 +2880,8 @@ components:
         name: {type: string}
         state:
           type: string
-          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
-            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+            JOB_CLOSED_DRAFT, INTERVIEW]
     ApplicationEvaluationOverviewListDTO:
       type: object
       properties:
@@ -2896,8 +2896,8 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
-            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+            JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         job: {$ref: '#/components/schemas/JobCardDTO'}
         motivation: {type: string}
@@ -2910,8 +2910,8 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
-            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+            JOB_CLOSED_DRAFT, INTERVIEW]
         createdAt: {type: string, format: date-time}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
@@ -3298,8 +3298,8 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
-            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+            JOB_CLOSED_DRAFT, INTERVIEW]
         avatar: {type: string}
         contractDuration: {type: integer, format: int32}
         imageUrl: {type: string}
@@ -3385,8 +3385,8 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
-            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+            JOB_CLOSED_DRAFT, INTERVIEW]
         contractDuration: {type: integer, format: int32}
         contractExtendable: {type: boolean}
         createdAt: {type: string, format: date-time}
@@ -3866,8 +3866,8 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
-            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+            JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         motivation: {type: string}
         projects: {type: string}

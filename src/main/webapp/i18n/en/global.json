@@ -516,7 +516,7 @@
       "state": {
         "draft": "Draft",
         "submitted": "Submitted",
-        "referencesPending": "References Pending",
+        "pending": "Pending",
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",

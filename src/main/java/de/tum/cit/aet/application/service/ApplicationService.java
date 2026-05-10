@@ -168,12 +168,12 @@ public class ApplicationService {
     public ApplicationForApplicantDTO updateApplication(UpdateApplicationDTO updateApplicationDTO) {
         Application application = assertCanManageApplication(updateApplicationDTO.applicationId());
         // When the applicant submits but the job requires recommendation letters that aren't all
-        // in yet, the application enters REFERENCES_PENDING instead of SENT. Once every required
+        // in yet, the application enters PENDING instead of SENT. Once every required
         // letter is uploaded, ReferenceRequestService promotes the application back to SENT.
         ApplicationState targetState = updateApplicationDTO.applicationState();
         boolean isSubmitting = ApplicationState.SENT.equals(targetState);
         if (isSubmitting && referenceRequestService.hasIncompleteReferences(application)) {
-            targetState = ApplicationState.REFERENCES_PENDING;
+            targetState = ApplicationState.PENDING;
         }
         application.setState(targetState);
         application.setDesiredStartDate(updateApplicationDTO.desiredDate());
@@ -212,7 +212,7 @@ public class ApplicationService {
 
         application = applicationRepository.save(application);
 
-        // Submit-time side effects fire whether the application landed in SENT or REFERENCES_PENDING:
+        // Submit-time side effects fire whether the application landed in SENT or PENDING:
         // the professor needs to know about the incoming application either way (the missing-refs
         // badge tells them to wait), and invitation emails must go out so referees can upload.
         if (isSubmitting) {

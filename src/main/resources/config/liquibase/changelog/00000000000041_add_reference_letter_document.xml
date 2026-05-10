@@ -21,11 +21,11 @@
     </createIndex>
   </changeSet>
 
-  <changeSet id="041b_add_references_pending_to_application_state" author="Cathy">
+  <changeSet id="041b_add_pending_to_application_state" author="Cathy">
     <sql>
       ALTER TABLE applications
         MODIFY application_state ENUM(
-        'SAVED', 'SENT', 'REFERENCES_PENDING', 'ACCEPTED', 'IN_REVIEW', 'REJECTED',
+        'SAVED', 'SENT', 'PENDING', 'ACCEPTED', 'IN_REVIEW', 'REJECTED',
         'WITHDRAWN', 'JOB_CLOSED', 'JOB_CLOSED_DRAFT', 'INTERVIEW'
         ) NOT NULL;
     </sql>
