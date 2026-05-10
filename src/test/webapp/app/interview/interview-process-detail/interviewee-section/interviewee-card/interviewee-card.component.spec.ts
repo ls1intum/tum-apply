@@ -80,20 +80,13 @@ describe('IntervieweeCardComponent', () => {
   });
 
   describe('Computed Properties', () => {
-    it('should compute full name from user', () => {
+    it('should compute full name and avatar URL from user', () => {
       fixture.componentRef.setInput('interviewee', uncontactedInterviewee);
       fixture.componentRef.setInput('processId', 'proc-1');
       fixture.detectChanges();
 
       expect(component.fullName()).toContain('Alice');
       expect(component.fullName()).toContain('Mueller');
-    });
-
-    it('should compute avatar URL', () => {
-      fixture.componentRef.setInput('interviewee', uncontactedInterviewee);
-      fixture.componentRef.setInput('processId', 'proc-1');
-      fixture.detectChanges();
-
       expect(component.avatarUrl()).toBe('/img/alice.jpg');
     });
 

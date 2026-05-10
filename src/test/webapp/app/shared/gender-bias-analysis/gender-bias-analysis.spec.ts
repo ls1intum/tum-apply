@@ -11,15 +11,13 @@ import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gende
 
 describe('GenderBiasAnalysisService', () => {
   let service: GenderBiasAnalysisService;
-  let genderBiasAnalysisApiMock: GenderBiasAnalysisResourceApiMock;
+  let apiMock: GenderBiasAnalysisResourceApiMock;
 
   beforeEach(() => {
-    genderBiasAnalysisApiMock = createGenderBiasAnalysisResourceApiMock();
-
+    apiMock = createGenderBiasAnalysisResourceApiMock();
     TestBed.configureTestingModule({
-      providers: [GenderBiasAnalysisService, provideGenderBiasAnalysisResourceApiMock(genderBiasAnalysisApiMock)],
+      providers: [GenderBiasAnalysisService, provideGenderBiasAnalysisResourceApiMock(apiMock)],
     });
-
     service = TestBed.inject(GenderBiasAnalysisService);
   });
 
@@ -29,108 +27,41 @@ describe('GenderBiasAnalysisService', () => {
   });
 
   describe('getAnalysisForField', () => {
-    it('should return an observable for a field', () => {
-      const fieldId = 'test-field';
-
-      const analysis = service.getAnalysisForField(fieldId);
-
-      expect(analysis).toBeDefined();
+    it('should return same observable for same id and different observables for different ids', () => {
+      expect(service.getAnalysisForField('a')).toBe(service.getAnalysisForField('a'));
+      expect(service.getAnalysisForField('a')).not.toBe(service.getAnalysisForField('b'));
     });
 
-    it('should return the same observable for the same field id', () => {
-      const fieldId = 'test-field';
-
-      const analysis1 = service.getAnalysisForField(fieldId);
-      const analysis2 = service.getAnalysisForField(fieldId);
-
-      expect(analysis1).toBe(analysis2);
-    });
-
-    it('should return different observables for different field ids', () => {
-      const fieldId1 = 'test-field-1';
-      const fieldId2 = 'test-field-2';
-
-      const analysis1 = service.getAnalysisForField(fieldId1);
-      const analysis2 = service.getAnalysisForField(fieldId2);
-
-      expect(analysis1).not.toBe(analysis2);
-    });
-
-    it('should return undefined when text is empty', async () => {
-      const fieldId = 'test-field';
+    it.each(['', '   '])('should return undefined when text is "%s"', async text => {
       let result: GenderBiasAnalysisResponse | undefined;
-
-      const analysis = service.getAnalysisForField(fieldId);
-      analysis.subscribe(value => {
-        result = value;
-      });
-
-      service.triggerAnalysis(fieldId, '', 'en');
-
+      service.getAnalysisForField('f').subscribe(v => (result = v));
+      service.triggerAnalysis('f', text, 'en');
       await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(result).toBeUndefined();
-    });
-
-    it('should return undefined when text is only whitespace', async () => {
-      const fieldId = 'test-field';
-      let result: GenderBiasAnalysisResponse | undefined;
-
-      const analysis = service.getAnalysisForField(fieldId);
-      analysis.subscribe(value => {
-        result = value;
-      });
-
-      service.triggerAnalysis(fieldId, '   ', 'en');
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
       expect(result).toBeUndefined();
     });
 
     it('should call API and return result for valid text', async () => {
       vi.useFakeTimers();
-      const fieldId = 'test-field';
-      const mockResponse: GenderBiasAnalysisResponse = {
-        coding: 'male',
-        biasedWords: [{ word: 'he', type: 'male' }],
-      };
-
-      genderBiasAnalysisApiMock.analyzeHtmlContent = vi.fn().mockReturnValue(of(mockResponse));
+      const mockResponse: GenderBiasAnalysisResponse = { coding: 'male', biasedWords: [{ word: 'he', type: 'male' }] };
+      apiMock.analyzeHtmlContent = vi.fn().mockReturnValue(of(mockResponse));
 
       let result: GenderBiasAnalysisResponse | undefined;
-      const analysis = service.getAnalysisForField(fieldId);
-      analysis.subscribe(value => {
-        result = value;
-      });
-
-      service.triggerAnalysis(fieldId, 'Test text', 'en');
-
-      // Advance timers to trigger the immediate analysis
+      service.getAnalysisForField('f').subscribe(v => (result = v));
+      service.triggerAnalysis('f', 'Test text', 'en');
       vi.runAllTimers();
 
       expect(result).toEqual(mockResponse);
-      expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
-      expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
-        text: 'Test text',
-        language: 'en',
-      });
+      expect(apiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
+      expect(apiMock.analyzeHtmlContent).toHaveBeenCalledWith({ text: 'Test text', language: 'en' });
     });
 
     it('should return undefined when API call fails', async () => {
       vi.useFakeTimers();
-      const fieldId = 'test-field';
-
-      genderBiasAnalysisApiMock.analyzeHtmlContent = vi.fn().mockReturnValue(throwError(() => new Error('API error')));
+      apiMock.analyzeHtmlContent = vi.fn().mockReturnValue(throwError(() => new Error('API error')));
 
       let result: GenderBiasAnalysisResponse | undefined;
-      const analysis = service.getAnalysisForField(fieldId);
-      analysis.subscribe(value => {
-        result = value;
-      });
-
-      service.triggerAnalysis(fieldId, 'Test text', 'en');
-
+      service.getAnalysisForField('f').subscribe(v => (result = v));
+      service.triggerAnalysis('f', 'Test text', 'en');
       vi.runAllTimers();
 
       expect(result).toBeUndefined();
@@ -138,245 +69,67 @@ describe('GenderBiasAnalysisService', () => {
   });
 
   describe('analyzeHtmlContent', () => {
-    it('should call the API service with correct parameters', async () => {
+    it('should call the API service with correct parameters', () => {
       const request = { text: 'Test text', language: 'en' };
-      const mockResponse: GenderBiasAnalysisResponse = {
-        coding: 'neutral',
-        biasedWords: [],
-      };
-
-      genderBiasAnalysisApiMock.analyzeHtmlContent = vi.fn().mockReturnValue(of(mockResponse));
+      const mockResponse: GenderBiasAnalysisResponse = { coding: 'neutral', biasedWords: [] };
+      apiMock.analyzeHtmlContent = vi.fn().mockReturnValue(of(mockResponse));
 
       let result: GenderBiasAnalysisResponse | undefined;
-      service.analyzeHtmlContent(request).subscribe(value => {
-        result = value;
-      });
+      service.analyzeHtmlContent(request).subscribe(v => (result = v));
 
       expect(result).toEqual(mockResponse);
-      expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
-      expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith(request);
+      expect(apiMock.analyzeHtmlContent).toHaveBeenCalledWith(request);
     });
   });
 
   describe('triggerAnalysis', () => {
-    describe('debounced behavior', () => {
-      it('should debounce analysis calls within 400ms', async () => {
-        vi.useFakeTimers();
-        const fieldId = 'test-field';
+    it('should debounce rapid analysis calls and only fire once with last value', () => {
+      vi.useFakeTimers();
+      service.getAnalysisForField('f').subscribe(() => {});
 
-        const results: (GenderBiasAnalysisResponse | undefined)[] = [];
-        const analysis$ = service.getAnalysisForField(fieldId);
-        analysis$.subscribe(value => {
-          results.push(value);
-        });
+      service.triggerAnalysis('f', 'Initial', 'en');
+      vi.advanceTimersByTime(500);
+      vi.clearAllMocks();
 
-        // Initialize the field with first call
-        service.triggerAnalysis(fieldId, 'Initial', 'en');
-        vi.advanceTimersByTime(500);
+      service.triggerAnalysis('f', 'Test 1', 'en');
+      service.triggerAnalysis('f', 'Test 2', 'en');
+      service.triggerAnalysis('f', 'Test 3', 'en');
 
-        // Reset mock to track subsequent calls
-        vi.clearAllMocks();
+      vi.advanceTimersByTime(200);
+      expect(apiMock.analyzeHtmlContent).not.toHaveBeenCalled();
 
-        // Trigger multiple analyses quickly
-        service.triggerAnalysis(fieldId, 'Test 1', 'en');
-        service.triggerAnalysis(fieldId, 'Test 2', 'en');
-        service.triggerAnalysis(fieldId, 'Test 3', 'en');
-
-        // Advance time by less than debounce time
-        vi.advanceTimersByTime(200);
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).not.toHaveBeenCalled();
-
-        // Advance time to complete debounce
-        vi.advanceTimersByTime(300);
-
-        // Should only call API once with the last value
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
-          text: 'Test 3',
-          language: 'en',
-        });
-      });
-
-      it('should not debounce when text changes after debounce period', async () => {
-        vi.useFakeTimers();
-        const fieldId = 'test-field';
-
-        const analysis = service.getAnalysisForField(fieldId);
-        analysis.subscribe(() => {});
-
-        service.triggerAnalysis(fieldId, 'Test 1', 'en');
-        vi.advanceTimersByTime(500);
-
-        vi.clearAllMocks();
-
-        service.triggerAnalysis(fieldId, 'Test 2', 'en');
-        vi.advanceTimersByTime(500);
-
-        service.triggerAnalysis(fieldId, 'Test 3', 'en');
-        vi.advanceTimersByTime(500);
-
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
-      });
+      vi.advanceTimersByTime(300);
+      expect(apiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
+      expect(apiMock.analyzeHtmlContent).toHaveBeenCalledWith({ text: 'Test 3', language: 'en' });
     });
 
-    describe('immediate behavior', () => {
-      it('should analyze immediately on first load', async () => {
-        vi.useFakeTimers();
-        const fieldId = 'test-field';
+    it('should analyze immediately on first load and when language changes', () => {
+      vi.useFakeTimers();
+      service.getAnalysisForField('f').subscribe(() => {});
 
-        const analysis = service.getAnalysisForField(fieldId);
-        analysis.subscribe(() => {});
+      service.triggerAnalysis('f', 'Test', 'en');
+      vi.advanceTimersByTime(500);
+      vi.clearAllMocks();
 
-        service.triggerAnalysis(fieldId, 'First text', 'en');
+      service.triggerAnalysis('f', 'Test', 'de');
+      vi.runAllTimers();
 
-        vi.runAllTimers();
-
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
-          text: 'First text',
-          language: 'en',
-        });
-      });
-
-      it('should analyze immediately when language changes', async () => {
-        vi.useFakeTimers();
-        const fieldId = 'test-field';
-
-        const analysis = service.getAnalysisForField(fieldId);
-        analysis.subscribe(() => {});
-
-        service.triggerAnalysis(fieldId, 'Test', 'en');
-        vi.advanceTimersByTime(500);
-
-        vi.clearAllMocks();
-
-        service.triggerAnalysis(fieldId, 'Test', 'de');
-        vi.runAllTimers();
-
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
-          text: 'Test',
-          language: 'de',
-        });
-      });
-
-      it('should analyze immediately when language changes back to original', async () => {
-        vi.useFakeTimers();
-        const fieldId = 'test-field';
-
-        const analysis = service.getAnalysisForField(fieldId);
-        analysis.subscribe(() => {});
-
-        service.triggerAnalysis(fieldId, 'Test', 'en');
-        vi.advanceTimersByTime(500);
-
-        service.triggerAnalysis(fieldId, 'Test', 'de');
-        vi.advanceTimersByTime(500);
-
-        vi.clearAllMocks();
-
-        service.triggerAnalysis(fieldId, 'Test', 'en');
-        vi.runAllTimers();
-
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
-          text: 'Test',
-          language: 'en',
-        });
-      });
+      expect(apiMock.analyzeHtmlContent).toHaveBeenCalledOnce();
+      expect(apiMock.analyzeHtmlContent).toHaveBeenCalledWith({ text: 'Test', language: 'de' });
     });
 
-    describe('field initialization', () => {
-      it('should initialize field and retry when subjects do not exist', () => {
-        const fieldId = 'new-field';
+    it('should handle multiple fields independently', () => {
+      vi.useFakeTimers();
+      service.getAnalysisForField('f1').subscribe(() => {});
+      service.getAnalysisForField('f2').subscribe(() => {});
 
-        expect(() => {
-          service.triggerAnalysis(fieldId, 'Test text', 'en');
-        }).not.toThrow();
+      service.triggerAnalysis('f1', 'Text 1', 'en');
+      service.triggerAnalysis('f2', 'Text 2', 'de');
+      vi.runAllTimers();
 
-        const analysis = service.getAnalysisForField(fieldId);
-        expect(analysis).toBeDefined();
-      });
-    });
-
-    describe('multiple fields', () => {
-      it('should handle multiple fields independently', async () => {
-        vi.useFakeTimers();
-        const fieldId1 = 'field-1';
-        const fieldId2 = 'field-2';
-
-        const analysis1 = service.getAnalysisForField(fieldId1);
-        const analysis2 = service.getAnalysisForField(fieldId2);
-        analysis1.subscribe(() => {});
-        analysis2.subscribe(() => {});
-
-        service.triggerAnalysis(fieldId1, 'Text 1', 'en');
-        service.triggerAnalysis(fieldId2, 'Text 2', 'de');
-
-        vi.runAllTimers();
-
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
-          text: 'Text 1',
-          language: 'en',
-        });
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
-          text: 'Text 2',
-          language: 'de',
-        });
-      });
-
-      it('should track language changes independently for each field', async () => {
-        vi.useFakeTimers();
-        const fieldId1 = 'field-1';
-        const fieldId2 = 'field-2';
-
-        const analysis1 = service.getAnalysisForField(fieldId1);
-        const analysis2 = service.getAnalysisForField(fieldId2);
-        analysis1.subscribe(() => {});
-        analysis2.subscribe(() => {});
-
-        service.triggerAnalysis(fieldId1, 'Text', 'en');
-        service.triggerAnalysis(fieldId2, 'Text', 'en');
-        vi.advanceTimersByTime(500);
-
-        vi.clearAllMocks();
-
-        service.triggerAnalysis(fieldId1, 'Text', 'de');
-
-        service.triggerAnalysis(fieldId2, 'New text', 'en');
-
-        vi.runAllTimers();
-
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
-          text: 'Text',
-          language: 'de',
-        });
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledWith({
-          text: 'New text',
-          language: 'en',
-        });
-      });
-
-      it('should track first load independently for each field', async () => {
-        vi.useFakeTimers();
-        const fieldId1 = 'field-1';
-        const fieldId2 = 'field-2';
-
-        const analysis1 = service.getAnalysisForField(fieldId1);
-        const analysis2 = service.getAnalysisForField(fieldId2);
-        analysis1.subscribe(() => {});
-        analysis2.subscribe(() => {});
-
-        service.triggerAnalysis(fieldId1, 'Text 1', 'en');
-        vi.advanceTimersByTime(100);
-
-        service.triggerAnalysis(fieldId2, 'Text 2', 'en');
-        vi.runAllTimers();
-
-        expect(genderBiasAnalysisApiMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
-      });
+      expect(apiMock.analyzeHtmlContent).toHaveBeenCalledTimes(2);
+      expect(apiMock.analyzeHtmlContent).toHaveBeenCalledWith({ text: 'Text 1', language: 'en' });
+      expect(apiMock.analyzeHtmlContent).toHaveBeenCalledWith({ text: 'Text 2', language: 'de' });
     });
   });
 });

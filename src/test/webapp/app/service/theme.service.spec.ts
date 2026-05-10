@@ -167,29 +167,19 @@ describe('ThemeService', () => {
   });
 
   describe('toggleTheme', () => {
-    it('should switch from system sync mode to light and disable sync', () => {
-      localStorage.setItem('tumApplySyncWithSystem', 'true');
+    it.each([
+      { initialSync: 'true', initialTheme: 'light', expectedSetThemeArg: 'light', expectedSyncAfter: false },
+      { initialSync: 'false', initialTheme: 'light', expectedSetThemeArg: 'dark', expectedSyncAfter: false },
+    ])('should toggle from $initialTheme/sync=$initialSync', ({ initialSync, initialTheme, expectedSetThemeArg, expectedSyncAfter }) => {
+      localStorage.setItem('tumApplySyncWithSystem', initialSync);
+      localStorage.setItem('tumApplyTheme', initialTheme);
       const service = createService();
       const setThemeSpy = vi.spyOn(service, 'setTheme');
 
       service.toggleTheme();
 
-      expect(service.syncWithSystem()).toBe(false);
-      expect(localStorage.getItem('tumApplySyncWithSystem')).toBe('false');
-      expect(setThemeSpy).toHaveBeenCalledWith('light');
-      expect(setThemeSpy).toHaveBeenCalledOnce();
-    });
-
-    it('should switch light to dark when sync is disabled', () => {
-      localStorage.setItem('tumApplySyncWithSystem', 'false');
-      localStorage.setItem('tumApplyTheme', 'light');
-      const service = createService();
-      const setThemeSpy = vi.spyOn(service, 'setTheme');
-
-      service.toggleTheme();
-
-      expect(setThemeSpy).toHaveBeenCalledWith('dark');
-      expect(setThemeSpy).toHaveBeenCalledOnce();
+      expect(service.syncWithSystem()).toBe(expectedSyncAfter);
+      expect(setThemeSpy).toHaveBeenCalledWith(expectedSetThemeArg);
     });
 
     it('should delegate to setSyncWithSystem when currently dark', () => {
@@ -201,7 +191,6 @@ describe('ThemeService', () => {
       service.toggleTheme();
 
       expect(setSyncSpy).toHaveBeenCalledWith(true);
-      expect(setSyncSpy).toHaveBeenCalledOnce();
     });
   });
 

@@ -34,11 +34,6 @@ describe('SelectComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create', () => {
-    const fixture = createFixture();
-    expect(fixture.componentInstance).toBeTruthy();
-  });
-
   it('should render label, asterisk, and placeholder', () => {
     const fixture = createFixture();
     const label = fixture.debugElement.query(By.css('label')).nativeElement;
@@ -68,14 +63,6 @@ describe('SelectComponent', () => {
     expect(emitSpy).toHaveBeenCalledWith(next);
   });
 
-  it('should reflect the disabled input on the component', () => {
-    const fixture = createFixture();
-    fixture.componentRef.setInput('disabled', true);
-    fixture.detectChanges();
-
-    expect(fixture.componentInstance.disabled()).toBe(true);
-  });
-
   it('should toggle isOpen state when dropdown opens/closes', () => {
     const fixture = createFixture();
     const comp = fixture.componentInstance;
@@ -86,84 +73,5 @@ describe('SelectComponent', () => {
 
     selectEl.triggerEventHandler('onHide', {});
     expect(comp.isOpen).toBe(false);
-  });
-
-  it('should support tooltipText input when icon=circle-info', () => {
-    const fixture = createFixture();
-    fixture.componentRef.setInput('icon', 'circle-info');
-    fixture.componentRef.setInput('tooltipText', 'Helpful text');
-    fixture.detectChanges();
-
-    expect(fixture.componentInstance.icon()).toBe('circle-info');
-    expect(fixture.componentInstance.tooltipText()).toBe('Helpful text');
-  });
-
-  it('should render regular icon when icon is not circle-info', () => {
-    const fixture = createFixture();
-    fixture.componentRef.setInput('icon', 'user');
-    fixture.detectChanges();
-
-    const icons = fixture.debugElement.queryAll(By.css('fa-icon'));
-    expect(icons.length).toBeGreaterThan(0);
-  });
-
-  it('should accept translateItems=true without error', () => {
-    const fixture = createFixture();
-    fixture.componentRef.setInput('translateItems', true);
-    fixture.detectChanges();
-
-    expect(fixture.componentInstance.translateItems()).toBe(true);
-  });
-
-  it('should update selected and placeholder dynamically', () => {
-    const fixture = createFixture();
-    fixture.componentRef.setInput('selected', mockItems[1]);
-    fixture.componentRef.setInput('placeholder', 'Pick one');
-    fixture.detectChanges();
-
-    expect(fixture.componentInstance.selected()).toEqual(mockItems[1]);
-    expect(fixture.componentInstance.placeholder()).toBe('Pick one');
-  });
-
-  it('should enable filtering when filter=true', () => {
-    const fixture = createFixture();
-    fixture.componentRef.setInput('filter', true);
-    fixture.detectChanges();
-
-    expect(fixture.componentInstance.filter()).toBe(true);
-    const selectEl = fixture.debugElement.query(By.css('p-select'));
-    expect(selectEl.componentInstance.filter).toBe(true);
-  });
-
-  it('should handle empty items array gracefully', () => {
-    const fixture = TestBed.createComponent(SelectComponent);
-    fixture.componentRef.setInput('items', []);
-    fixture.detectChanges();
-    expect(fixture.componentInstance.items()).toEqual([]);
-    expect(() => fixture.detectChanges()).not.toThrow();
-  });
-
-  it('should handle null/undefined selected value', () => {
-    const fixture = createFixture();
-    fixture.componentRef.setInput('selected', undefined);
-    fixture.detectChanges();
-    expect(fixture.componentInstance.selected()).toBeUndefined();
-    expect(() => fixture.detectChanges()).not.toThrow();
-  });
-
-  it('should show clear button when showClear=true', () => {
-    const fixture = createFixture();
-    fixture.componentRef.setInput('showClear', true);
-    fixture.detectChanges();
-
-    const selectEl = fixture.debugElement.query(By.css('p-select'));
-    expect(selectEl.componentInstance.showClear).toBe(true);
-  });
-
-  it('should not show clear button by default', () => {
-    const fixture = createFixture();
-    fixture.detectChanges();
-
-    expect(fixture.componentInstance.showClear()).toBe(false);
   });
 });

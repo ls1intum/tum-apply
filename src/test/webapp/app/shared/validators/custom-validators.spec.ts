@@ -7,7 +7,7 @@ afterEach(() => {
 });
 
 describe('HTML text validators', () => {
-  it('required validator: uses innerText when textContent is undefined', () => {
+  it('should use innerText for required validator when textContent is undefined', () => {
     const mockEl: Partial<HTMLElement> = {
       innerHTML: '',
       textContent: undefined,
@@ -28,7 +28,7 @@ describe('HTML text validators', () => {
     createSpy.mockRestore();
   });
 
-  it('maxLength validator: uses innerText when textContent is undefined', () => {
+  it('should use innerText for maxLength validator when textContent is undefined', () => {
     const mockEl: Partial<HTMLElement> = {
       innerHTML: '',
       textContent: undefined,

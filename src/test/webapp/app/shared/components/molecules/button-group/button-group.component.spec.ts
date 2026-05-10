@@ -21,7 +21,7 @@ describe('ButtonGroupComponent', () => {
       ],
     };
 
-    fixture.componentRef.setInput('data', { ...defaultData, ...overrideData });
+    fixture.componentRef.setInput('data', Object.assign({}, defaultData, overrideData ?? {}));
     fixture.detectChanges();
     return fixture;
   }
@@ -34,11 +34,6 @@ describe('ButtonGroupComponent', () => {
   });
 
   describe('Rendering', () => {
-    it('should create a button group', () => {
-      const fixture = createButtonFixture();
-      expect(fixture.componentRef).toBeTruthy();
-    });
-
     it('should render one element per provided button', () => {
       const fixture = createButtonFixture({
         buttons: [

@@ -41,14 +41,17 @@ export const createMockApplicationDTO = (applicationState: ApplicationForApplica
   },
 });
 
-const createMockApplicationOverview = (overrides?: Partial<ApplicationOverviewDTO>): ApplicationOverviewDTO => ({
-  applicationId: '123',
-  jobTitle: 'Software Engineer',
-  researchGroup: 'Research Group A',
-  applicationState: ApplicationOverviewDTOApplicationStateEnum.Sent,
-  createdAt: '2025-01-01T12:00:00Z',
-  ...overrides,
-});
+const createMockApplicationOverview = (overrides?: Partial<ApplicationOverviewDTO>): ApplicationOverviewDTO =>
+  Object.assign(
+    {
+      applicationId: '123',
+      jobTitle: 'Software Engineer',
+      researchGroup: 'Research Group A',
+      applicationState: ApplicationOverviewDTOApplicationStateEnum.Sent,
+      createdAt: '2025-01-01T12:00:00Z',
+    },
+    overrides ?? {},
+  );
 
 export const createMockApplicationOverviewPages = () => [
   createMockApplicationOverview({ applicationId: '1' }),

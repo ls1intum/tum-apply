@@ -14,18 +14,10 @@ describe('ApplicationConfigService', () => {
     service = TestBed.inject(ApplicationConfigService);
   });
 
-  describe('initialization', () => {
-    it('getAppConfig should throw before initialization', () => {
-      expect(() => service.getAppConfig()).toThrow('ApplicationConfig not initialized yet');
-    });
-
-    it('keycloak getter should throw before initialization', () => {
-      expect(() => service.keycloak).toThrow('ApplicationConfig not initialized yet');
-    });
-
-    it('otp getter should throw before initialization', () => {
-      expect(() => service.otp).toThrow('ApplicationConfig not initialized yet');
-    });
+  it('getters throw before initialization', () => {
+    expect(() => service.getAppConfig()).toThrow('ApplicationConfig not initialized yet');
+    expect(() => service.keycloak).toThrow('ApplicationConfig not initialized yet');
+    expect(() => service.otp).toThrow('ApplicationConfig not initialized yet');
   });
 
   describe('setAppConfig & getAppConfig', () => {
@@ -73,27 +65,22 @@ describe('ApplicationConfigService', () => {
     });
   });
 
-  describe('getter results are copies (no internal mutation)', () => {
-    it('mutating keycloak getter result must not change stored config', () => {
-      service.setAppConfig({ keycloak: { url: 'A', realm: 'R', clientId: 'C' } });
-      const k = service.keycloak;
-      k.url = 'B';
-      expect(service.keycloak.url).toBe('A');
+  it('mutating getter results must not change stored config', () => {
+    service.setAppConfig({
+      keycloak: { url: 'A', realm: 'R', clientId: 'C' },
+      otp: { length: 7, ttlSeconds: 111, resendCooldownSeconds: 22 },
     });
 
-    it('mutating otp getter result must not change stored config', () => {
-      service.setAppConfig({ otp: { length: 7, ttlSeconds: 111, resendCooldownSeconds: 22 } });
-      const o = service.otp;
-      o.length = 9;
-      expect(service.otp.length).toBe(7);
-    });
+    service.keycloak.url = 'B';
+    expect(service.keycloak.url).toBe('A');
+
+    service.otp.length = 9;
+    expect(service.otp.length).toBe(7);
   });
 
-  describe('getEndpointFor', () => {
-    it('should echo the api path (no prefixing applied yet)', () => {
-      service.setAppConfig({});
-      expect(service.getEndpointFor('api')).toBe('api');
-      expect(service.getEndpointFor('/api/auth')).toBe('/api/auth');
-    });
+  it('getEndpointFor should echo the api path', () => {
+    service.setAppConfig({});
+    expect(service.getEndpointFor('api')).toBe('api');
+    expect(service.getEndpointFor('/api/auth')).toBe('/api/auth');
   });
 });
