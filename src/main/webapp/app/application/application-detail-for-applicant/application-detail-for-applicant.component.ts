@@ -83,7 +83,7 @@ export default class ApplicationDetailForApplicantComponent {
    */
   references = computed<ReferenceRequestDTO[]>(() => {
     const preview = this.previewReferences();
-    if (preview && preview.length > 0) {
+    if (preview.length > 0) {
       return preview;
     }
     return this.actualReferences();
