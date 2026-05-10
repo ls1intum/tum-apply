@@ -58,7 +58,6 @@ describe('FilterMultiselect', () => {
     expect(fx.componentInstance.searchTerm()).toBe('');
   });
 
-
   it('should filter translated options when shouldTranslateOptions is true', () => {
     const filterFixture = createFilterMultiselectFixture({
       shouldTranslateOptions: true,
