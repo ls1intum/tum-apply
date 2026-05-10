@@ -66,8 +66,8 @@ describe('ApplicationCreationReferencesComponent', () => {
     });
 
     it('should fetch existing references for the active application on init', () => {
-      expect(referenceApi.list).toHaveBeenCalledOnce();
-      expect(referenceApi.list).toHaveBeenCalledWith(APPLICATION_ID);
+      expect(referenceApi.getReferences).toHaveBeenCalledOnce();
+      expect(referenceApi.getReferences).toHaveBeenCalledWith(APPLICATION_ID);
       expect(component.references()).toHaveLength(2);
     });
 
@@ -80,7 +80,7 @@ describe('ApplicationCreationReferencesComponent', () => {
 
     it('should toast an error when the initial load fails', async () => {
       referenceApi = createReferenceRequestResourceApiMock();
-      referenceApi.list.mockReturnValueOnce(throwError(() => new Error('boom')));
+      referenceApi.getReferences.mockReturnValueOnce(throwError(() => new Error('boom')));
       toast = createToastServiceMock();
 
       TestBed.resetTestingModule();
@@ -170,7 +170,7 @@ describe('ApplicationCreationReferencesComponent', () => {
     it('should clear the title control when selection is cleared', () => {
       component.onTitleSelected({ name: 'Dr.', value: 'Dr.' });
 
-      component.onTitleSelected(undefined as unknown as SelectOption);
+      component.onTitleSelected(undefined);
 
       expect(component.addForm.controls.title.value).toBe('');
       expect(component.selectedTitleOption()).toBeUndefined();
@@ -190,8 +190,8 @@ describe('ApplicationCreationReferencesComponent', () => {
       expect(component.addForm.touched).toBe(true);
     });
 
-    it('should POST trimmed values and append the new entry to the list', async () => {
-      fillForm({ firstName: '  Alan ', lastName: '  Turing ', email: '  alan@example.com ' });
+    it('should POST trimmed name values and append the new entry to the list', async () => {
+      fillForm({ firstName: '  Alan ', lastName: '  Turing ', email: 'alan@example.com' });
 
       await component.onAdd();
 

@@ -86,10 +86,13 @@ export default class ApplicationCreationReferencesComponent {
 
   /**
    * Updates the bound form control whenever the title dropdown selection changes.
+   *
+   * @param option the newly selected option, or undefined when the selection is cleared
    */
-  onTitleSelected(option: SelectOption): void {
-    this.selectedTitleOption.set(option);
-    this.addForm.controls.title.setValue(typeof option.value === 'string' ? option.value : '');
+  onTitleSelected(option: SelectOption | undefined): void {
+    const selected: SelectOption | undefined = option ?? undefined;
+    this.selectedTitleOption.set(selected);
+    this.addForm.controls.title.setValue(typeof selected?.value === 'string' ? selected.value : '');
   }
 
   /**
@@ -163,7 +166,7 @@ export default class ApplicationCreationReferencesComponent {
   private async refresh(): Promise<void> {
     this.loading.set(true);
     try {
-      const list = await firstValueFrom(this.referenceApi.list(this.applicationId()));
+      const list = await firstValueFrom(this.referenceApi.getReferences(this.applicationId()));
       this.references.set(list);
       this.referencesChanged.emit(this.references());
     } catch {

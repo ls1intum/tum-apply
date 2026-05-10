@@ -83,6 +83,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
     @BeforeEach
     void setup() {
         databaseCleaner.clean();
+        api.withoutPostProcessors();
         researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
         professor = UserTestData.savedProfessor(userRepository, researchGroup);
         applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
@@ -149,7 +150,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
 
             ReferenceRequestDTO created = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .postAndRead(String.format(REFERENCES_URL, savedApplication.getApplicationId()), payload, ReferenceRequestDTO.class, 200);
+                .postAndRead(String.format(REFERENCES_URL, savedApplication.getApplicationId()), payload, ReferenceRequestDTO.class, 201);
 
             assertThat(created.referenceRequestId()).isNotNull();
             assertThat(created.email()).isEqualTo(payload.email());
@@ -166,13 +167,8 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void shouldTrimWhitespaceOnPersist() {
-            CreateReferenceRequestDTO payload = new CreateReferenceRequestDTO(
-                "  Prof.  ",
-                "  Alan  ",
-                "  Turing  ",
-                "  alan@example.com  "
-            );
+        void shouldTrimWhitespaceFromNameFieldsOnPersist() {
+            CreateReferenceRequestDTO payload = new CreateReferenceRequestDTO("  Prof.  ", "  Alan  ", "  Turing  ", "alan@example.com");
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))

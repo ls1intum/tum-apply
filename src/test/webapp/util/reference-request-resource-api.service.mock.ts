@@ -5,7 +5,7 @@ import { ReferenceRequestResourceApi } from 'app/generated/api/reference-request
 import { ReferenceRequestDTO, ReferenceRequestDTOStatusEnum } from 'app/generated/model/reference-request-dto';
 
 export type ReferenceRequestResourceApiMock = {
-  list: ReturnType<typeof vi.fn>;
+  getReferences: ReturnType<typeof vi.fn>;
   add: ReturnType<typeof vi.fn>;
   remove: ReturnType<typeof vi.fn>;
 };
@@ -26,7 +26,7 @@ export const createMockReferenceRequestDTO = (overrides: Partial<ReferenceReques
 
 export function createReferenceRequestResourceApiMock(initial: ReferenceRequestDTO[] = []): ReferenceRequestResourceApiMock {
   return {
-    list: vi.fn().mockReturnValue(of(initial)),
+    getReferences: vi.fn().mockReturnValue(of(initial)),
     add: vi.fn().mockImplementation((_id: string, body: { email: string; firstName: string; lastName: string; title?: string }) =>
       of(
         createMockReferenceRequestDTO({
