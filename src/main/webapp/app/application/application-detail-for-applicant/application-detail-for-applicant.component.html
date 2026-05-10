@@ -284,12 +284,16 @@
                     {{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}
                     <span class="font-normal text-text-secondary text-sm ml-1"> ({{ reference.email }}) </span>
                   </span>
-                  @if (reference.status === 'SUBMITTED') {
-                    <span class="text-positive-default" jhiTranslate="entity.application_detail.reference_status.submitted">Submitted</span>
-                  } @else if (reference.status === 'EXPIRED') {
-                    <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.expired">Expired</span>
-                  } @else {
-                    <span class="text-text-secondary" jhiTranslate="entity.application_detail.reference_status.requested">Requested</span>
+                  @if (!previewDetailData()) {
+                    @if (reference.status === 'SUBMITTED') {
+                      <span class="text-positive-default" jhiTranslate="entity.application_detail.reference_status.submitted"
+                        >Submitted</span
+                      >
+                    } @else if (reference.status === 'EXPIRED') {
+                      <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.expired">Expired</span>
+                    } @else {
+                      <span class="text-text-secondary" jhiTranslate="entity.application_detail.reference_status.requested">Requested</span>
+                    }
                   }
                 </li>
               }
