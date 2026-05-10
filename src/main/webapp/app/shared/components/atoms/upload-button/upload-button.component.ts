@@ -61,6 +61,17 @@ export class UploadButtonComponent {
    */
   requestAuth = input<() => Promise<void>>();
 
+  /**
+   * Optional override for the actual upload step. When set, takes precedence over the built-in
+   * application/applicant-profile API calls and is invoked with the picked file. Used for flows
+   * that don't go through {@code ApplicationResourceApi}/{@code ApplicantResourceApi} — e.g. the
+   * public token-based reference-letter upload — so the same UI can be reused while the parent
+   * keeps full control of the request shape.
+   *
+   * The handler must resolve to the document holder list to display in the "uploaded" row.
+   */
+  uploadHandler = input<((file: File) => Promise<DocumentInformationHolderDTO[]>) | undefined>(undefined);
+
   selectedFiles = signal<File[] | undefined>(undefined);
   isUploading = signal<boolean>(false);
   disabled = computed(() => (this.documentIds()?.length ?? 0) > 0);
@@ -267,10 +278,10 @@ export class UploadButtonComponent {
         this.documentIds()?.map(doc =>
           doc.id === documentId
             ? {
-                id: doc.id,
-                name: newName,
-                size: doc.size,
-              }
+              id: doc.id,
+              name: newName,
+              size: doc.size,
+            }
             : doc,
         ) ?? [];
       this.documentIds.set(updatedDocs);
@@ -284,10 +295,10 @@ export class UploadButtonComponent {
         this.documentIds()?.map(doc =>
           doc.id === documentId
             ? {
-                id: doc.id,
-                name: newName,
-                size: doc.size,
-              }
+              id: doc.id,
+              name: newName,
+              size: doc.size,
+            }
             : doc,
         ) ?? [];
       this.documentIds.set(updatedDocs);
@@ -312,6 +323,11 @@ export class UploadButtonComponent {
    * the callback rejects (user cancelled / validation failed upstream).
    */
   private async ensureAuthenticated(): Promise<boolean> {
+    // A custom upload handler bypasses the built-in API paths entirely and is responsible for
+    // its own authentication (e.g. a token in the URL), so no further checks are needed here.
+    if (this.uploadHandler()) {
+      return true;
+    }
     if (this.uploadTarget() === 'applicantProfile') {
       return true;
     }
@@ -459,6 +475,11 @@ export class UploadButtonComponent {
   }
 
   private uploadDocument(file: File): Promise<DocumentInformationHolderDTO[]> {
+    const customHandler = this.uploadHandler();
+    if (customHandler) {
+      return customHandler(file);
+    }
+
     if (this.uploadTarget() === 'applicantProfile') {
       return firstValueFrom(this.applicantApi.uploadApplicantProfileDocuments(this.documentType(), file));
     }

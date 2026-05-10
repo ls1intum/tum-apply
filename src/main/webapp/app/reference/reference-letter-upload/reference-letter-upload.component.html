@@ -101,26 +101,13 @@
       </div>
 
       <!-- Upload control -->
-      <div class="border border-border-default rounded-lg p-6 bg-background-surface text-center">
-        <p
-          class="text-text-secondary mb-4"
-          jhiTranslate="reference.letterUpload.upload.helper"
-          [translateValues]="{ maxSize: maxUploadMb }"
-        ></p>
-        <p-fileUpload
-          name="file"
-          accept="application/pdf"
-          [auto]="true"
-          [showCancelButton]="false"
-          [showUploadButton]="false"
-          [chooseLabel]="'reference.letterUpload.upload.choose' | translate"
-          (onSelect)="onFileSelected($event)"
-          [disabled]="uploading()"
-          mode="basic"
+      <div class="border border-border-default rounded-lg p-6 bg-background-surface">
+        <jhi-upload-button
+          [documentType]="documentType"
+          [allowMultiple]="false"
+          [(documentIds)]="uploadedDocuments"
+          [uploadHandler]="uploadHandler"
         />
-        @if (uploading()) {
-          <div class="mt-4 text-text-secondary" jhiTranslate="reference.letterUpload.upload.uploading">Uploading…</div>
-        }
       </div>
     }
   </div>

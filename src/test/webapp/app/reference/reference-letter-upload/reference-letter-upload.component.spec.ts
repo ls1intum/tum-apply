@@ -13,13 +13,12 @@ import {
 } from 'util/reference-letter-upload-resource-api.service.mock';
 import { ReferenceLetterUploadComponent } from 'app/reference/reference-letter-upload/reference-letter-upload.component';
 import { ReferenceRequestDTOStatusEnum } from 'app/generated/model/reference-request-dto';
-import { FileSelectEvent } from 'primeng/fileupload';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 
 const TOKEN = 'sample-token';
 
 interface ReferenceLetterUploadComponentInternals {
-  uploadFile(file: File): Promise<void>;
-  onFileSelected(event: FileSelectEvent): Promise<void>;
+  uploadHandler(file: File): Promise<DocumentInformationHolderDTO[]>;
 }
 
 const internals = (component: ReferenceLetterUploadComponent): ReferenceLetterUploadComponentInternals =>
@@ -88,31 +87,19 @@ describe('ReferenceLetterUploadComponent', () => {
     });
 
     it('should POST the selected file and switch to the success view', async () => {
-      await internals(component).uploadFile(fakePdf());
+      const result = await internals(component).uploadHandler(fakePdf());
 
       expect(api.upload).toHaveBeenCalledOnce();
       expect(api.upload).toHaveBeenCalledWith(TOKEN, expect.any(File));
       expect(toast.showSuccessKey).toHaveBeenCalledOnce();
+      expect(result).toHaveLength(1);
     });
 
-    it('should reject files larger than the size limit before calling the API', async () => {
-      const oversized = fakePdf('big.pdf', 6 * 1024 * 1024);
-      const selectEvent = { currentFiles: [oversized] } as unknown as FileSelectEvent;
-
-      await internals(component).onFileSelected(selectEvent);
-
-      expect(api.upload).not.toHaveBeenCalled();
-      expect(toast.showErrorKey).toHaveBeenCalledOnce();
-      expect(toast.showErrorKey).toHaveBeenCalledWith('reference.letterUpload.toast.tooLarge');
-    });
-
-    it('should toast on upload failure and stay on the upload view', async () => {
+    it('should propagate failures so jhi-upload-button can show the generic error toast', async () => {
       api.upload.mockReturnValueOnce(throwError(() => new Error('boom')));
 
-      await internals(component).uploadFile(fakePdf());
-
-      expect(toast.showErrorKey).toHaveBeenCalledOnce();
-      expect(toast.showErrorKey).toHaveBeenCalledWith('reference.letterUpload.toast.uploadFailed');
+      await expect(internals(component).uploadHandler(fakePdf())).rejects.toThrow();
+      expect(toast.showSuccessKey).not.toHaveBeenCalled();
     });
   });
 
