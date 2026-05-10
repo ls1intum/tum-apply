@@ -54,7 +54,8 @@ describe('JobDetailComponent', () => {
   let component: JobDetailComponent;
   let translate: TranslateService;
 
-  const mockRouter = createRouterMock();
+  let mockRouter: ReturnType<typeof createRouterMock>;
+  let mockToastService: ReturnType<typeof createToastServiceMock>;
 
   let location: Location;
   let jobApi: {
@@ -63,7 +64,6 @@ describe('JobDetailComponent', () => {
     deleteJob: ReturnType<typeof vi.fn>;
   };
   let mockAccountService: ReturnType<typeof createAccountServiceMock>;
-  const mockToastService = createToastServiceMock();
   let researchGroupApi: { getResourceGroupDetails: ReturnType<typeof vi.fn> };
   let pdfExportApi: {
     exportJobToPDF: ReturnType<typeof vi.fn>;
@@ -71,6 +71,8 @@ describe('JobDetailComponent', () => {
   };
 
   beforeEach(async () => {
+    mockRouter = createRouterMock();
+    mockToastService = createToastServiceMock();
     location = { back: vi.fn() } as unknown as Location;
     jobApi = {
       getJobDetails: vi.fn(),
@@ -109,6 +111,8 @@ describe('JobDetailComponent', () => {
     translate = TestBed.inject(TranslateService);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    await fixture.whenStable();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
@@ -174,27 +178,27 @@ describe('JobDetailComponent', () => {
       jobApi.changeJobState.mockReturnValue(of({}));
       await component.onCloseJob();
       expect(jobApi.changeJobState).toHaveBeenCalledWith('job123', JobDetailDTOStateEnum.Closed);
-      expect(mockToastService.showSuccess).toHaveBeenCalled();
-      expect(location.back).toHaveBeenCalled();
+      expect(mockToastService.showSuccess).toHaveBeenCalledOnce();
+      expect(location.back).toHaveBeenCalledOnce();
     });
 
     it('should toast error on close job failure', async () => {
       jobApi.changeJobState.mockReturnValue(throwError(() => new Error('fail')));
       await component.onCloseJob();
-      expect(mockToastService.showError).toHaveBeenCalled();
+      expect(mockToastService.showError).toHaveBeenCalledOnce();
     });
 
     it('should delete job successfully', async () => {
       jobApi.deleteJob.mockReturnValue(of({}));
       await component.onDeleteJob();
       expect(jobApi.deleteJob).toHaveBeenCalledWith('job123');
-      expect(mockToastService.showSuccess).toHaveBeenCalled();
+      expect(mockToastService.showSuccess).toHaveBeenCalledOnce();
     });
 
     it('should toast error on delete failure', async () => {
       jobApi.deleteJob.mockReturnValue(throwError(() => new Error('boom')));
       await component.onDeleteJob();
-      expect(mockToastService.showError).toHaveBeenCalled();
+      expect(mockToastService.showError).toHaveBeenCalledOnce();
     });
   });
 
@@ -219,8 +223,8 @@ describe('JobDetailComponent', () => {
     it('should toast error and navigate back on init failure', async () => {
       jobApi.getJobDetails.mockReturnValue(throwError(() => new Error('fail')));
       await component.init();
-      expect(mockToastService.showError).toHaveBeenCalled();
-      expect(location.back).toHaveBeenCalled();
+      expect(mockToastService.showError).toHaveBeenCalledOnce();
+      expect(location.back).toHaveBeenCalledOnce();
     });
 
     it('should handle HttpErrorResponse with status detail', async () => {
@@ -271,7 +275,7 @@ describe('JobDetailComponent', () => {
     it('should toast error when researchGroupApi fails', async () => {
       researchGroupApi.getResourceGroupDetails.mockReturnValue(throwError(() => new Error('RG error')));
       await (component as JobDetailComponentInternals).loadJobDetailsFromForm({ title: 'FormJob' } as JobFormDTO);
-      expect(mockToastService.showError).toHaveBeenCalled();
+      expect(mockToastService.showError).toHaveBeenCalledOnce();
     });
 
     it('should call getResourceGroupDetails with empty string when user has no researchGroup id', async () => {
