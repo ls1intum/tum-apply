@@ -22,11 +22,7 @@ function buildComponent(profileInfo: Partial<ProfileInfo>): ComponentFixture<Foo
   };
   TestBed.configureTestingModule({
     imports: [FooterComponent],
-    providers: [
-      provideRouter([]),
-      provideTranslateMock(),
-      { provide: ProfileService, useValue: profileServiceMock },
-    ],
+    providers: [provideRouter([]), provideTranslateMock(), { provide: ProfileService, useValue: profileServiceMock }],
   });
   const fixture = TestBed.createComponent(FooterComponent);
   fixture.detectChanges();

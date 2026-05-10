@@ -30,6 +30,12 @@ gitProperties {
   gitPropertiesResourceDir.set(file("$projectDir/src/main/resources"))
 }
 
+// processResources reads from src/main/resources, where generateGitProperties writes git.properties.
+// Declare the dependency explicitly so Gradle 9+ task-validation doesn't flag the implicit ordering.
+tasks.named('processResources') {
+  dependsOn 'generateGitProperties'
+}
+
 group = "de.tum.cit.aet"
 
 // Version configuration based on profile:
