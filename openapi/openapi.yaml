@@ -308,7 +308,8 @@ paths:
         required: true
         schema:
           type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, REFERENCE_LETTER,
+            CV, CUSTOM]
       requestBody:
         content:
           multipart/form-data:
@@ -610,7 +611,8 @@ paths:
         required: true
         schema:
           type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, REFERENCE_LETTER,
+            CV, CUSTOM]
       requestBody:
         content:
           multipart/form-data:
@@ -2092,6 +2094,43 @@ paths:
               schema:
                 type: object
                 additionalProperties: {}
+  /api/reference-letters/{token}:
+    get:
+      tags: [reference-letter-upload-resource]
+      operationId: getContext
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferenceLetterContextDTO'}
+    post:
+      tags: [reference-letter-upload-resource]
+      operationId: upload
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema: {type: string}
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: {type: string, format: binary}
+              required: [file]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferenceRequestDTO'}
   /api/research-groups:
     get:
       tags: [research-group-resource]
@@ -2782,8 +2821,8 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
+            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
         jobLocation:
@@ -2841,8 +2880,8 @@ components:
         name: {type: string}
         state:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
+            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
     ApplicationEvaluationOverviewListDTO:
       type: object
       properties:
@@ -2857,8 +2896,8 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
+            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         job: {$ref: '#/components/schemas/JobCardDTO'}
         motivation: {type: string}
@@ -2871,8 +2910,8 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
+            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
         createdAt: {type: string, format: date-time}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
@@ -3047,7 +3086,8 @@ components:
       properties:
         documentType:
           type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, REFERENCE_LETTER,
+            CV, CUSTOM]
         id: {type: string, format: uuid}
         name: {type: string}
         size: {type: integer, format: int64}
@@ -3258,8 +3298,8 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
+            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
         avatar: {type: string}
         contractDuration: {type: integer, format: int32}
         imageUrl: {type: string}
@@ -3345,8 +3385,8 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
+            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
         contractDuration: {type: integer, format: int32}
         contractExtendable: {type: boolean}
         createdAt: {type: string, format: date-time}
@@ -3639,9 +3679,24 @@ components:
           type: array
           items: {$ref: '#/components/schemas/RatingDTO'}
           uniqueItems: true
+    ReferenceLetterContextDTO:
+      type: object
+      properties:
+        applicantFirstName: {type: string}
+        applicantLastName: {type: string}
+        deadline: {type: string, format: date-time}
+        jobTitle: {type: string}
+        refereeFirstName: {type: string}
+        refereeLastName: {type: string}
+        refereeTitle: {type: string}
+        researchGroupName: {type: string}
+        status:
+          type: string
+          enum: [REQUESTED, SUBMITTED, EXPIRED]
     ReferenceRequestDTO:
       type: object
       properties:
+        documentId: {type: string, format: uuid}
         email: {type: string}
         firstName: {type: string}
         lastName: {type: string}
@@ -3811,8 +3866,8 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            JOB_CLOSED_DRAFT, INTERVIEW]
+          enum: [SAVED, SENT, REFERENCES_PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN,
+            JOB_CLOSED, JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         motivation: {type: string}
         projects: {type: string}

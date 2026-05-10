@@ -76,6 +76,7 @@ export class ApplicationOverviewComponent {
 
   readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info' | 'neutral'>>({
     SENT: 'info',
+    REFERENCES_PENDING: 'warn',
     ACCEPTED: 'success',
     REJECTED: 'danger',
     IN_REVIEW: 'warn',

@@ -17,6 +17,8 @@ import { ReviewDialogComponent } from 'app/shared/components/molecules/review-di
 import { ApplicationEvaluationResourceApi } from 'app/generated/api/application-evaluation-resource-api';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
 import { InterviewResourceApi } from 'app/generated/api/interview-resource-api';
+import { ReferenceRequestResourceApi } from 'app/generated/api/reference-request-resource-api';
+import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
 import { AcceptDTO } from 'app/generated/model/accept-dto';
 import { RejectDTO } from 'app/generated/model/reject-dto';
@@ -79,6 +81,7 @@ export class ApplicationDetailComponent {
 
   currentApplication = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
   currentDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+  currentReferenceRequests = signal<ReferenceRequestDTO[]>([]);
   sortBy = signal<string>('appliedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
@@ -106,10 +109,13 @@ export class ApplicationDetailComponent {
       return false;
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
+    // Professors cannot accept/reject while reference letters are still pending — the application
+    // is incomplete in that case and decisions should wait until every required letter is in.
     return (
       state !== ApplicationDetailDTOApplicationStateEnum.Accepted &&
       state !== ApplicationDetailDTOApplicationStateEnum.Rejected &&
-      state !== ApplicationDetailDTOApplicationStateEnum.JobClosed
+      state !== ApplicationDetailDTOApplicationStateEnum.JobClosed &&
+      state !== ApplicationDetailDTOApplicationStateEnum.ReferencesPending
     );
   });
 
@@ -168,6 +174,7 @@ export class ApplicationDetailComponent {
   private readonly evaluationApi = inject(ApplicationEvaluationResourceApi);
   private readonly applicationApi = inject(ApplicationResourceApi);
   private readonly interviewApi = inject(InterviewResourceApi);
+  private readonly referenceApi = inject(ReferenceRequestResourceApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly translateService = inject(TranslateService);
@@ -674,5 +681,11 @@ export class ApplicationDetailComponent {
         this.currentDocumentIds.set(ids);
       })
       .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
+
+    // Reference requests are loaded separately so the document section can list each uploaded
+    // letter as its own preview card and the referee summary card can show per-referee status.
+    firstValueFrom(this.referenceApi.getReferences(applicationId))
+      .then(references => this.currentReferenceRequests.set(references))
+      .catch(() => this.currentReferenceRequests.set([]));
   }
 }

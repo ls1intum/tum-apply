@@ -64,6 +64,7 @@ public class ApplicationEvaluationService {
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
         ApplicationState.SENT,
+        ApplicationState.REFERENCES_PENDING,
         ApplicationState.IN_REVIEW,
         ApplicationState.ACCEPTED,
         ApplicationState.REJECTED,
@@ -391,6 +392,7 @@ public class ApplicationEvaluationService {
             case MASTER_TRANSCRIPT -> "master";
             case CV -> "cv";
             case REFERENCE -> "reference";
+            case REFERENCE_LETTER -> "reference-letter";
             case CUSTOM -> "custom";
         };
     }

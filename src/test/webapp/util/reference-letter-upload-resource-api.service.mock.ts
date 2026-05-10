@@ -1,0 +1,50 @@
+import { Provider } from '@angular/core';
+import { vi } from 'vitest';
+import { of } from 'rxjs';
+import { ReferenceLetterUploadResourceApi } from 'app/generated/api/reference-letter-upload-resource-api';
+import { ReferenceLetterContextDTO } from 'app/generated/model/reference-letter-context-dto';
+import { ReferenceRequestDTO, ReferenceRequestDTOStatusEnum } from 'app/generated/model/reference-request-dto';
+
+export type ReferenceLetterUploadResourceApiMock = {
+  getReferenceLetterContext: ReturnType<typeof vi.fn>;
+  uploadReferenceLetter: ReturnType<typeof vi.fn>;
+};
+
+export const createMockContext = (overrides: Partial<ReferenceLetterContextDTO> = {}): ReferenceLetterContextDTO =>
+  Object.assign(
+    {
+      refereeTitle: 'Prof. Dr.',
+      refereeFirstName: 'Ada',
+      refereeLastName: 'Lovelace',
+      applicantFirstName: 'Sample',
+      applicantLastName: 'Applicant',
+      jobTitle: 'PhD Position',
+      researchGroupName: 'Research Group A',
+      status: ReferenceRequestDTOStatusEnum.Requested,
+    },
+    overrides,
+  );
+
+export function createReferenceLetterUploadResourceApiMock(
+  initialContext: ReferenceLetterContextDTO = createMockContext(),
+): ReferenceLetterUploadResourceApiMock {
+  const submitted: ReferenceRequestDTO = {
+    referenceRequestId: 'submitted-id',
+    title: initialContext.refereeTitle,
+    firstName: initialContext.refereeFirstName,
+    lastName: initialContext.refereeLastName,
+    email: 'ada@example.com',
+    status: ReferenceRequestDTOStatusEnum.Submitted,
+    documentId: 'document-id',
+  };
+  return {
+    getReferenceLetterContext: vi.fn().mockReturnValue(of(initialContext)),
+    uploadReferenceLetter: vi.fn().mockReturnValue(of(submitted)),
+  };
+}
+
+export function provideReferenceLetterUploadResourceApiMock(
+  mock: ReferenceLetterUploadResourceApiMock = createReferenceLetterUploadResourceApiMock(),
+): Provider {
+  return { provide: ReferenceLetterUploadResourceApi, useValue: mock };
+}

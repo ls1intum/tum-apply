@@ -33,4 +33,33 @@ public interface ReferenceRequestRepository extends JpaRepository<ReferenceReque
         """
     )
     Optional<ReferenceRequest> findByIdWithApplication(@Param("id") UUID id);
+
+    /**
+     * Looks up a request by the SHA-256 hash of the raw token sent in the invitation email.
+     * Eagerly loads the application, applicant user, job and research group so the caller can
+     * read all the prefilled fields without a service-level transaction.
+     *
+     * @param tokenHash hash of the raw token presented by the referee
+     * @return the matching request with application context, or empty if none
+     */
+    @Query(
+        """
+        SELECT r FROM ReferenceRequest r
+        JOIN FETCH r.application a
+        JOIN FETCH a.applicant ap
+        JOIN FETCH ap.user
+        JOIN FETCH a.job j
+        JOIN FETCH j.researchGroup
+        WHERE r.tokenHash = :tokenHash
+        """
+    )
+    Optional<ReferenceRequest> findByTokenHashWithApplication(@Param("tokenHash") String tokenHash);
+
+    /**
+     * Counts how many reference requests on the given application have already been submitted.
+     *
+     * @param applicationId the owning application
+     * @return the number of requests in {@code SUBMITTED} state
+     */
+    long countByApplicationApplicationIdAndStatus(UUID applicationId, de.tum.cit.aet.reference.constants.ReferenceRequestStatus status);
 }

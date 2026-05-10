@@ -13,6 +13,7 @@ import TranslateDirective from '../../../language/translate.directive';
 import { ToastService } from '../../../../service/toast-service';
 import { ApplicationDocumentIdsDTO } from '../../../../generated/model/application-document-ids-dto';
 import { DocumentInformationHolderDTO } from '../../../../generated/model/document-information-holder-dto';
+import { ReferenceRequestDTO } from '../../../../generated/model/reference-request-dto';
 import { ApplicationEvaluationResourceApi } from '../../../../generated/api/application-evaluation-resource-api';
 import { DocumentDialog } from '../../molecules/document-dialog/document-dialog';
 
@@ -29,6 +30,11 @@ export interface DocumentHolder {
 export class DocumentSection {
   idsDTO = input<ApplicationDocumentIdsDTO | undefined>(undefined);
   applicationId = input.required<string | undefined>();
+  /**
+   * External reference letters uploaded by referees, to be merged into the listed documents.
+   * Each entry shows up labelled "Reference Letter — &lt;referee name&gt;".
+   */
+  referenceLetters = input<ReferenceRequestDTO[]>([]);
 
   documents = signal<DocumentHolder[]>([]);
   extraDocuments = signal<DocumentHolder[]>([]);
@@ -59,25 +65,37 @@ export class DocumentSection {
 
   idChangeEffect = effect(() => {
     const dto = this.idsDTO();
+    const letters = this.referenceLetters();
 
-    if (!dto) {
+    if (!dto && letters.length === 0) {
       this.documents.set([]);
       this.extraDocuments.set([]);
       this.documentsCount.set(0);
       return;
     }
 
-    const result: { label: string; document: DocumentInformationHolderDTO }[] = [];
+    const result: DocumentHolder[] = [];
 
-    dto.masterDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeMaster', document: d }));
+    dto?.masterDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeMaster', document: d }));
 
-    if (dto.cvDocumentId) {
+    if (dto?.cvDocumentId) {
       result.push({ label: 'evaluation.details.documentTypeCV', document: dto.cvDocumentId });
     }
 
-    dto.bachelorDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeBachelor', document: d }));
+    dto?.bachelorDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeBachelor', document: d }));
 
-    dto.referenceDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeReference', document: d }));
+    dto?.referenceDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeReference', document: d }));
+
+    // Externally-uploaded reference letters appear last and are individually labelled with the
+    // referee's name so reviewers can tell them apart at a glance.
+    letters
+      .filter(letter => !!letter.documentId)
+      .forEach(letter =>
+        result.push({
+          label: this.buildReferenceLetterLabel(letter),
+          document: { id: letter.documentId!, name: this.buildReferenceLetterLabel(letter), size: 0 },
+        }),
+      );
 
     this.documentsCount.set(result.length);
 
@@ -85,6 +103,18 @@ export class DocumentSection {
     this.documents.set(result.slice(0, this.NUMBER_OF_DOCUMENTS));
     this.extraDocuments.set(result.slice(this.NUMBER_OF_DOCUMENTS));
   });
+
+  /**
+   * Builds the display label for an externally uploaded reference letter, e.g. "Reference Letter — Ada Lovelace".
+   *
+   * @param letter the reference request whose letter is being rendered
+   * @return the label string used in the documents list
+   */
+  private buildReferenceLetterLabel(letter: ReferenceRequestDTO): string {
+    const name = [letter.firstName, letter.lastName].filter(part => !!part).join(' ');
+    const base = this.translate.instant('evaluation.details.documentTypeReferenceLetter');
+    return name ? `${base} — ${name}` : base;
+  }
 
   async downloadAllDocuments(): Promise<void> {
     const applicationId = this.applicationId();

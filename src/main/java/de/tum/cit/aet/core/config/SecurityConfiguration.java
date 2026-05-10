@@ -135,6 +135,9 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/api/export/job/**")
                     .permitAll()
+                    // External recommendation letter upload — token in the path is the only auth.
+                    .requestMatchers("/api/reference-letters/**")
+                    .permitAll()
                     // Public GET endpoints for schools
                     .requestMatchers(
                         org.springframework.http.HttpMethod.GET,

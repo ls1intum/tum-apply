@@ -167,12 +167,20 @@ public class ApplicationService {
     @Transactional
     public ApplicationForApplicantDTO updateApplication(UpdateApplicationDTO updateApplicationDTO) {
         Application application = assertCanManageApplication(updateApplicationDTO.applicationId());
-        application.setState(updateApplicationDTO.applicationState());
+        // When the applicant submits but the job requires recommendation letters that aren't all
+        // in yet, the application enters REFERENCES_PENDING instead of SENT. Once every required
+        // letter is uploaded, ReferenceRequestService promotes the application back to SENT.
+        ApplicationState targetState = updateApplicationDTO.applicationState();
+        boolean isSubmitting = ApplicationState.SENT.equals(targetState);
+        if (isSubmitting && referenceRequestService.hasIncompleteReferences(application)) {
+            targetState = ApplicationState.REFERENCES_PENDING;
+        }
+        application.setState(targetState);
         application.setDesiredStartDate(updateApplicationDTO.desiredDate());
         application.setProjects(HtmlSanitizer.sanitize(updateApplicationDTO.projects()));
         application.setSpecialSkills(HtmlSanitizer.sanitize(updateApplicationDTO.specialSkills()));
         application.setMotivation(HtmlSanitizer.sanitize(updateApplicationDTO.motivation()));
-        if (updateApplicationDTO.applicationState().equals(ApplicationState.SENT)) {
+        if (isSubmitting) {
             application.setAppliedAt(LocalDateTime.now());
         }
 
@@ -204,7 +212,10 @@ public class ApplicationService {
 
         application = applicationRepository.save(application);
 
-        if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
+        // Submit-time side effects fire whether the application landed in SENT or REFERENCES_PENDING:
+        // the professor needs to know about the incoming application either way (the missing-refs
+        // badge tells them to wait), and invitation emails must go out so referees can upload.
+        if (isSubmitting) {
             syncSnapshotDataToApplicant(application);
             syncDocumentsToApplicantProfile(application);
             confirmApplicationToApplicant(application);
