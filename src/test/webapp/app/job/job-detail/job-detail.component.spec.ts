@@ -22,6 +22,33 @@ import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 import { PdfExportResourceApi } from 'app/generated/api/pdf-export-resource-api';
 
+type ResearchGroupDetails = {
+  department?: { name: string };
+  description?: string;
+  email?: string;
+  website?: string;
+  street?: string;
+  postalCode?: string;
+  city?: string;
+};
+
+type JobDetailComponentInternals = JobDetailComponent & {
+  loadJobDetailsFromForm(form: JobFormDTO): Promise<void>;
+  mapToJobDetails(
+    data: JobDetailDTO | JobFormDTO,
+    user?: User,
+    researchGroupDetails?: ResearchGroupDetails,
+    isForm?: boolean,
+  ): JobDetails;
+  isOwnerOfJob(job: JobDetails): boolean;
+};
+
+type MapToJobDetailsArgs =
+  | [data: JobDetailDTO | JobFormDTO]
+  | [data: JobDetailDTO | JobFormDTO, user: User | undefined]
+  | [data: JobDetailDTO | JobFormDTO, user: User | undefined, researchGroupDetails: ResearchGroupDetails | undefined]
+  | [data: JobDetailDTO | JobFormDTO, user: User | undefined, researchGroupDetails: ResearchGroupDetails | undefined, isForm: boolean];
+
 describe('JobDetailComponent', () => {
   let fixture: ComponentFixture<JobDetailComponent>;
   let component: JobDetailComponent;
@@ -236,21 +263,21 @@ describe('JobDetailComponent', () => {
   describe('loadJobDetailsFromForm', () => {
     it('should set jobDetails and dataLoaded', async () => {
       const form: JobFormDTO = { title: 'FormJob', jobDescriptionEN: 'Desc', jobDescriptionDE: 'Desc' } as JobFormDTO;
-      await (component as any).loadJobDetailsFromForm(form);
+      await (component as JobDetailComponentInternals).loadJobDetailsFromForm(form);
       expect(component.jobDetails()).not.toBeNull();
       expect(component.dataLoaded()).toBe(true);
     });
 
     it('should toast error when researchGroupApi fails', async () => {
       researchGroupApi.getResourceGroupDetails.mockReturnValue(throwError(() => new Error('RG error')));
-      await (component as any).loadJobDetailsFromForm({ title: 'FormJob' } as JobFormDTO);
+      await (component as JobDetailComponentInternals).loadJobDetailsFromForm({ title: 'FormJob' } as JobFormDTO);
       expect(mockToastService.showError).toHaveBeenCalled();
     });
 
     it('should call getResourceGroupDetails with empty string when user has no researchGroup id', async () => {
       mockAccountService.user.set({ id: 'u2', name: 'NoGroupUser', researchGroup: {} } as User);
       const spy = vi.spyOn(researchGroupApi, 'getResourceGroupDetails').mockReturnValue(of({ description: 'none' }));
-      await (component as any).loadJobDetailsFromForm({
+      await (component as JobDetailComponentInternals).loadJobDetailsFromForm({
         title: 'Form Job',
         subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
         location: JobFormDTOLocationEnum.Garching,
@@ -278,8 +305,8 @@ describe('JobDetailComponent', () => {
   });
 
   describe('mapToJobDetails', () => {
-    function callMap(args: any[]) {
-      return (component as any).mapToJobDetails.apply(component, args);
+    function callMap(args: MapToJobDetailsArgs): JobDetails {
+      return (component as JobDetailComponentInternals).mapToJobDetails.apply(component, args);
     }
 
     it('should map JobDetailDTO core fields', () => {
@@ -355,7 +382,8 @@ describe('JobDetailComponent', () => {
   });
 
   describe('primaryActionButton', () => {
-    it.each([
+    type PrimaryActionSpyKey = 'onApply' | 'onEditApplication' | 'onViewApplication' | 'onEditJob';
+    it.each<{ name: string; details: JobDetails; spy: PrimaryActionSpyKey }>([
       {
         name: 'apply when not in research group and no application',
         details: { belongsToResearchGroup: false, applicationState: undefined } as JobDetails,
@@ -378,10 +406,10 @@ describe('JobDetailComponent', () => {
       },
     ])('should trigger $spy on click for: $name', ({ details, spy }) => {
       component.jobDetails.set(details);
-      const onClickSpy = vi.spyOn(component, spy as any);
+      const onClickSpy = vi.spyOn(component, spy);
       const btn = component.primaryActionButton();
       btn?.onClick();
-      expect(onClickSpy).toHaveBeenCalled();
+      expect(onClickSpy).toHaveBeenCalledOnce();
     });
 
     it('should set showCloseDialog true for PUBLISHED owned job', () => {
@@ -403,14 +431,14 @@ describe('JobDetailComponent', () => {
 
     it('should return null when previewData exists', () => {
       const previewSignal = signal({ title: 'Preview job' } as JobFormDTO);
-      (component as any).previewData = () => previewSignal;
+      (component as unknown as { previewData: () => typeof previewSignal }).previewData = () => previewSignal;
       expect(component.primaryActionButton()).toBeNull();
     });
   });
 
   describe('isOwnerOfJob', () => {
     it.each([
-      ['user missing', () => mockAccountService.user.set(null as any), { belongsToResearchGroup: true } as JobDetails],
+      ['user missing', () => mockAccountService.user.set(null as unknown as User), { belongsToResearchGroup: true } as JobDetails],
       ['not professor', () => vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(false), { belongsToResearchGroup: true } as JobDetails],
       [
         'job not in research group',
@@ -419,7 +447,7 @@ describe('JobDetailComponent', () => {
       ],
     ])('should return false when %s', (_label, setup, job) => {
       setup();
-      expect((component as any).isOwnerOfJob(job)).toBe(false);
+      expect((component as JobDetailComponentInternals).isOwnerOfJob(job)).toBe(false);
     });
   });
 
@@ -434,7 +462,7 @@ describe('JobDetailComponent', () => {
     it('should call onDownloadPDF when pdfButton command is invoked', () => {
       const spy = vi.spyOn(component, 'onDownloadPDF').mockResolvedValue();
       fixture.componentRef.setInput('previewData', undefined);
-      component.jobDetails.set({ jobState: JobDetailDTOStateEnum.Published, belongsToResearchGroup: false } as any);
+      component.jobDetails.set({ jobState: JobDetailDTOStateEnum.Published, belongsToResearchGroup: false } as JobDetails);
       const pdfItem = component.menuItems().find(item => item.label === 'button.downloadPDF');
       pdfItem!.command?.();
       expect(spy).toHaveBeenCalledOnce();
@@ -455,7 +483,7 @@ describe('JobDetailComponent', () => {
     it('should return empty string when jobDetails is null/undefined', () => {
       component.jobDetails.set(null);
       expect(component.jobDescriptionForCurrentLang()).toBe('');
-      (component as any).jobDetails.set(undefined);
+      (component.jobDetails as unknown as { set(value: undefined): void }).set(undefined);
       expect(component.jobDescriptionForCurrentLang()).toBe('');
     });
   });
@@ -471,7 +499,7 @@ describe('JobDetailComponent', () => {
     const previewJob: JobFormDTO = { title: 'PreviewJob' } as JobFormDTO;
     const fixture2 = TestBed.createComponent(JobDetailComponent);
     const comp2 = fixture2.componentInstance;
-    const loadSpy = vi.spyOn(comp2 as any, 'loadJobDetailsFromForm').mockResolvedValue();
+    const loadSpy = vi.spyOn(comp2 as JobDetailComponentInternals, 'loadJobDetailsFromForm').mockResolvedValue();
     fixture2.componentRef.setInput('previewData', signal(previewJob));
     fixture2.detectChanges();
     await Promise.resolve();

@@ -82,8 +82,8 @@ describe('ApplicationOverviewComponent', () => {
   });
 
   it('should initialize with sorted job names and first page loaded', async () => {
-    expect(api.getAllJobNames).toHaveBeenCalled();
-    expect(api.getApplicationsOverviews).toHaveBeenCalled();
+    expect(api.getAllJobNames).toHaveBeenCalledOnce();
+    expect(api.getApplicationsOverviews).toHaveBeenCalledOnce();
 
     vi.runOnlyPendingTimers();
     expect(component.allAvailableJobNames()).toEqual(['A', 'B']);
