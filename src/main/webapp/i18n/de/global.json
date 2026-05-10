@@ -700,7 +700,6 @@
     "letterUpload": {
       "title": "Empfehlungsschreiben hochladen",
       "loading": "Lädt …",
-      "greeting": "Hallo {refereeName}, bitte laden Sie hier Ihr Empfehlungsschreiben hoch.",
       "requestedFor": {
         "title": "Angefragt für",
         "applicant": "Bewerber:in",
@@ -725,11 +724,11 @@
       },
       "expired": {
         "title": "Frist abgelaufen",
-        "message": "Die Frist für dieses Empfehlungsschreiben ist abgelaufen."
+        "message": "Die Frist für dieses Empfehlungsschreiben ist abgelaufen. Bitte kontaktieren Sie die bewerbende Person, falls es trotzdem eingereicht werden soll."
       },
       "error": {
         "title": "Link nicht gültig",
-        "invalidLink": "Dieser Empfehlungsschreiben-Link ist ungültig oder nicht mehr erreichbar."
+        "invalidLink": "Dieser Empfehlungsschreiben-Link ist ungültig oder nicht mehr erreichbar. Bitte kontaktieren Sie die bewerbende Person, falls dies ein Fehler sein sollte."
       },
       "toast": {
         "tooLarge": {
@@ -742,7 +741,7 @@
         },
         "uploadFailed": {
           "summary": "Upload fehlgeschlagen",
-          "detail": "Wir konnten Ihr Schreiben nicht speichern. Bitte erneut versuchen."
+          "detail": "Wir konnten Ihr Schreiben nicht speichern. Bitte erneut versuchen oder die bewerbende Person kontaktieren."
         }
       }
     }

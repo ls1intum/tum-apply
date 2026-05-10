@@ -700,7 +700,6 @@
     "letterUpload": {
       "title": "Upload your recommendation letter",
       "loading": "Loading…",
-      "greeting": "Hello {refereeName}, please use this page to upload your recommendation letter.",
       "requestedFor": {
         "title": "Requested for",
         "applicant": "Applicant",
@@ -725,11 +724,11 @@
       },
       "expired": {
         "title": "Deadline reached",
-        "message": "The deadline for this recommendation letter has passed."
+        "message": "The deadline for this recommendation letter has passed. Please contact the applicant if you still need to submit it."
       },
       "error": {
         "title": "Link not valid",
-        "invalidLink": "This recommendation letter link is invalid or no longer accessible."
+        "invalidLink": "This recommendation letter link is invalid or no longer accessible. Please contact the applicant if you believe this is a mistake."
       },
       "toast": {
         "tooLarge": {
@@ -742,7 +741,7 @@
         },
         "uploadFailed": {
           "summary": "Upload failed",
-          "detail": "We could not save your letter. Please try again."
+          "detail": "We could not save your letter. Please try again or contact the applicant."
         }
       }
     }

@@ -42,14 +42,6 @@ export class ReferenceLetterUploadComponent {
   protected readonly queuedFile = signal<File | undefined>(undefined);
   protected readonly hasQueuedFile = computed(() => !!this.queuedFile());
 
-  protected readonly refereeFullName = computed(() => {
-    const ctx = this.context();
-    if (!ctx) {
-      return '';
-    }
-    return [ctx.refereeTitle, ctx.refereeFirstName, ctx.refereeLastName].filter(part => !!part).join(' ');
-  });
-
   protected readonly applicantFullName = computed(() => {
     const ctx = this.context();
     if (!ctx) {
