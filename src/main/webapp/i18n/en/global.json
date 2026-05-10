@@ -700,7 +700,7 @@
     "letterUpload": {
       "title": "Upload your recommendation letter",
       "loading": "Loading…",
-      "greeting": "Hello {{ refereeName }}, please use this page to upload your recommendation letter.",
+      "greeting": "Hello {refereeName}, please use this page to upload your recommendation letter.",
       "requestedFor": {
         "title": "Requested for",
         "applicant": "Applicant",
@@ -708,7 +708,7 @@
         "researchGroup": "Research group"
       },
       "upload": {
-        "helper": "Upload a single PDF (max {{ maxSize }} MB).",
+        "helper": "Upload a single PDF (max {maxSize} MB).",
         "choose": "Choose PDF",
         "uploading": "Uploading…"
       },

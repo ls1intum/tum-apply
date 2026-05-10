@@ -700,7 +700,7 @@
     "letterUpload": {
       "title": "Empfehlungsschreiben hochladen",
       "loading": "Lädt …",
-      "greeting": "Hallo {{ refereeName }}, bitte laden Sie hier Ihr Empfehlungsschreiben hoch.",
+      "greeting": "Hallo {refereeName}, bitte laden Sie hier Ihr Empfehlungsschreiben hoch.",
       "requestedFor": {
         "title": "Angefragt für",
         "applicant": "Bewerber:in",
@@ -708,7 +708,7 @@
         "researchGroup": "Forschungsgruppe"
       },
       "upload": {
-        "helper": "Bitte laden Sie ein einzelnes PDF (max. {{ maxSize }} MB) hoch.",
+        "helper": "Bitte laden Sie ein einzelnes PDF (max. {maxSize} MB) hoch.",
         "choose": "PDF auswählen",
         "uploading": "Wird hochgeladen …"
       },
