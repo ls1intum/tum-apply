@@ -78,14 +78,15 @@ public class UserAdminService {
         User user = userRepository
             .findWithResearchGroupRolesByUserId(userId)
             .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
-        UserRole primaryRole = user.getResearchGroupRoles() == null
-            ? null
-            : user
-                .getResearchGroupRoles()
-                .stream()
-                .map(r -> r.getRole())
-                .max(Comparator.comparingInt(UserAdminService::priority))
-                .orElse(null);
+        UserRole primaryRole =
+            user.getResearchGroupRoles() == null
+                ? null
+                : user
+                      .getResearchGroupRoles()
+                      .stream()
+                      .map(r -> r.getRole())
+                      .max(Comparator.comparingInt(UserAdminService::priority))
+                      .orElse(null);
         UUID rgId = user.getResearchGroup() == null ? null : user.getResearchGroup().getResearchGroupId();
         String rgName = user.getResearchGroup() == null ? null : user.getResearchGroup().getName();
         return new AdminUserDetailDTO(

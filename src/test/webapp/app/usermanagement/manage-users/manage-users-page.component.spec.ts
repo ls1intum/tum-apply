@@ -206,15 +206,7 @@ describe('ManageUsersPageComponent', () => {
       await Promise.resolve();
 
       expect(component.selectedResearchGroupFilters()).toEqual(['rg-1', 'rg-2']);
-      expect(mockUserAdminApi.getAllUsers).toHaveBeenCalledWith(
-        10,
-        0,
-        'lastActivityAt',
-        'DESC',
-        undefined,
-        ['rg-1', 'rg-2'],
-        undefined,
-      );
+      expect(mockUserAdminApi.getAllUsers).toHaveBeenCalledWith(10, 0, 'lastActivityAt', 'DESC', undefined, ['rg-1', 'rg-2'], undefined);
     });
   });
 
@@ -227,15 +219,7 @@ describe('ManageUsersPageComponent', () => {
 
       expect(component.searchQuery()).toBe('alice');
       expect(component.page()).toBe(0);
-      expect(mockUserAdminApi.getAllUsers).toHaveBeenCalledWith(
-        10,
-        0,
-        'lastActivityAt',
-        'DESC',
-        undefined,
-        undefined,
-        'alice',
-      );
+      expect(mockUserAdminApi.getAllUsers).toHaveBeenCalledWith(10, 0, 'lastActivityAt', 'DESC', undefined, undefined, 'alice');
     });
 
     it('should NOT reload when query is unchanged', async () => {

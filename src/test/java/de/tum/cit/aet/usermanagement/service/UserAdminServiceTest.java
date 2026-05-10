@@ -48,8 +48,7 @@ class UserAdminServiceTest {
     @Test
     void shouldCreateKeycloakUserThenSyncDb() {
         UUID newId = UUID.randomUUID();
-        when(keycloakUserService.createUserWithPassword(eq("a@b.com"), eq("Alice"), eq("Apple"), eq("hunter2!Long")))
-            .thenReturn(newId);
+        when(keycloakUserService.createUserWithPassword(eq("a@b.com"), eq("Alice"), eq("Apple"), eq("hunter2!Long"))).thenReturn(newId);
         User user = new User();
         user.setUserId(newId);
         when(userService.upsertUser(eq(newId.toString()), eq("a@b.com"), eq("Alice"), eq("Apple"))).thenReturn(user);

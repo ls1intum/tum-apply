@@ -1118,12 +1118,12 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
 
             User updatedUser = userRepository.findById(userToAdd.getUserId()).orElseThrow();
-            assertThat(userResearchGroupRoleRepository.findAllByUser(updatedUser))
-                .anyMatch(role ->
+            assertThat(userResearchGroupRoleRepository.findAllByUser(updatedUser)).anyMatch(
+                role ->
                     role.getRole() == UserRole.PROFESSOR &&
                     role.getResearchGroup() != null &&
                     role.getResearchGroup().getResearchGroupId().equals(researchGroup.getResearchGroupId())
-                );
+            );
         }
 
         @Test
@@ -1138,12 +1138,12 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
 
             User updatedUser = userRepository.findById(userToAdd.getUserId()).orElseThrow();
-            assertThat(userResearchGroupRoleRepository.findAllByUser(updatedUser))
-                .anyMatch(role ->
+            assertThat(userResearchGroupRoleRepository.findAllByUser(updatedUser)).anyMatch(
+                role ->
                     role.getRole() == UserRole.EMPLOYEE &&
                     role.getResearchGroup() != null &&
                     role.getResearchGroup().getResearchGroupId().equals(researchGroup.getResearchGroupId())
-                );
+            );
         }
     }
 }
