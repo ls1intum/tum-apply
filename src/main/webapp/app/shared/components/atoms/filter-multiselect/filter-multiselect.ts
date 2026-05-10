@@ -7,7 +7,6 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ChipModule } from 'primeng/chip';
 import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
-// Interface for filter options which can be passed to the filter component
 export interface Filter {
   filterId: string;
   filterLabel: string;
@@ -53,7 +52,8 @@ export class FilterMultiselect {
   dropdownAlignment = signal<'left' | 'right'>('left');
   maxVisibleChips = 2;
 
-  // gives the selected values back to the parent component
+  private readonly renderedOptions = signal<RenderedOption[]>([]);
+
   filterChange = output<{ filterId: string; selectedValues: string[] }>();
 
   displayFilterLabel = computed(() => this.translator.translate(this.filterLabel()) ?? '');
@@ -80,33 +80,37 @@ export class FilterMultiselect {
     });
   });
 
-  sortedOptions = computed<RenderedOption[]>(() => {
-    this.translator.langChange();
+  visibleOptions = computed<RenderedOption[]>(() => {
+    const snapshot = this.renderedOptions();
     const selected = this.selectedValues();
-    const filtered = this.filteredOptions();
-    const translateLabels = this.shouldTranslateOptions();
+    const search = this.searchTerm().toLowerCase().trim();
 
-    const opts = filtered.map(option => ({
-      value: option,
-      label: translateLabels ? this.translateService.instant(option) : option,
-      selected: selected.includes(option),
-    }));
+    const withLiveSelection = snapshot.map(opt => ({ ...opt, selected: selected.includes(opt.value) }));
 
-    return opts.sort((a, b) => {
-      if (a.selected && !b.selected) return -1;
-      if (!a.selected && b.selected) return 1;
+    if (!search) {
+      return withLiveSelection;
+    }
 
-      return a.label.localeCompare(b.label);
-    });
+    return withLiveSelection.filter(opt => opt.label.toLowerCase().includes(search));
   });
 
-  selectedOptions = computed(() => this.sortedOptions().filter(opt => opt.selected));
+  selectedOptions = computed<RenderedOption[]>(() => {
+    this.translator.langChange();
+    const selected = this.selectedValues();
+    const translateLabels = this.shouldTranslateOptions();
+    return this.filterOptions()
+      .filter(value => selected.includes(value))
+      .map(value => ({
+        value,
+        label: translateLabels ? this.translateService.instant(value) : value,
+        selected: true,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  });
 
-  unselectedOptions = computed(() => this.sortedOptions().filter(opt => !opt.selected));
   showChipsCounterOnly = computed(() => this.selectedOptions().length > this.maxVisibleChips);
-
   hasSelectedItems = computed(() => this.selectedOptions().length > 0);
-  hasUnselectedItems = computed(() => this.unselectedOptions().length > 0);
+  hasVisibleItems = computed(() => this.visibleOptions().length > 0);
 
   selectedCount = computed(() => this.selectedValues().length);
   totalCount = computed(() => this.filterOptions().length);
@@ -116,7 +120,6 @@ export class FilterMultiselect {
   private readonly translator = injectTranslator();
   private readonly translateService = this.translator.translateService;
 
-  // Sync selected values between inputs and mobile filter bar
   private readonly syncSelectedValuesEffect = effect(() => {
     const externalSelectedValues = this.selectedValuesInput();
     if (externalSelectedValues === undefined) {
@@ -127,17 +130,22 @@ export class FilterMultiselect {
       this.selectedValues.set([...externalSelectedValues]);
     }
   });
+
   toggleDropdown(): void {
-    this.isOpen.update(current => !current);
-    if (this.isOpen()) {
+    const opening = !this.isOpen();
+    this.isOpen.set(opening);
+    if (opening) {
       this.searchTerm.set('');
-      this.calculateDropdownAlignment();
       this.focusedIndexOptionList.set(-1);
+      this.renderedOptions.set(this.computeSnapshot());
+      this.calculateDropdownAlignment();
+    } else {
+      this.renderedOptions.set([]);
     }
   }
 
   onTriggerKeydown(event: KeyboardEvent): void {
-    const options = this.filteredOptions();
+    const options = this.visibleOptions();
     const maxIndex = options.length - 1;
 
     switch (event.key) {
@@ -150,7 +158,9 @@ export class FilterMultiselect {
           this.focusedIndexOptionList.set(0);
         } else if (this.focusedIndexOptionList() >= 0) {
           const option = options[this.focusedIndexOptionList()];
-          this.toggleOption(option);
+          if (option) {
+            this.toggleOption(option.value);
+          }
         }
         break;
 
@@ -161,8 +171,7 @@ export class FilterMultiselect {
           this.toggleDropdown();
           this.focusedIndexOptionList.set(0);
         } else {
-          const next = this.focusedIndexOptionList() < maxIndex ? this.focusedIndexOptionList() + 1 : 0; // wrap to top
-
+          const next = this.focusedIndexOptionList() < maxIndex ? this.focusedIndexOptionList() + 1 : 0;
           this.focusedIndexOptionList.set(next);
         }
         break;
@@ -171,8 +180,7 @@ export class FilterMultiselect {
         event.preventDefault();
 
         if (this.isOpen()) {
-          const prev = this.focusedIndexOptionList() > 0 ? this.focusedIndexOptionList() - 1 : maxIndex; // wrap to bottom
-
+          const prev = this.focusedIndexOptionList() > 0 ? this.focusedIndexOptionList() - 1 : maxIndex;
           this.focusedIndexOptionList.set(prev);
         }
         break;
@@ -187,7 +195,10 @@ export class FilterMultiselect {
   }
 
   closeDropdown(): void {
-    this.isOpen.set(false);
+    if (this.isOpen()) {
+      this.isOpen.set(false);
+      this.renderedOptions.set([]);
+    }
   }
 
   removeOption(value: string): void {
@@ -225,13 +236,31 @@ export class FilterMultiselect {
     }
   }
 
-  // Close dropdown when clicking outside
   onDocumentClick(event: Event): void {
     if (!this.elementRef.nativeElement.contains(event.target as Node)) {
       this.closeDropdown();
     }
   }
-  // check that filter of mobile view and normal view are aligned
+
+  private computeSnapshot(): RenderedOption[] {
+    this.translator.langChange();
+    const selected = this.selectedValues();
+    const filtered = this.filteredOptions();
+    const translateLabels = this.shouldTranslateOptions();
+
+    const opts: RenderedOption[] = filtered.map(option => ({
+      value: option,
+      label: translateLabels ? this.translateService.instant(option) : option,
+      selected: selected.includes(option),
+    }));
+
+    return opts.sort((a, b) => {
+      if (a.selected && !b.selected) return -1;
+      if (!a.selected && b.selected) return 1;
+      return a.label.localeCompare(b.label);
+    });
+  }
+
   private areFilterValuesEqual(first: string[], second: string[]): boolean {
     if (first.length !== second.length) {
       return false;

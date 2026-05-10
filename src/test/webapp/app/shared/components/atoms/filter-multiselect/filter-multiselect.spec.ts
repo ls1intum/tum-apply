@@ -58,19 +58,6 @@ describe('FilterMultiselect', () => {
     expect(fx.componentInstance.searchTerm()).toBe('');
   });
 
-  it('should maintain sort order (selected first) even with active search', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    filterFixture.componentInstance.selectedValues.set(['Option B', 'Option D']);
-    filterFixture.componentInstance.searchTerm.set('option');
-
-    expect(filterFixture.componentInstance.sortedOptions()).toEqual([
-      { label: 'Option B', value: 'Option B', selected: true },
-      { label: 'Option D', value: 'Option D', selected: true },
-      { label: 'Option A', value: 'Option A', selected: false },
-      { label: 'Option C', value: 'Option C', selected: false },
-    ]);
-  });
 
   it('should filter translated options when shouldTranslateOptions is true', () => {
     const filterFixture = createFilterMultiselectFixture({
@@ -82,28 +69,18 @@ describe('FilterMultiselect', () => {
     expect(filterFixture.componentInstance.filteredOptions()).toEqual(['key.option.a']);
   });
 
-  it('should compute selectedOptions, unselectedOptions, hasSelectedItems, hasUnselectedItems and counts based on selectedValues', () => {
-    const filterFixture = createFilterMultiselectFixture();
-    const comp = filterFixture.componentInstance;
+  it('should derive selectedOptions and counts from selectedValues', () => {
+    const fx = createFilterMultiselectFixture();
+    const comp = fx.componentInstance;
 
     expect(comp.hasSelectedItems()).toBe(false);
-    expect(comp.hasUnselectedItems()).toBe(true);
+    expect(comp.selectedCount()).toBe(0);
+    expect(comp.totalCount()).toBe(4);
 
     comp.selectedValues.set(['Option A', 'Option C']);
     expect(comp.hasSelectedItems()).toBe(true);
-    expect(comp.selectedOptions()).toEqual([
-      { label: 'Option A', value: 'Option A', selected: true },
-      { label: 'Option C', value: 'Option C', selected: true },
-    ]);
-    expect(comp.unselectedOptions()).toEqual([
-      { label: 'Option B', value: 'Option B', selected: false },
-      { label: 'Option D', value: 'Option D', selected: false },
-    ]);
+    expect(comp.selectedOptions().map(o => o.value)).toEqual(['Option A', 'Option C']);
     expect(comp.selectedCount()).toBe(2);
-    expect(comp.totalCount()).toBe(4);
-
-    comp.selectedValues.set(mockFilterOptions);
-    expect(comp.hasUnselectedItems()).toBe(false);
   });
 
   it('should toggle and close dropdown state', () => {
@@ -183,8 +160,59 @@ describe('FilterMultiselect', () => {
     });
 
     expect(filterFixture.componentInstance.filteredOptions()).toEqual([]);
-    expect(filterFixture.componentInstance.sortedOptions()).toEqual([]);
-    expect(filterFixture.componentInstance.hasUnselectedItems()).toBe(false);
     expect(filterFixture.componentInstance.totalCount()).toBe(0);
+  });
+
+  it('should toggle the visually highlighted option when Enter is pressed', () => {
+    const fx = createFilterMultiselectFixture();
+    const comp = fx.componentInstance;
+    comp.toggleDropdown();
+    fx.detectChanges();
+
+    comp.onTriggerKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' })); // index 0 -> Option A
+    comp.onTriggerKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' })); // index 1 -> Option B
+    comp.onTriggerKeydown(new KeyboardEvent('keydown', { key: 'Enter' }));
+
+    expect(comp.selectedValues()).toEqual(['Option B']);
+  });
+
+  it('should deselect an already-selected option when Enter is pressed on it', () => {
+    const fx = createFilterMultiselectFixture();
+    const comp = fx.componentInstance;
+    comp.selectedValues.set(['Option A']);
+    comp.toggleDropdown(); // snapshot now lists Option A first
+    fx.detectChanges();
+
+    comp.onTriggerKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' })); // index 0 -> Option A
+    comp.onTriggerKeydown(new KeyboardEvent('keydown', { key: 'Enter' }));
+
+    expect(comp.selectedValues()).toEqual([]);
+  });
+
+  it('should not reorder rendered options while the dropdown is open after a toggle', () => {
+    const fx = createFilterMultiselectFixture();
+    const comp = fx.componentInstance;
+    comp.toggleDropdown();
+    fx.detectChanges();
+
+    const orderBefore = comp.visibleOptions().map(o => o.value);
+    expect(orderBefore).toEqual(['Option A', 'Option B', 'Option C', 'Option D']);
+
+    comp.toggleOption('Option C');
+    fx.detectChanges();
+
+    const orderAfter = comp.visibleOptions().map(o => o.value);
+    expect(orderAfter).toEqual(orderBefore);
+  });
+
+  it('should re-snapshot the rendered order on the next open', () => {
+    const fx = createFilterMultiselectFixture();
+    const comp = fx.componentInstance;
+    comp.selectedValues.set(['Option C']);
+    comp.toggleDropdown();
+    expect(comp.visibleOptions().map(o => o.value)).toEqual(['Option C', 'Option A', 'Option B', 'Option D']);
+    comp.toggleDropdown();
+    comp.toggleDropdown();
+    expect(comp.visibleOptions().map(o => o.value)).toEqual(['Option C', 'Option A', 'Option B', 'Option D']);
   });
 });
