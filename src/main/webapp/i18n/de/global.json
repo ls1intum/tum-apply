@@ -710,6 +710,7 @@
       "upload": {
         "helper": "Bitte laden Sie ein einzelnes PDF (max. {maxSize} MB) hoch.",
         "choose": "PDF auswählen",
+        "confirm": "Hochladen",
         "uploading": "Wird hochgeladen …"
       },
       "summary": {

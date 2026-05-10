@@ -101,13 +101,26 @@
       </div>
 
       <!-- Upload control -->
-      <div class="border border-border-default rounded-lg p-6 bg-background-surface">
+      <div class="border border-border-default rounded-lg p-6 bg-background-surface flex flex-col gap-4">
         <jhi-upload-button
           [documentType]="documentType"
           [allowMultiple]="false"
+          [deferUpload]="true"
           [(documentIds)]="uploadedDocuments"
-          [uploadHandler]="uploadHandler"
+          (queuedFilesChange)="onQueuedFilesChanged($event)"
         />
+
+        <div class="flex justify-center">
+          <jhi-button
+            severity="primary"
+            icon="cloud-arrow-up"
+            label="reference.letterUpload.upload.confirm"
+            [shouldTranslate]="true"
+            [disabled]="!hasQueuedFile() || uploading()"
+            [loading]="uploading()"
+            (click)="confirmUpload()"
+          />
+        </div>
       </div>
     }
   </div>

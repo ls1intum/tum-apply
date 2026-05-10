@@ -61,17 +61,6 @@ export class UploadButtonComponent {
    */
   requestAuth = input<() => Promise<void>>();
 
-  /**
-   * Optional override for the actual upload step. When set, takes precedence over the built-in
-   * application/applicant-profile API calls and is invoked with the picked file. Used for flows
-   * that don't go through {@code ApplicationResourceApi}/{@code ApplicantResourceApi} — e.g. the
-   * public token-based reference-letter upload — so the same UI can be reused while the parent
-   * keeps full control of the request shape.
-   *
-   * The handler must resolve to the document holder list to display in the "uploaded" row.
-   */
-  uploadHandler = input<((file: File) => Promise<DocumentInformationHolderDTO[]>) | undefined>(undefined);
-
   selectedFiles = signal<File[] | undefined>(undefined);
   isUploading = signal<boolean>(false);
   disabled = computed(() => (this.documentIds()?.length ?? 0) > 0);
@@ -323,9 +312,11 @@ export class UploadButtonComponent {
    * the callback rejects (user cancelled / validation failed upstream).
    */
   private async ensureAuthenticated(): Promise<boolean> {
-    // A custom upload handler bypasses the built-in API paths entirely and is responsible for
-    // its own authentication (e.g. a token in the URL), so no further checks are needed here.
-    if (this.uploadHandler()) {
+    // In deferred mode the file pick never reaches this component's upload paths — the parent
+    // owns the upload step and is responsible for whatever auth model that flow needs. Gating
+    // the pick on a built-in auth check would silently drop the file for any deferred caller
+    // that doesn't also use the built-in application/applicant API.
+    if (this.deferUpload()) {
       return true;
     }
     if (this.uploadTarget() === 'applicantProfile') {
@@ -475,11 +466,6 @@ export class UploadButtonComponent {
   }
 
   private uploadDocument(file: File): Promise<DocumentInformationHolderDTO[]> {
-    const customHandler = this.uploadHandler();
-    if (customHandler) {
-      return customHandler(file);
-    }
-
     if (this.uploadTarget() === 'applicantProfile') {
       return firstValueFrom(this.applicantApi.uploadApplicantProfileDocuments(this.documentType(), file));
     }

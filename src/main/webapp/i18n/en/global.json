@@ -710,6 +710,7 @@
       "upload": {
         "helper": "Upload a single PDF (max {maxSize} MB).",
         "choose": "Choose PDF",
+        "confirm": "Upload",
         "uploading": "Uploading…"
       },
       "summary": {

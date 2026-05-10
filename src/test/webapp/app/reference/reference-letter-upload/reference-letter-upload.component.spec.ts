@@ -13,12 +13,12 @@ import {
 } from 'util/reference-letter-upload-resource-api.service.mock';
 import { ReferenceLetterUploadComponent } from 'app/reference/reference-letter-upload/reference-letter-upload.component';
 import { ReferenceRequestDTOStatusEnum } from 'app/generated/model/reference-request-dto';
-import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 
 const TOKEN = 'sample-token';
 
 interface ReferenceLetterUploadComponentInternals {
-  uploadHandler(file: File): Promise<DocumentInformationHolderDTO[]>;
+  onQueuedFilesChanged(files: File[]): void;
+  confirmUpload(): Promise<void>;
 }
 
 const internals = (component: ReferenceLetterUploadComponent): ReferenceLetterUploadComponentInternals =>
@@ -86,20 +86,36 @@ describe('ReferenceLetterUploadComponent', () => {
       await setupFixture();
     });
 
-    it('should POST the selected file and switch to the success view', async () => {
-      const result = await internals(component).uploadHandler(fakePdf());
+    it('should not call the API until the user confirms after picking a file', () => {
+      internals(component).onQueuedFilesChanged([fakePdf()]);
+
+      expect(api.upload).not.toHaveBeenCalled();
+    });
+
+    it('should POST the queued file and switch to the success view on confirm', async () => {
+      internals(component).onQueuedFilesChanged([fakePdf()]);
+
+      await internals(component).confirmUpload();
 
       expect(api.upload).toHaveBeenCalledOnce();
       expect(api.upload).toHaveBeenCalledWith(TOKEN, expect.any(File));
       expect(toast.showSuccessKey).toHaveBeenCalledOnce();
-      expect(result).toHaveLength(1);
     });
 
-    it('should propagate failures so jhi-upload-button can show the generic error toast', async () => {
-      api.upload.mockReturnValueOnce(throwError(() => new Error('boom')));
+    it('should be a no-op when confirm is pressed with nothing queued', async () => {
+      await internals(component).confirmUpload();
 
-      await expect(internals(component).uploadHandler(fakePdf())).rejects.toThrow();
-      expect(toast.showSuccessKey).not.toHaveBeenCalled();
+      expect(api.upload).not.toHaveBeenCalled();
+    });
+
+    it('should toast on upload failure and stay on the upload view', async () => {
+      api.upload.mockReturnValueOnce(throwError(() => new Error('boom')));
+      internals(component).onQueuedFilesChanged([fakePdf()]);
+
+      await internals(component).confirmUpload();
+
+      expect(toast.showErrorKey).toHaveBeenCalledOnce();
+      expect(toast.showErrorKey).toHaveBeenCalledWith('reference.letterUpload.toast.uploadFailed');
     });
   });
 

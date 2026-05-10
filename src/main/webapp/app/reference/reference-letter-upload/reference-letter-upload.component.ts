@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
@@ -20,21 +21,26 @@ const TOAST_PREFIX = 'reference.letterUpload';
 /**
  * Public landing page rendered at {@code /reference/:token} for external referees to upload a
  * recommendation letter. The token in the URL is the only authentication; the page resolves the
- * prefilled context server-side, delegates the actual file pick to {@code jhi-upload-button} and
- * swaps to a green-checkmark confirmation panel after a successful upload.
+ * prefilled context server-side. {@code jhi-upload-button} runs in deferred mode so picking a
+ * file only stages it locally — the referee then has to press the page-level "Upload" button
+ * before the file is actually sent, which lets them revoke a wrong pick. After a successful
+ * upload the page swaps to the green-checkmark view.
  */
 @Component({
   selector: 'jhi-reference-letter-upload',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, TranslateModule, TranslateDirective, UploadButtonComponent],
+  imports: [CommonModule, FontAwesomeModule, TranslateModule, TranslateDirective, ButtonComponent, UploadButtonComponent],
   templateUrl: './reference-letter-upload.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReferenceLetterUploadComponent {
   protected readonly loading = signal<boolean>(true);
+  protected readonly uploading = signal<boolean>(false);
   protected readonly context = signal<ReferenceLetterContextDTO | undefined>(undefined);
   protected readonly errorKey = signal<string | undefined>(undefined);
   protected readonly justUploaded = signal<boolean>(false);
+  protected readonly queuedFile = signal<File | undefined>(undefined);
+  protected readonly hasQueuedFile = computed(() => !!this.queuedFile());
 
   protected readonly refereeFullName = computed(() => {
     const ctx = this.context();
@@ -58,29 +64,19 @@ export class ReferenceLetterUploadComponent {
 
   protected readonly expired = computed(() => this.context()?.status === ReferenceRequestDTOStatusEnum.Expired);
 
+  /**
+   * The document type passed to {@code jhi-upload-button}. {@code REFERENCE_LETTER} keeps the
+   * uploader-side label consistent with what the backend stores.
+   */
   protected readonly documentType = DocumentInformationHolderDTODocumentTypeEnum.ReferenceLetter;
 
   /**
-   * Backing list for the upload button's "uploaded document" row.
+   * Backing list for the upload button's row. In deferred mode the button uses this to render a
+   * placeholder for the picked file with a remove icon — perfect for letting the referee back out
+   * before pressing Upload. Type and absence of {@code readonly} mirror what
+   * {@code jhi-upload-button} expects from its two-way {@code documentIds} model.
    */
   protected uploadedDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-
-  /**
-   * Custom upload handler given to {@code jhi-upload-button}. Bound as an arrow so it captures
-   * {@code this} when the button invokes it.
-   */
-  protected readonly uploadHandler = async (file: File): Promise<DocumentInformationHolderDTO[]> => {
-    const created = await firstValueFrom(this.api.upload(this.token, file));
-    this.justUploaded.set(true);
-    this.toastService.showSuccessKey(`${TOAST_PREFIX}.toast.uploadSuccess`);
-    return [
-      {
-        id: created.referenceRequestId ?? '',
-        name: file.name,
-        size: file.size,
-      },
-    ];
-  };
 
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(ReferenceLetterUploadResourceApi);
@@ -89,6 +85,38 @@ export class ReferenceLetterUploadComponent {
 
   constructor() {
     void this.loadContext();
+  }
+
+  /**
+   * Captures the file the referee picked while {@code jhi-upload-button} is in deferred mode.
+   * The button emits the queue as a file array; since we restrict the row to one file, we only
+   * keep the first entry. An empty array (referee removed the staged file) clears the queue.
+   *
+   * @param files the queued file list emitted by the upload button
+   */
+  protected onQueuedFilesChanged(files: File[]): void {
+    this.queuedFile.set(files[0]);
+  }
+
+  /**
+   * Sends the staged file to the upload endpoint and switches to the success view. Stays on the
+   * upload view on failure so the referee can retry.
+   */
+  protected async confirmUpload(): Promise<void> {
+    const file = this.queuedFile();
+    if (!file) {
+      return;
+    }
+    this.uploading.set(true);
+    try {
+      await firstValueFrom(this.api.upload(this.token, file));
+      this.justUploaded.set(true);
+      this.toastService.showSuccessKey(`${TOAST_PREFIX}.toast.uploadSuccess`);
+    } catch {
+      this.toastService.showErrorKey(`${TOAST_PREFIX}.toast.uploadFailed`);
+    } finally {
+      this.uploading.set(false);
+    }
   }
 
   /**
