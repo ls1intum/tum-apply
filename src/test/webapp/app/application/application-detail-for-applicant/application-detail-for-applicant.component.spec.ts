@@ -18,10 +18,7 @@ import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-docum
 import { createPdfExportResourceApiMock, providePdfExportResourceApiMock } from 'util/pdf-export-resource-api.service.mock';
 
 function setupTest(paramId: string | null, appApiOverrides?: Partial<ApplicationResourceApiMock>) {
-  const applicationApi: ApplicationResourceApiMock = {
-    ...createApplicationResourceApiMock(),
-    ...(appApiOverrides ?? {}),
-  };
+  const applicationApi: ApplicationResourceApiMock = Object.assign({}, createApplicationResourceApiMock(), appApiOverrides ?? {});
 
   const routeMock = createActivatedRouteMock(paramId ? { application_id: paramId } : {});
   const translate: TranslateServiceMock = createTranslateServiceMock();
@@ -57,7 +54,7 @@ const DEFAULT_APPLICATION_DETAIL: ApplicationDetailDTO = {
 } as ApplicationDetailDTO;
 
 function makeDetail(overrides: Partial<ApplicationDetailDTO> = {}): ApplicationDetailDTO {
-  return { ...DEFAULT_APPLICATION_DETAIL, ...overrides } as ApplicationDetailDTO;
+  return Object.assign({}, DEFAULT_APPLICATION_DETAIL, overrides) as ApplicationDetailDTO;
 }
 
 describe('ApplicationDetailForApplicantComponent', () => {

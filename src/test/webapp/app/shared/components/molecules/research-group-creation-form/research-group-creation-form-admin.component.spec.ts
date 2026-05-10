@@ -125,13 +125,17 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
    * @param overrides - Optional field overrides for specific test scenarios
    */
   function fillValidForm(overrides: Record<string, unknown> = {}): void {
-    component.form.patchValue({
-      tumID: 'ab12cde',
-      researchGroupHead: 'Prof. Dr. Admin Test',
-      researchGroupName: 'Admin Research Group',
-      departmentId: 'dept-1',
-      ...overrides,
-    });
+    component.form.patchValue(
+      Object.assign(
+        {
+          tumID: 'ab12cde',
+          researchGroupHead: 'Prof. Dr. Admin Test',
+          researchGroupName: 'Admin Research Group',
+          departmentId: 'dept-1',
+        },
+        overrides,
+      ),
+    );
   }
 
   describe('Admin Mode', () => {

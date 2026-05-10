@@ -121,10 +121,11 @@ describe('ResearchGroupInfoComponent', () => {
     });
 
     it.each([
-      { description: 'no research group', user: () => ({ ...mockUser, researchGroup: undefined }) },
+      { description: 'no research group', user: () => Object.assign({}, mockUser, { researchGroup: undefined }) },
       {
         description: 'empty research group id',
-        user: () => ({ ...mockUser, researchGroup: { ...mockUser.researchGroup, researchGroupId: '' } }),
+        user: () =>
+          Object.assign({}, mockUser, { researchGroup: Object.assign({}, mockUser.researchGroup, { researchGroupId: '' }) }),
       },
     ])('should not initialize when user has $description', async ({ user }) => {
       mockAccountService.user.set(user());
@@ -157,7 +158,7 @@ describe('ResearchGroupInfoComponent', () => {
 
       expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledOnce();
 
-      mockAccountService.user.set({ ...mockUser });
+      mockAccountService.user.set(Object.assign({}, mockUser));
       fixture.detectChanges();
       await fixture.whenStable();
 
@@ -224,7 +225,7 @@ describe('ResearchGroupInfoComponent', () => {
     });
 
     it('should show error when saving without research group id', async () => {
-      mockAccountService.user.set({ ...mockUser, researchGroup: undefined });
+      mockAccountService.user.set(Object.assign({}, mockUser, { researchGroup: undefined }));
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -259,7 +260,7 @@ describe('ResearchGroupInfoComponent', () => {
 
   describe('Data Mapping', () => {
     it('should map street field between form address and DTO street', async () => {
-      mockResearchGroupApi.getResearchGroup.mockReturnValue(of({ ...mockResearchGroupData, street: 'Test Street' }));
+      mockResearchGroupApi.getResearchGroup.mockReturnValue(of(Object.assign({}, mockResearchGroupData, { street: 'Test Street' })));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockAccountService.user.set(mockUser);
 

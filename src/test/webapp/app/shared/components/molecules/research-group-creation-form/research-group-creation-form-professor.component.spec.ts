@@ -118,16 +118,20 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
    * @param overrides - Optional field overrides for specific test scenarios
    */
   function fillValidForm(overrides: Record<string, unknown> = {}): void {
-    component.form.patchValue({
-      title: 'Prof.',
-      firstName: 'Max',
-      lastName: 'Mustermann',
-      tumID: 'ab12cde',
-      researchGroupHead: 'Prof. Dr. Max Mustermann',
-      researchGroupName: 'AI Research Group',
-      departmentId: 'dept-1',
-      ...overrides,
-    });
+    component.form.patchValue(
+      Object.assign(
+        {
+          title: 'Prof.',
+          firstName: 'Max',
+          lastName: 'Mustermann',
+          tumID: 'ab12cde',
+          researchGroupHead: 'Prof. Dr. Max Mustermann',
+          researchGroupName: 'AI Research Group',
+          departmentId: 'dept-1',
+        },
+        overrides,
+      ),
+    );
   }
 
   describe('Form Initialization', () => {

@@ -66,7 +66,7 @@ function createApplicationPage2Fixture(
     if (inputs.documentIdsMasterTranscript !== undefined) {
       componentRef.setInput('documentIdsMasterTranscript', inputs.documentIdsMasterTranscript);
     }
-    componentRef.setInput('data', { ...DEFAULT_PAGE2_FORM_DATA, ...(inputs ? inputs.data : {}) });
+    componentRef.setInput('data', Object.assign({}, DEFAULT_PAGE2_FORM_DATA, inputs ? (inputs.data ?? {}) : {}));
   }
   fixture.detectChanges();
 
@@ -236,14 +236,13 @@ describe('ApplicationPage2Component', () => {
     });
 
     it('should return defaults when applicant is undefined', () => {
-      expect(getPage2FromApplication({ ...application, applicant: undefined })).toEqual(DEFAULT_PAGE2_FORM_DATA);
+      expect(getPage2FromApplication(Object.assign({}, application, { applicant: undefined }))).toEqual(DEFAULT_PAGE2_FORM_DATA);
     });
 
     it('should fill missing applicant fields with empty strings', () => {
-      expect(getPage2FromApplication({ ...application, applicant: { bachelorDegreeName: 'BSc Biology', user: {} } })).toEqual({
-        ...DEFAULT_PAGE2_FORM_DATA,
-        bachelorDegreeName: 'BSc Biology',
-      });
+      expect(
+        getPage2FromApplication(Object.assign({}, application, { applicant: { bachelorDegreeName: 'BSc Biology', user: {} } })),
+      ).toEqual(Object.assign({}, DEFAULT_PAGE2_FORM_DATA, { bachelorDegreeName: 'BSc Biology' }));
     });
   });
 

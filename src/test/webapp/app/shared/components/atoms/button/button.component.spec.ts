@@ -36,7 +36,7 @@ describe('ButtonComponent', () => {
       type: 'button',
     };
 
-    const inputs = { ...defaults, ...overrideInputs };
+    const inputs = Object.assign({}, defaults, overrideInputs);
 
     Object.entries(inputs).forEach(([key, value]) => {
       fixture.componentRef.setInput(key as keyof ButtonForTest, value);

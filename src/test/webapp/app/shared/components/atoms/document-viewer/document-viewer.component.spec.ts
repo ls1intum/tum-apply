@@ -9,11 +9,14 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
-const createMockDocumentInfo = (overrides?: Partial<DocumentInformationHolderDTO>): DocumentInformationHolderDTO => ({
-  id: 'doc-123',
-  size: 1024,
-  ...overrides,
-});
+const createMockDocumentInfo = (overrides?: Partial<DocumentInformationHolderDTO>): DocumentInformationHolderDTO =>
+  Object.assign(
+    {
+      id: 'doc-123',
+      size: 1024,
+    },
+    overrides ?? {},
+  );
 
 describe('DocumentViewerComponent', () => {
   let documentApi: Pick<DocumentResourceApi, 'downloadDocument'>;

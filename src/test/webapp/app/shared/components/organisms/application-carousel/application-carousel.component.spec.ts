@@ -213,7 +213,7 @@ describe('ApplicationCarouselComponent', () => {
       ['altKey', { altKey: true }],
     ])('should not navigate when %s modifier is pressed', (_desc, modifiers) => {
       const spyNext = vi.spyOn(component, 'loadNext');
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight', ...modifiers }));
+      component.handleGlobalKeyDown(new KeyboardEvent('keydown', Object.assign({ key: 'ArrowRight' }, modifiers)));
 
       expect(spyNext).not.toHaveBeenCalled();
     });

@@ -53,10 +53,7 @@ describe('OnboardingDialog', () => {
       expect(mockDialogRef.close).toHaveBeenCalledOnce();
       expect(mockDialogService.open).toHaveBeenCalledWith(
         ResearchGroupCreationFormComponent,
-        expect.objectContaining({
-          ...ONBOARDING_FORM_DIALOG_CONFIG,
-          header: 'onboarding.professorRequest.dialogTitle',
-        }),
+        expect.objectContaining(Object.assign({}, ONBOARDING_FORM_DIALOG_CONFIG, { header: 'onboarding.professorRequest.dialogTitle' })),
       );
       expect(mockProfOnboardingService.confirmOnboarding).not.toHaveBeenCalled();
     });
@@ -82,10 +79,7 @@ describe('OnboardingDialog', () => {
       expect(mockDialogRef.close).toHaveBeenCalledOnce();
       expect(mockDialogService.open).toHaveBeenCalledWith(
         EmployeeRequestAccessFormComponent,
-        expect.objectContaining({
-          ...ONBOARDING_FORM_DIALOG_CONFIG,
-          header: 'onboarding.employeeRequest.dialogTitle',
-        }),
+        expect.objectContaining(Object.assign({}, ONBOARDING_FORM_DIALOG_CONFIG, { header: 'onboarding.employeeRequest.dialogTitle' })),
       );
     });
   });

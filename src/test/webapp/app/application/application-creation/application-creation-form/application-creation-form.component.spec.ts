@@ -92,22 +92,24 @@ async function configureTestBed(config: TestBedConfig) {
 }
 
 function createValidPersonalInfoData(overrides?: Partial<ApplicationCreationPage1Data>): ApplicationCreationPage1Data {
-  return {
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'test@example.com',
-    phoneNumber: '+1234567890',
-    gender: undefined,
-    nationality: undefined,
-    dateOfBirth: '',
-    website: '',
-    linkedIn: '',
-    street: '',
-    city: '',
-    country: undefined,
-    postcode: '',
-    ...overrides,
-  };
+  return Object.assign(
+    {
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'test@example.com',
+      phoneNumber: '+1234567890',
+      gender: undefined,
+      nationality: undefined,
+      dateOfBirth: '',
+      website: '',
+      linkedIn: '',
+      street: '',
+      city: '',
+      country: undefined,
+      postcode: '',
+    },
+    overrides ?? {},
+  );
 }
 
 describe('ApplicationForm', () => {

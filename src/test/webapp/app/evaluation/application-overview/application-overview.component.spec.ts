@@ -17,15 +17,17 @@ import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../ut
 type GetOverviewsArgs = Parameters<ApplicationEvaluationResourceApi['getApplicationsOverviews']>;
 
 function makeOverview(id: string, partial?: Partial<ApplicationEvaluationOverviewDTO>): ApplicationEvaluationOverviewDTO {
-  return {
-    applicationId: id,
-    name: `Name ${id}`,
-    jobName: `Job ${id}`,
-    state: ApplicationDetailDTOApplicationStateEnum.Sent,
-    appliedAt: '2025-10-01T00:00:00Z',
-    createdAt: '2025-10-01T00:00:00Z',
-    ...partial,
-  } as ApplicationEvaluationOverviewDTO;
+  return Object.assign(
+    {
+      applicationId: id,
+      name: `Name ${id}`,
+      jobName: `Job ${id}`,
+      state: ApplicationDetailDTOApplicationStateEnum.Sent,
+      appliedAt: '2025-10-01T00:00:00Z',
+      createdAt: '2025-10-01T00:00:00Z',
+    },
+    partial ?? {},
+  ) as ApplicationEvaluationOverviewDTO;
 }
 
 describe('ApplicationOverviewComponent', () => {

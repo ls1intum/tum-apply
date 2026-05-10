@@ -73,10 +73,10 @@ describe('ProfessorHeroSectionComponent', () => {
 
       await component.navigateToGetStarted();
 
-      expect(dialogServiceMock.open).toHaveBeenCalledWith(OnboardingDialog, {
-        ...ONBOARDING_FORM_DIALOG_CONFIG,
-        header: 'onboarding.title',
-      });
+      expect(dialogServiceMock.open).toHaveBeenCalledWith(
+        OnboardingDialog,
+        Object.assign({}, ONBOARDING_FORM_DIALOG_CONFIG, { header: 'onboarding.title' }),
+      );
       expect(routerMock.navigate).not.toHaveBeenCalled();
       expect(authFacadeServiceMock.loginWithProvider).not.toHaveBeenCalled();
     });

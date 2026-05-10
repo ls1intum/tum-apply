@@ -21,7 +21,7 @@ describe('ButtonGroupComponent', () => {
       ],
     };
 
-    fixture.componentRef.setInput('data', { ...defaultData, ...overrideData });
+    fixture.componentRef.setInput('data', Object.assign({}, defaultData, overrideData ?? {}));
     fixture.detectChanges();
     return fixture;
   }

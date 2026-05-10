@@ -24,15 +24,17 @@ function makeEditorEvent(html: string, overrides: Partial<unknown> = {}): Conten
     oldDelta: { ops: [] },
     html: html,
     text: plainText,
-    editor: {
-      root: { innerHTML: html },
-      getSelection: () => ({ index: 0, length: 0 }),
-      setContents: vi.fn(),
-      setSelection: vi.fn(),
-      getText: () => plainText,
-      getLength: () => plainText.length,
-      ...overrides,
-    },
+    editor: Object.assign(
+      {
+        root: { innerHTML: html },
+        getSelection: () => ({ index: 0, length: 0 }),
+        setContents: vi.fn(),
+        setSelection: vi.fn(),
+        getText: () => plainText,
+        getLength: () => plainText.length,
+      },
+      overrides,
+    ),
   } as unknown as ContentChange;
 }
 

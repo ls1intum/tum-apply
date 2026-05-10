@@ -68,7 +68,7 @@ describe('ApplicationPage1Component', () => {
     { postcode: '987877', valid: false },
   ])('postcode=$postcode -> valid=$valid for German country', ({ postcode, valid }) => {
     const countryOption = { value: 'DE', name: 'Germany' };
-    comp.data.set({ ...comp.data(), country: countryOption });
+    comp.data.set(Object.assign({}, comp.data(), { country: countryOption }));
     const form = comp.page1Form();
     form.controls.firstName.setValue('Alice');
     form.controls.lastName.setValue('Smith');
@@ -225,7 +225,7 @@ describe('ApplicationPage1Component', () => {
 
     it('does not overwrite existing country dropdown selection', () => {
       const preset = { value: 'fr', name: 'countries.fr' };
-      comp.data.set({ ...comp.data(), country: preset });
+      comp.data.set(Object.assign({}, comp.data(), { country: preset }));
 
       const extracted: ExtractedApplicationDataDTO = { country: 'de' };
       comp.onAiDataExtracted(extracted);

@@ -442,11 +442,10 @@ describe('ApplicationDetailComponent', () => {
       const testComp = component as unknown as { rejectOtherApplicationsOfJob: (id: string) => Promise<void> };
       const spy = vi.spyOn(testComp, 'rejectOtherApplicationsOfJob');
       const base = makeDetailApp('1', ApplicationDetailDTOApplicationStateEnum.Sent);
-      const app = {
-        ...base,
+      const app = Object.assign({}, base, {
         jobId: undefined,
-        applicationDetailDTO: { ...base.applicationDetailDTO, jobId: undefined },
-      } as unknown as ApplicationEvaluationDetailDTO;
+        applicationDetailDTO: Object.assign({}, base.applicationDetailDTO, { jobId: undefined }),
+      }) as unknown as ApplicationEvaluationDetailDTO;
       component.currentApplication.set(app);
       component.applications.set([app, makeDetailApp('2')]);
       await component.acceptApplication({ closeJob: true });

@@ -370,7 +370,11 @@ describe('ResearchGroupAdminView', () => {
     });
 
     it.each([
-      { description: 'id is missing', setup: () => ({ ...mockResearchGroup1, id: undefined }), groups: [{ ...mockResearchGroup1, id: undefined }] },
+      {
+        description: 'id is missing',
+        setup: () => Object.assign({}, mockResearchGroup1, { id: undefined }),
+        groups: [Object.assign({}, mockResearchGroup1, { id: undefined })],
+      },
       { description: 'id is present but not in menu map', setup: () => mockResearchGroup2, groups: [] },
     ])('returns empty menu items when $description', ({ setup, groups }) => {
       component.researchGroups.set(groups);

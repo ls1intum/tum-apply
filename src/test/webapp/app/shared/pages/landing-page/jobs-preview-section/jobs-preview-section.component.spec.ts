@@ -37,7 +37,7 @@ describe('JobsPreviewSectionComponent', () => {
     imageUrl: undefined,
   };
 
-  const mockResponse = { content: [mockJob, { ...mockJob, jobId: 'job2' }], totalElements: 2 };
+  const mockResponse = { content: [mockJob, Object.assign({}, mockJob, { jobId: 'job2' })], totalElements: 2 };
 
   beforeEach(async () => {
     api = new JobResourceApiMock();

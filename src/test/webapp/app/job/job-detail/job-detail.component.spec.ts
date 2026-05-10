@@ -278,8 +278,8 @@ describe('JobDetailComponent', () => {
   });
 
   describe('mapToJobDetails', () => {
-    function callMap(...args: any[]) {
-      return (component as any).mapToJobDetails(...args);
+    function callMap(args: any[]) {
+      return (component as any).mapToJobDetails.apply(component, args);
     }
 
     it('should map JobDetailDTO core fields', () => {
@@ -291,13 +291,13 @@ describe('JobDetailComponent', () => {
         createdAt: new Date().toISOString(),
         lastModifiedAt: new Date().toISOString(),
       } as JobDetailDTO;
-      const result = callMap(dto, mockAccountService.loadedUser());
+      const result = callMap([dto, mockAccountService.loadedUser()]);
       expect(result.title).toBe('Mapped');
       expect(result.jobState).toBe(JobDetailDTOStateEnum.Published);
     });
 
     it('should fall back to empty strings for missing fields', () => {
-      const result = callMap(
+      const result = callMap([
         {
           jobId: 'j1',
           title: 'X',
@@ -308,7 +308,7 @@ describe('JobDetailComponent', () => {
           lastModifiedAt: '',
         } as unknown as JobDetailDTO,
         mockAccountService.loadedUser(),
-      );
+      ]);
       expect(result.supervisingProfessor ?? '').toBe('');
       expect(result.researchGroup ?? '').toBe('');
       expect(result.workload ?? '').toBe('');
@@ -316,7 +316,7 @@ describe('JobDetailComponent', () => {
     });
 
     it('should override researchGroup fields from researchGroupDetails in form mode', () => {
-      const result = callMap({ title: 'Test' } as JobFormDTO, undefined, { email: 'x@test.de', street: 'Main St', city: 'X' }, true);
+      const result = callMap([{ title: 'Test' } as JobFormDTO, undefined, { email: 'x@test.de', street: 'Main St', city: 'X' }, true]);
       expect(result.researchGroupEmail).toBe('x@test.de');
       expect(result.researchGroupStreet).toBe('Main St');
       expect(result.researchGroupCity).toBe('X');
@@ -334,7 +334,7 @@ describe('JobDetailComponent', () => {
         contractDuration: 9 as unknown as number,
         subjectArea: JobFormDTOSubjectAreaEnum.ComputerScience,
       } as JobDetailDTO;
-      const result = callMap(dto, mockAccountService.loadedUser());
+      const result = callMap([dto, mockAccountService.loadedUser()]);
       expect(result.workload).toBe('15');
       expect(result.contractDuration).toBe('9');
     });
@@ -350,7 +350,7 @@ describe('JobDetailComponent', () => {
         createdAt: new Date().toISOString(),
         lastModifiedAt: new Date().toISOString(),
       } as JobDetailDTO;
-      expect(callMap(dto, user as User).belongsToResearchGroup).toBe(true);
+      expect(callMap([dto, user as User]).belongsToResearchGroup).toBe(true);
     });
   });
 

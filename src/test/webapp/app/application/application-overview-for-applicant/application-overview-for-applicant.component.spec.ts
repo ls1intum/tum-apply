@@ -72,7 +72,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     ])('should compute paging args from event', async (event, expectedArgs) => {
       applicationApi.getApplicationPages = vi.fn().mockReturnValue(of([]));
       await comp.loadPage(event);
-      expect(applicationApi.getApplicationPages).toHaveBeenCalledWith(...expectedArgs);
+      expect(applicationApi.getApplicationPages).toHaveBeenCalledWith(expectedArgs[0], expectedArgs[1], expectedArgs[2], expectedArgs[3]);
     });
 
     it('should log error when API fails', async () => {
