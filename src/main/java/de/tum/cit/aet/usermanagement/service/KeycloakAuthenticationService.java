@@ -153,6 +153,8 @@ public class KeycloakAuthenticationService {
      */
     public AuthResponseDTO refreshTokens(String accessToken, String refreshToken) {
         final Jwt jwt = jwtService.decode(accessToken);
+        final String preferredRealm = determinePreferredRealm(jwt);
+        final String fallbackRealm = preferredRealm.equals(this.realm) ? this.tumLoginRealm : this.realm;
 
         // 1) No refresh token: accept valid access token, else session expired
         if (StringUtil.isBlank(refreshToken)) {
@@ -167,7 +169,15 @@ public class KeycloakAuthenticationService {
             final String authorizedParty = jwtService.getAuthorizedParty(jwt);
             if (clientId.equals(authorizedParty)) {
                 // Default refresh with server client
-                return getResponseFromToken(refreshTokensWithClient(clientId, clientSecret, refreshToken));
+                AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(preferredRealm, clientId, clientSecret, refreshToken);
+                if (serverRefresh != null) {
+                    return getResponseFromToken(serverRefresh);
+                }
+                serverRefresh = tryRefreshTokensWithClient(fallbackRealm, clientId, clientSecret, refreshToken);
+                if (serverRefresh != null) {
+                    return getResponseFromToken(serverRefresh);
+                }
+                throw new UnauthorizedException("Unable to refresh");
             }
             if (adminClientId.equals(authorizedParty)) {
                 // Subject-only refresh via otp client
@@ -181,12 +191,18 @@ public class KeycloakAuthenticationService {
         }
 
         // 3) No valid access token: try to refresh with both clients
-        AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(clientId, clientSecret, refreshToken);
+        AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(preferredRealm, clientId, clientSecret, refreshToken);
+        if (serverRefresh == null) {
+            serverRefresh = tryRefreshTokensWithClient(fallbackRealm, clientId, clientSecret, refreshToken);
+        }
         if (serverRefresh != null) {
             return getResponseFromToken(serverRefresh);
         }
 
-        AccessTokenResponse otpRefresh = tryRefreshTokensWithClient(adminClientId, adminClientSecret, refreshToken);
+        AccessTokenResponse otpRefresh = tryRefreshTokensWithClient(preferredRealm, adminClientId, adminClientSecret, refreshToken);
+        if (otpRefresh == null) {
+            otpRefresh = tryRefreshTokensWithClient(fallbackRealm, adminClientId, adminClientSecret, refreshToken);
+        }
         if (otpRefresh != null) {
             Jwt otpJwt = jwtService.decode(otpRefresh.getToken());
             String keycloakUserId = otpJwt.getSubject();
@@ -292,7 +308,7 @@ public class KeycloakAuthenticationService {
      * @return DTO with fresh access token, refresh token, and lifetimes
      * @throws UnauthorizedException if the request is rejected or fails
      */
-    private AccessTokenResponse refreshTokensWithClient(String clientId, String clientSecret, String refreshToken) {
+    private AccessTokenResponse refreshTokensWithClient(String targetRealm, String clientId, String clientSecret, String refreshToken) {
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new UnauthorizedException("Missing refresh token");
         }
@@ -300,7 +316,7 @@ public class KeycloakAuthenticationService {
         addClientAuth(form, clientId, clientSecret);
         form.add("grant_type", GRANT_TYPE_REFRESH);
         form.add("refresh_token", refreshToken);
-        return callKeycloak(this.realm, OidcEndpoint.TOKEN, form, "Failed to refresh token")
+        return callKeycloak(targetRealm, OidcEndpoint.TOKEN, form, "Failed to refresh token")
             .bodyToMono(AccessTokenResponse.class)
             .block(Duration.ofSeconds(5));
     }
@@ -313,13 +329,28 @@ public class KeycloakAuthenticationService {
      * @param refreshToken the user's refresh token
      * @return DTO with fresh access token, refresh token, and lifetimes or null if exception
      */
-    private AccessTokenResponse tryRefreshTokensWithClient(String clientId, String clientSecret, String refreshToken) {
+    private AccessTokenResponse tryRefreshTokensWithClient(String targetRealm, String clientId, String clientSecret, String refreshToken) {
         try {
-            return refreshTokensWithClient(clientId, clientSecret, refreshToken);
+            return refreshTokensWithClient(targetRealm, clientId, clientSecret, refreshToken);
         } catch (UnauthorizedException ex) {
-            log.debug("Refresh with client {} failed: {}", clientId, ex.getMessage());
+            log.debug("Refresh with client {} on realm {} failed: {}", clientId, targetRealm, ex.getMessage());
             return null;
         }
+    }
+
+    private String determinePreferredRealm(Jwt accessJwt) {
+        if (accessJwt == null || accessJwt.getIssuer() == null) {
+            return this.realm;
+        }
+        return realmFromIssuer(accessJwt.getIssuer().toString());
+    }
+
+    private String realmFromIssuer(String issuer) {
+        String tumIssuer = realmIssuer(this.tumLoginRealm);
+        if (tumIssuer.equals(issuer)) {
+            return this.tumLoginRealm;
+        }
+        return this.realm;
     }
 
     /**
