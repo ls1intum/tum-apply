@@ -1,4 +1,16 @@
-import { Component, ElementRef, ViewEncapsulation, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewEncapsulation,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+  viewChild,
+  viewChildren,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
@@ -117,6 +129,7 @@ export class FilterMultiselect {
   private readonly renderedOptions = signal<RenderedOption[]>([]);
   private readonly elementRef = inject(ElementRef);
   private readonly dropdownRef = viewChild<ElementRef<HTMLElement>>('dropdown');
+  private readonly optionElements = viewChildren<ElementRef<HTMLElement>>('optionRow');
   private readonly translator = injectTranslator();
   private readonly translateService = this.translator.translateService;
 
@@ -129,6 +142,15 @@ export class FilterMultiselect {
     if (!this.areFilterValuesEqual(this.selectedValues(), externalSelectedValues)) {
       this.selectedValues.set([...externalSelectedValues]);
     }
+  });
+
+  private readonly scrollFocusedIntoViewEffect = effect(() => {
+    const index = this.focusedIndexOptionList();
+    if (index < 0) {
+      return;
+    }
+    const elements = this.optionElements();
+    elements[index]?.nativeElement.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   });
 
   toggleDropdown(): void {

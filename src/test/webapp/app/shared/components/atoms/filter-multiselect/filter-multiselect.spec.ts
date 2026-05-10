@@ -260,4 +260,26 @@ describe('FilterMultiselect', () => {
 
     expect(comp.isOpen()).toBe(true);
   });
+
+  it('should scroll the focused option into view on arrow-key navigation', () => {
+    const fx = createFilterMultiselectFixture();
+    const comp = fx.componentInstance;
+    comp.toggleDropdown();
+    fx.detectChanges();
+
+    const optionEls = fx.nativeElement.querySelectorAll<HTMLElement>('.flex-1.overflow-y-auto > div');
+    expect(optionEls.length).toBeGreaterThan(1);
+    Array.from(optionEls).forEach(el => {
+      el.scrollIntoView = vi.fn();
+    });
+    const scrollSpies = Array.from(optionEls).map(el => vi.spyOn(el, 'scrollIntoView'));
+
+    comp.onTriggerKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' })); // -> index 0
+    fx.detectChanges();
+    comp.onTriggerKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' })); // -> index 1
+    fx.detectChanges();
+
+    expect(scrollSpies[0]).toHaveBeenCalledWith({ block: 'nearest', inline: 'nearest' });
+    expect(scrollSpies[1]).toHaveBeenCalledWith({ block: 'nearest', inline: 'nearest' });
+  });
 });
