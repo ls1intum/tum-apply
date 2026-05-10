@@ -105,7 +105,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
         return new CreateReferenceRequestDTO("Prof. Dr.", "Ada", "Lovelace", "ada@example.com");
     }
 
-    private List<ReferenceRequestDTO> listAsApplicant(UUID applicationId) {
+    private List<ReferenceRequestDTO> getReferencesAsApplicant(UUID applicationId) {
         return api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
             .getAndRead(String.format(REFERENCES_URL, applicationId), null, new TypeReference<>() {}, 200);
@@ -116,7 +116,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldReturnEmptyListWhenNoneAdded() {
-            List<ReferenceRequestDTO> references = listAsApplicant(savedApplication.getApplicationId());
+            List<ReferenceRequestDTO> references = getReferencesAsApplicant(savedApplication.getApplicationId());
 
             assertThat(references).isEmpty();
         }
@@ -126,7 +126,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
             ReferenceRequestTestData.saved(referenceRequestRepository, savedApplication, "first@example.com");
             ReferenceRequestTestData.saved(referenceRequestRepository, savedApplication, "second@example.com");
 
-            List<ReferenceRequestDTO> references = listAsApplicant(savedApplication.getApplicationId());
+            List<ReferenceRequestDTO> references = getReferencesAsApplicant(savedApplication.getApplicationId());
 
             assertThat(references)
                 .hasSize(2)

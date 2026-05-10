@@ -32,7 +32,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Manages the referee contacts an applicant attaches to an application and dispatches the
@@ -61,7 +60,6 @@ public class ReferenceRequestService {
      * @param applicationId the owning application
      * @return all reference requests, mapped to DTOs (no token data)
      */
-    @Transactional(readOnly = true)
     public List<ReferenceRequestDTO> listForApplication(UUID applicationId) {
         Application application = assertOwnsApplication(applicationId);
         return referenceRequestRepository
@@ -79,7 +77,6 @@ public class ReferenceRequestService {
      * @param payload       the referee's title, name and email
      * @return the persisted entry as a DTO
      */
-    @Transactional
     public ReferenceRequestDTO addToApplication(UUID applicationId, CreateReferenceRequestDTO payload) {
         Application application = assertOwnsApplication(applicationId);
         assertApplicationEditable(application);
@@ -102,13 +99,12 @@ public class ReferenceRequestService {
      * @param applicationId  the owning application
      * @param referenceId    the entry to remove
      */
-    @Transactional
     public void removeFromApplication(UUID applicationId, UUID referenceId) {
         Application application = assertOwnsApplication(applicationId);
         assertApplicationEditable(application);
 
         ReferenceRequest entry = referenceRequestRepository
-            .findById(referenceId)
+            .findByIdWithApplication(referenceId)
             .orElseThrow(() -> EntityNotFoundException.forId("ReferenceRequest", referenceId));
         if (!entry.getApplication().getApplicationId().equals(application.getApplicationId())) {
             throw new OperationNotAllowedException("Reference does not belong to the given application.");
@@ -118,11 +114,11 @@ public class ReferenceRequestService {
 
     /**
      * Generates and persists a fresh token for each pending entry on the application and dispatches
-     * the invitation email.
+     * the invitation email. Must be called from a transactional context — the caller's transaction
+     * keeps {@code application.job} / {@code application.job.researchGroup} attached for lazy access.
      *
      * @param application the application whose referees should be notified
      */
-    @Transactional
     public void dispatchInvitations(Application application) {
         if (application.getJob().getReferenceLettersRequired() <= 0) {
             return;
@@ -146,13 +142,13 @@ public class ReferenceRequestService {
      * Loads the application and verifies the current user owns it (or is an admin).
      *
      * @param applicationId the application to load
-     * @return the loaded application
+     * @return the loaded application with eager applicant + job
      */
     private Application assertOwnsApplication(UUID applicationId) {
         Application application = applicationRepository
-            .findById(applicationId)
+            .findByIdWithApplicantAndJob(applicationId)
             .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
-        currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
+        currentUserService.assertAccessTo(application);
         return application;
     }
 

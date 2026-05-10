@@ -26,7 +26,7 @@ public class ReferenceRequest extends AbstractAuditingEntity {
     @Column(name = "reference_request_id", nullable = false)
     private UUID referenceRequestId;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "application_id", nullable = false)
     private Application application;
 

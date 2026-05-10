@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,8 @@ public class ReferenceRequestResource {
      */
     @ApplicantOrAdmin
     @GetMapping
-    public ResponseEntity<List<ReferenceRequestDTO>> list(@PathVariable UUID applicationId) {
+    public ResponseEntity<List<ReferenceRequestDTO>> getReferences(@PathVariable UUID applicationId) {
+        log.info("GET /api/applications/{}/references - Fetching references", applicationId);
         return ResponseEntity.ok(referenceRequestService.listForApplication(applicationId));
     }
 
@@ -50,7 +52,7 @@ public class ReferenceRequestResource {
         @Valid @RequestBody CreateReferenceRequestDTO payload
     ) {
         log.info("POST /api/applications/{}/references - Adding reference {}", applicationId, payload.toString());
-        return ResponseEntity.ok(referenceRequestService.addToApplication(applicationId, payload));
+        return ResponseEntity.status(HttpStatus.CREATED).body(referenceRequestService.addToApplication(applicationId, payload));
     }
 
     /**
