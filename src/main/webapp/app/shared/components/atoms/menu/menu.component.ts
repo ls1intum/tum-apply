@@ -1,5 +1,5 @@
-import { Component, computed, effect, inject, input, output, viewChild } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, computed, inject, input, output, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -79,19 +79,21 @@ export class MenuComponent {
   };
 
   private router = inject(Router);
-
-  // Latest NavigationStart event as a signal; auto-cleans on component destroy.
-  private readonly navigationStart = toSignal(this.router.events.pipe(filter(event => event instanceof NavigationStart)), {
-    initialValue: undefined,
-  });
+  private destroyRef = inject(DestroyRef);
 
   // Clean up menu overlays on navigation start.
   // Workaround for PrimeNG 21 popup-on-navigation behavior; remove once upstream is fixed.
-  private readonly clearOnNavigation = effect(() => {
-    if (this.navigationStart() === undefined) return;
-    this.clearMenuPopups();
-    this.visibleChange.emit(false);
-  });
+  // Subscribe (rather than toSignal+effect) so cleanup runs synchronously inside the
+  // navigation event tick — required for tests that assert DOM state immediately after.
+  private readonly clearOnNavigationSub = this.router.events
+    .pipe(
+      filter(event => event instanceof NavigationStart),
+      takeUntilDestroyed(this.destroyRef),
+    )
+    .subscribe(() => {
+      this.clearMenuPopups();
+      this.visibleChange.emit(false);
+    });
 
   toggle(event: Event): void {
     this.menu().toggle(event);
