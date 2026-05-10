@@ -113,8 +113,12 @@ keycloak:
     client-id: tumapply-server-client
     client-secret: tumapply-server-secret
   admin:
-    client-id: tumapply-otp-admin
-    client-secret: tumapply-otp-secret
+    tum:
+      client-id: tumapply-admin-api
+      client-secret: tumapply-admin-api-secret
+    external:
+      client-id: tumapply-admin-api
+      client-secret: tumapply-admin-api-secret
 
 security:
   otp:
