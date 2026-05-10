@@ -725,11 +725,11 @@
       },
       "expired": {
         "title": "Frist abgelaufen",
-        "message": "Die Frist für dieses Empfehlungsschreiben ist abgelaufen. Bitte kontaktieren Sie die bewerbende Person, falls es trotzdem eingereicht werden soll."
+        "message": "Die Frist für dieses Empfehlungsschreiben ist abgelaufen."
       },
       "error": {
         "title": "Link nicht gültig",
-        "invalidLink": "Dieser Empfehlungsschreiben-Link ist ungültig oder nicht mehr erreichbar. Bitte kontaktieren Sie die bewerbende Person, falls dies ein Fehler sein sollte."
+        "invalidLink": "Dieser Empfehlungsschreiben-Link ist ungültig oder nicht mehr erreichbar."
       },
       "toast": {
         "tooLarge": {
@@ -742,7 +742,7 @@
         },
         "uploadFailed": {
           "summary": "Upload fehlgeschlagen",
-          "detail": "Wir konnten Ihr Schreiben nicht speichern. Bitte erneut versuchen oder die bewerbende Person kontaktieren."
+          "detail": "Wir konnten Ihr Schreiben nicht speichern. Bitte erneut versuchen."
         }
       }
     }

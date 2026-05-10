@@ -725,11 +725,11 @@
       },
       "expired": {
         "title": "Deadline reached",
-        "message": "The deadline for this recommendation letter has passed. Please contact the applicant if you still need to submit it."
+        "message": "The deadline for this recommendation letter has passed."
       },
       "error": {
         "title": "Link not valid",
-        "invalidLink": "This recommendation letter link is invalid or no longer accessible. Please contact the applicant if you believe this is a mistake."
+        "invalidLink": "This recommendation letter link is invalid or no longer accessible."
       },
       "toast": {
         "tooLarge": {
@@ -742,7 +742,7 @@
         },
         "uploadFailed": {
           "summary": "Upload failed",
-          "detail": "We could not save your letter. Please try again or contact the applicant."
+          "detail": "We could not save your letter. Please try again."
         }
       }
     }
