@@ -52,7 +52,12 @@
       <span aria-hidden="true">·</span>
       <span>
         <span jhiTranslate="footer.git.commitHash"></span>:
-        <a [href]="commitUrl(gitInfo.commitHashFull)" target="_blank" rel="noopener" class="text-primary hover:underline">
+        <a
+          [href]="'https://github.com/ls1intum/tum-apply/commit/' + gitInfo.commitHashFull"
+          target="_blank"
+          rel="noopener"
+          class="text-primary hover:underline"
+        >
           {{ gitInfo.commitHashShort }}
         </a>
       </span>
