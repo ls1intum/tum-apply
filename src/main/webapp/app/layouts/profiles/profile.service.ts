@@ -45,18 +45,19 @@ export class ProfileService {
 }
 
 function mapGitInfo(git: InfoGitResponse | undefined): GitInfo | undefined {
-  const id = git?.commit?.id;
-  const idAbbrev = git?.commit?.['id.abbrev'];
+  const idValue = git?.commit?.id;
+  const fullId = typeof idValue === 'string' ? idValue : idValue?.full;
+  const abbrevId = typeof idValue === 'string' ? fullId?.slice(0, 7) : idValue?.abbrev;
   const branch = git?.branch;
   const time = git?.commit?.time;
   const userName = git?.commit?.user?.name;
-  if (id == null || idAbbrev == null || branch == null || time == null || userName == null) {
+  if (fullId == null || abbrevId == null || branch == null || time == null || userName == null) {
     return undefined;
   }
   return {
     branch,
-    commitHashShort: idAbbrev,
-    commitHashFull: id,
+    commitHashShort: abbrevId,
+    commitHashFull: fullId,
     commitTime: time,
     lastCommitter: userName,
   };

@@ -17,8 +17,10 @@ describe('ProfileService', () => {
     git: {
       branch: 'main',
       commit: {
-        id: 'bffa79953d4a8ae56405d9ba58d04eed1c351574',
-        'id.abbrev': 'bffa799',
+        id: {
+          full: 'bffa79953d4a8ae56405d9ba58d04eed1c351574',
+          abbrev: 'bffa799',
+        },
         time: '2026-05-10T16:24:58+0200',
         user: { name: 'Catherine Kalra' },
       },
@@ -58,5 +60,33 @@ describe('ProfileService', () => {
     const profileInfo = await new Promise<ProfileInfo>(resolve => service.getProfileInfo().subscribe(resolve));
 
     expect(profileInfo.gitInfo).toBeUndefined();
+  });
+
+  it('should also handle the simple git mode where commit.id is a plain string', async () => {
+    httpMock.get.mockReturnValueOnce(
+      of(
+        buildInfoResponse({
+          git: {
+            branch: 'main',
+            commit: {
+              id: 'bffa79953d4a8ae56405d9ba58d04eed1c351574',
+              time: '2026-05-10T16:24:58+0200',
+              user: { name: 'Catherine Kalra' },
+            },
+          },
+        }),
+      ),
+    );
+    const service = TestBed.inject(ProfileService);
+
+    const profileInfo = await new Promise<ProfileInfo>(resolve => service.getProfileInfo().subscribe(resolve));
+
+    expect(profileInfo.gitInfo).toEqual({
+      branch: 'main',
+      commitHashShort: 'bffa799',
+      commitHashFull: 'bffa79953d4a8ae56405d9ba58d04eed1c351574',
+      commitTime: '2026-05-10T16:24:58+0200',
+      lastCommitter: 'Catherine Kalra',
+    });
   });
 });

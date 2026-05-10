@@ -1,8 +1,9 @@
 export interface InfoGitResponse {
   branch?: string;
   commit?: {
-    id?: string;
-    'id.abbrev'?: string;
+    // With management.info.git.mode=full Spring Boot nests this as { full, abbrev, describe };
+    // with mode=simple it's a plain string.
+    id?: string | { full?: string; abbrev?: string };
     time?: string;
     user?: { name?: string };
   };
