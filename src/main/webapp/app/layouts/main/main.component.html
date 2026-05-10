@@ -1,17 +1,17 @@
-<div class="whole-page">
+<div class="flex flex-col h-screen bg-background-default text-text-primary">
   <jhi-page-ribbon />
   <jhi-header />
 
-  <div [class.is-collapsed]="isSidebarCollapsed()" class="main-page">
+  <div [class.is-collapsed]="isSidebarCollapsed()" class="main-page flex flex-1 overflow-hidden">
     @if (loggedIn()) {
       <jhi-sidebar
-        class="sidebar shadow-[1px_0px_3px_0px_rgba(0,0,0,0.1)]"
+        class="flex-none max-h-full overflow-y-auto shadow-[1px_0px_3px_0px_rgba(0,0,0,0.1)]"
         [isSidebarCollapsed]="isSidebarCollapsed()"
         (sidebarCollapsedChange)="toggleSidebar()"
       />
     }
-    <div #scrollContainer class="content">
-      <div class="content-flex">
+    <div #scrollContainer class="flex flex-col flex-1 overflow-auto">
+      <div class="flex flex-col flex-1 w-full">
         <router-outlet (activate)="onActivate()" />
       </div>
 

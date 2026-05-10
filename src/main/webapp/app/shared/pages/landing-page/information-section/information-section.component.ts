@@ -9,7 +9,6 @@ import { InformationCardComponent } from './information-card/information-card/in
   selector: 'jhi-information-section',
   imports: [InformationCardComponent, TranslateModule, TranslateDirective],
   templateUrl: './information-section.component.html',
-  styleUrl: './information-section.component.scss',
 })
 export class InformationSectionComponent {
   cards = [

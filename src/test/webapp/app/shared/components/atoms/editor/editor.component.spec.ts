@@ -98,7 +98,7 @@ describe('EditorComponent', () => {
       await fixture.whenStable();
 
       expect(comp.isOverCharLimit()).toBe(true);
-      expect(comp.charCounterColor()).toBe('char-counter-danger');
+      expect(comp.charCounterColor()).toBe('text-negative');
     });
 
     it('should compute warning color when near limit', async () => {
@@ -110,7 +110,7 @@ describe('EditorComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      expect(comp.charCounterColor()).toBe('char-counter-warning');
+      expect(comp.charCounterColor()).toBe('text-warning');
     });
 
     it('should return normal counter color when within limit', async () => {
@@ -122,7 +122,7 @@ describe('EditorComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      expect(comp.charCounterColor()).toBe('char-counter-normal');
+      expect(comp.charCounterColor()).toBe('');
     });
   });
 
@@ -291,7 +291,7 @@ describe('EditorComponent', () => {
       await fixture.whenStable();
 
       expect(comp.isOverCharLimit()).toBe(false);
-      expect(comp.charCounterColor()).toBe('char-counter-normal');
+      expect(comp.charCounterColor()).toBe('');
     });
 
     it('should not truncate text when characterLimit is undefined', async () => {

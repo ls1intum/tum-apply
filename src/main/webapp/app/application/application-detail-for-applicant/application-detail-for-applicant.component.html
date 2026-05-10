@@ -1,5 +1,5 @@
 <jhi-confirm-dialog
-  class="confirm-dialog"
+  class="hidden"
   header="entity.applicationOverview.dialogs.withdrawHeader"
   message="entity.applicationOverview.dialogs.withdrawMessage"
   label="button.withdraw"
@@ -11,7 +11,7 @@
   (closed)="showWithdrawDialog.set(false)"
 />
 <jhi-confirm-dialog
-  class="confirm-dialog"
+  class="hidden"
   header="entity.applicationOverview.dialogs.deleteHeader"
   message="entity.applicationOverview.dialogs.deleteMessage"
   label="button.delete"
@@ -87,7 +87,7 @@
             (click)="onViewJobDetails()"
           />
         </div>
-        <div class="overview-content">
+        <div class="flex flex-wrap items-center gap-8">
           <div class="info-item">
             <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
             <span jhiTranslate="entity.application_detail.supervisor"></span>
@@ -127,7 +127,7 @@
     }
 
     <!-- Main Content Grid -->
-    <div class="content-grid">
+    <div class="grid gap-8 mb-8 grid-cols-[1fr_25rem] max-xl:grid-cols-1">
       <!-- Personal Statements Section -->
       <section>
         @if (!previewDetailData()) {
@@ -196,9 +196,9 @@
               </div>
             </div>
             @if (application.applicant?.user?.website || application.applicant?.user?.linkedinUrl) {
-              <div class="links">
+              <div class="flex items-center gap-4 border-t border-border-default mt-4 pt-4">
                 @if (application.applicant?.user?.website) {
-                  <div class="link-container">
+                  <div class="flex items-center gap-2">
                     <fa-icon [icon]="['fas', 'link']" class="icon" />
                     <a class="link" [href]="application.applicant?.user?.website" target="_blank" rel="noopener noreferrer">
                       <span jhiTranslate="entity.detail_card.website"></span>
@@ -206,7 +206,7 @@
                   </div>
                 }
                 @if (application.applicant?.user?.linkedinUrl) {
-                  <div class="link-container">
+                  <div class="flex items-center gap-2">
                     <fa-icon [icon]="['fab', 'linkedin']" class="icon" />
                     <a class="link" [href]="application.applicant?.user?.linkedinUrl" target="_blank" rel="noopener noreferrer">
                       <span jhiTranslate="entity.detail_card.linkedin"></span>
@@ -277,7 +277,7 @@
           }
         }
         <!-- Document grid for all document types -->
-        <div class="document-container">
+        <div class="grid gap-x-8 grid-cols-2 max-md:grid-cols-1 xl:grid-cols-3">
           @if (documentIds.cvDocumentId; as cvDoc) {
             <div class="section-detail-card">
               <div class="section-card-header">
@@ -285,7 +285,7 @@
                 <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.CV"></h3>
               </div>
               <div class="section-card-body">
-                <div class="document-viewer">
+                <div [class]="documentViewerHeightClass">
                   <jhi-document-viewer [documentId]="cvDoc" />
                 </div>
               </div>
@@ -300,7 +300,7 @@
                   <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.BACHELOR_TRANSCRIPT"></h3>
                 </div>
                 <div class="section-card-body">
-                  <div class="document-viewer">
+                  <div [class]="documentViewerHeightClass">
                     <jhi-document-viewer [documentId]="doc" />
                   </div>
                 </div>
@@ -316,7 +316,7 @@
                   <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.MASTER_TRANSCRIPT"></h3>
                 </div>
                 <div class="section-card-body">
-                  <div class="document-viewer">
+                  <div [class]="documentViewerHeightClass">
                     <jhi-document-viewer [documentId]="doc" />
                   </div>
                 </div>
@@ -332,7 +332,7 @@
                   <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.REFERENCES"></h3>
                 </div>
                 <div class="section-card-body">
-                  <div class="document-viewer">
+                  <div [class]="documentViewerHeightClass">
                     <jhi-document-viewer [documentId]="doc" />
                   </div>
                 </div>

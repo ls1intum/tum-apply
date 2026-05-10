@@ -74,12 +74,12 @@ export class ApplicationOverviewComponent {
     ];
   });
 
-  readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
+  readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info' | 'neutral'>>({
     SENT: 'info',
     ACCEPTED: 'success',
     REJECTED: 'danger',
     IN_REVIEW: 'warn',
-    INTERVIEW: 'info',
+    INTERVIEW: 'neutral',
     JOB_CLOSED: 'info',
   });
 
