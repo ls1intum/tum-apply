@@ -34,6 +34,7 @@ interface RenderedOption {
   encapsulation: ViewEncapsulation.None,
   host: {
     '(document:click)': 'onDocumentClick($event)',
+    '(focusout)': 'onFocusOut($event)',
   },
 })
 export class FilterMultiselect {
@@ -235,6 +236,13 @@ export class FilterMultiselect {
 
   onDocumentClick(event: Event): void {
     if (!this.elementRef.nativeElement.contains(event.target as Node)) {
+      this.closeDropdown();
+    }
+  }
+
+  onFocusOut(event: FocusEvent): void {
+    const next = event.relatedTarget as Node | null;
+    if (next === null || !this.elementRef.nativeElement.contains(next)) {
       this.closeDropdown();
     }
   }

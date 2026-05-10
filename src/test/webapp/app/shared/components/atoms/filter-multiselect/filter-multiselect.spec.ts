@@ -228,4 +228,36 @@ describe('FilterMultiselect', () => {
 
     expect(comp.focusedIndexOptionList()).toBe(-1);
   });
+
+  it('should close the dropdown when focus moves to an element outside the component', () => {
+    const fx = createFilterMultiselectFixture();
+    const comp = fx.componentInstance;
+    comp.isOpen.set(true);
+
+    const outside = document.createElement('button');
+    comp.onFocusOut({ relatedTarget: outside } as unknown as FocusEvent);
+
+    expect(comp.isOpen()).toBe(false);
+  });
+
+  it('should close the dropdown when focus moves to nothing (relatedTarget is null)', () => {
+    const fx = createFilterMultiselectFixture();
+    const comp = fx.componentInstance;
+    comp.isOpen.set(true);
+
+    comp.onFocusOut({ relatedTarget: null } as unknown as FocusEvent);
+
+    expect(comp.isOpen()).toBe(false);
+  });
+
+  it('should keep the dropdown open when focus moves between elements inside the component', () => {
+    const fx = createFilterMultiselectFixture();
+    const comp = fx.componentInstance;
+    comp.isOpen.set(true);
+
+    const inside = fx.nativeElement.querySelector('.filter-multiselect') as HTMLElement;
+    comp.onFocusOut({ relatedTarget: inside } as unknown as FocusEvent);
+
+    expect(comp.isOpen()).toBe(true);
+  });
 });
