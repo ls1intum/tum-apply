@@ -61,6 +61,7 @@ management:
       enabled: true
   info:
     git:
+      enabled: true
       mode: full
     env:
       enabled: true
