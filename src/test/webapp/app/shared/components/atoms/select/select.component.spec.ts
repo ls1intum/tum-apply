@@ -74,5 +74,4 @@ describe('SelectComponent', () => {
     selectEl.triggerEventHandler('onHide', {});
     expect(comp.isOpen).toBe(false);
   });
-
 });

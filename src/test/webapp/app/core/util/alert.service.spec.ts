@@ -34,9 +34,7 @@ describe('AlertService', () => {
   }));
 
   it('should produce alert with all custom fields', inject([AlertService], (service: AlertService) => {
-    expect(
-      service.addAlert({ type: 'success', message: 'Hello', timeout: 3000, toast: true, position: 'top left' }),
-    ).toEqual(
+    expect(service.addAlert({ type: 'success', message: 'Hello', timeout: 3000, toast: true, position: 'top left' })).toEqual(
       expect.objectContaining({
         type: 'success',
         message: 'Hello',
@@ -94,21 +92,15 @@ describe('AlertService', () => {
     },
   ));
 
-  it('should fall back to provided message when translation key missing', inject(
-    [AlertService],
-    (service: AlertService) => {
-      expect(service.addAlert({ type: 'info', message: 'Hello', translationKey: 'hello.missing' })).toEqual(
-        expect.objectContaining({ message: 'Hello' } as Alert),
-      );
-    },
-  ));
+  it('should fall back to provided message when translation key missing', inject([AlertService], (service: AlertService) => {
+    expect(service.addAlert({ type: 'info', message: 'Hello', translationKey: 'hello.missing' })).toEqual(
+      expect.objectContaining({ message: 'Hello' } as Alert),
+    );
+  }));
 
-  it('should fall back to translationKey when neither translation nor message provided', inject(
-    [AlertService],
-    (service: AlertService) => {
-      expect(service.addAlert({ type: 'info', translationKey: 'hello.missing' })).toEqual(
-        expect.objectContaining({ message: 'hello.missing' } as Alert),
-      );
-    },
-  ));
+  it('should fall back to translationKey when neither translation nor message provided', inject([AlertService], (service: AlertService) => {
+    expect(service.addAlert({ type: 'info', translationKey: 'hello.missing' })).toEqual(
+      expect.objectContaining({ message: 'hello.missing' } as Alert),
+    );
+  }));
 });

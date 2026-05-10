@@ -156,9 +156,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       expect(component.form.get('researchGroupContactEmail')?.value).toBe('anna.muster@tum.de');
 
       component.form.patchValue({ firstName: 'ManualFirst', researchGroupContactEmail: 'manual@tum.de' });
-      mockGetCurrentUser.mockReturnValue(
-        of({ firstName: 'OtherFirst', email: 'other@tum.de', universityId: 'ab12cde' } as UserShortDTO),
-      );
+      mockGetCurrentUser.mockReturnValue(of({ firstName: 'OtherFirst', email: 'other@tum.de', universityId: 'ab12cde' } as UserShortDTO));
 
       await component['prefillProfessorData']();
 
@@ -206,20 +204,20 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       fillValidForm();
     });
 
-    it.each<['invalid form', 'already submitting'] | unknown[]>([
-      ['invalid form'],
-      ['already submitting'],
-    ])('should not submit when %s', desc => {
-      if (desc === 'invalid form') {
-        component.form.patchValue({ title: '' });
-      } else {
-        component.isSubmitting.set(true);
-      }
+    it.each<['invalid form', 'already submitting'] | unknown[]>([['invalid form'], ['already submitting']])(
+      'should not submit when %s',
+      desc => {
+        if (desc === 'invalid form') {
+          component.form.patchValue({ title: '' });
+        } else {
+          component.isSubmitting.set(true);
+        }
 
-      component.onConfirmSubmit();
+        component.onConfirmSubmit();
 
-      expect(mockResearchGroupService.createProfessorResearchGroupRequest).not.toHaveBeenCalled();
-    });
+        expect(mockResearchGroupService.createProfessorResearchGroupRequest).not.toHaveBeenCalled();
+      },
+    );
 
     it('should call research group service with trimmed and abbreviated data', async () => {
       fillValidForm({
@@ -311,7 +309,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith(expectedKey);
     });
-
   });
 
   describe('onCancel', () => {
@@ -324,7 +321,11 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
 
   describe('Edge Cases', () => {
     it.each([
-      { desc: 'null', overrides: { researchGroupAbbreviation: null, researchGroupWebsite: null }, expected: { abbreviation: '', website: '' } },
+      {
+        desc: 'null',
+        overrides: { researchGroupAbbreviation: null, researchGroupWebsite: null },
+        expected: { abbreviation: '', website: '' },
+      },
       {
         desc: 'undefined',
         overrides: { researchGroupAbbreviation: undefined, researchGroupContactEmail: undefined },
@@ -332,7 +333,12 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       },
       {
         desc: 'whitespace-only',
-        overrides: { researchGroupAbbreviation: '   ', researchGroupWebsite: '  ', researchGroupCity: '    ', researchGroupDescription: '\t\n' },
+        overrides: {
+          researchGroupAbbreviation: '   ',
+          researchGroupWebsite: '  ',
+          researchGroupCity: '    ',
+          researchGroupDescription: '\t\n',
+        },
         expected: { abbreviation: '', website: '', city: '', description: '' },
       },
     ])('should normalize $desc values in optional fields to empty strings', async ({ overrides, expected }) => {

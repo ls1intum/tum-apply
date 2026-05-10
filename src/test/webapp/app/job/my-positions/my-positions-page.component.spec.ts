@@ -10,7 +10,11 @@ import { CreatedJobDTO, CreatedJobDTOStateEnum } from 'app/generated/model/creat
 import { PageCreatedJobDTO } from 'app/generated/model/page-created-job-dto';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
-import { createJobResourceApiMock, JobResourceApiMock, provideJobResourceApiMock } from 'src/test/webapp/util/job-resource-api.service.mock';
+import {
+  createJobResourceApiMock,
+  JobResourceApiMock,
+  provideJobResourceApiMock,
+} from 'src/test/webapp/util/job-resource-api.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
 type MyPositionsPageComponentInternals = MyPositionsPageComponent & {
@@ -183,7 +187,9 @@ describe('MyPositionsPageComponent', () => {
     });
 
     it('should default jobs/totalRecords to empty when API returns undefined fields', async () => {
-      mockJobApi.getJobsForCurrentResearchGroup.mockReturnValueOnce(of<PageCreatedJobDTO>({ content: undefined, totalElements: undefined }));
+      mockJobApi.getJobsForCurrentResearchGroup.mockReturnValueOnce(
+        of<PageCreatedJobDTO>({ content: undefined, totalElements: undefined }),
+      );
       await (component as MyPositionsPageComponentInternals).loadJobs();
       expect(component.jobs()).toEqual([]);
       expect(component.totalRecords()).toBe(0);

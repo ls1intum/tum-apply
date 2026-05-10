@@ -245,5 +245,4 @@ describe('OtpInput', () => {
 
     expect(component.disabledSubmit()).toBe(false);
   });
-
 });

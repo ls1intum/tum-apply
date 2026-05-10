@@ -124,8 +124,7 @@ describe('ResearchGroupInfoComponent', () => {
       { description: 'no research group', user: () => Object.assign({}, mockUser, { researchGroup: undefined }) },
       {
         description: 'empty research group id',
-        user: () =>
-          Object.assign({}, mockUser, { researchGroup: Object.assign({}, mockUser.researchGroup, { researchGroupId: '' }) }),
+        user: () => Object.assign({}, mockUser, { researchGroup: Object.assign({}, mockUser.researchGroup, { researchGroupId: '' }) }),
       },
     ])('should not initialize when user has $description', async ({ user }) => {
       mockAccountService.user.set(user());
@@ -273,10 +272,7 @@ describe('ResearchGroupInfoComponent', () => {
 
       await component.onSave();
 
-      expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith(
-        'rg-1',
-        expect.objectContaining({ street: 'New Street' }),
-      );
+      expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith('rg-1', expect.objectContaining({ street: 'New Street' }));
     });
 
     it('should default undefined optional fields to empty strings on save', async () => {
@@ -319,10 +315,7 @@ describe('ResearchGroupInfoComponent', () => {
 
       await component.onSave();
 
-      expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith(
-        'rg-1',
-        expect.objectContaining({ name: '', head: '' }),
-      );
+      expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith('rg-1', expect.objectContaining({ name: '', head: '' }));
     });
   });
 });

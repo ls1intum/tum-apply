@@ -82,7 +82,6 @@ describe('FilterMultiselect', () => {
     expect(filterFixture.componentInstance.filteredOptions()).toEqual(['key.option.a']);
   });
 
-
   it('should compute selectedOptions, unselectedOptions, hasSelectedItems, hasUnselectedItems and counts based on selectedValues', () => {
     const filterFixture = createFilterMultiselectFixture();
     const comp = filterFixture.componentInstance;
@@ -188,5 +187,4 @@ describe('FilterMultiselect', () => {
     expect(filterFixture.componentInstance.hasUnselectedItems()).toBe(false);
     expect(filterFixture.componentInstance.totalCount()).toBe(0);
   });
-
 });

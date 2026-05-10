@@ -247,7 +247,7 @@ describe('ApplicationPage2Component', () => {
   });
 
   describe('onChangeGradingScale', () => {
-    it.each(['bachelor', 'master'] as const)('should open dialog with correct data for %s', async (gradeType) => {
+    it.each(['bachelor', 'master'] as const)('should open dialog with correct data for %s', async gradeType => {
       const { componentInstance, fixture } = createApplicationPage2Fixture({ data: VALID_PAGE2_FORM_DATA });
       await new Promise(resolve => setTimeout(resolve, 150));
       fixture.detectChanges();
@@ -279,7 +279,7 @@ describe('ApplicationPage2Component', () => {
       );
     });
 
-    it.each(['bachelor', 'master'] as const)('should update %s limits and set manuallySet flag on dialog result', (gradeType) => {
+    it.each(['bachelor', 'master'] as const)('should update %s limits and set manuallySet flag on dialog result', gradeType => {
       const { componentInstance, fixture } = createApplicationPage2Fixture();
       fixture.detectChanges();
 
@@ -292,8 +292,7 @@ describe('ApplicationPage2Component', () => {
 
       const upperKey = `${gradeType}GradeUpperLimit`;
       const lowerKey = `${gradeType}GradeLowerLimit`;
-      const limitsKey: 'bachelorGradeLimits' | 'masterGradeLimits' =
-        gradeType === 'bachelor' ? 'bachelorGradeLimits' : 'masterGradeLimits';
+      const limitsKey: 'bachelorGradeLimits' | 'masterGradeLimits' = gradeType === 'bachelor' ? 'bachelorGradeLimits' : 'masterGradeLimits';
       const manuallyKey: 'bachelorLimitsManuallySet' | 'masterLimitsManuallySet' =
         gradeType === 'bachelor' ? 'bachelorLimitsManuallySet' : 'masterLimitsManuallySet';
       expect(componentInstance.page2Form.get(upperKey)?.value).toBe('5.0');
@@ -320,29 +319,38 @@ describe('ApplicationPage2Component', () => {
       expect(componentInstance.bachelorLimitsManuallySet()).toBe(false);
     });
 
-    it.each(['bachelor', 'master'] as const)('should fall back to empty string for %s limits when control value is null', async (gradeType) => {
-      const { componentInstance, fixture } = createApplicationPage2Fixture();
-      componentInstance.page2Form.controls[`${gradeType}GradeUpperLimit`].setValue(null);
-      componentInstance.page2Form.controls[`${gradeType}GradeLowerLimit`].setValue(null);
-      fixture.detectChanges();
+    it.each(['bachelor', 'master'] as const)(
+      'should fall back to empty string for %s limits when control value is null',
+      async gradeType => {
+        const { componentInstance, fixture } = createApplicationPage2Fixture();
+        componentInstance.page2Form.controls[`${gradeType}GradeUpperLimit`].setValue(null);
+        componentInstance.page2Form.controls[`${gradeType}GradeLowerLimit`].setValue(null);
+        fixture.detectChanges();
 
-      const onCloseSub = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
-      mockDialogService.open = vi.fn().mockReturnValue({ onClose: onCloseSub.asObservable() });
+        const onCloseSub = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
+        mockDialogService.open = vi.fn().mockReturnValue({ onClose: onCloseSub.asObservable() });
 
-      componentInstance.onChangeGradingScale(gradeType);
-      expect(mockDialogService.open).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          data: expect.objectContaining({ gradeType, currentUpperLimit: '', currentLowerLimit: '' }),
-        }),
-      );
-    });
+        componentInstance.onChangeGradingScale(gradeType);
+        expect(mockDialogService.open).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            data: expect.objectContaining({ gradeType, currentUpperLimit: '', currentLowerLimit: '' }),
+          }),
+        );
+      },
+    );
   });
 
   describe('initializeFormEffect — limit back-fill from AI-extracted grades', () => {
     it('populates bachelor limits when grade set but limits empty', () => {
       const { componentInstance } = createApplicationPage2Fixture({
-        data: { bachelorDegreeName: 'CS', bachelorDegreeUniversity: 'TUM', bachelorGrade: '1.5', bachelorGradeUpperLimit: '', bachelorGradeLowerLimit: '' },
+        data: {
+          bachelorDegreeName: 'CS',
+          bachelorDegreeUniversity: 'TUM',
+          bachelorGrade: '1.5',
+          bachelorGradeUpperLimit: '',
+          bachelorGradeLowerLimit: '',
+        },
       });
       expect(componentInstance.page2Form.get('bachelorGradeUpperLimit')?.value).toBe('1.0');
       expect(componentInstance.page2Form.get('bachelorGradeLowerLimit')?.value).toBe('4.0');
@@ -350,7 +358,13 @@ describe('ApplicationPage2Component', () => {
 
     it('populates master limits when grade set but limits empty', () => {
       const { componentInstance } = createApplicationPage2Fixture({
-        data: { masterDegreeName: 'CS', masterDegreeUniversity: 'TUM', masterGrade: '85%', masterGradeUpperLimit: '', masterGradeLowerLimit: '' },
+        data: {
+          masterDegreeName: 'CS',
+          masterDegreeUniversity: 'TUM',
+          masterGrade: '85%',
+          masterGradeUpperLimit: '',
+          masterGradeLowerLimit: '',
+        },
       });
       expect(componentInstance.page2Form.get('masterGradeUpperLimit')?.value).toBe('100%');
       expect(componentInstance.page2Form.get('masterGradeLowerLimit')?.value).toBe('50%');
@@ -358,7 +372,13 @@ describe('ApplicationPage2Component', () => {
 
     it('does not overwrite existing limits', () => {
       const { componentInstance } = createApplicationPage2Fixture({
-        data: { bachelorDegreeName: 'CS', bachelorDegreeUniversity: 'TUM', bachelorGrade: '1.5', bachelorGradeUpperLimit: '6.0', bachelorGradeLowerLimit: '4.0' },
+        data: {
+          bachelorDegreeName: 'CS',
+          bachelorDegreeUniversity: 'TUM',
+          bachelorGrade: '1.5',
+          bachelorGradeUpperLimit: '6.0',
+          bachelorGradeLowerLimit: '4.0',
+        },
       });
       expect(componentInstance.page2Form.get('bachelorGradeUpperLimit')?.value).toBe('6.0');
       expect(componentInstance.page2Form.get('bachelorGradeLowerLimit')?.value).toBe('4.0');
@@ -366,7 +386,13 @@ describe('ApplicationPage2Component', () => {
 
     it('leaves limits empty when grade is not detectable', () => {
       const { componentInstance } = createApplicationPage2Fixture({
-        data: { bachelorDegreeName: 'CS', bachelorDegreeUniversity: 'TUM', bachelorGrade: '???', bachelorGradeUpperLimit: '', bachelorGradeLowerLimit: '' },
+        data: {
+          bachelorDegreeName: 'CS',
+          bachelorDegreeUniversity: 'TUM',
+          bachelorGrade: '???',
+          bachelorGradeUpperLimit: '',
+          bachelorGradeLowerLimit: '',
+        },
       });
       expect(componentInstance.page2Form.get('bachelorGradeUpperLimit')?.value).toBe('');
       expect(componentInstance.page2Form.get('bachelorGradeLowerLimit')?.value).toBe('');

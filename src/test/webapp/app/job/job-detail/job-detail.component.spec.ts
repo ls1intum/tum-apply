@@ -34,12 +34,7 @@ type ResearchGroupDetails = {
 
 type JobDetailComponentInternals = JobDetailComponent & {
   loadJobDetailsFromForm(form: JobFormDTO): Promise<void>;
-  mapToJobDetails(
-    data: JobDetailDTO | JobFormDTO,
-    user?: User,
-    researchGroupDetails?: ResearchGroupDetails,
-    isForm?: boolean,
-  ): JobDetails;
+  mapToJobDetails(data: JobDetailDTO | JobFormDTO, user?: User, researchGroupDetails?: ResearchGroupDetails, isForm?: boolean): JobDetails;
   isOwnerOfJob(job: JobDetails): boolean;
 };
 
@@ -443,7 +438,11 @@ describe('JobDetailComponent', () => {
   describe('isOwnerOfJob', () => {
     it.each([
       ['user missing', () => mockAccountService.user.set(null as unknown as User), { belongsToResearchGroup: true } as JobDetails],
-      ['not professor', () => vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(false), { belongsToResearchGroup: true } as JobDetails],
+      [
+        'not professor',
+        () => vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(false),
+        { belongsToResearchGroup: true } as JobDetails,
+      ],
       [
         'job not in research group',
         () => vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true),

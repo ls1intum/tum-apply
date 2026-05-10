@@ -246,7 +246,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
       masterGradeLowerLimit?: string;
     };
 
-    it.each(['bachelor', 'master'] as const)('should return "-" for %s display when grade missing', (level) => {
+    it.each(['bachelor', 'master'] as const)('should return "-" for %s display when grade missing', level => {
       const { component } = setupTest(null);
       const applicantOverrides: ApplicantOverrides = { user: { email: '', userId: '1' } };
       applicantOverrides[`${level}Grade`] = undefined;
@@ -256,7 +256,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
       expect(result).toBe('-');
     });
 
-    it.each(['bachelor', 'master'] as const)('should return grade only for %s display when limits missing', (level) => {
+    it.each(['bachelor', 'master'] as const)('should return grade only for %s display when limits missing', level => {
       const { component } = setupTest(null);
       const applicantOverrides: ApplicantOverrides = { user: { email: '', userId: '1' } };
       applicantOverrides[`${level}Grade`] = '2.3';
@@ -266,7 +266,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
       expect(result).toBe('2.3');
     });
 
-    it.each(['bachelor', 'master'] as const)('should return grade and scale for %s display when limits present', (level) => {
+    it.each(['bachelor', 'master'] as const)('should return grade and scale for %s display when limits present', level => {
       const { component, translate } = setupTest(null);
       const applicantOverrides: ApplicantOverrides = { user: { email: '', userId: '' } };
       applicantOverrides[`${level}Grade`] = '1.7';

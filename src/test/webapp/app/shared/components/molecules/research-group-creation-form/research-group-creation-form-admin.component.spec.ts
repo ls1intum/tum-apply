@@ -181,7 +181,11 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       [undefined, 'Creation failed', 'researchGroup.adminView.errors.create'],
       [409, 'Research group already exists', 'researchGroup.adminView.errors.duplicateName'],
       [404, 'User with universityId "invalid" not found', 'researchGroup.adminView.errors.userNotFound'],
-      [400, "User with universityId 'aa00bka' is already a member of research group 'Existing Group'", 'researchGroup.adminView.errors.userAlreadyMember'],
+      [
+        400,
+        "User with universityId 'aa00bka' is already a member of research group 'Existing Group'",
+        'researchGroup.adminView.errors.userAlreadyMember',
+      ],
     ])('should map error status %i with message %s to toast key %s', async (status, message, expectedKey) => {
       const error = new HttpErrorResponse(status !== undefined ? { status, error: { message } } : { error: message });
       mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => error));

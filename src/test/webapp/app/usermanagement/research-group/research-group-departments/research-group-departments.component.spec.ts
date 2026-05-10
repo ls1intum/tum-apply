@@ -238,6 +238,5 @@ describe('ResearchGroupDepartmentsComponent', () => {
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.toastMessages.deleteFailed');
     });
-
   });
 });

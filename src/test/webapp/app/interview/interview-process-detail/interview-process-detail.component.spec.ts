@@ -130,7 +130,6 @@ describe('InterviewProcessDetailComponent', () => {
 
       expect(component.isJobClosed()).toBe(expected);
     });
-
   });
 
   it('should increment refresh keys on slot events', async () => {

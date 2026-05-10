@@ -69,5 +69,4 @@ describe('SegmentedToggleComponent', () => {
 
     expect(emitSpy).not.toHaveBeenCalled();
   });
-
 });

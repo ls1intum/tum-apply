@@ -216,7 +216,11 @@ describe('KeycloakAuthenticationService', () => {
 
     it.each([
       { label: 'custom relative URI', uri: '/custom-redirect', shouldContain: '/custom-redirect' },
-      { label: 'same-origin absolute URI', uri: window.location.origin + '/dashboard', shouldContain: window.location.origin + '/dashboard' },
+      {
+        label: 'same-origin absolute URI',
+        uri: window.location.origin + '/dashboard',
+        shouldContain: window.location.origin + '/dashboard',
+      },
     ])('should accept $label as redirect', async ({ uri, shouldContain }) => {
       keycloakInstance.authenticated = true;
       await service.logout(uri);

@@ -227,9 +227,7 @@ describe('ApplicationDetailComponent', () => {
     });
 
     it('should call loadNext when currentIndex + half < totalRecords', () => {
-      const spy = vi
-        .spyOn(component as unknown as { loadNext: (i: number) => Promise<void> }, 'loadNext')
-        .mockResolvedValue(undefined);
+      const spy = vi.spyOn(component as unknown as { loadNext: (i: number) => Promise<void> }, 'loadNext').mockResolvedValue(undefined);
 
       component.applications.set([makeDetailApp('1'), makeDetailApp('2'), makeDetailApp('3')]);
       component.totalRecords.set(10);
@@ -241,9 +239,7 @@ describe('ApplicationDetailComponent', () => {
     });
 
     it('should call loadPrev when currentIndex - half >= 0', () => {
-      const spy = vi
-        .spyOn(component as unknown as { loadPrev: (i: number) => Promise<void> }, 'loadPrev')
-        .mockResolvedValue(undefined);
+      const spy = vi.spyOn(component as unknown as { loadPrev: (i: number) => Promise<void> }, 'loadPrev').mockResolvedValue(undefined);
 
       component.applications.set(Array.from({ length: 7 }, (_, i) => makeDetailApp(`${i}`)));
       component.totalRecords.set(7);

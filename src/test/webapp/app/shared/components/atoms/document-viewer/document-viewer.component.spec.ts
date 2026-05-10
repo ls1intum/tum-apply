@@ -127,5 +127,4 @@ describe('DocumentViewerComponent', () => {
       expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl2);
     });
   });
-
 });

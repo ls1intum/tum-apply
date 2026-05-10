@@ -81,7 +81,6 @@ describe('CommentSection', () => {
     });
   });
 
-
   describe('loadComments', () => {
     it('should clear draft and set comments [] when applicationId is undefined', async () => {
       fixture.componentRef.setInput('applicationId', undefined);

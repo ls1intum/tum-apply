@@ -61,7 +61,6 @@ describe('ResearchGroupSchoolsComponent', () => {
       await expect(component.loadSchools()).resolves.toBeUndefined();
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.schools.toastMessages.loadFailed');
     });
-
   });
 
   describe('pagination', () => {
@@ -166,6 +165,5 @@ describe('ResearchGroupSchoolsComponent', () => {
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.schools.toastMessages.deleteFailed');
     });
-
   });
 });

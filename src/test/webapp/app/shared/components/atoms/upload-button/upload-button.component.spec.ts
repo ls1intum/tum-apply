@@ -407,7 +407,6 @@ describe('UploadButtonComponent', () => {
       expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.replace_failed');
       expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
     });
-
   });
 
   it.each<File[] | undefined>([undefined, []])('should do nothing on upload when selectedFiles=%s', async selected => {

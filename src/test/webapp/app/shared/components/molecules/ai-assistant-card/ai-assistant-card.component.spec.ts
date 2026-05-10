@@ -47,5 +47,4 @@ describe('AiAssistantCardComponent', () => {
     fixture.detectChanges();
     expect(component.displayedScore()).toBe(84);
   });
-
 });

@@ -126,5 +126,4 @@ describe('SearchFilterSortBar', () => {
 
     expect(sortOutputSpy).toHaveBeenCalledWith(sortChange);
   });
-
 });

@@ -30,5 +30,4 @@ describe('SavingBadgeComponent', () => {
     expect(component.colorClass()).toBe(colorClass);
     expect(component.translationKey()).toBe(key);
   });
-
 });

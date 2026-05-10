@@ -263,9 +263,21 @@ describe('ResearchGroupAdminView', () => {
 
   describe('Research Group Actions', () => {
     it.each([
-      { action: 'onApproveResearchGroup' as const, apiMethod: 'activateResearchGroup' as const, successKey: 'researchGroup.adminView.success.approve' },
-      { action: 'onDenyResearchGroup' as const, apiMethod: 'denyResearchGroup' as const, successKey: 'researchGroup.adminView.success.deny' },
-      { action: 'onWithdrawResearchGroup' as const, apiMethod: 'withdrawResearchGroup' as const, successKey: 'researchGroup.adminView.success.withdraw' },
+      {
+        action: 'onApproveResearchGroup' as const,
+        apiMethod: 'activateResearchGroup' as const,
+        successKey: 'researchGroup.adminView.success.approve',
+      },
+      {
+        action: 'onDenyResearchGroup' as const,
+        apiMethod: 'denyResearchGroup' as const,
+        successKey: 'researchGroup.adminView.success.deny',
+      },
+      {
+        action: 'onWithdrawResearchGroup' as const,
+        apiMethod: 'withdrawResearchGroup' as const,
+        successKey: 'researchGroup.adminView.success.withdraw',
+      },
     ])('$action: should succeed and reload', async ({ action, apiMethod, successKey }) => {
       mockResearchGroupService[apiMethod].mockReturnValue(of(void 0));
       mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
@@ -278,9 +290,17 @@ describe('ResearchGroupAdminView', () => {
     });
 
     it.each([
-      { action: 'onApproveResearchGroup' as const, apiMethod: 'activateResearchGroup' as const, errorKey: 'researchGroup.adminView.errors.approve' },
+      {
+        action: 'onApproveResearchGroup' as const,
+        apiMethod: 'activateResearchGroup' as const,
+        errorKey: 'researchGroup.adminView.errors.approve',
+      },
       { action: 'onDenyResearchGroup' as const, apiMethod: 'denyResearchGroup' as const, errorKey: 'researchGroup.adminView.errors.deny' },
-      { action: 'onWithdrawResearchGroup' as const, apiMethod: 'withdrawResearchGroup' as const, errorKey: 'researchGroup.adminView.errors.withdraw' },
+      {
+        action: 'onWithdrawResearchGroup' as const,
+        apiMethod: 'withdrawResearchGroup' as const,
+        errorKey: 'researchGroup.adminView.errors.withdraw',
+      },
     ])('$action: should show error and not reload on failure', async ({ action, apiMethod, errorKey }) => {
       mockResearchGroupService[apiMethod].mockReturnValue(throwError(() => new Error('API Error')));
 

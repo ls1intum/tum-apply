@@ -49,7 +49,6 @@ describe('Comment', () => {
     expect(component['canSave']()).toBe(true);
   });
 
-
   it.each<[boolean, string, string]>([
     [true, 'hello', 'hello'],
     [false, 'world', ''],

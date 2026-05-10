@@ -98,7 +98,6 @@ describe('AuthDialogService', () => {
       expect(ref.close).toHaveBeenCalledOnce();
       expect(authOrchestratorMock.close).toHaveBeenCalledOnce();
     });
-
   });
 
   describe('reactive closing events', () => {

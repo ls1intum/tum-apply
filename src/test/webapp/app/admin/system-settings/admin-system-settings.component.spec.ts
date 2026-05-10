@@ -128,7 +128,6 @@ describe('AdminSystemSettingsComponent', () => {
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.ai.toast.toggleError');
     });
-
   });
 
   describe('Reset Circuit Breaker', () => {
@@ -149,6 +148,5 @@ describe('AdminSystemSettingsComponent', () => {
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.ai.toast.resetError');
     });
-
   });
 });

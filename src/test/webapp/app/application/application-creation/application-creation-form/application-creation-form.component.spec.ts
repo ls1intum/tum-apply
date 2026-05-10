@@ -771,7 +771,9 @@ describe('ApplicationForm', () => {
     });
 
     it('should toast error and navigate to detail when state is not SAVED', async () => {
-      applicationApi.getApplicationById = vi.fn().mockReturnValue(of(createMockApplicationDTO(ApplicationDetailDTOApplicationStateEnum.Sent)));
+      applicationApi.getApplicationById = vi
+        .fn()
+        .mockReturnValue(of(createMockApplicationDTO(ApplicationDetailDTOApplicationStateEnum.Sent)));
 
       await expect(comp.initPageLoadExistingApplication('existing-app-456')).rejects.toThrow('Application is not editable.');
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.notEditable');

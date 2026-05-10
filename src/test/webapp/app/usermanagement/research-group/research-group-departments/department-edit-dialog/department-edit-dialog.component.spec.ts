@@ -150,7 +150,6 @@ describe('DepartmentEditDialogComponent', () => {
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.createDialog.errors.createFailed');
     });
-
   });
 
   it('should close dialog on cancel', () => {

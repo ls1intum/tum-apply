@@ -538,12 +538,16 @@ describe('JobCreationFormComponent', () => {
       mockAllPanelTemplates(component);
       component.basicInfoValid.set(false);
       component.positionDetailsValid.set(false);
-      let imageStep = getPrivate(component).buildStepData().find(s => s.name.includes('imageSelection'));
+      let imageStep = getPrivate(component)
+        .buildStepData()
+        .find(s => s.name.includes('imageSelection'));
       expect(imageStep?.disabled).toBe(true);
 
       component.basicInfoValid.set(true);
       component.positionDetailsValid.set(true);
-      imageStep = getPrivate(component).buildStepData().find(s => s.name.includes('imageSelection'));
+      imageStep = getPrivate(component)
+        .buildStepData()
+        .find(s => s.name.includes('imageSelection'));
       expect(imageStep?.disabled).toBe(false);
     });
   });

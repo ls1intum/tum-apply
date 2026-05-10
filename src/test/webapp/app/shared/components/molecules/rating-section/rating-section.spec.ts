@@ -82,7 +82,6 @@ describe('RatingSection', () => {
       expect(component.otherRatings()).toEqual([4]);
       expect(mockRatingApi.getRatings).toHaveBeenCalledTimes(2);
     });
-
   });
 
   // ---------------- ERROR HANDLING (LOADING) ----------------

@@ -88,19 +88,22 @@ describe('ConfirmDialog', () => {
   });
 
   describe('Accept and Reject Behaviour', () => {
-    it.each<[string | undefined]>([['test-data-123'], [undefined]])('should emit confirmed event with data %s when accept is called', data => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      if (data !== undefined) {
-        fixture.componentRef.setInput('data', data);
-      }
-      const emitSpy = vi.spyOn(comp.confirmed, 'emit');
+    it.each<[string | undefined]>([['test-data-123'], [undefined]])(
+      'should emit confirmed event with data %s when accept is called',
+      data => {
+        const fixture = createFixture();
+        const comp = fixture.componentInstance;
+        if (data !== undefined) {
+          fixture.componentRef.setInput('data', data);
+        }
+        const emitSpy = vi.spyOn(comp.confirmed, 'emit');
 
-      comp.confirm();
-      (mockConfirmationService.confirm.mock.calls[0][0] as ConfirmArgs).accept?.();
+        comp.confirm();
+        (mockConfirmationService.confirm.mock.calls[0][0] as ConfirmArgs).accept?.();
 
-      expect(emitSpy).toHaveBeenCalledWith(data);
-    });
+        expect(emitSpy).toHaveBeenCalledWith(data);
+      },
+    );
 
     it('should not emit confirmed when accept is never called or dialog is rejected', () => {
       const fixture = createFixture();
