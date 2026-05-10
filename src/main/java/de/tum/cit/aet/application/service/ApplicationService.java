@@ -209,9 +209,6 @@ public class ApplicationService {
 
         application = applicationRepository.save(application);
 
-        // Submit-time side effects fire whether the application landed in SENT or PENDING:
-        // the professor needs to know about the incoming application either way (the missing-refs
-        // badge tells them to wait), and invitation emails must go out so referees can upload.
         if (isSubmitting) {
             syncSnapshotDataToApplicant(application);
             syncDocumentsToApplicantProfile(application);

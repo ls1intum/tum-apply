@@ -1,5 +1,6 @@
 package de.tum.cit.aet.reference.repository;
 
+import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +60,8 @@ public interface ReferenceRequestRepository extends JpaRepository<ReferenceReque
      * Counts how many reference requests on the given application have already been submitted.
      *
      * @param applicationId the owning application
+     * @param status        the request status to count
      * @return the number of requests in {@code SUBMITTED} state
      */
-    long countByApplicationApplicationIdAndStatus(UUID applicationId, de.tum.cit.aet.reference.constants.ReferenceRequestStatus status);
+    long countByApplicationApplicationIdAndStatus(UUID applicationId, ReferenceRequestStatus status);
 }
