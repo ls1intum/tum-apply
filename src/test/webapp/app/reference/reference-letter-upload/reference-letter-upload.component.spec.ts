@@ -70,12 +70,12 @@ describe('ReferenceLetterUploadComponent', () => {
     it('should resolve the token context on init', async () => {
       await setupFixture();
 
-      expect(api.getReferenceLetterContext).toHaveBeenCalledOnce();
-      expect(api.getReferenceLetterContext).toHaveBeenCalledWith(TOKEN);
+      expect(api.getContext).toHaveBeenCalledOnce();
+      expect(api.getContext).toHaveBeenCalledWith(TOKEN);
     });
 
     it('should toast and surface invalid-link state when the token cannot be resolved', async () => {
-      await setupFixture({ getReferenceLetterContext: vi.fn().mockReturnValue(throwError(() => new Error('boom'))) });
+      await setupFixture({ getContext: vi.fn().mockReturnValue(throwError(() => new Error('boom'))) });
 
       const root = fixture.nativeElement as HTMLElement;
       expect(root.textContent).toContain('reference.letterUpload.error.invalidLink');
@@ -90,8 +90,8 @@ describe('ReferenceLetterUploadComponent', () => {
     it('should POST the selected file and switch to the success view', async () => {
       await internals(component).uploadFile(fakePdf());
 
-      expect(api.uploadReferenceLetter).toHaveBeenCalledOnce();
-      expect(api.uploadReferenceLetter).toHaveBeenCalledWith(TOKEN, expect.any(File));
+      expect(api.upload).toHaveBeenCalledOnce();
+      expect(api.upload).toHaveBeenCalledWith(TOKEN, expect.any(File));
       expect(toast.showSuccessKey).toHaveBeenCalledOnce();
     });
 
@@ -101,13 +101,13 @@ describe('ReferenceLetterUploadComponent', () => {
 
       await internals(component).onFileSelected(selectEvent);
 
-      expect(api.uploadReferenceLetter).not.toHaveBeenCalled();
+      expect(api.upload).not.toHaveBeenCalled();
       expect(toast.showErrorKey).toHaveBeenCalledOnce();
       expect(toast.showErrorKey).toHaveBeenCalledWith('reference.letterUpload.toast.tooLarge');
     });
 
     it('should toast on upload failure and stay on the upload view', async () => {
-      api.uploadReferenceLetter.mockReturnValueOnce(throwError(() => new Error('boom')));
+      api.upload.mockReturnValueOnce(throwError(() => new Error('boom')));
 
       await internals(component).uploadFile(fakePdf());
 

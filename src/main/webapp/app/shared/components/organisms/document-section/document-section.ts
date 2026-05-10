@@ -18,7 +18,10 @@ import { ApplicationEvaluationResourceApi } from '../../../../generated/api/appl
 import { DocumentDialog } from '../../molecules/document-dialog/document-dialog';
 
 export interface DocumentHolder {
+  /** Translation key for the row title — never a pre-translated string. */
   label: string;
+  /** Optional placeholder values interpolated into the translation (e.g. {@code name}). */
+  labelParams?: Record<string, unknown>;
   document: DocumentInformationHolderDTO;
 }
 
@@ -59,7 +62,7 @@ export class DocumentSection {
     this.currentLang();
 
     return this.extraDocuments()
-      .map(doc => this.translate.instant(doc.label))
+      .map(doc => this.translate.instant(doc.label, doc.labelParams))
       .join(', ');
   });
 
@@ -87,15 +90,19 @@ export class DocumentSection {
     dto?.referenceDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeReference', document: d }));
 
     // Externally-uploaded reference letters appear last and are individually labelled with the
-    // referee's name so reviewers can tell them apart at a glance.
+    // referee's name so reviewers can tell them apart at a glance. The label stays a translation
+    // key — the referee name is interpolated as a parameter so it never round-trips through the
+    // missing-translation handler.
     letters
       .filter(letter => !!letter.documentId)
-      .forEach(letter =>
+      .forEach(letter => {
+        const refereeName = [letter.title, letter.firstName, letter.lastName].filter(part => !!part).join(' ');
         result.push({
-          label: this.buildReferenceLetterLabel(letter),
-          document: { id: letter.documentId!, name: this.buildReferenceLetterLabel(letter), size: 0 },
-        }),
-      );
+          label: 'evaluation.details.documentTypeReferenceLetter',
+          labelParams: { name: refereeName },
+          document: { id: letter.documentId!, name: refereeName, size: 0 },
+        });
+      });
 
     this.documentsCount.set(result.length);
 
@@ -103,18 +110,6 @@ export class DocumentSection {
     this.documents.set(result.slice(0, this.NUMBER_OF_DOCUMENTS));
     this.extraDocuments.set(result.slice(this.NUMBER_OF_DOCUMENTS));
   });
-
-  /**
-   * Builds the display label for an externally uploaded reference letter, e.g. "Reference Letter — Ada Lovelace".
-   *
-   * @param letter the reference request whose letter is being rendered
-   * @return the label string used in the documents list
-   */
-  private buildReferenceLetterLabel(letter: ReferenceRequestDTO): string {
-    const name = [letter.firstName, letter.lastName].filter(part => !!part).join(' ');
-    const base = this.translate.instant('evaluation.details.documentTypeReferenceLetter');
-    return name ? `${base} — ${name}` : base;
-  }
 
   async downloadAllDocuments(): Promise<void> {
     const applicationId = this.applicationId();

@@ -6,8 +6,8 @@ import { ReferenceLetterContextDTO } from 'app/generated/model/reference-letter-
 import { ReferenceRequestDTO, ReferenceRequestDTOStatusEnum } from 'app/generated/model/reference-request-dto';
 
 export type ReferenceLetterUploadResourceApiMock = {
-  getReferenceLetterContext: ReturnType<typeof vi.fn>;
-  uploadReferenceLetter: ReturnType<typeof vi.fn>;
+  getContext: ReturnType<typeof vi.fn>;
+  upload: ReturnType<typeof vi.fn>;
 };
 
 export const createMockContext = (overrides: Partial<ReferenceLetterContextDTO> = {}): ReferenceLetterContextDTO =>
@@ -38,8 +38,8 @@ export function createReferenceLetterUploadResourceApiMock(
     documentId: 'document-id',
   };
   return {
-    getReferenceLetterContext: vi.fn().mockReturnValue(of(initialContext)),
-    uploadReferenceLetter: vi.fn().mockReturnValue(of(submitted)),
+    getContext: vi.fn().mockReturnValue(of(initialContext)),
+    upload: vi.fn().mockReturnValue(of(submitted)),
   };
 }
 
