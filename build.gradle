@@ -23,6 +23,13 @@ plugins {
   id "org.springdoc.openapi-gradle-plugin" version "${springdocPluginVersion}"
 }
 
+gitProperties {
+  // Write into src/main/resources so the file is on the classpath both for Gradle's
+  // processResources output (build/resources/main/) and for IntelliJ's out/production/resources/.
+  // The file is gitignored.
+  gitPropertiesResourceDir.set(file("$projectDir/src/main/resources"))
+}
+
 group = "de.tum.cit.aet"
 
 // Version configuration based on profile:

@@ -123,6 +123,7 @@ Desktop.ini
 ######################
 *.log*
 /src/main/resources/testdata/generated-user-ids.json
+/src/main/resources/git.properties
 
 ######################
 # Others
