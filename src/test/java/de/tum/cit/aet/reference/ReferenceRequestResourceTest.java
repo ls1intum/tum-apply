@@ -172,7 +172,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .postAndRead(String.format(REFERENCES_URL, savedApplication.getApplicationId()), payload, ReferenceRequestDTO.class, 200);
+                .postAndRead(String.format(REFERENCES_URL, savedApplication.getApplicationId()), payload, ReferenceRequestDTO.class, 201);
 
             ReferenceRequest persisted = referenceRequestRepository
                 .findByApplicationApplicationIdOrderByCreatedAtAsc(savedApplication.getApplicationId())
