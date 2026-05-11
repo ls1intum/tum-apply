@@ -94,13 +94,13 @@ export class DocumentSection {
     // key — the referee name is interpolated as a parameter so it never round-trips through the
     // missing-translation handler.
     letters
-      .filter(letter => !!letter.documentId)
+      .filter((letter): letter is ReferenceRequestDTO & { documentId: string } => !!letter.documentId)
       .forEach(letter => {
         const refereeName = [letter.title, letter.firstName, letter.lastName].filter(part => !!part).join(' ');
         result.push({
           label: 'evaluation.details.documentTypeReferenceLetter',
           labelParams: { name: refereeName },
-          document: { id: letter.documentId!, name: refereeName, size: 0 },
+          document: { id: letter.documentId, name: refereeName, size: 0 },
         });
       });
 

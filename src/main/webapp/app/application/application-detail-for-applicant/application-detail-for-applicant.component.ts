@@ -97,9 +97,9 @@ export default class ApplicationDetailForApplicantComponent {
     this.references()
       .filter(reference => !!reference.documentId)
       .map(reference => ({
-        documentId: reference.documentId!,
+        documentId: reference.documentId,
         refereeName: [reference.firstName, reference.lastName].filter(part => !!part).join(' '),
-        viewerInput: { id: reference.documentId!, name: `${reference.firstName ?? ''} ${reference.lastName ?? ''}`.trim(), size: 0 },
+        viewerInput: { id: reference.documentId as string, name: `${reference.firstName ?? ''} ${reference.lastName ?? ''}`.trim(), size: 0 },
       })),
   );
 
