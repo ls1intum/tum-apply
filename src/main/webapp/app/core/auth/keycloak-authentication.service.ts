@@ -107,6 +107,31 @@ export class KeycloakAuthenticationService {
     return this.accountService.signedIn();
   }
 
+  /** Returns true when current authenticated Keycloak session belongs to the TUM realm. */
+  isTumRealmSession(): boolean {
+    const realmName = this.getRealmNameFromTokenIssuer();
+    if (realmName === undefined) {
+      return false;
+    }
+    return !realmName.toLowerCase().includes('external');
+  }
+
+  private getRealmNameFromTokenIssuer(): string | undefined {
+    const issuer = typeof this.keycloak?.tokenParsed?.iss === 'string' ? this.keycloak.tokenParsed.iss : '';
+    if (issuer.trim() === '') {
+      return undefined;
+    }
+    const marker = '/realms/';
+    const markerIndex = issuer.indexOf(marker);
+    if (markerIndex < 0) {
+      return undefined;
+    }
+    const realmStart = markerIndex + marker.length;
+    const realmEnd = issuer.indexOf('/', realmStart);
+    const realmName = (realmEnd >= 0 ? issuer.slice(realmStart, realmEnd) : issuer.slice(realmStart)).trim();
+    return realmName !== '' ? realmName : undefined;
+  }
+
   // --------------------------- Login ----------------------------
 
   /**

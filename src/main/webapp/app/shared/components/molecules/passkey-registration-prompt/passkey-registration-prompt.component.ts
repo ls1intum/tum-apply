@@ -1,4 +1,6 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faBolt, faFingerprint, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 import { AccountService } from 'app/core/auth/account.service';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
@@ -15,7 +17,7 @@ import { TranslateDirective } from 'app/shared/language';
 @Component({
   selector: 'jhi-passkey-registration-prompt',
   standalone: true,
-  imports: [DialogComponent, CheckboxComponent, ButtonComponent, TranslateDirective],
+  imports: [DialogComponent, CheckboxComponent, ButtonComponent, TranslateDirective, FontAwesomeModule],
   templateUrl: './passkey-registration-prompt.component.html',
 })
 export class PasskeyRegistrationPromptComponent {
@@ -25,8 +27,14 @@ export class PasskeyRegistrationPromptComponent {
   readonly authFacade = inject(AuthFacadeService);
   readonly keycloakAuthenticationService = inject(KeycloakAuthenticationService);
   readonly onboardingOrchestratorService = inject(OnboardingOrchestratorService);
+  readonly faFingerprint = faFingerprint;
+  readonly faBolt = faBolt;
+  readonly faShieldHalved = faShieldHalved;
 
   readonly loggedIn = computed(() => this.accountService.signedIn());
+  readonly promptHeaderKey = computed(() =>
+    this.keycloakAuthenticationService.isTumRealmSession() ? 'auth.passkey.prompt.tum.header' : 'auth.passkey.prompt.header',
+  );
   readonly visible = signal(false);
   readonly neverAskAgain = signal(false);
   readonly busy = signal(false);

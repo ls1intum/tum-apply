@@ -35,6 +35,7 @@ export function provideKeycloakMock(mock: KeycloakMock = createKeycloakMock(), p
 export type KeycloakAuthenticationServiceMock = {
   isLoggedIn: ReturnType<typeof vi.fn>;
   canManagePasskeys: ReturnType<typeof vi.fn>;
+  isTumRealmSession: ReturnType<typeof vi.fn>;
   listPasskeys: ReturnType<typeof vi.fn>;
   loginWithPasskey: ReturnType<typeof vi.fn>;
   registerPasskey: ReturnType<typeof vi.fn>;
@@ -45,6 +46,7 @@ export function createKeycloakAuthenticationServiceMock(): KeycloakAuthenticatio
   return {
     isLoggedIn: vi.fn().mockReturnValue(true),
     canManagePasskeys: vi.fn().mockReturnValue(true),
+    isTumRealmSession: vi.fn().mockReturnValue(false),
     listPasskeys: vi.fn().mockResolvedValue([]),
     loginWithPasskey: vi.fn().mockResolvedValue(undefined),
     registerPasskey: vi.fn().mockResolvedValue(undefined),

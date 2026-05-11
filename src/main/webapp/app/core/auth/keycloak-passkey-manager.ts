@@ -136,6 +136,7 @@ export class KeycloakPasskeyManager {
     const userId = getFirstNonEmptyString([claims.sub, fallbackIdentity?.id]) ?? '';
     const username = getFirstNonEmptyString([claims.preferred_username, claims.email, fallbackIdentity?.username, userId]) ?? '';
     const displayName = getFirstNonEmptyString([claims.name, fallbackIdentity?.displayName, username]) ?? username;
+    const relyingPartyName = this.getRelyingPartyName(claims);
 
     if (userId === '' || username === '') {
       throw new Error('Missing user identity claims for passkey registration');
@@ -152,7 +153,7 @@ export class KeycloakPasskeyManager {
       (await navigator.credentials.create({
         publicKey: {
           challenge: this.fromBase64Url(challenge.challenge),
-          rp: { name: 'TUM Apply', id: this.getRelyingPartyId() },
+          rp: { name: relyingPartyName, id: this.getRelyingPartyId() },
           user: { id: userIdBytes, name: username, displayName },
           pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
           authenticatorSelection: { residentKey: 'required', userVerification: 'required' },
@@ -320,6 +321,13 @@ export class KeycloakPasskeyManager {
   private getRelyingPartyId(): string {
     const relyingPartyId = this.deps.relyingPartyId;
     return relyingPartyId.trim() !== '' ? relyingPartyId : window.location.hostname;
+  }
+
+  /** Returns RP display name based on the authenticated realm. */
+  private getRelyingPartyName(claims: Record<string, unknown>): string {
+    const issuer = typeof claims.iss === 'string' ? claims.iss : '';
+    const tumRealmMarker = `/realms/${this.deps.tumRealmName}`;
+    return issuer.includes(tumRealmMarker) ? 'TUM AET' : 'TUM Apply';
   }
 
   /** Builds a passkey custom-endpoint URL for the given realm and operation path. */
