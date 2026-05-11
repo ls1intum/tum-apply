@@ -16,15 +16,8 @@ import {
 } from 'app/generated/model/document-information-holder-dto';
 import { ReferenceRequestDTOStatusEnum } from 'app/generated/model/reference-request-dto';
 
-const TOAST_PREFIX = 'reference.letterUpload';
-
 /**
- * Public landing page rendered at {@code /reference/:token} for external referees to upload a
- * recommendation letter. The token in the URL is the only authentication; the page resolves the
- * prefilled context server-side. {@code jhi-upload-button} runs in deferred mode so picking a
- * file only stages it locally — the referee then has to press the page-level "Upload" button
- * before the file is actually sent, which lets them revoke a wrong pick. After a successful
- * upload the page swaps to the green-checkmark view.
+ * Public landing page for external referees to upload a recommendation letter.
  */
 @Component({
   selector: 'jhi-reference-letter-upload',
@@ -80,9 +73,7 @@ export class ReferenceLetterUploadComponent {
   }
 
   /**
-   * Captures the file the referee picked while {@code jhi-upload-button} is in deferred mode.
-   * The button emits the queue as a file array; since we restrict the row to one file, we only
-   * keep the first entry. An empty array (referee removed the staged file) clears the queue.
+    * Captures the file the referee picked.
    *
    * @param files the queued file list emitted by the upload button
    */
@@ -91,8 +82,8 @@ export class ReferenceLetterUploadComponent {
   }
 
   /**
-   * Sends the staged file to the upload endpoint and switches to the success view. Stays on the
-   * upload view on failure so the referee can retry.
+   * Sends the staged file to the upload endpoint and switches to the success view.
+   * Stays on the upload view on failure so the referee can retry.
    */
   protected async confirmUpload(): Promise<void> {
     const file = this.queuedFile();
@@ -103,9 +94,9 @@ export class ReferenceLetterUploadComponent {
     try {
       await firstValueFrom(this.api.upload(this.token, file));
       this.justUploaded.set(true);
-      this.toastService.showSuccessKey(`${TOAST_PREFIX}.toast.uploadSuccess`);
+      this.toastService.showSuccessKey(`reference.toast.uploadSuccess`);
     } catch {
-      this.toastService.showErrorKey(`${TOAST_PREFIX}.toast.uploadFailed`);
+      this.toastService.showErrorKey(`reference.toast.uploadFailed`);
     } finally {
       this.uploading.set(false);
     }
@@ -118,7 +109,7 @@ export class ReferenceLetterUploadComponent {
    */
   private async loadContext(): Promise<void> {
     if (!this.token) {
-      this.errorKey.set(`${TOAST_PREFIX}.error.invalidLink`);
+      this.errorKey.set(`reference.error.invalidLink`);
       this.loading.set(false);
       return;
     }
@@ -126,7 +117,7 @@ export class ReferenceLetterUploadComponent {
       const context = await firstValueFrom(this.api.getContext(this.token));
       this.context.set(context);
     } catch {
-      this.errorKey.set(`${TOAST_PREFIX}.error.invalidLink`);
+      this.errorKey.set(`reference.error.invalidLink`);
     } finally {
       this.loading.set(false);
     }
