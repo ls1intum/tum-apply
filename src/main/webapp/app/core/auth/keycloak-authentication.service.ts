@@ -116,22 +116,6 @@ export class KeycloakAuthenticationService {
     return !realmName.toLowerCase().includes('external');
   }
 
-  private getRealmNameFromTokenIssuer(): string | undefined {
-    const issuer = typeof this.keycloak?.tokenParsed?.iss === 'string' ? this.keycloak.tokenParsed.iss : '';
-    if (issuer.trim() === '') {
-      return undefined;
-    }
-    const marker = '/realms/';
-    const markerIndex = issuer.indexOf(marker);
-    if (markerIndex < 0) {
-      return undefined;
-    }
-    const realmStart = markerIndex + marker.length;
-    const realmEnd = issuer.indexOf('/', realmStart);
-    const realmName = (realmEnd >= 0 ? issuer.slice(realmStart, realmEnd) : issuer.slice(realmStart)).trim();
-    return realmName !== '' ? realmName : undefined;
-  }
-
   // --------------------------- Login ----------------------------
 
   /**
@@ -250,6 +234,22 @@ export class KeycloakAuthenticationService {
         this.refreshInFlight = undefined;
       });
     return this.refreshInFlight;
+  }
+
+  private getRealmNameFromTokenIssuer(): string | undefined {
+    const issuer = typeof this.keycloak?.tokenParsed?.iss === 'string' ? this.keycloak.tokenParsed.iss : '';
+    if (issuer.trim() === '') {
+      return undefined;
+    }
+    const marker = '/realms/';
+    const markerIndex = issuer.indexOf(marker);
+    if (markerIndex < 0) {
+      return undefined;
+    }
+    const realmStart = markerIndex + marker.length;
+    const realmEnd = issuer.indexOf('/', realmStart);
+    const realmName = (realmEnd >= 0 ? issuer.slice(realmStart, realmEnd) : issuer.slice(realmStart)).trim();
+    return realmName !== '' ? realmName : undefined;
   }
 
   /**
