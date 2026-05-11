@@ -110,7 +110,7 @@ public class ReferenceRequestService {
 
     /**
      * Removes a referee contact from the application. Only allowed while the application is
-     * still editable; once submitted, removal goes through the withdraw flow (future iteration).
+     * still editable.
      *
      * @param applicationId  the owning application
      * @param referenceId    the entry to remove
@@ -249,7 +249,7 @@ public class ReferenceRequestService {
 
     /**
      * Guards the upload write path: only {@code REQUESTED} requests with a non-expired token may
-     * accept a new file. Already-submitted or expired requests are immutable in this iteration.
+     * accept a new file. Already-submitted or expired requests are immutable.
      *
      * @param entry the reference request being uploaded against
      */

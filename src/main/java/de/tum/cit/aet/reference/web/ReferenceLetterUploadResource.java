@@ -20,8 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
  * Public endpoints used by external referees to open their tokenized invitation link and upload
  * a recommendation letter. The token in the URL is the only authentication — these endpoints are
  * therefore whitelisted in {@code SecurityConfiguration} and use the {@link Public} annotation.
- *
- * The matching client route is {@code /reference/:token}.
  */
 @Slf4j
 @RestController
@@ -32,8 +30,8 @@ public class ReferenceLetterUploadResource {
     private final ReferenceRequestService referenceRequestService;
 
     /**
-     * Resolves the prefill context the upload page renders for the referee (their own name, the
-     * applicant, the job, the deadline and the request status).
+     * Resolves the prefill context the upload page renders for the referee
+     * (the applicant, the job, the deadline and the request status).
      *
      * @param token the raw token from the invitation email
      * @return the context, or 404 if the token is unknown

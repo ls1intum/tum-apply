@@ -697,53 +697,38 @@
     }
   },
   "reference": {
-    "letterUpload": {
-      "title": "Empfehlungsschreiben hochladen",
-      "loading": "Lädt …",
-      "requestedFor": {
-        "title": "Angefragt für",
-        "applicant": "Bewerber:in",
-        "jobTitle": "Stelle",
-        "researchGroup": "Forschungsgruppe"
-      },
-      "upload": {
-        "helper": "Bitte laden Sie ein einzelnes PDF (max. {maxSize} MB) hoch.",
-        "choose": "PDF auswählen",
-        "confirm": "Hochladen",
-        "uploading": "Wird hochgeladen …"
-      },
-      "summary": {
-        "title": "Zusammenfassung",
-        "applicant": "Bewerber:in",
-        "jobTitle": "Stelle",
-        "researchGroup": "Forschungsgruppe"
-      },
-      "success": {
-        "title": "Empfehlungsschreiben empfangen!",
-        "message": "Vielen Dank. Ihr Schreiben wurde erfolgreich übermittelt."
-      },
-      "expired": {
-        "title": "Frist abgelaufen",
-        "message": "Die Frist für dieses Empfehlungsschreiben ist abgelaufen. Bitte kontaktieren Sie die bewerbende Person, falls es trotzdem eingereicht werden soll."
-      },
-      "error": {
-        "title": "Link nicht gültig",
-        "invalidLink": "Dieser Empfehlungsschreiben-Link ist ungültig oder nicht mehr erreichbar. Bitte kontaktieren Sie die bewerbende Person, falls dies ein Fehler sein sollte."
-      },
-      "toast": {
-        "tooLarge": {
-          "summary": "Datei zu groß",
-          "detail": "Bitte laden Sie ein PDF mit maximal 5 MB hoch."
-        },
-        "uploadSuccess": {
-          "summary": "Schreiben hochgeladen",
-          "detail": "Ihr Empfehlungsschreiben wurde empfangen."
-        },
-        "uploadFailed": {
-          "summary": "Upload fehlgeschlagen",
-          "detail": "Wir konnten Ihr Schreiben nicht speichern. Bitte erneut versuchen oder die bewerbende Person kontaktieren."
-        }
-      }
+    "title": "Empfehlungsschreiben hochladen",
+    "loading": "Lädt...",
+    "requestedFor": {
+      "title": "Angefragt für",
+      "applicant": "Bewerber:in",
+      "jobTitle": "Stelle",
+      "researchGroup": "Forschungsgruppe"
+    },
+    "upload": {
+      "confirm": "Hochladen"
+    },
+    "summary": {
+      "title": "Zusammenfassung",
+      "applicant": "Bewerber:in",
+      "jobTitle": "Stelle",
+      "researchGroup": "Forschungsgruppe"
+    },
+    "success": {
+      "title": "Empfehlungsschreiben empfangen",
+      "message": "Vielen Dank. Ihr Schreiben wurde erfolgreich übermittelt."
+    },
+    "expired": {
+      "title": "Frist abgelaufen",
+      "message": "Die Frist für dieses Empfehlungsschreiben ist abgelaufen."
+    },
+    "error": {
+      "title": "Link nicht gültig",
+      "invalidLink": "Dieser Empfehlungsschreiben-Link ist ungültig oder nicht mehr erreichbar."
+    },
+    "uploadFailed": {
+      "summary": "Upload fehlgeschlagen",
+      "detail": "Wir konnten Ihr Schreiben nicht speichern. Bitte versuchen Sie es erneut."
     }
   },
   "imageUpload": {

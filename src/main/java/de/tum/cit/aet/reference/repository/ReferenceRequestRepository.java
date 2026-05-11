@@ -61,7 +61,7 @@ public interface ReferenceRequestRepository extends JpaRepository<ReferenceReque
      *
      * @param applicationId the owning application
      * @param status        the request status to count
-     * @return the number of requests in {@code SUBMITTED} state
+     * @return the number of requests matching the status
      */
     long countByApplicationApplicationIdAndStatus(UUID applicationId, ReferenceRequestStatus status);
 }

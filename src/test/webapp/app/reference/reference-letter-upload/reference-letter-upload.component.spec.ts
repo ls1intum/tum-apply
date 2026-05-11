@@ -77,7 +77,7 @@ describe('ReferenceLetterUploadComponent', () => {
       await setupFixture({ getContext: vi.fn().mockReturnValue(throwError(() => new Error('boom'))) });
 
       const root = fixture.nativeElement as HTMLElement;
-      expect(root.textContent).toContain('reference.letterUpload.error.invalidLink');
+      expect(root.textContent).toContain('reference.error.invalidLink');
     });
   });
 
@@ -115,7 +115,7 @@ describe('ReferenceLetterUploadComponent', () => {
       await internals(component).confirmUpload();
 
       expect(toast.showErrorKey).toHaveBeenCalledOnce();
-      expect(toast.showErrorKey).toHaveBeenCalledWith('reference.letterUpload.toast.uploadFailed');
+      expect(toast.showErrorKey).toHaveBeenCalledWith('reference.uploadFailed');
     });
   });
 
@@ -124,7 +124,7 @@ describe('ReferenceLetterUploadComponent', () => {
       await setupFixture(undefined, createMockContext({ status: ReferenceRequestDTOStatusEnum.Submitted }));
 
       const root = fixture.nativeElement as HTMLElement;
-      expect(root.textContent).toContain('reference.letterUpload.success.title');
+      expect(root.textContent).toContain('reference.success.title');
     });
   });
 });
