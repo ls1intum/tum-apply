@@ -1,12 +1,12 @@
-<div class="dialog-body">
-  <div class="content">
+<div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-4">
     <p jhiTranslate="onboarding.body"></p>
     <!-- <p-message severity="warn">
       <p jhiTranslate="onboarding.disclaimer"></p>
     </p-message> -->
   </div>
 
-  <div class="actions">
+  <div class="flex justify-between max-[600px]:flex-col max-[600px]:items-center max-[600px]:gap-4">
     <jhi-button
       class="mr-2"
       (click)="markOnboarded(false)"

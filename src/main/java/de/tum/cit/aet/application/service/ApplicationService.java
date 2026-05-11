@@ -27,6 +27,7 @@ import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
+import de.tum.cit.aet.reference.service.ReferenceRequestService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
@@ -65,6 +66,7 @@ public class ApplicationService {
     private final ApplicantService applicantService;
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
+    private final ReferenceRequestService referenceRequestService;
 
     /**
      * Creates a new job application for the given applicant and job.
@@ -207,6 +209,7 @@ public class ApplicationService {
             syncDocumentsToApplicantProfile(application);
             confirmApplicationToApplicant(application);
             confirmApplicationToProfessor(application);
+            referenceRequestService.dispatchInvitations(application);
         }
         return ApplicationForApplicantDTO.getFromEntity(application);
     }

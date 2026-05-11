@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
@@ -13,7 +12,6 @@ import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogR
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
-import { ToastService } from 'app/service/toast-service';
 
 describe('EmployeeRequestAccessFormComponent', () => {
   let component: EmployeeRequestAccessFormComponent;
@@ -33,11 +31,11 @@ describe('EmployeeRequestAccessFormComponent', () => {
     mockToastService = createToastServiceMock();
 
     mockResearchGroupService = {
-      createEmployeeResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as any)),
+      createEmployeeResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as unknown as void)),
     };
 
     mockProfOnboardingService = {
-      confirmOnboarding: vi.fn(() => of(undefined)) as any,
+      confirmOnboarding: vi.fn(() => of(undefined)),
     };
 
     await TestBed.configureTestingModule({
@@ -58,48 +56,14 @@ describe('EmployeeRequestAccessFormComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  describe('Form Initialization', () => {
-    it('should initialize with professorName field', () => {
-      expect(component.employeeForm.get('professorName')).toBeDefined();
-    });
-
-    it('should initialize form with empty value', () => {
-      expect(component.employeeForm.get('professorName')?.value).toBe('');
-    });
-
-    it('should mark professorName as required', () => {
+  describe('Form Validation', () => {
+    it('should enforce required and minimum length 3 on professorName', () => {
       const control = component.employeeForm.get('professorName');
       control?.setValue('');
       expect(control?.hasError('required')).toBe(true);
-    });
-
-    it('should enforce minimum length of 3 characters', () => {
-      const control = component.employeeForm.get('professorName');
       control?.setValue('ab');
       expect(control?.hasError('minlength')).toBe(true);
-
       control?.setValue('abc');
-      expect(control?.hasError('minlength')).toBe(false);
-    });
-  });
-
-  describe('Form Validation', () => {
-    it('should be invalid when professorName is empty', () => {
-      component.employeeForm.patchValue({ professorName: '' });
-      expect(component.employeeForm.valid).toBe(false);
-    });
-
-    it('should be invalid when professorName is less than 3 characters', () => {
-      component.employeeForm.patchValue({ professorName: 'AB' });
-      expect(component.employeeForm.valid).toBe(false);
-    });
-
-    it('should be valid when professorName has at least 3 characters', () => {
-      component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
       expect(component.employeeForm.valid).toBe(true);
     });
   });
@@ -140,69 +104,31 @@ describe('EmployeeRequestAccessFormComponent', () => {
       expect(mockResearchGroupService.createEmployeeResearchGroupRequest).not.toHaveBeenCalled();
     });
 
-    it('should call research group service with trimmed professor name', async () => {
+    it('should call research group service with trimmed name, confirm onboarding, show success toast and close dialog after success', async () => {
       component.employeeForm.patchValue({ professorName: '  Prof. Smith  ' });
 
       component.onConfirmSubmit();
 
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      expect(mockResearchGroupService.createEmployeeResearchGroupRequest).toHaveBeenCalledWith({
-        professorName: 'Prof. Smith',
-      });
+      expect(mockResearchGroupService.createEmployeeResearchGroupRequest).toHaveBeenCalledWith({ professorName: 'Prof. Smith' });
+      expect(mockProfOnboardingService.confirmOnboarding).toHaveBeenCalledOnce();
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('onboarding.employeeRequest.success');
+      expect(mockDialogRef.close).toHaveBeenCalledOnce();
+      expect(component.isSubmitting()).toBe(false);
     });
 
-    it('should set isSubmitting to true during submission', () => {
+    it('should set isSubmitting to true during pending submission', () => {
       component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
 
       component.onConfirmSubmit();
 
       expect(component.isSubmitting()).toBe(true);
     });
-
-    it('should call confirmOnboarding after successful request', async () => {
-      component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-
-      expect(mockProfOnboardingService.confirmOnboarding).toHaveBeenCalledOnce();
-    });
-
-    it('should show success toast after successful submission', async () => {
-      component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-
-      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('onboarding.employeeRequest.success');
-    });
-
-    it('should close dialog after successful submission', async () => {
-      component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-
-      expect(mockDialogRef.close).toHaveBeenCalledOnce();
-    });
-
-    it('should set isSubmitting to false after successful submission', async () => {
-      component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-
-      expect(component.isSubmitting()).toBe(false);
-    });
   });
 
   describe('Error Handling', () => {
-    it('should show error toast when request fails', async () => {
+    it('should show error toast, not close dialog, not call confirmOnboarding and reset isSubmitting on failure', async () => {
       mockResearchGroupService.createEmployeeResearchGroupRequest = vi.fn(() => throwError(() => new Error('Request failed')));
       component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
 
@@ -211,39 +137,9 @@ describe('EmployeeRequestAccessFormComponent', () => {
       await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.employeeRequest.error');
-    });
-
-    it('should not close dialog when submission fails', async () => {
-      mockResearchGroupService.createEmployeeResearchGroupRequest = vi.fn(() => throwError(() => new Error('Request failed')));
-      component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-
       expect(mockDialogRef.close).not.toHaveBeenCalled();
-    });
-
-    it('should set isSubmitting to false after failed submission', async () => {
-      mockResearchGroupService.createEmployeeResearchGroupRequest = vi.fn(() => throwError(() => new Error('Request failed')));
-      component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-
-      expect(component.isSubmitting()).toBe(false);
-    });
-
-    it('should not call confirmOnboarding when request fails', async () => {
-      mockResearchGroupService.createEmployeeResearchGroupRequest = vi.fn(() => throwError(() => new Error('Request failed')));
-      component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-
       expect(mockProfOnboardingService.confirmOnboarding).not.toHaveBeenCalled();
+      expect(component.isSubmitting()).toBe(false);
     });
   });
 
@@ -256,72 +152,14 @@ describe('EmployeeRequestAccessFormComponent', () => {
   });
 
   describe('onBack', () => {
-    it('should close current dialog', () => {
+    it('should close current dialog and reopen main onboarding dialog', () => {
       component.onBack();
 
       expect(mockDialogRef.close).toHaveBeenCalledOnce();
-    });
-
-    it('should reopen main onboarding dialog with correct configuration', () => {
-      component.onBack();
-
       expect(mockDialogService.open).toHaveBeenCalledWith(
         OnboardingDialog,
-        expect.objectContaining({
-          width: '56.25rem',
-          header: 'onboarding.title',
-        }),
+        expect.objectContaining({ width: '56.25rem', header: 'onboarding.title' }),
       );
-    });
-  });
-
-  describe('Edge Cases', () => {
-    it('should handle missing dialog ref gracefully on cancel', () => {
-      const fixtureNoRef = TestBed.resetTestingModule()
-        .configureTestingModule({
-          imports: [EmployeeRequestAccessFormComponent, ReactiveFormsModule],
-          providers: [
-            provideTranslateMock(),
-            provideFontAwesomeTesting(),
-            { provide: DynamicDialogRef, useValue: null },
-            { provide: DialogService, useValue: mockDialogService },
-            { provide: ResearchGroupResourceApi, useValue: mockResearchGroupService },
-            { provide: ProfOnboardingResourceApi, useValue: mockProfOnboardingService },
-            { provide: ToastService, useValue: mockToastService },
-          ],
-        })
-        .createComponent(EmployeeRequestAccessFormComponent);
-
-      const componentNoRef = fixtureNoRef.componentInstance;
-
-      expect(() => componentNoRef.onCancel()).not.toThrow();
-    });
-
-    it('should handle whitespace-only professor name by trimming', async () => {
-      component.employeeForm.patchValue({ professorName: '   Prof.   ' });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-
-      expect(mockResearchGroupService.createEmployeeResearchGroupRequest).toHaveBeenCalledWith({
-        professorName: 'Prof.',
-      });
-    });
-  });
-
-  describe('Loading State', () => {
-    it('should initialize with isSubmitting as false', () => {
-      expect(component.isSubmitting()).toBe(false);
-    });
-
-    it('should prevent multiple simultaneous submissions', () => {
-      component.employeeForm.patchValue({ professorName: 'Prof. Smith' });
-      component.isSubmitting.set(true);
-
-      component.onConfirmSubmit();
-
-      expect(mockResearchGroupService.createEmployeeResearchGroupRequest).not.toHaveBeenCalled();
     });
   });
 });

@@ -193,6 +193,8 @@ public class JobService {
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getImage() != null ? job.getImage().getUrl() : null,
             job.getSuitableForDisabled(),
+            job.getStartDateByArrangement(),
+            job.getContractExtendable(),
             job.getGenderBiasScore(),
             job.getComplianceIssues()
         );
@@ -254,6 +256,9 @@ public class JobService {
             applicationId,
             applicationState,
             job.getSuitableForDisabled(),
+            job.getStartDateByArrangement(),
+            job.getContractExtendable(),
+            job.getReferenceLettersRequired(),
             job.getImage() != null ? job.getImage().getImageId() : null
         );
     }
@@ -394,6 +399,9 @@ public class JobService {
         job.setJobDescriptionDE(HtmlSanitizer.sanitize(dto.jobDescriptionDE()));
         job.setState(dto.state());
         job.setSuitableForDisabled(dto.suitableForDisabled());
+        job.setStartDateByArrangement(Boolean.TRUE.equals(dto.startDateByArrangement()));
+        job.setContractExtendable(Boolean.TRUE.equals(dto.contractExtendable()));
+        job.setReferenceLettersRequired(Objects.requireNonNullElse(dto.referenceLettersRequired(), 0));
 
         // Capture old image before any modifications
         Image oldImage = job.getImage();

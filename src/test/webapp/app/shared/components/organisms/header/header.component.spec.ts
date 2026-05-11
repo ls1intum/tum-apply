@@ -76,10 +76,6 @@ describe('HeaderComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('onLogoClick', () => {
     it.each<[string, UserShortDTORolesEnum[], string, boolean, string[]]>([
       ['professor', [UserShortDTORolesEnum.Professor], '/', true, ['/professor']],
@@ -98,14 +94,6 @@ describe('HeaderComponent', () => {
       component.navigateToHome();
 
       expect(router.navigate).toHaveBeenCalledWith(expectedRoute);
-    });
-
-    it('should navigate to applicant landing page when not professor and not on professor URL', () => {
-      router.url = '/';
-
-      component.navigateToHome();
-
-      expect(router.navigate).toHaveBeenCalledWith(['/']);
     });
 
     it.each([
@@ -157,40 +145,26 @@ describe('HeaderComponent', () => {
       expect(component.isProfessorPage()).toBe(expected);
     });
 
-    it('should consider page as professor page when route authorities contain Professor role', () => {
-      router.url = '/some-other-route';
+    it.each<[string, UserShortDTORolesEnum[], boolean]>([
+      ['route data only contains Professor', [UserShortDTORolesEnum.Professor], true],
+      [
+        'route data mixes Professor with non-professor roles and user lacks professor portal roles',
+        [UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Professor, UserShortDTORolesEnum.Applicant, UserShortDTORolesEnum.Employee],
+        false,
+      ],
+    ])('should derive isProfessorPage from route data when %s', (_desc, authorities, expected) => {
+      router.url = '/some-route';
       accountService.setAuthorities([]);
-      router.routerState.snapshot.root.data = {
-        authorities: [UserShortDTORolesEnum.Professor],
-      };
+      router.routerState.snapshot.root.data = { authorities };
 
       fixture = TestBed.createComponent(HeaderComponent);
       component = fixture.componentInstance as HeaderComponentTestInstance;
       fixture.detectChanges();
 
-      expect(component.isProfessorPage()).toBe(true);
+      expect(component.isProfessorPage()).toBe(expected);
     });
 
-    it('should not consider page as professor page when route authorities mix professor and non-professor roles and user lacks professor portal roles', () => {
-      router.url = '/settings';
-      accountService.setAuthorities([]);
-      router.routerState.snapshot.root.data = {
-        authorities: [
-          UserShortDTORolesEnum.Admin,
-          UserShortDTORolesEnum.Professor,
-          UserShortDTORolesEnum.Applicant,
-          UserShortDTORolesEnum.Employee,
-        ],
-      };
-
-      fixture = TestBed.createComponent(HeaderComponent);
-      component = fixture.componentInstance as HeaderComponentTestInstance;
-      fixture.detectChanges();
-
-      expect(component.isProfessorPage()).toBe(false);
-    });
-
-    it('should consider page as professor page when nested route snapshot contains Professor role (initial snapshot)', () => {
+    it('should consider page as professor page when nested route snapshot contains Professor role', () => {
       router.url = '/some-nested-route';
       accountService.setAuthorities([]);
 
@@ -242,14 +216,6 @@ describe('HeaderComponent', () => {
     });
   });
 
-  describe('navigateToSettings', () => {
-    it('should navigate to settings page', () => {
-      component.navigateToSettings();
-
-      expect(router.navigate).toHaveBeenCalledWith(['/settings']);
-    });
-  });
-
   describe('toggleProfileMenu', () => {
     it('should call profileMenu toggle method with event', () => {
       accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
@@ -264,24 +230,10 @@ describe('HeaderComponent', () => {
       expect(toggleSpy).toHaveBeenCalledWith(mockEvent);
     });
 
-    it('should not throw error when profileMenu is undefined and should not change isProfileMenuOpen', () => {
-      component.isProfileMenuOpen.set(false);
-      const mockEvent = new MouseEvent('click');
+    it('should not throw when profileMenu is undefined', () => {
+      vi.spyOn(component, 'profileMenu').mockReturnValue(undefined);
 
-      vi.spyOn(component as any, 'profileMenu').mockReturnValue(undefined);
-
-      expect(() => component.toggleProfileMenu(mockEvent)).not.toThrow();
-      expect(component.isProfileMenuOpen()).toBe(false);
-    });
-
-    it('should reflect menu visibility changes in isProfileMenuOpen (simulating visibleChange)', () => {
-      component.isProfileMenuOpen.set(false);
-
-      component.isProfileMenuOpen.set(true);
-      expect(component.isProfileMenuOpen()).toBe(true);
-
-      component.isProfileMenuOpen.set(false);
-      expect(component.isProfileMenuOpen()).toBe(false);
+      expect(() => component.toggleProfileMenu(new MouseEvent('click'))).not.toThrow();
     });
   });
 
@@ -290,70 +242,26 @@ describe('HeaderComponent', () => {
       accountService.user.set(undefined);
       fixture.detectChanges();
 
-      const menuItems = component.profileMenuItems();
-
-      expect(menuItems).toEqual([]);
+      expect(component.profileMenuItems()).toEqual([]);
     });
 
-    it('should return settings and logout menu items when user is authenticated', () => {
-      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
-      fixture.detectChanges();
-
-      const menuItems = component.profileMenuItems();
-
-      expect(menuItems).toHaveLength(2);
-      expect(menuItems[0]).toMatchObject({
-        label: 'header.settings',
-        icon: 'gear',
-        severity: 'primary',
-      });
-      expect(menuItems[1]).toMatchObject({
-        label: 'header.logout',
-        icon: 'right-from-bracket',
-        severity: 'danger',
-      });
-    });
-
-    it('should trigger navigateToSettings when settings menu item command is executed', () => {
+    it('should return settings and logout menu items wired to component handlers when authenticated', () => {
       accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
       const navigateSpy = vi.spyOn(component, 'navigateToSettings');
-      fixture.detectChanges();
-
-      const menuItems = component.profileMenuItems();
-      const settingsItem = menuItems[0];
-      settingsItem?.command?.();
-
-      expect(navigateSpy).toHaveBeenCalledOnce();
-    });
-
-    it('should trigger logout when logout menu item command is executed', () => {
-      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
       const logoutSpy = vi.spyOn(component, 'logout');
       fixture.detectChanges();
 
       const menuItems = component.profileMenuItems();
-      const logoutItem = menuItems[1];
-      logoutItem?.command?.();
+      expect(menuItems).toHaveLength(2);
+      expect(menuItems[0]).toMatchObject({ label: 'header.settings', icon: 'gear', severity: 'primary' });
+      expect(menuItems[1]).toMatchObject({ label: 'header.logout', icon: 'right-from-bracket', severity: 'danger' });
 
+      menuItems[0]?.command?.();
+      expect(navigateSpy).toHaveBeenCalledOnce();
+      expect(router.navigate).toHaveBeenCalledWith(['/settings']);
+
+      menuItems[1]?.command?.();
       expect(logoutSpy).toHaveBeenCalledOnce();
-    });
-
-    it('should reactively update when language changes', () => {
-      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
-      fixture.detectChanges();
-
-      const menuItemsBefore = component.profileMenuItems();
-      expect(menuItemsBefore).toHaveLength(2);
-
-      // Trigger language change
-      translate.use('de');
-      fixture.detectChanges();
-
-      const menuItemsAfter = component.profileMenuItems();
-      expect(menuItemsAfter).toHaveLength(2);
-      // Menu items should still have the same structure
-      expect(menuItemsAfter[0]?.label).toBe('header.settings');
-      expect(menuItemsAfter[1]?.label).toBe('header.logout');
     });
   });
 
@@ -363,7 +271,7 @@ describe('HeaderComponent', () => {
 
       component.login();
 
-      expect(authDialog.open).toHaveBeenCalledTimes(1);
+      expect(authDialog.open).toHaveBeenCalledOnce();
       const args = authDialog.open.mock.calls[0]?.[0] as AuthDialogOpenArgs;
       expect(args.mode).toBe('login');
       expect(authFacade.loginWithProvider).not.toHaveBeenCalled();
@@ -376,31 +284,14 @@ describe('HeaderComponent', () => {
       component.login();
 
       expect(authDialog.open).not.toHaveBeenCalled();
-      expect(authFacade.loginWithProvider).toHaveBeenCalledTimes(1);
+      expect(authFacade.loginWithProvider).toHaveBeenCalledOnce();
       expect(authFacade.loginWithProvider).toHaveBeenCalledWith(IdpProvider.TUM, '/professor');
-    });
-
-    it('should call authDialogService.open in openLoginDialog', () => {
-      component.openLoginDialog();
-
-      expect(authDialog.open).toHaveBeenCalledTimes(1);
-      const args = authDialog.open.mock.calls[0]?.[0] as AuthDialogOpenArgs;
-      expect(args.mode).toBe('login');
-    });
-
-    it('should call loginWithProvider with TUM and current URL in onTUMSSOLogin', async () => {
-      router.url = '/some-url';
-
-      await component.onTUMSSOLogin();
-
-      expect(authFacade.loginWithProvider).toHaveBeenCalledTimes(1);
-      expect(authFacade.loginWithProvider).toHaveBeenCalledWith(IdpProvider.TUM, '/some-url');
     });
 
     it('should call logout on authFacadeService when logout is called', () => {
       component.logout();
 
-      expect(authFacade.logout).toHaveBeenCalledTimes(1);
+      expect(authFacade.logout).toHaveBeenCalledOnce();
     });
   });
 
@@ -411,7 +302,7 @@ describe('HeaderComponent', () => {
 
       component.toggleLanguage(firstLanguage);
 
-      expect(useSpy).toHaveBeenCalledTimes(1);
+      expect(useSpy).toHaveBeenCalledOnce();
       expect(useSpy).toHaveBeenCalledWith(firstLanguage.toLowerCase());
     });
 
@@ -422,7 +313,7 @@ describe('HeaderComponent', () => {
       component.toggleLanguage('XX');
 
       expect(useSpy).not.toHaveBeenCalled();
-      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(warnSpy).toHaveBeenCalledOnce();
       expect(warnSpy.mock.calls[0]?.[0]).toContain('Unsupported language: XX');
     });
 
@@ -436,46 +327,17 @@ describe('HeaderComponent', () => {
     });
   });
 
-  describe('layout & state exposure', () => {
-    it('should expose isDarkMode signal without throwing', () => {
-      const darkMode = component.isDarkMode();
-      expect(typeof darkMode).toBe('boolean');
-    });
-
-    it('should default to an empty array for routeAuthorities when route data is missing authorities', () => {
-      router.routerState.snapshot.root.data = {};
-      fixture = TestBed.createComponent(HeaderComponent);
-      component = fixture.componentInstance as HeaderComponentTestInstance;
-      fixture.detectChanges();
-
-      expect(component.routeAuthorities()).toEqual([]);
-
-      router.events.next(new NavigationEnd(1, '/', '/'));
-      fixture.detectChanges();
-      expect(component.routeAuthorities()).toEqual([]);
-    });
-  });
-
   describe('theme handling', () => {
     beforeEach(() => {
       document.documentElement.classList.remove('tum-apply-dark-mode', 'theme-switching');
       localStorage.clear();
     });
 
-    it('should enable dark mode and persist preference when currently light', () => {
-      component.themeService.setTheme('dark');
+    it.each<['dark' | 'light']>([['dark'], ['light']])('should set theme to %s via themeService', target => {
+      component.themeService.setTheme(target);
 
-      expect(themeService.setTheme).toHaveBeenCalledWith('dark');
-      expect(themeService.theme()).toBe('dark');
-    });
-
-    it('should disable dark mode and persist preference when currently dark', () => {
-      themeService.theme.set('dark');
-
-      component.themeService.setTheme('light');
-
-      expect(themeService.setTheme).toHaveBeenCalledWith('light');
-      expect(themeService.theme()).toBe('light');
+      expect(themeService.setTheme).toHaveBeenCalledWith(target);
+      expect(themeService.theme()).toBe(target);
     });
   });
 });

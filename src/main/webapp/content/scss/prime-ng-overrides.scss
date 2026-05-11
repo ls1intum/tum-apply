@@ -46,7 +46,7 @@ p-step[data-p-active='true'] .p-step-title {
 }
 
 .p-tag-info {
-  border-color: var(--p-neutral-500) !important;
+  border-color: var(--p-info-500) !important;
 }
 
 .p-tag-secondary {
@@ -63,6 +63,16 @@ p-step[data-p-active='true'] .p-step-title {
 
 .p-tag-contrast {
   border-color: var(--p-accent-500) !important;
+}
+
+.p-tag-neutral {
+  background: var(--p-neutral-200) !important;
+  color: var(--p-text-primary) !important;
+  border-color: var(--p-neutral-500) !important;
+}
+
+.tum-apply-dark-mode .p-tag-neutral {
+  background: var(--p-neutral-800) !important;
 }
 
 /* -------------------------------

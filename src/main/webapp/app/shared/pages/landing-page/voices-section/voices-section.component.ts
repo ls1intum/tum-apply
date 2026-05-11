@@ -10,7 +10,6 @@ import { VoiceCardComponent } from './voice-card/voice-card/voice-card.component
   standalone: true,
   imports: [TranslateModule, VoiceCardComponent, TranslateDirective],
   templateUrl: './voices-section.component.html',
-  styleUrl: './voices-section.component.scss',
 })
 export class VoicesSectionComponent {
   voices = [

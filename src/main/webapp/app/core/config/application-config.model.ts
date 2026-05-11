@@ -5,10 +5,8 @@ export interface ApplicationConfig {
 
 export interface KeycloakConfig {
   url: string;
-  tumLoginRealm: string;
-  externalLoginRealm: string;
+  realm: string;
   clientId: string;
-  relyingPartyId: string;
 }
 
 export interface OtpConfig {

@@ -346,11 +346,7 @@
       },
       "notes": {
         "label": "Interview Note",
-        "empty": "No interview notes added yet.",
-        "saved": {
-          "summary": "Saved",
-          "detail": "Interview note saved successfully."
-        }
+        "empty": "No interview notes added yet."
       },
       "error": {
         "saveFailed": {
