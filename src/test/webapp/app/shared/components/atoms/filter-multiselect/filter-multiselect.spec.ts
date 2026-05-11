@@ -266,7 +266,8 @@ describe('FilterMultiselect', () => {
     comp.toggleDropdown();
     fx.detectChanges();
 
-    const optionEls = fx.nativeElement.querySelectorAll<HTMLElement>('.flex-1.overflow-y-auto > div');
+    const root = fx.nativeElement as HTMLElement;
+    const optionEls = root.querySelectorAll<HTMLElement>('.flex-1.overflow-y-auto > div');
     expect(optionEls.length).toBeGreaterThan(1);
     Array.from(optionEls).forEach(el => {
       el.scrollIntoView = vi.fn();
