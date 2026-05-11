@@ -24,14 +24,12 @@ plugins {
 }
 
 gitProperties {
-  // Write into src/main/resources so the file is on the classpath both for Gradle's
-  // processResources output (build/resources/main/) and for IntelliJ's out/production/resources/.
-  // The file is gitignored.
-  gitPropertiesResourceDir.set(file("$projectDir/src/main/resources"))
+  // Write git.properties into a generated build directory. The plugin registers this as a
+  // resource source dir, so it ends up on the runtime classpath for Gradle and IntelliJ alike
+  // (without duplicating src/main/resources, which would break processResources on Gradle 9+).
+  gitPropertiesResourceDir.set(layout.buildDirectory.dir('generated/resources/git-properties'))
 }
 
-// processResources reads from src/main/resources, where generateGitProperties writes git.properties.
-// Declare the dependency explicitly so Gradle 9+ task-validation doesn't flag the implicit ordering.
 tasks.named('processResources') {
   dependsOn 'generateGitProperties'
 }
