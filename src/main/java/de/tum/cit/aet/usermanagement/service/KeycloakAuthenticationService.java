@@ -242,7 +242,13 @@ public class KeycloakAuthenticationService {
         }
 
         // 3) No valid access token: try to refresh with both clients
-        AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(preferredRealm, clientId, clientSecret, refreshToken, refreshFailures);
+        AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(
+            preferredRealm,
+            clientId,
+            clientSecret,
+            refreshToken,
+            refreshFailures
+        );
         if (serverRefresh == null) {
             serverRefresh = tryRefreshTokensWithClient(fallbackRealm, clientId, clientSecret, refreshToken, refreshFailures);
         }

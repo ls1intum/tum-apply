@@ -1,19 +1,19 @@
 package de.tum.cit.aet.core.config;
 
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
 import de.tum.cit.aet.core.security.CustomJwtAuthenticationConverter;
 import de.tum.cit.aet.core.security.SpaWebFilter;
 import de.tum.cit.aet.core.util.CookieUtils;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.JWTParser;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -25,9 +25,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.WebUtils;
 
@@ -214,7 +214,9 @@ public class SecurityConfiguration {
                     return tokens.accessToken();
                 }
                 return accessCookie.getValue();
-            } else if ((accessCookie == null || accessCookie.getValue() == null || accessCookie.getValue().isBlank()) && refreshCookie != null) {
+            } else if (
+                (accessCookie == null || accessCookie.getValue() == null || accessCookie.getValue().isBlank()) && refreshCookie != null
+            ) {
                 AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(null, refreshCookie.getValue());
                 writeAuthCookies(tokens);
                 return tokens.accessToken();

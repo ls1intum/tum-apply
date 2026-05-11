@@ -58,8 +58,7 @@ public class KeycloakConfigurationGuard {
         requireNonBlank(missingOrBlank, "keycloak.admin.tum.client-secret", adminTumClientSecret);
         if (!missingOrBlank.isEmpty()) {
             throw new IllegalStateException(
-                "Invalid Keycloak configuration. The following properties must be set and non-blank: " +
-                String.join(", ", missingOrBlank)
+                "Invalid Keycloak configuration. The following properties must be set and non-blank: " + String.join(", ", missingOrBlank)
             );
         }
     }
