@@ -319,20 +319,27 @@ keycloak:
       username: ${KEYCLOAK_USERS_ADMIN_USERNAME:admin}
       password: ${KEYCLOAK_USERS_ADMIN_PASSWORD:admin}
   server:
-    # External realm (`keycloak.external-login-realm`) confidential client used by backend auth flows
-    # (password login, refresh, logout, token exchange audience target)
-    client-id: ${KEYCLOAK_SERVER_CLIENT_ID:tumapply-server-client}
-    # Secret for the external realm server client above
-    client-secret: ${KEYCLOAK_SERVER_CLIENT_SECRET:tumapply-server-secret}
+    external:
+      # External realm (`keycloak.external-login-realm`) confidential client used by server auth flows
+      # (password login, refresh, logout, token exchange audience target)
+      client-id: ${KEYCLOAK_SERVER_CLIENT_ID:tumapply-server-client}
+      # Secret for the external realm server client above
+      client-secret: ${KEYCLOAK_SERVER_CLIENT_SECRET:tumapply-server-secret}
+    tum:
+      # TUM realm (`keycloak.tum-login-realm`) confidential client used by server auth flows
+      # (password login fallback, refresh, logout in TUM realm)
+      client-id: ${KEYCLOAK_SERVER_TUM_CLIENT_ID:tumapply-server-client}
+      # Secret for the TUM realm server client above
+      client-secret: ${KEYCLOAK_SERVER_TUM_CLIENT_SECRET:tumapply-server-secret}
   admin:
     tum:
-      # TUM realm (`keycloak.tum-login-realm`) admin service-account client used by backend Admin API calls
+      # TUM realm (`keycloak.tum-login-realm`) admin service-account client used by server Admin API calls
       # (e.g., user lookup/search in Keycloak)
       client-id: ${KEYCLOAK_ADMIN_TUM_CLIENT_ID:tumapply-admin-api}
       # Secret for the TUM realm admin client above
       client-secret: ${KEYCLOAK_ADMIN_TUM_CLIENT_SECRET:tumapply-admin-api-secret}
     external:
-      # External realm (`keycloak.external-login-realm`) admin service-account client used by backend
+      # External realm (`keycloak.external-login-realm`) admin service-account client used by server
       # Admin API calls and token exchange/impersonation flows
       client-id: ${KEYCLOAK_ADMIN_EXTERNAL_CLIENT_ID:tumapply-admin-api}
       # Secret for the external realm admin client above

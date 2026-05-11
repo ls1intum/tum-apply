@@ -48,11 +48,13 @@ public class KeycloakAuthenticationService {
     private final AuthzClient tumRealmAuthzClient;
 
     private final String keycloakUrl;
-    private final String realm;
+    private final String externalRealm;
     private final String tumLoginRealm;
     private final String browserClientId;
-    private final String clientId;
-    private final String clientSecret;
+    private final String externalServerClientId;
+    private final String externalServerClientSecret;
+    private final String tumServerClientId;
+    private final String tumServerClientSecret;
 
     private final String adminClientId;
     private final String adminClientSecret;
@@ -64,28 +66,32 @@ public class KeycloakAuthenticationService {
 
     public KeycloakAuthenticationService(
         @Value("${keycloak.url}") String keycloakUrl,
-        @Value("${keycloak.external-login-realm}") String realm,
+        @Value("${keycloak.external-login-realm}") String externalRealm,
         @Value("${keycloak.tum-login-realm}") String tumLoginRealm,
         @Value("${keycloak.client-id}") String browserClientId,
-        @Value("${keycloak.server.client-id}") String clientId,
-        @Value("${keycloak.server.client-secret}") String clientSecret,
+        @Value("${keycloak.server.external.client-id}") String externalServerClientId,
+        @Value("${keycloak.server.external.client-secret}") String externalServerClientSecret,
+        @Value("${keycloak.server.tum.client-id}") String tumServerClientId,
+        @Value("${keycloak.server.tum.client-secret}") String tumServerClientSecret,
         @Value("${keycloak.admin.external.client-id}") String adminClientId,
         @Value("${keycloak.admin.external.client-secret}") String adminClientSecret,
         JwtService jwtService,
         KeycloakUserService keycloakUserService
     ) {
         this.externalRealmAuthzClient = AuthzClient.create(
-            new Configuration(keycloakUrl, realm, clientId, Map.of("secret", clientSecret), null)
+            new Configuration(keycloakUrl, externalRealm, externalServerClientId, Map.of("secret", externalServerClientSecret), null)
         );
         this.tumRealmAuthzClient = AuthzClient.create(
-            new Configuration(keycloakUrl, tumLoginRealm, clientId, Map.of("secret", clientSecret), null)
+            new Configuration(keycloakUrl, tumLoginRealm, tumServerClientId, Map.of("secret", tumServerClientSecret), null)
         );
         this.keycloakUrl = keycloakUrl;
-        this.realm = realm;
+        this.externalRealm = externalRealm;
         this.tumLoginRealm = tumLoginRealm;
         this.browserClientId = browserClientId;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
+        this.externalServerClientId = externalServerClientId;
+        this.externalServerClientSecret = externalServerClientSecret;
+        this.tumServerClientId = tumServerClientId;
+        this.tumServerClientSecret = tumServerClientSecret;
 
         this.adminClientId = adminClientId;
         this.adminClientSecret = adminClientSecret;
@@ -136,9 +142,9 @@ public class KeycloakAuthenticationService {
 
         // The refresh token can come from either realm (external login or TUM IDP); try each in turn.
         if (
-            !logoutWithClient(this.realm, this.clientId, this.clientSecret, refreshToken) &&
-            !logoutWithClient(this.realm, this.adminClientId, this.adminClientSecret, refreshToken) &&
-            !logoutWithClient(this.tumLoginRealm, this.clientId, this.clientSecret, refreshToken) &&
+            !logoutWithClient(this.externalRealm, this.externalServerClientId, this.externalServerClientSecret, refreshToken) &&
+            !logoutWithClient(this.externalRealm, this.adminClientId, this.adminClientSecret, refreshToken) &&
+            !logoutWithClient(this.tumLoginRealm, this.tumServerClientId, this.tumServerClientSecret, refreshToken) &&
             !logoutWithClient(this.tumLoginRealm, this.adminClientId, this.adminClientSecret, refreshToken)
         ) {
             throw new UnauthorizedException("Failed to logout user");
@@ -196,7 +202,7 @@ public class KeycloakAuthenticationService {
             log.debug("refreshTokens(): access token decode failed, continuing with refresh-token path: {}", ex.getMessage());
         }
         final String preferredRealm = determinePreferredRealm(jwt);
-        final String fallbackRealm = preferredRealm.equals(this.realm) ? this.tumLoginRealm : this.realm;
+        final String fallbackRealm = preferredRealm.equals(this.externalRealm) ? this.tumLoginRealm : this.externalRealm;
         final List<String> refreshFailures = new ArrayList<>();
 
         // 1) No refresh token: accept valid access token, else session expired
@@ -210,19 +216,29 @@ public class KeycloakAuthenticationService {
         // 2) Valid access token present: choose path based on azp
         if (jwt != null && jwtService.isActive(jwt)) {
             final String authorizedParty = jwtService.getAuthorizedParty(jwt);
-            if (clientId.equals(authorizedParty)) {
+            if (isServerClient(authorizedParty)) {
                 // Default refresh with server client
+                String preferredClientId = serverClientIdForRealm(preferredRealm);
+                String preferredClientSecret = serverClientSecretForRealm(preferredRealm);
                 AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(
                     preferredRealm,
-                    clientId,
-                    clientSecret,
+                    preferredClientId,
+                    preferredClientSecret,
                     refreshToken,
                     refreshFailures
                 );
                 if (serverRefresh != null) {
                     return getResponseFromToken(serverRefresh);
                 }
-                serverRefresh = tryRefreshTokensWithClient(fallbackRealm, clientId, clientSecret, refreshToken, refreshFailures);
+                String fallbackClientId = serverClientIdForRealm(fallbackRealm);
+                String fallbackClientSecret = serverClientSecretForRealm(fallbackRealm);
+                serverRefresh = tryRefreshTokensWithClient(
+                    fallbackRealm,
+                    fallbackClientId,
+                    fallbackClientSecret,
+                    refreshToken,
+                    refreshFailures
+                );
                 if (serverRefresh != null) {
                     return getResponseFromToken(serverRefresh);
                 }
@@ -237,20 +253,32 @@ public class KeycloakAuthenticationService {
                 return exchangeForUserTokens(subject);
             }
             refreshFailures.add(
-                "Access token azp '" + authorizedParty + "' not in configured clients [" + clientId + ", " + adminClientId + "]"
+                "Access token azp '" +
+                authorizedParty +
+                "' not in configured clients [" +
+                externalServerClientId +
+                ", " +
+                tumServerClientId +
+                ", " +
+                adminClientId +
+                "]"
             );
         }
 
         // 3) No valid access token: try to refresh with both clients
+        String preferredClientId = serverClientIdForRealm(preferredRealm);
+        String preferredClientSecret = serverClientSecretForRealm(preferredRealm);
         AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(
             preferredRealm,
-            clientId,
-            clientSecret,
+            preferredClientId,
+            preferredClientSecret,
             refreshToken,
             refreshFailures
         );
         if (serverRefresh == null) {
-            serverRefresh = tryRefreshTokensWithClient(fallbackRealm, clientId, clientSecret, refreshToken, refreshFailures);
+            String fallbackClientId = serverClientIdForRealm(fallbackRealm);
+            String fallbackClientSecret = serverClientSecretForRealm(fallbackRealm);
+            serverRefresh = tryRefreshTokensWithClient(fallbackRealm, fallbackClientId, fallbackClientSecret, refreshToken, refreshFailures);
         }
         if (serverRefresh != null) {
             return getResponseFromToken(serverRefresh);
@@ -290,9 +318,9 @@ public class KeycloakAuthenticationService {
         addClientAuth(form, adminClientId, adminClientSecret);
         form.add("grant_type", GRANT_TYPE_TOKEN_EXCHANGE);
         form.add("requested_subject", keycloakUserId);
-        form.add("audience", clientId);
+        form.add("audience", externalServerClientId);
 
-        AccessTokenResponse tokenResponse = callKeycloak(this.realm, OidcEndpoint.TOKEN, form, "Token exchange failed")
+        AccessTokenResponse tokenResponse = callKeycloak(this.externalRealm, OidcEndpoint.TOKEN, form, "Token exchange failed")
             .bodyToMono(AccessTokenResponse.class)
             .block(Duration.ofSeconds(5));
         return getResponseFromToken(tokenResponse);
@@ -417,7 +445,7 @@ public class KeycloakAuthenticationService {
 
     private String determinePreferredRealm(Jwt accessJwt) {
         if (accessJwt == null || accessJwt.getIssuer() == null) {
-            return this.realm;
+            return this.externalRealm;
         }
         return realmFromIssuer(accessJwt.getIssuer().toString());
     }
@@ -427,7 +455,7 @@ public class KeycloakAuthenticationService {
         if (tumIssuer.equals(issuer)) {
             return this.tumLoginRealm;
         }
-        return this.realm;
+        return this.externalRealm;
     }
 
     /**
@@ -447,7 +475,7 @@ public class KeycloakAuthenticationService {
         if (realmIssuer(tumLoginRealm).equals(issuer)) {
             return tumLoginRealm;
         }
-        return realm;
+        return externalRealm;
     }
 
     private String realmIssuer(String realmName) {
@@ -471,6 +499,18 @@ public class KeycloakAuthenticationService {
     private void addClientAuth(MultiValueMap<String, String> form, String id, String secret) {
         form.add("client_id", id);
         form.add("client_secret", secret);
+    }
+
+    private String serverClientIdForRealm(String targetRealm) {
+        return tumLoginRealm.equals(targetRealm) ? tumServerClientId : externalServerClientId;
+    }
+
+    private String serverClientSecretForRealm(String targetRealm) {
+        return tumLoginRealm.equals(targetRealm) ? tumServerClientSecret : externalServerClientSecret;
+    }
+
+    private boolean isServerClient(String clientId) {
+        return externalServerClientId.equals(clientId) || tumServerClientId.equals(clientId);
     }
 
     /**
