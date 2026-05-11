@@ -42,7 +42,7 @@ interface PasskeyManagerDependencies {
   canManagePasskeys: () => boolean;
   getPasskeyUserIdentity: () => { id: string; username: string; displayName: string } | undefined;
   listPasskeys: () => Promise<PasskeyDTO[]>;
-  removePasskey: (id: string) => Promise<void>;
+  removePasskey(id: string): Promise<void>;
   createPasskeyActionToken: () => Promise<PasskeyActionTokenResponse>;
 }
 
