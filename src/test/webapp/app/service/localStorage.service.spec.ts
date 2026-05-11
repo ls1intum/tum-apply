@@ -28,7 +28,12 @@ describe('LocalStorageService', () => {
   };
 
   function makeDraft(timestamp: Date): ApplicationDraftData {
-    return { ...baseDraft, timestamp: timestamp.toISOString() };
+    return {
+      personalInfoData: baseDraft.personalInfoData,
+      applicationId: baseDraft.applicationId,
+      jobId: baseDraft.jobId,
+      timestamp: timestamp.toISOString(),
+    };
   }
 
   it('saves application draft with applicationId key', () => {
@@ -87,7 +92,16 @@ describe('LocalStorageService', () => {
 
   it('rethrows error when JSON.stringify fails (circular data)', () => {
     const circularPersonal: ApplicationDraftData['personalInfoData'] & { self?: any } = {
-      ...emptyPersonalInfo,
+      firstName: emptyPersonalInfo.firstName,
+      lastName: emptyPersonalInfo.lastName,
+      email: emptyPersonalInfo.email,
+      phoneNumber: emptyPersonalInfo.phoneNumber,
+      dateOfBirth: emptyPersonalInfo.dateOfBirth,
+      website: emptyPersonalInfo.website,
+      linkedIn: emptyPersonalInfo.linkedIn,
+      street: emptyPersonalInfo.street,
+      city: emptyPersonalInfo.city,
+      postcode: emptyPersonalInfo.postcode,
     };
     circularPersonal.self = circularPersonal; // circular reference triggers JSON.stringify error
     const draft: ApplicationDraftData = {

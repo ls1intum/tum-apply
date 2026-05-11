@@ -18,6 +18,7 @@ export interface JobCardDTO {
     readonly jobId: string;
     readonly location: JobCardDTOLocationEnum;
     readonly professorName: string;
+    readonly referenceLettersRequired?: number;
     readonly relativeTimeEnglish?: string;
     readonly relativeTimeGerman?: string;
     readonly startDate?: string;

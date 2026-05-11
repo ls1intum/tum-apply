@@ -24,6 +24,7 @@ export interface JobDetailDTO {
     readonly jobId: string;
     readonly lastModifiedAt: string;
     readonly location?: JobDetailDTOLocationEnum;
+    readonly referenceLettersRequired?: number;
     readonly researchArea?: string;
     readonly researchGroup: ResearchGroupSummaryDTO;
     readonly startDate?: string;

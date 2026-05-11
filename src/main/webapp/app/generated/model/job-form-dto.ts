@@ -22,6 +22,7 @@ export interface JobFormDTO {
     readonly jobDescriptionEN?: string;
     readonly jobId?: string;
     readonly location: JobFormDTOLocationEnum;
+    readonly referenceLettersRequired?: number;
     readonly researchArea?: string;
     readonly startDate?: string;
     readonly startDateByArrangement?: boolean;

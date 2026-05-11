@@ -51,13 +51,6 @@ describe('PasswordInputComponent', () => {
     }).compileComponents();
   });
 
-  it('should create the password input component', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance as PasswordInputComponentTestInstance;
-
-    expect(component).toBeTruthy();
-  });
-
   it('should emit modelChange and update form control on input change', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance as PasswordInputComponentTestInstance;

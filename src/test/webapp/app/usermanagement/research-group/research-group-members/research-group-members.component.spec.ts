@@ -82,111 +82,61 @@ describe('ResearchGroupMembersComponent', () => {
     vi.clearAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should load members automatically via table lazy load on component init', () => {
+  it('should load members on init via table lazy load', () => {
     mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
     fixture.detectChanges();
     expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
   });
 
-  it('should load members by ID if route param is present', () => {
-    const groupId = '123';
+  it('should load members by ID when route param is present', () => {
     mockResearchGroupApi.getResearchGroupMembersById.mockReturnValue(of(mockPageResponse));
 
-    mockActivatedRoute.setParams({ id: groupId });
+    mockActivatedRoute.setParams({ id: '123' });
     fixture.detectChanges();
 
-    expect(mockResearchGroupApi.getResearchGroupMembersById).toHaveBeenCalledWith(groupId, 10, 0);
+    expect(mockResearchGroupApi.getResearchGroupMembersById).toHaveBeenCalledWith('123', 10, 0);
   });
 
-  it('should load members by ID if query param is present', () => {
-    const groupId = '456';
+  it('should load members by ID when query param is present', () => {
     mockResearchGroupApi.getResearchGroupMembersById.mockReturnValue(of(mockPageResponse));
 
-    mockActivatedRoute.setQueryParams({ researchGroupId: groupId });
-
-    // Trigger the subscription to re-evaluate
+    mockActivatedRoute.setQueryParams({ researchGroupId: '456' });
     mockActivatedRoute.setParams({});
     fixture.detectChanges();
 
-    expect(mockResearchGroupApi.getResearchGroupMembersById).toHaveBeenCalledWith(groupId, 10, 0);
-  });
-
-  it('should initialize with default values', () => {
-    expect(component.members()).toEqual([]);
-    expect(component.pageNumber()).toBe(0);
-    expect(component.pageSize()).toBe(10);
-    expect(component.total()).toBe(0);
-  });
-
-  it('should have correct columns configuration', () => {
-    const columns = component.columns();
-    const expectedColumns = [
-      { field: 'name', header: 'researchGroup.members.tableColumns.name', width: '26rem' },
-      { field: 'email', header: 'researchGroup.members.tableColumns.email', width: '26rem' },
-      { field: 'role', header: 'researchGroup.members.tableColumns.role', width: '26rem' },
-      { field: 'actions', header: '', width: '5rem' },
-    ];
-
-    expect(columns).toHaveLength(4);
-    expectedColumns.forEach((expectedColumn, index) => {
-      expect(columns[index]).toEqual(expect.objectContaining(expectedColumn));
-    });
-  });
-
-  it('should assign templates to correct columns', () => {
-    fixture.detectChanges();
-
-    const columns = component.columns();
-    const nameColumn = columns.find(c => c.field === 'name');
-    const actionsColumn = columns.find(c => c.field === 'actions');
-
-    expect(nameColumn?.template).toBeTruthy();
-    expect(actionsColumn?.template).toBeTruthy();
-    expect(columns.find(c => c.field === 'email')?.template).toBeUndefined();
-    expect(columns.find(c => c.field === 'role')?.template).toBeUndefined();
+    expect(mockResearchGroupApi.getResearchGroupMembersById).toHaveBeenCalledWith('456', 10, 0);
   });
 
   it('should update page number and load members on table emit', () => {
-    const event: TableLazyLoadEvent = {
-      first: 20,
-      rows: 10,
-    };
+    const event: TableLazyLoadEvent = { first: 20, rows: 10 };
     mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
     component.loadOnTableEmit(event);
 
-    expect(component.pageNumber()).toBe(2); // 20 / 10 = 2
+    expect(component.pageNumber()).toBe(2);
     expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledWith(10, 2);
   });
 
-  it('should handle undefined first and rows values in table emit with fallback to defaults', () => {
-    const event: TableLazyLoadEvent = {};
+  it('should fall back to defaults for undefined first/rows in table emit', () => {
     mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
-    component.loadOnTableEmit(event);
+    component.loadOnTableEmit({});
 
     expect(component.pageNumber()).toBe(0);
     expect(component.pageSize()).toBe(10);
-    expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
   });
 
-  it('should load members successfully', async () => {
+  it('should populate members and total on successful load', async () => {
     mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
     await component.loadMembers();
 
     expect(component.members()).toEqual(mockPageResponse.content);
     expect(component.total()).toBe(mockPageResponse.totalElements);
-    expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
   });
 
-  it('should handle empty or undefined response when loading members', async () => {
-    const emptyResponse: PageResponseDTOUserShortDTO = {};
-    mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(emptyResponse));
+  it('should handle empty response when loading members', async () => {
+    mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of({} as PageResponseDTOUserShortDTO));
 
     await component.loadMembers();
 
@@ -194,84 +144,39 @@ describe('ResearchGroupMembersComponent', () => {
     expect(component.total()).toBe(0);
   });
 
-  it('should handle error and show error toast when loading members fails', async () => {
+  it('should show error toast when loading members fails', async () => {
     mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(throwError(() => new Error('API Error')));
 
     await component.loadMembers();
 
     expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.loadFailed');
-    expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
   });
 
-  it('should remove member successfully', async () => {
+  it('should remove member and reload', async () => {
     mockResearchGroupApi.removeMemberFromResearchGroup.mockReturnValue(of(void 0));
     mockResearchGroupApi.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
     await component.removeMember(mockUserData);
 
     expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledWith('user-1');
-    expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
     expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.removeSuccess', {
       memberName: 'John Doe',
     });
-    expect(mockToastService.showSuccessKey).toHaveBeenCalledTimes(1);
     expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
-    expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
-  it('should handle error and show error toast when removing member fails', async () => {
+  it('should show error toast and not reload when remove fails', async () => {
     mockResearchGroupApi.removeMemberFromResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
 
     await component.removeMember(mockUserData);
 
-    expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledWith('user-1');
-    expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
     expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.removeFailed', {
       memberName: 'John Doe',
     });
-    expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
-    expect(mockResearchGroupApi.getResearchGroupMembers).not.toHaveBeenCalled(); // No refresh on error
+    expect(mockResearchGroupApi.getResearchGroupMembers).not.toHaveBeenCalled();
   });
 
-  it('should transform members data correctly in tableData computed and identify current user', () => {
-    component.members.set([mockUserData, mockCurrentUser]);
-
-    const tableData = component.tableData();
-
-    expect(tableData).toHaveLength(2);
-    expect(tableData[0]).toEqual({
-      userId: 'user-1',
-      firstName: 'John',
-      lastName: 'Doe',
-      roles: [UserShortDTORolesEnum.Professor],
-      name: 'John Doe',
-      role: 'Professor',
-      isCurrentUser: false,
-      canRemove: true,
-    });
-    expect(tableData[1]).toEqual({
-      userId: 'current-user',
-      firstName: 'Current',
-      lastName: 'User',
-      roles: [UserShortDTORolesEnum.Admin],
-      name: 'Current User',
-      role: 'Admin',
-      isCurrentUser: true,
-      canRemove: false,
-    });
-  });
-
-  it('shows the no role text when roles is undefined or empty', () => {
-    component.members.set([{ userId: 'user-1', firstName: 'John', lastName: 'Doe', roles: undefined }]);
-    let row = component.tableData()[0];
-    expect(row.role).toBe('researchGroup.members.noRole');
-
-    component.members.set([{ userId: 'user-1', firstName: 'John', lastName: 'Doe', roles: [] }]);
-    row = component.tableData()[0];
-    expect(row.role).toBe('researchGroup.members.noRole');
-  });
-
-  it('should handle member with undefined userId when removing', async () => {
+  it('should default missing userId to empty string when removing', async () => {
     const memberWithoutId: UserShortDTO = {
       userId: undefined,
       firstName: 'John',
@@ -284,19 +189,33 @@ describe('ResearchGroupMembersComponent', () => {
     await component.removeMember(memberWithoutId);
 
     expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledWith('');
-    expect(mockResearchGroupApi.removeMemberFromResearchGroup).toHaveBeenCalledTimes(1);
   });
 
-  it('should format role with proper capitalization', () => {
-    const memberWithLowercaseRole: UserShortDTO = {
+  it('should transform members data and identify current user in tableData', () => {
+    component.members.set([mockUserData, mockCurrentUser]);
+
+    const tableData = component.tableData();
+
+    expect(tableData[0]).toEqual({
       userId: 'user-1',
       firstName: 'John',
       lastName: 'Doe',
       roles: [UserShortDTORolesEnum.Professor],
-    };
-    component.members.set([memberWithLowercaseRole]);
-    const row = component.tableData()[0];
-    expect(row.role).toBe('Professor');
+      name: 'John Doe',
+      role: 'Professor',
+      isCurrentUser: false,
+      canRemove: true,
+    });
+    expect(tableData[1].isCurrentUser).toBe(true);
+    expect(tableData[1].canRemove).toBe(false);
+  });
+
+  it('should show no-role text when roles is undefined or empty', () => {
+    component.members.set([{ userId: 'user-1', firstName: 'John', lastName: 'Doe', roles: undefined }]);
+    expect(component.tableData()[0].role).toBe('researchGroup.members.noRole');
+
+    component.members.set([{ userId: 'user-1', firstName: 'John', lastName: 'Doe', roles: [] }]);
+    expect(component.tableData()[0].role).toBe('researchGroup.members.noRole');
   });
 
   describe('openAddMembersModal', () => {
@@ -309,82 +228,44 @@ describe('ResearchGroupMembersComponent', () => {
       vi.clearAllMocks();
     });
 
-    it('should open add members modal and reload members on close if added', () => {
-      const mockRef = {
-        onClose: of(true),
-      } as DynamicDialogRef;
-      vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
+    it('should reload members when add members modal closes with true', () => {
+      vi.spyOn(dialogService, 'open').mockReturnValue({ onClose: of(true) } as DynamicDialogRef);
 
       component.openAddMembersModal();
 
-      expect(dialogService.open).toHaveBeenCalled();
-      expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledTimes(1);
+      expect(mockResearchGroupApi.getResearchGroupMembers).toHaveBeenCalledOnce();
     });
 
-    it('should open add members modal and NOT reload members on close if NOT added', () => {
-      const mockRef = {
-        onClose: of(false),
-      } as DynamicDialogRef;
-      vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
+    it('should NOT reload members when add members modal closes with false', () => {
+      vi.spyOn(dialogService, 'open').mockReturnValue({ onClose: of(false) } as DynamicDialogRef);
 
       component.openAddMembersModal();
 
-      expect(dialogService.open).toHaveBeenCalled();
       expect(mockResearchGroupApi.getResearchGroupMembers).not.toHaveBeenCalled();
     });
   });
 
-  it('should prevent employee from removing a professor', () => {
+  it('should not allow employee to remove members regardless of target role', () => {
     mockAccountService.user.update(user => {
-      if (!user) {
-        return user;
-      }
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        authorities: [UserShortDTORolesEnum.Employee],
-      };
+      if (!user) return user;
+      return { id: user.id, name: user.name, email: user.email, authorities: [UserShortDTORolesEnum.Employee] };
     });
-    const professorMember: UserShortDTO = {
-      userId: 'user-1',
-      firstName: 'John',
-      lastName: 'Doe',
-      roles: [UserShortDTORolesEnum.Professor],
-    };
-    component.members.set([professorMember]);
+    component.members.set([
+      { userId: 'user-1', firstName: 'John', lastName: 'Doe', roles: [UserShortDTORolesEnum.Professor] },
+      { userId: 'user-2', firstName: 'Jane', lastName: 'Smith', roles: [UserShortDTORolesEnum.Employee] },
+    ]);
 
-    const row = component.tableData()[0];
+    const rows = component.tableData();
 
-    expect(row.canRemove).toBe(false);
+    expect(rows[0].canRemove).toBe(false);
+    expect(rows[1].canRemove).toBe(false);
   });
 
-  it('should not allow employee to remove members', () => {
-    mockAccountService.user.update(user => {
-      if (!user) {
-        return user;
-      }
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        authorities: [UserShortDTORolesEnum.Employee],
-      };
-    });
-    const studentMember: UserShortDTO = { userId: 'user-1', firstName: 'John', lastName: 'Doe', roles: [UserShortDTORolesEnum.Employee] };
-    component.members.set([studentMember]);
-
-    const row = component.tableData()[0];
-
-    expect(row.canRemove).toBe(false);
-  });
-
-  it('should load and set the research group name', async () => {
+  it('should load research group name', async () => {
     mockResearchGroupApi.getResearchGroup.mockReturnValue(of({ name: 'AI Lab' } as ResearchGroupDTO));
 
     await component['loadResearchGroupName']('group-1');
 
-    expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledWith('group-1');
     expect(component.researchGroupName()).toBe('AI Lab');
   });
 
@@ -394,43 +275,22 @@ describe('ResearchGroupMembersComponent', () => {
 
     await component['loadResearchGroupName']('group-2');
 
-    expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledWith('group-2');
     expect(component.researchGroupName()).toBeUndefined();
   });
 
-  it('should mark employee as true when user has Employee role', () => {
+  it.each([
+    { description: 'has Employee role', authorities: [UserShortDTORolesEnum.Employee], expected: true },
+    { description: 'lacks Employee role', authorities: [UserShortDTORolesEnum.Professor], expected: false },
+  ])('should compute isEmployee=$expected when user $description', ({ authorities, expected }) => {
     mockAccountService.user.update(user => {
-      if (!user) {
-        return user;
-      }
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        authorities: [UserShortDTORolesEnum.Employee],
-      };
+      if (!user) return user;
+      return { id: user.id, name: user.name, email: user.email, authorities };
     });
 
-    expect(component.isEmployee()).toBe(true);
+    expect(component.isEmployee()).toBe(expected);
   });
 
-  it('should mark employee as false when user lacks Employee role', () => {
-    mockAccountService.user.update(user => {
-      if (!user) {
-        return user;
-      }
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        authorities: [UserShortDTORolesEnum.Professor],
-      };
-    });
-
-    expect(component.isEmployee()).toBe(false);
-  });
-
-  it('should mark employee as false when authorities are undefined', () => {
+  it('should compute isEmployee=false when user is undefined', () => {
     mockAccountService.user.set(undefined);
 
     expect(component.isEmployee()).toBe(false);

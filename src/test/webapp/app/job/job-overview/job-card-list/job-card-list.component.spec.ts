@@ -75,14 +75,10 @@ describe('JobCardListComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create component', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should load filters successfully', async () => {
     await component.loadAllFilter();
 
-    expect(jobApi.getAllFilters).toHaveBeenCalled();
+    expect(jobApi.getAllFilters).toHaveBeenCalledTimes(2);
     // allSubjectAreas is a static list of i18n keys from DropdownOptions
     expect(component.allSubjectAreas).toEqual(DropdownOptions.subjectAreas.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual(['Prof. X']);
@@ -100,7 +96,7 @@ describe('JobCardListComponent', () => {
   it('should load jobs successfully', async () => {
     await component.loadJobs();
 
-    expect(jobApi.getAvailableJobs).toHaveBeenCalled();
+    expect(jobApi.getAvailableJobs).toHaveBeenCalledTimes(2);
     expect(component.jobs().length).toBe(1);
     expect(component.totalRecords()).toBe(1);
   });
@@ -136,33 +132,35 @@ describe('JobCardListComponent', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should handle filter changes for subjectArea', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
-
-    component.onFilterEmit({ filterId: 'subjectArea', selectedValues: [DropdownOptions.subjectAreas[0].name] });
-    fixture.detectChanges();
-    expect(component.selectedSubjectAreaFilters()).toEqual([DropdownOptions.subjectAreas[0].value]);
-    expect(spy).toHaveBeenCalledOnce();
-  });
-
-  it('should handle filter changes for location', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
-
-    component.onFilterEmit({
+  it.each<{
+    filterId: string;
+    values: string[];
+    selector: 'selectedSubjectAreaFilters' | 'selectedLocationFilters' | 'selectedSupervisorFilters';
+    expected: string[];
+  }>([
+    {
+      filterId: 'subjectArea',
+      values: [DropdownOptions.subjectAreas[0].name],
+      selector: 'selectedSubjectAreaFilters',
+      expected: [DropdownOptions.subjectAreas[0].value],
+    },
+    {
       filterId: 'location',
-      selectedValues: ['jobCreationForm.basicInformationSection.locations.Munich'],
-    });
-    fixture.detectChanges();
-    expect(component.selectedLocationFilters()).toEqual(['MUNICH']);
-    expect(spy).toHaveBeenCalledOnce();
-  });
-
-  it('should handle filter changes for supervisor', async () => {
+      values: ['jobCreationForm.basicInformationSection.locations.Munich'],
+      selector: 'selectedLocationFilters',
+      expected: ['MUNICH'],
+    },
+    {
+      filterId: 'supervisor',
+      values: ['Prof. X'],
+      selector: 'selectedSupervisorFilters',
+      expected: ['Prof. X'],
+    },
+  ])('should handle filter changes for $filterId', ({ filterId, values, selector, expected }) => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
-
-    component.onFilterEmit({ filterId: 'supervisor', selectedValues: ['Prof. X'] });
+    component.onFilterEmit({ filterId, selectedValues: values });
     fixture.detectChanges();
-    expect(component.selectedSupervisorFilters()).toEqual(['Prof. X']);
+    expect(component[selector]()).toEqual(expected);
     expect(spy).toHaveBeenCalledOnce();
   });
 
@@ -247,10 +245,6 @@ describe('JobCardListComponent', () => {
     expect(spy).toHaveBeenCalledOnce();
   });
 
-  it('should call loadAllFilter in constructor', () => {
-    expect(jobApi.getAllFilters).toHaveBeenCalled();
-  });
-
   it('should render one job-card per job when jobs exist', () => {
     component.jobs.set([
       {
@@ -329,7 +323,7 @@ describe('JobCardListComponent', () => {
     fixture.detectChanges();
     expect(component.page()).toBe(0);
     expect(component.pageSize()).toBe(20);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
   it('should default initial language to EN when translateService.currentLang is undefined', () => {
