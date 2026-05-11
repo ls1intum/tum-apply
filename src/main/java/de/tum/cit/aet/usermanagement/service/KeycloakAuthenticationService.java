@@ -195,101 +195,127 @@ public class KeycloakAuthenticationService {
     }
 
     private AuthResponseDTO refreshTokensInternal(String accessToken, String refreshToken) {
-        Jwt jwt = null;
-        try {
-            jwt = jwtService.decode(accessToken);
-        } catch (UnauthorizedException ex) {
-            log.debug("refreshTokens(): access token decode failed, continuing with refresh-token path: {}", ex.getMessage());
-        }
-        final String preferredRealm = determinePreferredRealm(jwt);
-        final String fallbackRealm = preferredRealm.equals(this.externalRealm) ? this.tumLoginRealm : this.externalRealm;
-        final List<String> refreshFailures = new ArrayList<>();
+        Jwt jwt = decodeAccessTokenSafely(accessToken);
+        String preferredRealm = determinePreferredRealm(jwt);
+        String fallbackRealm = preferredRealm.equals(this.externalRealm) ? this.tumLoginRealm : this.externalRealm;
+        List<String> refreshFailures = new ArrayList<>();
 
-        // 1) No refresh token: accept valid access token, else session expired
         if (StringUtil.isBlank(refreshToken)) {
-            if (jwt != null && jwtService.isActive(jwt)) {
-                return new AuthResponseDTO(accessToken, "", jwtService.secondsUntilExpiry(jwt), 0);
-            }
-            throw new UnauthorizedException("Session expired");
+            return buildSessionFromActiveAccessTokenOrThrow(accessToken, jwt);
         }
 
-        // 2) Valid access token present: choose path based on azp
-        if (jwt != null && jwtService.isActive(jwt)) {
-            final String authorizedParty = jwtService.getAuthorizedParty(jwt);
-            if (isServerClient(authorizedParty)) {
-                // Default refresh with server client
-                String preferredClientId = serverClientIdForRealm(preferredRealm);
-                String preferredClientSecret = serverClientSecretForRealm(preferredRealm);
-                AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(
-                    preferredRealm,
-                    preferredClientId,
-                    preferredClientSecret,
-                    refreshToken,
-                    refreshFailures
-                );
-                if (serverRefresh != null) {
-                    return getResponseFromToken(serverRefresh);
-                }
-                String fallbackClientId = serverClientIdForRealm(fallbackRealm);
-                String fallbackClientSecret = serverClientSecretForRealm(fallbackRealm);
-                serverRefresh = tryRefreshTokensWithClient(
-                    fallbackRealm,
-                    fallbackClientId,
-                    fallbackClientSecret,
-                    refreshToken,
-                    refreshFailures
-                );
-                if (serverRefresh != null) {
-                    return getResponseFromToken(serverRefresh);
-                }
-                throw buildRefreshFailure(refreshFailures, authorizedParty, jwt);
-            }
-            if (adminClientId.equals(authorizedParty)) {
-                // Subject-only refresh via otp client
-                final String subject = jwt.getSubject();
-                if (StringUtil.isBlank(subject)) {
-                    throw new UnauthorizedException("Access token missing subject");
-                }
-                return exchangeForUserTokens(subject);
-            }
-            refreshFailures.add(
-                "Access token azp '" +
-                    authorizedParty +
-                    "' not in configured clients [" +
-                    externalServerClientId +
-                    ", " +
-                    tumServerClientId +
-                    ", " +
-                    adminClientId +
-                    "]"
-            );
+        AuthResponseDTO viaAccessToken = tryRefreshUsingActiveAccessToken(jwt, refreshToken, preferredRealm, fallbackRealm, refreshFailures);
+        if (viaAccessToken != null) {
+            return viaAccessToken;
         }
 
-        // 3) No valid access token: try to refresh with both clients
-        String preferredClientId = serverClientIdForRealm(preferredRealm);
-        String preferredClientSecret = serverClientSecretForRealm(preferredRealm);
-        AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(
-            preferredRealm,
-            preferredClientId,
-            preferredClientSecret,
+        AuthResponseDTO viaRefreshToken = tryRefreshUsingRefreshTokenOnly(
             refreshToken,
+            preferredRealm,
+            fallbackRealm,
             refreshFailures
         );
-        if (serverRefresh == null) {
-            String fallbackClientId = serverClientIdForRealm(fallbackRealm);
-            String fallbackClientSecret = serverClientSecretForRealm(fallbackRealm);
-            serverRefresh = tryRefreshTokensWithClient(
-                fallbackRealm,
-                fallbackClientId,
-                fallbackClientSecret,
-                refreshToken,
-                refreshFailures
-            );
+        if (viaRefreshToken != null) {
+            return viaRefreshToken;
         }
+
+        throw buildRefreshFailure(refreshFailures, jwt != null ? jwtService.getAuthorizedParty(jwt) : null, jwt);
+    }
+
+    private Jwt decodeAccessTokenSafely(String accessToken) {
+        try {
+            return jwtService.decode(accessToken);
+        } catch (UnauthorizedException ex) {
+            log.debug("refreshTokens(): access token decode failed, continuing with refresh-token path: {}", ex.getMessage());
+            return null;
+        }
+    }
+
+    private AuthResponseDTO buildSessionFromActiveAccessTokenOrThrow(String accessToken, Jwt jwt) {
+        if (jwt != null && jwtService.isActive(jwt)) {
+            return new AuthResponseDTO(accessToken, "", jwtService.secondsUntilExpiry(jwt), 0);
+        }
+        throw new UnauthorizedException("Session expired");
+    }
+
+    private AuthResponseDTO tryRefreshUsingActiveAccessToken(
+        Jwt jwt,
+        String refreshToken,
+        String preferredRealm,
+        String fallbackRealm,
+        List<String> refreshFailures
+    ) {
+        if (jwt == null || !jwtService.isActive(jwt)) {
+            return null;
+        }
+
+        String authorizedParty = jwtService.getAuthorizedParty(jwt);
+        if (isServerClient(authorizedParty)) {
+            AccessTokenResponse serverRefresh = tryRefreshWithServerClients(preferredRealm, fallbackRealm, refreshToken, refreshFailures);
+            if (serverRefresh != null) {
+                return getResponseFromToken(serverRefresh);
+            }
+            throw buildRefreshFailure(refreshFailures, authorizedParty, jwt);
+        }
+
+        if (adminClientId.equals(authorizedParty)) {
+            return exchangeUsingSubject(jwt.getSubject());
+        }
+
+        refreshFailures.add("Access token azp '" + authorizedParty + "' not in configured clients [" + configuredClients() + "]");
+        return null;
+    }
+
+    private AuthResponseDTO tryRefreshUsingRefreshTokenOnly(
+        String refreshToken,
+        String preferredRealm,
+        String fallbackRealm,
+        List<String> refreshFailures
+    ) {
+        AccessTokenResponse serverRefresh = tryRefreshWithServerClients(preferredRealm, fallbackRealm, refreshToken, refreshFailures);
         if (serverRefresh != null) {
             return getResponseFromToken(serverRefresh);
         }
 
+        AccessTokenResponse otpRefresh = tryRefreshWithAdminClient(preferredRealm, fallbackRealm, refreshToken, refreshFailures);
+        if (otpRefresh == null) {
+            return null;
+        }
+        Jwt otpJwt = jwtService.decode(otpRefresh.getToken());
+        return exchangeUsingSubject(otpJwt.getSubject());
+    }
+
+    private AccessTokenResponse tryRefreshWithServerClients(
+        String preferredRealm,
+        String fallbackRealm,
+        String refreshToken,
+        List<String> refreshFailures
+    ) {
+        AccessTokenResponse serverRefresh = tryRefreshTokensWithClient(
+            preferredRealm,
+            serverClientIdForRealm(preferredRealm),
+            serverClientSecretForRealm(preferredRealm),
+            refreshToken,
+            refreshFailures
+        );
+        if (serverRefresh != null) {
+            return serverRefresh;
+        }
+        return tryRefreshTokensWithClient(
+            fallbackRealm,
+            serverClientIdForRealm(fallbackRealm),
+            serverClientSecretForRealm(fallbackRealm),
+            refreshToken,
+            refreshFailures
+        );
+    }
+
+    private AccessTokenResponse tryRefreshWithAdminClient(
+        String preferredRealm,
+        String fallbackRealm,
+        String refreshToken,
+        List<String> refreshFailures
+    ) {
         AccessTokenResponse otpRefresh = tryRefreshTokensWithClient(
             preferredRealm,
             adminClientId,
@@ -297,19 +323,21 @@ public class KeycloakAuthenticationService {
             refreshToken,
             refreshFailures
         );
-        if (otpRefresh == null) {
-            otpRefresh = tryRefreshTokensWithClient(fallbackRealm, adminClientId, adminClientSecret, refreshToken, refreshFailures);
-        }
         if (otpRefresh != null) {
-            Jwt otpJwt = jwtService.decode(otpRefresh.getToken());
-            String keycloakUserId = otpJwt.getSubject();
-            if (StringUtil.isBlank(keycloakUserId)) {
-                throw new UnauthorizedException("Access token missing subject");
-            }
-            return exchangeForUserTokens(keycloakUserId);
+            return otpRefresh;
         }
+        return tryRefreshTokensWithClient(fallbackRealm, adminClientId, adminClientSecret, refreshToken, refreshFailures);
+    }
 
-        throw buildRefreshFailure(refreshFailures, jwt != null ? jwtService.getAuthorizedParty(jwt) : null, jwt);
+    private AuthResponseDTO exchangeUsingSubject(String subject) {
+        if (StringUtil.isBlank(subject)) {
+            throw new UnauthorizedException("Access token missing subject");
+        }
+        return exchangeForUserTokens(subject);
+    }
+
+    private String configuredClients() {
+        return externalServerClientId + ", " + tumServerClientId + ", " + adminClientId;
     }
 
     /**

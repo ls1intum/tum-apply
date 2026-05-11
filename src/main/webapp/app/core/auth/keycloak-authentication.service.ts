@@ -318,9 +318,9 @@ export class KeycloakAuthenticationService {
       getTokenParsed: () => (this.keycloak?.tokenParsed ?? {}) as Record<string, unknown>,
       canManagePasskeys: () => this.canManagePasskeys(),
       getPasskeyUserIdentity: () => this.getPasskeyUserIdentity(),
-      listPasskeys: async () => firstValueFrom(this.authenticationApi.listPasskeys()),
-      removePasskey: async (id: string) => firstValueFrom(this.authenticationApi.removePasskey(id)),
-      createPasskeyActionToken: async () => firstValueFrom(this.authenticationApi.createPasskeyActionToken()),
+      listPasskeys: () => firstValueFrom(this.authenticationApi.listPasskeys()),
+      removePasskey: (id: string) => firstValueFrom(this.authenticationApi.removePasskey(id)),
+      createPasskeyActionToken: () => firstValueFrom(this.authenticationApi.createPasskeyActionToken()),
     });
     return this.passkeyManager;
   }

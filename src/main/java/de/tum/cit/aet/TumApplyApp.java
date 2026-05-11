@@ -3,6 +3,7 @@ package de.tum.cit.aet;
 import de.tum.cit.aet.core.config.ApplicantRetentionProperties;
 import de.tum.cit.aet.core.config.ApplicationProperties;
 import de.tum.cit.aet.core.config.CRLFLogConverter;
+import de.tum.cit.aet.core.config.KeycloakProperties;
 import de.tum.cit.aet.core.config.UserRetentionProperties;
 import jakarta.annotation.PostConstruct;
 import java.net.InetAddress;
@@ -23,7 +24,7 @@ import tech.jhipster.config.JHipsterConstants;
 
 @SpringBootApplication
 @EnableConfigurationProperties(
-    { LiquibaseProperties.class, ApplicationProperties.class, UserRetentionProperties.class, ApplicantRetentionProperties.class }
+    { LiquibaseProperties.class, ApplicationProperties.class, UserRetentionProperties.class, ApplicantRetentionProperties.class, KeycloakProperties.class }
 )
 public class TumApplyApp {
 

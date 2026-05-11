@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,14 +45,17 @@ class KeycloakAuthenticationServiceTest {
     private KeycloakUserService keycloakUserService;
 
     @Mock
-    private AuthzClient authzClient;
+    private AuthzClient externalAuthzClient;
+
+    @Mock
+    private AuthzClient tumAuthzClient;
 
     private KeycloakAuthenticationService service;
 
     @BeforeEach
     void setUp() {
         try (MockedStatic<AuthzClient> mockedAuthzClient = mockStatic(AuthzClient.class)) {
-            mockedAuthzClient.when(() -> AuthzClient.create(any(Configuration.class))).thenReturn(authzClient);
+            mockedAuthzClient.when(() -> AuthzClient.create(any(Configuration.class))).thenReturn(externalAuthzClient, tumAuthzClient);
             service = new KeycloakAuthenticationService(
                 KEYCLOAK_URL,
                 EXTERNAL_REALM,
@@ -80,7 +84,7 @@ class KeycloakAuthenticationServiceTest {
             tokenResponse.setExpiresIn(300);
             tokenResponse.setRefreshExpiresIn(3600);
 
-            when(authzClient.obtainAccessToken("applicant@tum.de", "secret")).thenReturn(tokenResponse);
+            when(externalAuthzClient.obtainAccessToken("applicant@tum.de", "secret")).thenReturn(tokenResponse);
 
             AuthResponseDTO actual = service.loginWithCredentials("applicant@tum.de", "secret");
 
@@ -88,18 +92,21 @@ class KeycloakAuthenticationServiceTest {
             assertThat(actual.refreshToken()).isEqualTo("refresh-token");
             assertThat(actual.expiresIn()).isEqualTo(300);
             assertThat(actual.refreshExpiresIn()).isEqualTo(3600);
-            verify(authzClient).obtainAccessToken("applicant@tum.de", "secret");
+            verify(externalAuthzClient).obtainAccessToken("applicant@tum.de", "secret");
+            verifyNoInteractions(tumAuthzClient);
         }
 
         @Test
         void shouldThrowUnauthorizedWhenExternalRealmAuthenticationFails() {
-            when(authzClient.obtainAccessToken("applicant@tum.de", "wrong-secret")).thenThrow(new RuntimeException("invalid_grant"));
+            when(externalAuthzClient.obtainAccessToken("applicant@tum.de", "wrong-secret")).thenThrow(new RuntimeException("invalid_grant"));
+            when(tumAuthzClient.obtainAccessToken("applicant@tum.de", "wrong-secret")).thenThrow(new RuntimeException("invalid_grant"));
 
             assertThatThrownBy(() -> service.loginWithCredentials("applicant@tum.de", "wrong-secret"))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("Invalid username or password");
 
-            verify(authzClient).obtainAccessToken("applicant@tum.de", "wrong-secret");
+            verify(externalAuthzClient).obtainAccessToken("applicant@tum.de", "wrong-secret");
+            verify(tumAuthzClient).obtainAccessToken("applicant@tum.de", "wrong-secret");
         }
     }
 
