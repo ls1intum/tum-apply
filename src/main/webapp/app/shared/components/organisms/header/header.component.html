@@ -91,7 +91,7 @@
         <jhi-button
           [class]="headerButtonClass"
           (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
-          label="auth.passkey.buttons.passkey"
+          [label]="isProfessorPage() ? 'auth.passkey.buttons.professorPasskey' : 'auth.passkey.buttons.passkey'"
           icon="key"
           severity="primary"
           variant="text"
@@ -101,7 +101,7 @@
         <jhi-button
           [class]="headerButtonClass"
           (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
-          label="auth.passkey.buttons.passkeyShort"
+          [label]="isProfessorPage() ? 'auth.passkey.buttons.professorPasskeyShort' : 'auth.passkey.buttons.passkeyShort'"
           severity="primary"
           variant="text"
         />

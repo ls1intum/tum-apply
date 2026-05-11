@@ -203,7 +203,7 @@ describe('KeycloakPasskeyManager', () => {
     expect(Array.from(credentialCreation.publicKey?.user.id as Uint8Array)).toEqual(Array.from(new TextEncoder().encode('subject-123')));
     expect(credentialCreation.publicKey?.user.name).toBe('jane');
     expect(credentialCreation.publicKey?.user.displayName).toBe('Jane Doe');
-    expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM AET', id: 'apply.example.test' });
+    expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM Apply', id: 'apply.example.test' });
     expect(credentialCreation.publicKey?.authenticatorSelection).toEqual({
       residentKey: 'required',
       userVerification: 'required',
@@ -264,7 +264,7 @@ describe('KeycloakPasskeyManager', () => {
     await manager.registerPasskey();
 
     const credentialCreation = credentialsCreate.mock.calls[0][0] as CredentialCreationOptions;
-    expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM AET', id: 'staging.apply.in.tum.de' });
+    expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM Apply', id: 'staging.apply.in.tum.de' });
   });
 
   it('should fall back to the current hostname when relying party id is not configured', async () => {
@@ -291,7 +291,7 @@ describe('KeycloakPasskeyManager', () => {
     await manager.registerPasskey();
 
     const credentialCreation = credentialsCreate.mock.calls[0][0] as CredentialCreationOptions;
-    expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM AET', id: window.location.hostname });
+    expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM Apply', id: window.location.hostname });
   });
 
   it('should list passkeys returned by the server', async () => {
