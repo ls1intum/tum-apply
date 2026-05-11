@@ -73,7 +73,7 @@ export class ReferenceLetterUploadComponent {
   }
 
   /**
-    * Captures the file the referee picked.
+   * Captures the file the referee picked.
    *
    * @param files the queued file list emitted by the upload button
    */

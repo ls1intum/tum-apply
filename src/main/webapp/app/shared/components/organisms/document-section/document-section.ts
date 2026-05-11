@@ -89,10 +89,6 @@ export class DocumentSection {
 
     dto?.referenceDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeReference', document: d }));
 
-    // Externally-uploaded reference letters appear last and are individually labelled with the
-    // referee's name so reviewers can tell them apart at a glance. The label stays a translation
-    // key — the referee name is interpolated as a parameter so it never round-trips through the
-    // missing-translation handler.
     letters
       .filter((letter): letter is ReferenceRequestDTO & { documentId: string } => !!letter.documentId)
       .forEach(letter => {
