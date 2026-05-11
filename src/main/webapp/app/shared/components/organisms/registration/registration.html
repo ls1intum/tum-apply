@@ -1,7 +1,7 @@
-<div class="registration-header">
+<div class="flex items-center justify-center self-stretch p-4 text-[2rem] font-bold rounded-t-xl bg-accent text-[var(--p-text-on-accent)]">
   @if (authOrchestrator.registerStep() !== 'email') {
     <jhi-button
-      class="registration-header-button back-button"
+      class="registration-header-button absolute top-3 left-3 scale-[0.8]"
       (click)="onBack()"
       variant="text"
       icon="chevron-left"
@@ -11,31 +11,40 @@
   }
   <h1 jhiTranslate="auth.common.title"></h1>
 </div>
-<div class="registration-steps">
-  <div class="steps">
-    <span [translateValues]="{ number: registerProgress(), total: totalRegisterSteps }" jhiTranslate="auth.register.texts.steps"></span>
+<div class="flex flex-col px-8 items-center">
+  <div class="grid grid-cols-[1fr_auto_1fr] items-center w-full h-14">
+    <span
+      class="col-start-2 justify-self-center text-center"
+      [translateValues]="{ number: registerProgress(), total: totalRegisterSteps }"
+      jhiTranslate="auth.register.texts.steps"
+    ></span>
     @if (showSkipButton()) {
-      <jhi-button (click)="onSkip()" variant="text" icon="chevron-right" />
+      <jhi-button class="col-start-3 justify-self-end" (click)="onSkip()" variant="text" icon="chevron-right" />
     }
   </div>
-  <div class="progressbar">
-    <p-progressbar [showValue]="false" [value]="registerProgressInPercent()" class="progressbar" color="var(--p-accent-color)" />
+  <div class="flex items-center gap-2 w-full">
+    <p-progressbar
+      [showValue]="false"
+      [value]="registerProgressInPercent()"
+      class="flex items-center gap-2 w-full"
+      color="var(--p-accent-color)"
+    />
   </div>
 </div>
-<div class="registration-content">
-  <div class="registration-panel">
+<div class="registration-content flex flex-col items-center self-stretch gap-1 px-8 py-6">
+  <div class="flex flex-col items-center justify-center self-stretch gap-4 max-w-100 w-full">
     @switch (authOrchestrator.registerStep()) {
       @case ('email') {
-        <jhi-credentials-group [showPassword]="false" [submitHandler]="sendOtp" class="registration-credentials" [isLogin]="false" />
+        <jhi-credentials-group [showPassword]="false" [submitHandler]="sendOtp" class="w-full" [isLogin]="false" />
       }
       @case ('otp') {
-        <jhi-otp-input [registration]="true" />
+        <jhi-otp-input class="w-full" [registration]="true" />
       }
       @case ('profile') {
-        <jhi-profile class="profile" [submitHandler]="setProfile" />
+        <jhi-profile class="w-full" [submitHandler]="setProfile" />
       }
       @case ('password') {
-        <form class="password" [formGroup]="passwordForm" (ngSubmit)="setPassword()">
+        <form class="w-full" [formGroup]="passwordForm" (ngSubmit)="setPassword()">
           <jhi-password-input
             label="auth.common.password.label"
             [shouldTranslate]="true"
@@ -54,10 +63,11 @@
     }
   </div>
   @if (authOrchestrator.registerStep() === 'email') {
-    <p class="registration-footer">
+    <p class="pt-4 text-center text-sm font-normal">
       <span jhiTranslate="auth.register.texts.accountPresent.prefix"></span>
       <a
         tabindex="0"
+        class="text-[var(--p-accent-color)] font-bold cursor-pointer hover:text-primary-hover"
         (click)="authOrchestrator.switchToLogin()"
         (keydown.enter)="authOrchestrator.switchToLogin()"
         jhiTranslate="auth.register.texts.accountPresent.link"

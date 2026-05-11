@@ -41,13 +41,6 @@ describe('AuthIdpButtons', () => {
     }).compileComponents();
   });
 
-  it('should create component', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    expect(component).toBeTruthy();
-  });
-
   it('should configure buttons vertically with labels at all viewport sizes', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;

@@ -102,7 +102,11 @@ public class PDFExportService {
                     labels.get("startDate"),
                     formatStartDateForOverview(formatDate(job.startDate()), job.startDateByArrangement(), labels)
                 )
-                .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
+                .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()));
+            if (job.referenceLettersRequired() > 0) {
+                builder.addOverviewItem(labels.get("referenceLettersRequired"), String.valueOf(job.referenceLettersRequired()));
+            }
+            builder
                 .addOverviewItem(labels.get("suitableForDisabled"), formatYesNo(job.suitableForDisabled(), labels))
                 .setOverviewDescriptionTitle(labels.get("jobDetails"))
                 .setOverviewDescription(descriptionForExport);
@@ -217,6 +221,7 @@ public class PDFExportService {
                 ),
                 job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-",
                 job.tvlGrade() != null ? job.tvlGrade().name() : "-",
+                job.referenceLettersRequired(),
                 formatStartDateForOverview(formatDate(job.startDate()), job.startDateByArrangement(), labels),
                 formatDate(job.endDate()),
                 formatYesNo(job.suitableForDisabled(), labels)
@@ -288,6 +293,7 @@ public class PDFExportService {
                 ),
                 jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().correctLanguageValue(lang) : "-",
                 jobFormDTO.tvlGrade() != null ? jobFormDTO.tvlGrade().name() : "-",
+                jobFormDTO.referenceLettersRequired(),
                 formatStartDateForOverview(
                     jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
                     jobFormDTO.startDateByArrangement(),
@@ -420,8 +426,11 @@ public class PDFExportService {
             .addOverviewItem(labels.get("fundingType"), getValue(data.fundingType()))
             .addOverviewItem(labels.get("tvlGrade"), getValue(data.tvlGrade()))
             .addOverviewItem(labels.get("startDate"), getValue(data.startDate()))
-            .addOverviewItem(labels.get("endDate"), getValue(data.endDate()))
-            .addOverviewItem(labels.get("suitableForDisabled"), getValue(data.suitableForDisabled()));
+            .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
+        if (data.referenceLettersRequired() > 0) {
+            builder.addOverviewItem(labels.get("referenceLettersRequired"), String.valueOf(data.referenceLettersRequired()));
+        }
+        builder.addOverviewItem(labels.get("suitableForDisabled"), getValue(data.suitableForDisabled()));
     }
 
     /**

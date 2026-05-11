@@ -1,5 +1,5 @@
-<div [class.active]="isCalendarOpen()" class="label-top datepicker-container">
-  <label class="custom-label" for="startDate">
+<div [class.active]="isCalendarOpen()" class="label-top datepicker-container flex flex-col relative">
+  <label class="mb-1 mr-4 text-text-primary" for="startDate">
     @if (label() !== undefined) {
       @if (shouldTranslate()) {
         <span jhiTranslate="{{ label() }}"></span>
@@ -30,7 +30,7 @@
     [defaultDate]="defaultDate()"
     [showButtonBar]="true"
     [style]="{ width: width() }"
-    class="custom-datepicker"
+    class="custom-datepicker flex-1"
     [dateFormat]="dateFormat()"
     iconDisplay="button"
     inputId="startDate"

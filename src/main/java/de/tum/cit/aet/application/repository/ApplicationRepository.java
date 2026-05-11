@@ -71,6 +71,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     j.startDate,
                     j.endDate,
                     j.contractDuration,
+                    j.referenceLettersRequired,
                     i.url
                 ),
                 a.state,
@@ -136,6 +137,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     j.startDate,
                     j.endDate,
                     j.contractDuration,
+                    j.referenceLettersRequired,
                     i.url
                 ),
                 a.state,
@@ -250,6 +252,24 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
     )
     Optional<Application> findWithDetailsById(@Param("id") UUID id);
+
+    /**
+     * Loads an application with applicant and job eagerly fetched. Used by callers that need to
+     * perform ownership ({@code applicant.userId}) and job-config ({@code job.referenceLettersRequired})
+     * checks without an open service-level transaction.
+     *
+     * @param id the application id
+     * @return the application with applicant and job, or empty if none
+     */
+    @Query(
+        """
+        SELECT a FROM Application a
+        LEFT JOIN FETCH a.applicant
+        LEFT JOIN FETCH a.job
+        WHERE a.applicationId = :id
+        """
+    )
+    Optional<Application> findByIdWithApplicantAndJob(@Param("id") UUID id);
 
     @Query(
         """

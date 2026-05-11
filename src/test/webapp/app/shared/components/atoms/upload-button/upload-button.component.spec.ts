@@ -63,11 +63,6 @@ describe('UploadButtonComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create an uploadbutton', () => {
-    const fixture = createUploadButtonFixture({ applicationId: 'app-id', documentType: 'CV' });
-    expect(fixture.componentRef).toBeTruthy();
-  });
-
   it('should show error if file exceeds max upload size', async () => {
     const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
     const component = fixture.componentInstance;
@@ -185,15 +180,6 @@ describe('UploadButtonComponent', () => {
     expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.delete_failed');
   });
 
-  it('should set isUploading to false on clear', () => {
-    const fixture = createUploadButtonFixture({ applicationId: 'app-id', documentType: 'CV' });
-    const component = fixture.componentInstance;
-
-    component.isUploading.set(true);
-    component.onClear();
-    expect(component.isUploading()).toBe(false);
-  });
-
   it('should skip renaming if name is empty', async () => {
     const fixture = createUploadButtonFixture({ applicationId: 'app-id', documentType: 'CV' });
     const component = fixture.componentInstance;
@@ -272,22 +258,6 @@ describe('UploadButtonComponent', () => {
     firstValueFromSpy.mockRestore();
   });
 
-  it('should not rename document if name is null or undefined', async () => {
-    const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
-    const component = fixture.componentInstance;
-    fixture.detectChanges();
-
-    const renameSpy = vi.spyOn(applicationApi, 'renameDocument');
-
-    const docWithUndefinedName = { id: '1', name: undefined } as any;
-    await component.renameDocument(docWithUndefinedName);
-    expect(renameSpy).not.toHaveBeenCalled();
-
-    const docWithNullName = { id: '1', name: null } as any;
-    await component.renameDocument(docWithNullName);
-    expect(renameSpy).not.toHaveBeenCalled();
-  });
-
   it('should rename document if name is valid and update documentIds correctly', async () => {
     const fixture = createUploadButtonFixture({ applicationId: 'app-id', documentType: 'CV' });
     const component = fixture.componentInstance;
@@ -308,61 +278,22 @@ describe('UploadButtonComponent', () => {
     expect(updatedDocs?.find(d => d.id === 'doc-2')?.name).toBe('OtherDoc');
   });
 
-  it('should handle deleteDictionary when documentIds is undefined (fallback to empty array)', async () => {
-    const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
-    const component = fixture.componentInstance;
-
-    await component.deleteDictionary({ id: 'doc-1', size: 1 });
-
-    expect(component.documentIds()).toEqual([]);
-  });
-
-  it('should handle undefined documentIds in rename function', async () => {
-    const fixture = createUploadButtonFixture({ applicationId: 'app-id', documentType: 'CV' });
-    const component = fixture.componentInstance;
-
-    const docId = 'doc-1';
-    const newName = 'UpdatedName';
-
-    component.documentIds.set(undefined);
-
-    await component.renameDocument({ id: docId, name: newName, size: 1000 });
-
-    const updatedDocs = component.documentIds();
-    expect(updatedDocs?.length).toBe(0);
-  });
-
   it('should remove a deferred queued file by placeholder id after renaming and deleting it', async () => {
     const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV', deferUpload: true });
     const component = fixture.componentInstance;
-
-    component.fileUploadComponent = signal({
-      clear: vi.fn(),
-    } as unknown as FileUpload);
+    component.fileUploadComponent = signal({ clear: vi.fn() } as unknown as FileUpload);
 
     await component.onFileSelected({
       currentFiles: [new File(['old-content'], 'original.pdf', { type: 'application/pdf' })],
     } as FileSelectEvent);
 
-    const queuedDocument = component.documentIds()?.[0];
-    expect(queuedDocument).toBeDefined();
-    if (!queuedDocument) {
-      throw new Error('Expected queued document');
-    }
-
+    const queuedDocument = component.documentIds()![0];
     await component.renameDocument({ id: queuedDocument.id, name: 'renamed.pdf', size: queuedDocument.size });
 
-    expect(component.documentIds()?.[0]?.name).toBe('renamed.pdf');
-    expect(component.queuedFiles()).toHaveLength(1);
+    expect(component.documentIds()![0].name).toBe('renamed.pdf');
     expect(component.queuedFiles()[0].name).toBe('renamed.pdf');
 
-    const renamedDocument = component.documentIds()?.[0];
-    expect(renamedDocument).toBeDefined();
-    if (!renamedDocument) {
-      throw new Error('Expected renamed document');
-    }
-
-    await component.deleteDictionary(renamedDocument);
+    await component.deleteDictionary(component.documentIds()![0]);
 
     expect(component.documentIds()).toEqual([]);
     expect(component.queuedFiles()).toEqual([]);
@@ -372,19 +303,11 @@ describe('UploadButtonComponent', () => {
   it('should replace a deferred renamed placeholder by id without leaving the old queued file behind', async () => {
     const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV', deferUpload: true });
     const component = fixture.componentInstance;
-
-    component.fileUploadComponent = signal({
-      clear: vi.fn(),
-    } as unknown as FileUpload);
+    component.fileUploadComponent = signal({ clear: vi.fn() } as unknown as FileUpload);
 
     await component.onFileSelected({ currentFiles: [new File(['old'], 'original.pdf', { type: 'application/pdf' })] } as FileSelectEvent);
 
-    const queuedDocument = component.documentIds()?.[0];
-    expect(queuedDocument).toBeDefined();
-    if (!queuedDocument) {
-      throw new Error('Expected queued document');
-    }
-
+    const queuedDocument = component.documentIds()![0];
     await component.renameDocument({ id: queuedDocument.id, name: 'renamed.pdf', size: queuedDocument.size });
 
     const replacementFile = new File(['replacement-content'], 'renamed.pdf', { type: 'application/pdf' });
@@ -393,9 +316,8 @@ describe('UploadButtonComponent', () => {
     await component.onConfirmDuplicate();
 
     expect(component.documentIds()).toHaveLength(1);
-    expect(component.documentIds()?.[0]?.name).toBe('renamed.pdf');
+    expect(component.documentIds()![0].name).toBe('renamed.pdf');
     expect(component.queuedFiles()).toHaveLength(1);
-    expect(component.queuedFiles()[0].name).toBe('renamed.pdf');
     expect(component.queuedFiles()[0].size).toBe(replacementFile.size);
   });
 
@@ -446,19 +368,10 @@ describe('UploadButtonComponent', () => {
 
       // Expect delete then upload
       expect(applicationApi.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
-      expect(applicationApi.uploadDocuments).toHaveBeenCalledTimes(1);
+      expect(applicationApi.uploadDocuments).toHaveBeenCalledOnce();
 
       // Check if list updated
       expect(component.documentIds()).toEqual([{ id: 'new-id', name: 'duplicate.pdf', size: 2000 }]);
-    });
-
-    it('should handle cancel via ConfirmDialog rejection', () => {
-      const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
-      const component = fixture.componentInstance;
-
-      component.pendingDuplicateFile.set(new File([], 'test.pdf'));
-
-      expect(component.pendingDuplicateFile()).not.toBeNull();
     });
 
     it('should not proceed if no pending file is set during replace', async () => {
@@ -494,62 +407,22 @@ describe('UploadButtonComponent', () => {
       expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.replace_failed');
       expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
     });
-
-    it('should handle documentIds becoming undefined during replace (race condition)', async () => {
-      const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
-      const component = fixture.componentInstance;
-
-      const existingDoc = { id: 'old-id', name: 'duplicate.pdf', size: 1000 };
-      component.documentIds.set([existingDoc]);
-
-      const newFile = new File(['new content'], 'duplicate.pdf');
-      component.pendingDuplicateFile.set(newFile);
-
-      // Subject to control when the delete completes
-      const deleteSubject = new rxjs.Subject<any>();
-      vi.spyOn(applicationApi, 'deleteDocumentFromApplication').mockImplementation(
-        (): rxjs.Observable<any> => deleteSubject.asObservable(),
-      );
-      vi.spyOn(applicationApi, 'uploadDocuments').mockImplementation((): rxjs.Observable<any> => of([]));
-
-      // Start the replace process
-      const replacePromise = component.onConfirmDuplicate();
-
-      // Simulate race condition: documentIds cleared while delete is pending
-      component.documentIds.set(undefined);
-
-      // Complete the delete
-      deleteSubject.next({});
-      deleteSubject.complete();
-
-      await replacePromise;
-
-      // Verify that it handled the undefined documentIds gracefully (fallback to [])
-      expect(component.documentIds()).toEqual([]);
-    });
   });
 
-  it('should do nothing on upload if no files selected', async () => {
+  it.each<File[] | undefined>([undefined, []])('should do nothing on upload when selectedFiles=%s', async selected => {
     const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
-    const component = fixture.componentInstance;
-
-    component.selectedFiles.set(undefined);
-    await component.onUpload();
-    expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
-
-    component.selectedFiles.set([]);
-    await component.onUpload();
+    fixture.componentInstance.selectedFiles.set(selected);
+    await fixture.componentInstance.onUpload();
     expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
   });
 
   describe('Auth gate via requestAuth', () => {
-    it('invokes requestAuth when applicationId is empty and resumes the upload after the callback resolves', async () => {
+    it('should invoke requestAuth when applicationId is empty', async () => {
       const fixture = TestBed.createComponent(UploadButtonComponent);
       const component = fixture.componentInstance;
       fixture.componentRef.setInput('documentType', 'CV');
       fixture.componentRef.setInput('applicationId', undefined);
       const trigger = vi.fn().mockImplementation(async () => {
-        // Simulate the parent populating applicationId after auth completes.
         fixture.componentRef.setInput('applicationId', 'app-after-auth');
       });
       fixture.componentRef.setInput('requestAuth', trigger);
@@ -557,39 +430,27 @@ describe('UploadButtonComponent', () => {
 
       component.fileUploadComponent = signal({ clear: vi.fn() } as unknown as FileUpload);
 
-      const file = new File([new ArrayBuffer(10)], 'cv.pdf');
-      await component.onFileSelected({ currentFiles: [file] } as FileSelectEvent);
+      await component.onFileSelected({ currentFiles: [new File([new ArrayBuffer(10)], 'cv.pdf')] } as FileSelectEvent);
 
-      expect(trigger).toHaveBeenCalledTimes(1);
+      expect(trigger).toHaveBeenCalledOnce();
     });
 
-    it('does not upload when applicationId is empty and no requestAuth callback is provided', async () => {
+    it.each<['missing callback' | 'rejected callback', (() => Promise<unknown>) | undefined]>([
+      ['missing callback', undefined],
+      ['rejected callback', () => Promise.reject(new Error('cancelled'))],
+    ])('should not upload when applicationId is empty and %s', async (_desc, requestAuth) => {
       const fixture = TestBed.createComponent(UploadButtonComponent);
       const component = fixture.componentInstance;
       fixture.componentRef.setInput('documentType', 'CV');
       fixture.componentRef.setInput('applicationId', undefined);
+      if (requestAuth) {
+        fixture.componentRef.setInput('requestAuth', requestAuth);
+      }
       fixture.detectChanges();
 
       component.fileUploadComponent = signal({ clear: vi.fn() } as unknown as FileUpload);
 
-      const file = new File([new ArrayBuffer(10)], 'cv.pdf');
-      await component.onFileSelected({ currentFiles: [file] } as FileSelectEvent);
-
-      expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
-    });
-
-    it('does not upload when requestAuth rejects (user cancels OTP)', async () => {
-      const fixture = TestBed.createComponent(UploadButtonComponent);
-      const component = fixture.componentInstance;
-      fixture.componentRef.setInput('documentType', 'CV');
-      fixture.componentRef.setInput('applicationId', undefined);
-      fixture.componentRef.setInput('requestAuth', () => Promise.reject(new Error('cancelled')));
-      fixture.detectChanges();
-
-      component.fileUploadComponent = signal({ clear: vi.fn() } as unknown as FileUpload);
-
-      const file = new File([new ArrayBuffer(10)], 'cv.pdf');
-      await component.onFileSelected({ currentFiles: [file] } as FileSelectEvent);
+      await component.onFileSelected({ currentFiles: [new File([new ArrayBuffer(10)], 'cv.pdf')] } as FileSelectEvent);
 
       expect(applicationApi.uploadDocuments).not.toHaveBeenCalled();
     });

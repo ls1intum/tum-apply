@@ -66,10 +66,6 @@ describe('Registration Component', () => {
     vi.clearAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('sendOtp', () => {
     it('should return false for empty email', async () => {
       const res = await component.sendOtp('   ');
@@ -89,22 +85,19 @@ describe('Registration Component', () => {
   });
 
   describe('setProfile', () => {
-    it('should call accountService.updateUser and advance step on success', async () => {
+    it('should call accountService.updateUser and advance step on success, set error on failure', async () => {
       const updateSpy = vi.spyOn(accountService, 'updateUser').mockResolvedValue(undefined);
       const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
 
       await component.setProfile('John', 'Doe');
-
       expect(updateSpy).toHaveBeenCalledWith('John', 'Doe');
       expect(nextStepSpy).toHaveBeenCalledOnce();
-    });
 
-    it('should set orchestrator error on failure', async () => {
       vi.spyOn(accountService, 'updateUser').mockRejectedValue(new Error('fail'));
       const setErrorSpy = vi.spyOn(authOrchestrator, 'setError');
-      const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
-      await component.setProfile('John', 'Doe');
+      nextStepSpy.mockClear();
 
+      await component.setProfile('John', 'Doe');
       expect(setErrorSpy).toHaveBeenCalledWith({
         summary: 'auth.common.toast.updateNameFailed.summary',
         detail: 'auth.common.toast.updateNameFailed.detail',
@@ -114,25 +107,20 @@ describe('Registration Component', () => {
   });
 
   describe('setPassword', () => {
-    it('should call accountService.updatePassword and advance step on success', async () => {
+    it('should call accountService.updatePassword and advance step on success, set error on failure', async () => {
       component.passwordForm.controls['password'].setValue('secret123');
       const updateSpy = vi.spyOn(accountService, 'updatePassword').mockResolvedValue(undefined);
       const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
 
       await component.setPassword();
-
       expect(updateSpy).toHaveBeenCalledWith('secret123');
       expect(nextStepSpy).toHaveBeenCalledOnce();
-    });
 
-    it('should set orchestrator error on failure', async () => {
-      component.passwordForm.controls['password'].setValue('secret123');
       vi.spyOn(accountService, 'updatePassword').mockRejectedValue(new Error('fail'));
       const setErrorSpy = vi.spyOn(authOrchestrator, 'setError');
-      const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
+      nextStepSpy.mockClear();
 
       await component.setPassword();
-
       expect(setErrorSpy).toHaveBeenCalledWith({
         summary: 'auth.common.toast.updatePasswordFailed.summary',
         detail: 'auth.common.toast.updatePasswordFailed.detail',
@@ -142,16 +130,13 @@ describe('Registration Component', () => {
   });
 
   describe('navigation', () => {
-    it('onBack should call orchestrator.previousStep', () => {
-      const prevSpy = vi.spyOn(authOrchestrator, 'previousStep');
-      component.onBack();
-      expect(prevSpy).toHaveBeenCalledOnce();
-    });
-
-    it('onSkip should call orchestrator.nextStep', () => {
-      const nextSpy = vi.spyOn(authOrchestrator, 'nextStep');
-      component.onSkip();
-      expect(nextSpy).toHaveBeenCalledOnce();
+    it.each<['onBack' | 'onSkip', 'previousStep' | 'nextStep']>([
+      ['onBack', 'previousStep'],
+      ['onSkip', 'nextStep'],
+    ])('should call orchestrator.%s when %s is invoked', (componentMethod, orchestratorMethod) => {
+      const spy = vi.spyOn(authOrchestrator, orchestratorMethod);
+      component[componentMethod]();
+      expect(spy).toHaveBeenCalledOnce();
     });
   });
 });

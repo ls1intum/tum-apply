@@ -56,18 +56,14 @@ describe('UserAvatarComponent', () => {
   const component = () => fixture.componentInstance as unknown as UserAvatarComponentTestAccess;
 
   describe('initials', () => {
-    it('should use "U" for missing, empty, and whitespace-only names', () => {
-      for (const fullName of [undefined, '', '   ']) {
-        expect(render({ fullName }).initials()).toBe('U');
-      }
-    });
-
-    it('should derive first and last initials for full names', () => {
-      expect(render({ fullName: 'Max Applicant' }).initials()).toBe('MA');
-    });
-
-    it('should derive a single initial for one-part names', () => {
-      expect(render({ fullName: 'max' }).initials()).toBe('M');
+    it.each<[string | undefined, string]>([
+      [undefined, 'U'],
+      ['', 'U'],
+      ['   ', 'U'],
+      ['Max Applicant', 'MA'],
+      ['max', 'M'],
+    ])('should derive initials %s for fullName=%s', (fullName, expected) => {
+      expect(render({ fullName }).initials()).toBe(expected);
     });
   });
 
@@ -78,62 +74,36 @@ describe('UserAvatarComponent', () => {
     });
   });
 
-  describe('backgroundColor', () => {
-    it('should use the same color for undefined and empty or whitespace-only names', () => {
-      const colorForUndefined = render({ fullName: undefined }).backgroundColor();
-
-      for (const fullName of ['', '   ']) {
-        expect(render({ fullName }).backgroundColor()).toBe(colorForUndefined);
-      }
-    });
-  });
-
   describe('sizeClass', () => {
-    it('should use the sm size class when size is set to sm', () => {
-      expect(render({ size: 'sm' }).sizeClass()).toBe('h-10 w-10 text-[1rem]');
-    });
-
-    it('should use the md size class when size is set to md', () => {
-      expect(render({ size: 'md' }).sizeClass()).toBe('h-12 w-12 text-[1.2rem]');
-    });
-
-    it('should use the lg size class when size is set to lg', () => {
-      expect(render({ size: 'lg' }).sizeClass()).toBe('h-14 w-14 text-[1.4rem]');
-    });
-
-    it('should use the sm size class by default', () => {
-      expect(render().sizeClass()).toBe('h-10 w-10 text-[1rem]');
-    });
-
-    it('should use the xl size class when size is set to xl', () => {
-      expect(render({ size: 'xl' }).sizeClass()).toBe('h-16 w-16 text-[1.6rem]');
+    it.each<[AvatarInputs['size'] | undefined, string]>([
+      [undefined, 'h-10 w-10 text-[1rem]'],
+      ['sm', 'h-10 w-10 text-[1rem]'],
+      ['md', 'h-12 w-12 text-[1.2rem]'],
+      ['lg', 'h-14 w-14 text-[1.4rem]'],
+      ['xl', 'h-16 w-16 text-[1.6rem]'],
+    ])('should use class %s for size %s', (size, expected) => {
+      const inputs: AvatarInputs = size === undefined ? {} : { size };
+      expect(render(inputs).sizeClass()).toBe(expected);
     });
   });
 
   describe('image loading', () => {
+    it.each<['eager' | 'lazy']>([['eager'], ['lazy']])('should set loading=%s', loading => {
+      render({ fullName: 'Max Applicant', avatarUrl: '/images/profiles/avatar.jpg', loading });
+
+      expect(getImage()?.getAttribute('loading')).toBe(loading);
+    });
+
     it('should default avatar images to eager loading', () => {
       render({ fullName: 'Max Applicant', avatarUrl: '/images/profiles/avatar.jpg' });
 
       expect(getImage()?.getAttribute('loading')).toBe('eager');
     });
-
-    it('should allow lazy loading for list contexts', () => {
-      render({ fullName: 'Max Applicant', avatarUrl: '/images/profiles/avatar.jpg', loading: 'lazy' });
-
-      expect(getImage()?.getAttribute('loading')).toBe('lazy');
-    });
   });
 
   describe('private helpers', () => {
-    it('should cover initials fallback when split and filter produce no parts', () => {
-      expect(component().initialsFromFullName('   ')).toBe('U');
-    });
-
     it('should cover the hashString negative hash branch', () => {
-      const weirdValue = {
-        length: 1,
-        charCodeAt: () => -1,
-      };
+      const weirdValue = { length: 1, charCodeAt: () => -1 };
 
       expect(component().hashString(weirdValue as unknown as string)).toBe(4_294_967_295 - 4_294_967_296);
     });

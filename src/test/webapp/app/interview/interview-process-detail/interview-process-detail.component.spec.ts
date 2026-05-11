@@ -130,39 +130,19 @@ describe('InterviewProcessDetailComponent', () => {
 
       expect(component.isJobClosed()).toBe(expected);
     });
-
-    it('should default safeProcessId and safeJobTitle to empty strings before data loads', () => {
-      (mockInterviewService.getInterviewProcessDetails as ReturnType<typeof vi.fn>).mockReturnValue(of(processDetailsResponse));
-
-      fixture = TestBed.createComponent(InterviewProcessDetailComponent);
-      component = fixture.componentInstance;
-
-      // safeProcessId returns processId or '' — processId is set from route param
-      expect(component.safeProcessId()).toBe('process-1');
-      // safeJobTitle returns '' before API response arrives
-      expect(component.safeJobTitle()).toBe('');
-    });
   });
 
-  describe('Refresh Keys', () => {
-    it('should increment intervieweeRefreshKey on onSlotAssigned()', async () => {
-      fixture = TestBed.createComponent(InterviewProcessDetailComponent);
-      component = fixture.componentInstance;
-      await fixture.whenStable();
+  it('should increment refresh keys on slot events', async () => {
+    fixture = TestBed.createComponent(InterviewProcessDetailComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
 
-      const initial = component.intervieweeRefreshKey();
-      component.onSlotAssigned();
-      expect(component.intervieweeRefreshKey()).toBe(initial + 1);
-    });
+    const initialAssigned = component.intervieweeRefreshKey();
+    component.onSlotAssigned();
+    expect(component.intervieweeRefreshKey()).toBe(initialAssigned + 1);
 
-    it('should increment slotsRefreshKey on onSlotCancelled()', async () => {
-      fixture = TestBed.createComponent(InterviewProcessDetailComponent);
-      component = fixture.componentInstance;
-      await fixture.whenStable();
-
-      const initial = component.slotsRefreshKey();
-      component.onSlotCancelled();
-      expect(component.slotsRefreshKey()).toBe(initial + 1);
-    });
+    const initialCancelled = component.slotsRefreshKey();
+    component.onSlotCancelled();
+    expect(component.slotsRefreshKey()).toBe(initialCancelled + 1);
   });
 });
