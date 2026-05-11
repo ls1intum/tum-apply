@@ -25,13 +25,22 @@ interface PasskeyActionTokenResponse {
   expiresIn?: number;
 }
 
+interface PasskeyUserIdentity {
+  id: string;
+  username: string;
+  displayName: string;
+}
+
+type GetPasskeyUserIdentity = () => PasskeyUserIdentity | undefined;
+type RemovePasskey = (credentialId: string) => Promise<void>;
+
 /**
  * Runtime dependencies required by {@link KeycloakPasskeyManager}.
  *
  * The manager is intentionally framework-agnostic and receives all external
  * interactions (token/session/user context) through this contract.
  */
-interface PasskeyManagerDependencies {
+type PasskeyManagerDependencies = {
   pendingRealmStorageKey: string;
   keycloakUrl: string;
   tumRealmName: string;
@@ -40,11 +49,11 @@ interface PasskeyManagerDependencies {
   relyingPartyId: string;
   getTokenParsed: () => Record<string, unknown>;
   canManagePasskeys: () => boolean;
-  getPasskeyUserIdentity: () => { id: string; username: string; displayName: string } | undefined;
+  getPasskeyUserIdentity: GetPasskeyUserIdentity;
   listPasskeys: () => Promise<PasskeyDTO[]>;
-  removePasskey(id: string): Promise<void>;
+  removePasskey: RemovePasskey;
   createPasskeyActionToken: () => Promise<PasskeyActionTokenResponse>;
-}
+};
 
 /**
  * Drives the passkey lifecycle against Keycloak (login, registration, listing, removal) by orchestrating WebAuthn calls
