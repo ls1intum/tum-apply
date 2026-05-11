@@ -49,28 +49,6 @@
       ]
     },
     {
-      "id": "00000000-0000-0000-0000-000000000103",
-      "username": "applicant1",
-      "enabled": true,
-      "email": "applicant1@tumapply.local",
-      "emailVerified": true,
-      "firstName": "Max",
-      "lastName": "Applicant",
-      "clientRoles": {
-        "account": [
-          "manage-account",
-          "view-profile"
-        ]
-      },
-      "credentials": [
-        {
-          "type": "password",
-          "value": "applicant",
-          "temporary": false
-        }
-      ]
-    },
-    {
       "id": "00000000-0000-0000-0000-000000000105",
       "username": "professor2",
       "enabled": true,
@@ -88,28 +66,6 @@
         {
           "type": "password",
           "value": "professor",
-          "temporary": false
-        }
-      ]
-    },
-    {
-      "id": "00000000-0000-0000-0000-000000000106",
-      "username": "applicant3",
-      "enabled": true,
-      "email": "applicant3@tumapply.local",
-      "emailVerified": true,
-      "firstName": "Jean-Pierre-Étienne",
-      "lastName": "Van Der Straaten-Sánchez",
-      "clientRoles": {
-        "account": [
-          "manage-account",
-          "view-profile"
-        ]
-      },
-      "credentials": [
-        {
-          "type": "password",
-          "value": "applicant",
           "temporary": false
         }
       ]
