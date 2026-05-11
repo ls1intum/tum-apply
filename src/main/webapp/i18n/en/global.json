@@ -726,6 +726,10 @@
       "title": "Link not valid",
       "invalidLink": "This recommendation letter link is invalid or no longer accessible."
     },
+    "uploadSuccess": {
+      "summary": "Letter uploaded",
+      "detail": "Your recommendation letter has been received."
+    },
     "uploadFailed": {
       "summary": "Upload failed",
       "detail": "We could not save your letter. Please try again."

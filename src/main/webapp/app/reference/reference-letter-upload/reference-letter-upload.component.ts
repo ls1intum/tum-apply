@@ -96,7 +96,7 @@ export class ReferenceLetterUploadComponent {
       this.justUploaded.set(true);
       this.toastService.showSuccessKey(`reference.toast.uploadSuccess`);
     } catch {
-      this.toastService.showErrorKey(`reference.toast.uploadFailed`);
+      this.toastService.showErrorKey(`reference.uploadFailed`);
     } finally {
       this.uploading.set(false);
     }

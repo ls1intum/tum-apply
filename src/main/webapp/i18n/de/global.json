@@ -726,6 +726,10 @@
       "title": "Link nicht gültig",
       "invalidLink": "Dieser Empfehlungsschreiben-Link ist ungültig oder nicht mehr erreichbar."
     },
+    "uploadSuccess": {
+      "summary": "Schreiben hochgeladen",
+      "detail": "Ihr Empfehlungsschreiben wurde empfangen."
+    },
     "uploadFailed": {
       "summary": "Upload fehlgeschlagen",
       "detail": "Wir konnten Ihr Schreiben nicht speichern. Bitte versuchen Sie es erneut."
