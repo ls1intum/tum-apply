@@ -100,6 +100,7 @@ describe('KeycloakPasskeyManager', () => {
 
     const credentialRequest = credentialsGet.mock.calls[0][0] as CredentialRequestOptions;
     expect(credentialRequest.publicKey?.userVerification).toBe('required');
+    expect(credentialRequest.publicKey?.rpId).toBe(window.location.hostname);
     expect(credentialRequest.publicKey?.allowCredentials).toBeUndefined();
     expect(Array.from(new Uint8Array(credentialRequest.publicKey?.challenge as ArrayBuffer))).toEqual([1, 2, 3]);
 

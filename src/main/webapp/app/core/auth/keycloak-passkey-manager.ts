@@ -72,6 +72,7 @@ export class KeycloakPasskeyManager {
     const challenge = await this.getPasskeyChallenge(realmKind);
     const publicKey: PublicKeyCredentialRequestOptions = {
       challenge: this.fromBase64Url(challenge.challenge),
+      rpId: this.getRelyingPartyId(),
       userVerification: 'required',
     };
 
