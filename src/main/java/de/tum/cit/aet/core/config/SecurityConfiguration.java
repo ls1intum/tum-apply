@@ -20,6 +20,7 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -184,6 +185,12 @@ public class SecurityConfiguration {
             )
             .oauth2ResourceServer(oauth2 ->
                 oauth2
+                    .authenticationEntryPoint((request, response, authException) -> {
+                        if (WebUtils.getCookie(request, "access_token") != null || WebUtils.getCookie(request, "refresh_token") != null) {
+                            CookieUtils.setAuthCookies(response, null);
+                        }
+                        new BearerTokenAuthenticationEntryPoint().commence(request, response, authException);
+                    })
                     .bearerTokenResolver(bearerTokenResolver())
                     .jwt(jwt -> jwt.jwtAuthenticationConverter(customJwtAuthenticationConverter))
             );
