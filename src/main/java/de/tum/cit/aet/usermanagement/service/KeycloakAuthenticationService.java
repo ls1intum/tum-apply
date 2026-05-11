@@ -254,14 +254,14 @@ public class KeycloakAuthenticationService {
             }
             refreshFailures.add(
                 "Access token azp '" +
-                authorizedParty +
-                "' not in configured clients [" +
-                externalServerClientId +
-                ", " +
-                tumServerClientId +
-                ", " +
-                adminClientId +
-                "]"
+                    authorizedParty +
+                    "' not in configured clients [" +
+                    externalServerClientId +
+                    ", " +
+                    tumServerClientId +
+                    ", " +
+                    adminClientId +
+                    "]"
             );
         }
 
@@ -278,7 +278,13 @@ public class KeycloakAuthenticationService {
         if (serverRefresh == null) {
             String fallbackClientId = serverClientIdForRealm(fallbackRealm);
             String fallbackClientSecret = serverClientSecretForRealm(fallbackRealm);
-            serverRefresh = tryRefreshTokensWithClient(fallbackRealm, fallbackClientId, fallbackClientSecret, refreshToken, refreshFailures);
+            serverRefresh = tryRefreshTokensWithClient(
+                fallbackRealm,
+                fallbackClientId,
+                fallbackClientSecret,
+                refreshToken,
+                refreshFailures
+            );
         }
         if (serverRefresh != null) {
             return getResponseFromToken(serverRefresh);

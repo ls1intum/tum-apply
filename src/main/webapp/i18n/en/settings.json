@@ -123,7 +123,7 @@
       },
       "error": {
         "title": "Could not load passkeys",
-        "description": "We couldn't load your passkeys right now. Please try again in a moment."
+        "description": "We could not load your passkeys right now. Please try again in a moment."
       },
       "unavailable": {
         "title": "Passkey management unavailable",

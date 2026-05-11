@@ -1,9 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
+import { firstValueFrom } from 'rxjs';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { environment } from 'app/environments/environment';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthenticationResourceApi } from 'app/generated/api/authentication-resource-api';
 
 import { AccountService } from './account.service';
 import { PasskeyCredentialSummary } from './models/auth.model';
@@ -52,6 +54,7 @@ export class KeycloakAuthenticationService {
   private readonly accountService = inject(AccountService);
   private readonly toastService = inject(ToastService);
   private readonly translate = inject(TranslateService);
+  private readonly authenticationApi = inject(AuthenticationResourceApi);
   private readonly translationKey = 'auth.common.toast';
 
   private keycloak: Keycloak | undefined;
@@ -312,10 +315,12 @@ export class KeycloakAuthenticationService {
       externalRealmName: this.config.keycloak.externalLoginRealm,
       clientId: this.config.keycloak.clientId,
       relyingPartyId: this.config.keycloak.relyingPartyId,
-      getToken: () => this.keycloak?.token,
       getTokenParsed: () => (this.keycloak?.tokenParsed ?? {}) as Record<string, unknown>,
       canManagePasskeys: () => this.canManagePasskeys(),
       getPasskeyUserIdentity: () => this.getPasskeyUserIdentity(),
+      listPasskeys: async () => firstValueFrom(this.authenticationApi.listPasskeys()),
+      removePasskey: async (id: string) => firstValueFrom(this.authenticationApi.removePasskey(id)),
+      createPasskeyActionToken: async () => firstValueFrom(this.authenticationApi.createPasskeyActionToken()),
     });
     return this.passkeyManager;
   }

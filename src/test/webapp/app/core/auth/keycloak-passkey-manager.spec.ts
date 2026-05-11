@@ -25,7 +25,7 @@ class MockAuthenticatorAttestationResponse {
   ) {}
 }
 
-function buffer(...bytes: number[]): ArrayBuffer {
+function buffer(bytes: number[]): ArrayBuffer {
   return new Uint8Array(bytes).buffer;
 }
 
@@ -60,10 +60,16 @@ describe('KeycloakPasskeyManager', () => {
       externalRealmName: 'external-login',
       clientId: 'mock-client',
       relyingPartyId: '',
-      getToken: vi.fn().mockReturnValue('mock-token'),
       getTokenParsed: vi.fn(() => tokenParsed),
       canManagePasskeys: vi.fn().mockReturnValue(true),
       getPasskeyUserIdentity: vi.fn().mockReturnValue({ id: 'mock-subject', username: 'mock-user', displayName: 'Mock User' }),
+      listPasskeys: vi.fn().mockResolvedValue([]),
+      removePasskey: vi.fn().mockResolvedValue(undefined),
+      createPasskeyActionToken: vi.fn().mockResolvedValue({
+        realm: 'external-login',
+        clientId: 'mock-action-client',
+        accessToken: 'mock-action-token',
+      }),
     };
 
     manager = new KeycloakPasskeyManager(deps);
@@ -80,8 +86,8 @@ describe('KeycloakPasskeyManager', () => {
       .fn()
       .mockResolvedValue(
         new MockPublicKeyCredential(
-          buffer(4, 5, 6),
-          new MockAuthenticatorAssertionResponse(buffer(7), buffer(8), buffer(9), buffer(10, 11)),
+          buffer([4, 5, 6]),
+          new MockAuthenticatorAssertionResponse(buffer([7]), buffer([8]), buffer([9]), buffer([10, 11])),
         ),
       );
     stubWebAuthn({ get: credentialsGet });
@@ -126,7 +132,7 @@ describe('KeycloakPasskeyManager', () => {
     const credentialsGet = vi
       .fn()
       .mockResolvedValue(
-        new MockPublicKeyCredential(buffer(4, 5, 6), new MockAuthenticatorAssertionResponse(buffer(7), buffer(8), buffer(9), null)),
+        new MockPublicKeyCredential(buffer([4, 5, 6]), new MockAuthenticatorAssertionResponse(buffer([7]), buffer([8]), buffer([9]), null)),
       );
     stubWebAuthn({ get: credentialsGet });
     fetchMock.mockResolvedValueOnce({
@@ -145,8 +151,8 @@ describe('KeycloakPasskeyManager', () => {
       .fn()
       .mockResolvedValue(
         new MockPublicKeyCredential(
-          buffer(4, 5, 6),
-          new MockAuthenticatorAssertionResponse(buffer(7), buffer(8), buffer(9), buffer(10, 11)),
+          buffer([4, 5, 6]),
+          new MockAuthenticatorAssertionResponse(buffer([7]), buffer([8]), buffer([9]), buffer([10, 11])),
         ),
       );
     stubWebAuthn({ get: credentialsGet });
@@ -178,18 +184,9 @@ describe('KeycloakPasskeyManager', () => {
     deps.relyingPartyId = 'apply.example.test';
     const credentialsCreate = vi
       .fn()
-      .mockResolvedValue(new MockPublicKeyCredential(buffer(12), new MockAuthenticatorAttestationResponse(buffer(13), buffer(14))));
+      .mockResolvedValue(new MockPublicKeyCredential(buffer([12]), new MockAuthenticatorAttestationResponse(buffer([13]), buffer([14]))));
     stubWebAuthn({ create: credentialsCreate });
     fetchMock
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: vi.fn().mockResolvedValue({
-          realm: 'external-login',
-          clientId: 'mock-action-client',
-          accessToken: 'mock-action-token',
-        }),
-      })
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -212,18 +209,12 @@ describe('KeycloakPasskeyManager', () => {
       userVerification: 'required',
     });
 
-    expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/auth/passkeys/action-token', {
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer mock-token',
-      },
-    });
-    expect(fetchMock).toHaveBeenNthCalledWith(2, 'http://mock-keycloak/realms/external-login/passkey/mock-action-client/challenge', {
+    expect(deps.createPasskeyActionToken).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenNthCalledWith(1, 'http://mock-keycloak/realms/external-login/passkey/mock-action-client/challenge', {
       credentials: 'include',
     });
-    const saveRequest = fetchMock.mock.calls[2][1] as RequestInit;
-    expect(fetchMock.mock.calls[2][0]).toBe('http://mock-keycloak/realms/external-login/passkey/mock-action-client/save');
+    const saveRequest = fetchMock.mock.calls[1][1] as RequestInit;
+    expect(fetchMock.mock.calls[1][0]).toBe('http://mock-keycloak/realms/external-login/passkey/mock-action-client/save');
     expect(saveRequest.credentials).toBe('include');
     expect(saveRequest.headers).toEqual({
       'Content-Type': 'application/json',
@@ -257,18 +248,9 @@ describe('KeycloakPasskeyManager', () => {
     deps.relyingPartyId = 'staging.apply.in.tum.de';
     const credentialsCreate = vi
       .fn()
-      .mockResolvedValue(new MockPublicKeyCredential(buffer(1), new MockAuthenticatorAttestationResponse(buffer(2), buffer(3))));
+      .mockResolvedValue(new MockPublicKeyCredential(buffer([1]), new MockAuthenticatorAttestationResponse(buffer([2]), buffer([3]))));
     stubWebAuthn({ create: credentialsCreate });
     fetchMock
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: vi.fn().mockResolvedValue({
-          realm: 'external-login',
-          clientId: 'mock-action-client',
-          accessToken: 'mock-action-token',
-        }),
-      })
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -293,18 +275,9 @@ describe('KeycloakPasskeyManager', () => {
     deps.relyingPartyId = '   ';
     const credentialsCreate = vi
       .fn()
-      .mockResolvedValue(new MockPublicKeyCredential(buffer(1), new MockAuthenticatorAttestationResponse(buffer(2), buffer(3))));
+      .mockResolvedValue(new MockPublicKeyCredential(buffer([1]), new MockAuthenticatorAttestationResponse(buffer([2]), buffer([3]))));
     stubWebAuthn({ create: credentialsCreate });
     fetchMock
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: vi.fn().mockResolvedValue({
-          realm: 'external-login',
-          clientId: 'mock-action-client',
-          accessToken: 'mock-action-token',
-        }),
-      })
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -327,51 +300,24 @@ describe('KeycloakPasskeyManager', () => {
       { id: 'passkey-2', label: 'Backup key' },
       { id: '' },
     ];
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: vi.fn().mockResolvedValue(credentialsPayload),
-    });
+    vi.mocked(deps.listPasskeys).mockResolvedValue(credentialsPayload);
 
     await expect(manager.listPasskeys()).resolves.toEqual([
       { id: 'passkey-1', label: 'MacBook Pro', createdDate: 1_710_000_000_000 },
       { id: 'passkey-2', label: 'Backup key' },
     ]);
-    expect(fetchMock).toHaveBeenCalledWith('/api/auth/passkeys', {
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer mock-token',
-      },
-    });
+    expect(deps.listPasskeys).toHaveBeenCalledTimes(1);
   });
 
   it('should surface API errors when loading passkeys fails', async () => {
-    fetchMock.mockResolvedValue({
-      ok: false,
-      status: 503,
-      json: vi.fn().mockResolvedValue({ error: 'temporarily unavailable' }),
-    });
+    vi.mocked(deps.listPasskeys).mockRejectedValue(new Error('temporarily unavailable'));
 
     await expect(manager.listPasskeys()).rejects.toThrow('temporarily unavailable');
   });
 
   it('should remove a passkey via the encoded account credential endpoint', async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 204,
-      json: vi.fn().mockResolvedValue({}),
-    });
-
     await manager.removePasskey('passkey/with slash');
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/auth/passkeys/passkey%2Fwith%20slash', {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        Authorization: 'Bearer mock-token',
-      },
-    });
+    expect(deps.removePasskey).toHaveBeenCalledWith('passkey/with slash');
   });
 });

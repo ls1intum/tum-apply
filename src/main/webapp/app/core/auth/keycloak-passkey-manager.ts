@@ -38,10 +38,12 @@ interface PasskeyManagerDependencies {
   externalRealmName: string;
   clientId: string;
   relyingPartyId: string;
-  getToken: () => string | undefined;
   getTokenParsed: () => Record<string, unknown>;
   canManagePasskeys: () => boolean;
   getPasskeyUserIdentity: () => { id: string; username: string; displayName: string } | undefined;
+  listPasskeys: () => Promise<PasskeyDTO[]>;
+  removePasskey: (id: string) => Promise<void>;
+  createPasskeyActionToken: () => Promise<PasskeyActionTokenResponse>;
 }
 
 /**
@@ -193,21 +195,7 @@ export class KeycloakPasskeyManager {
    */
   async listPasskeys(): Promise<PasskeyCredentialSummary[]> {
     this.assertPasskeyManagementAvailable();
-    const response = await fetch('/api/auth/passkeys', {
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        ...this.getOptionalAuthorizationHeader(),
-      },
-    });
-    const payload = (await response.json().catch(() => [])) as PasskeyDTO[] | { error?: string };
-
-    if (!response.ok) {
-      const payloadError = Array.isArray(payload) ? undefined : payload.error;
-      throw new Error(getErrorMessage(payloadError, `Failed to load passkeys: ${response.status}`));
-    }
-
-    const credentials = Array.isArray(payload) ? payload : [];
+    const credentials = await this.deps.listPasskeys();
     const summaries: PasskeyCredentialSummary[] = [];
     for (const credential of credentials) {
       const id = credential.id?.trim() ?? '';
@@ -233,19 +221,7 @@ export class KeycloakPasskeyManager {
    */
   async removePasskey(id: string): Promise<void> {
     this.assertPasskeyManagementAvailable();
-    const response = await fetch(`/api/auth/passkeys/${encodeURIComponent(id)}`, {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        ...this.getOptionalAuthorizationHeader(),
-      },
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-
-    if (!response.ok) {
-      throw new Error(getErrorMessage(payload.error, `Failed to remove passkey: ${response.status}`));
-    }
+    await this.deps.removePasskey(id);
   }
 
   /**
@@ -271,17 +247,9 @@ export class KeycloakPasskeyManager {
   }
 
   private async getPasskeyActionToken(): Promise<Required<Pick<PasskeyActionTokenResponse, 'realm' | 'clientId' | 'accessToken'>>> {
-    const response = await fetch('/api/auth/passkeys/action-token', {
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        ...this.getOptionalAuthorizationHeader(),
-      },
-    });
-    const payload = (await response.json().catch(() => ({}))) as PasskeyActionTokenResponse & { error?: string };
+    const payload = await this.deps.createPasskeyActionToken();
 
     if (
-      !response.ok ||
       typeof payload.realm !== 'string' ||
       payload.realm.trim() === '' ||
       typeof payload.clientId !== 'string' ||
@@ -289,7 +257,7 @@ export class KeycloakPasskeyManager {
       typeof payload.accessToken !== 'string' ||
       payload.accessToken.trim() === ''
     ) {
-      throw new Error(getErrorMessage(payload.error, `Failed to create passkey action token: ${response.status}`));
+      throw new Error(getErrorMessage(undefined, 'Failed to create passkey action token'));
     }
 
     return {
@@ -366,13 +334,5 @@ export class KeycloakPasskeyManager {
   /** Resolves realm name from realm kind. */
   private getRealmName(realmKind: KeycloakRealmKind): string {
     return realmKind === KeycloakRealmKind.Tum ? this.deps.tumRealmName : this.deps.externalRealmName;
-  }
-
-  private getOptionalAuthorizationHeader(): Record<string, string> {
-    const token = this.deps.getToken();
-    if (token === undefined || token.trim() === '') {
-      return {};
-    }
-    return { Authorization: `Bearer ${token}` };
   }
 }

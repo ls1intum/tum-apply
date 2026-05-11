@@ -30,7 +30,8 @@ class KeycloakAuthenticationServiceTest {
     private static final String EXTERNAL_REALM = "external-login";
     private static final String TUM_REALM = "tum";
     private static final String BROWSER_CLIENT_ID = "tumapply-client";
-    private static final String SERVER_CLIENT_ID = "tumapply-server-client";
+    private static final String EXTERNAL_SERVER_CLIENT_ID = "tumapply-server-client";
+    private static final String TUM_SERVER_CLIENT_ID = "tumapply-server-client-tum";
 
     @Mock
     private JwtService jwtService;
@@ -52,8 +53,10 @@ class KeycloakAuthenticationServiceTest {
                 EXTERNAL_REALM,
                 TUM_REALM,
                 BROWSER_CLIENT_ID,
-                SERVER_CLIENT_ID,
-                "server-secret",
+                EXTERNAL_SERVER_CLIENT_ID,
+                "external-server-secret",
+                TUM_SERVER_CLIENT_ID,
+                "tum-server-secret",
                 "admin-client",
                 "admin-secret",
                 jwtService,
@@ -68,13 +71,13 @@ class KeycloakAuthenticationServiceTest {
         @Test
         void shouldUseIssuingRealmAndAuthorizedPartyWhenJwtCarriesAuthorizedParty() {
             Jwt jwt = jwt("access-token", "user-id", TUM_REALM);
-            when(jwtService.getAuthorizedParty(jwt)).thenReturn(SERVER_CLIENT_ID);
+            when(jwtService.getAuthorizedParty(jwt)).thenReturn(TUM_SERVER_CLIENT_ID);
             when(jwtService.secondsUntilExpiry(jwt)).thenReturn(120);
 
             PasskeyActionTokenDTO actual = service.createPasskeyActionToken(jwt);
 
             assertThat(actual.realm()).isEqualTo(TUM_REALM);
-            assertThat(actual.clientId()).isEqualTo(SERVER_CLIENT_ID);
+            assertThat(actual.clientId()).isEqualTo(TUM_SERVER_CLIENT_ID);
             assertThat(actual.accessToken()).isEqualTo("access-token");
             assertThat(actual.expiresIn()).isEqualTo(120);
         }
