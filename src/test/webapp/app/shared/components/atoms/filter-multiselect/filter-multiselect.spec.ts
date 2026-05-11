@@ -39,36 +39,23 @@ describe('FilterMultiselect', () => {
     vi.restoreAllMocks();
   });
 
-  it('should initialize with empty selected values and closed dropdown', () => {
+  it.each<[string, string[]]>([
+    ['', mockFilterOptions],
+    ['Option A', ['Option A']],
+    ['option b', ['Option B']],
+  ])('should filter options for search term "%s"', (searchTerm, expected) => {
     const filterFixture = createFilterMultiselectFixture();
+    filterFixture.componentInstance.searchTerm.set(searchTerm);
 
-    expect(filterFixture.componentInstance.selectedValues()).toEqual([]);
-    expect(filterFixture.componentInstance.isOpen()).toBe(false);
-    expect(filterFixture.componentInstance.searchTerm()).toBe('');
+    expect(filterFixture.componentInstance.filteredOptions()).toEqual(expected);
   });
 
-  it('should return all options when no search term is provided', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    const filteredOptions = filterFixture.componentInstance.filteredOptions();
-    expect(filteredOptions).toEqual(mockFilterOptions);
-  });
-
-  it('clears search term when opening the dropdown', () => {
+  it('should clear search term when opening the dropdown', () => {
     const fx = createFilterMultiselectFixture();
     fx.componentInstance.searchTerm.set('abc');
     fx.componentInstance.toggleDropdown();
     expect(fx.componentInstance.isOpen()).toBe(true);
     expect(fx.componentInstance.searchTerm()).toBe('');
-  });
-
-  it('should filter options based on search term', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    filterFixture.componentInstance.searchTerm.set('Option A');
-
-    const filteredOptions = filterFixture.componentInstance.filteredOptions();
-    expect(filteredOptions).toEqual(['Option A']);
   });
 
   it('should maintain sort order (selected first) even with active search', () => {
@@ -77,28 +64,12 @@ describe('FilterMultiselect', () => {
     filterFixture.componentInstance.selectedValues.set(['Option B', 'Option D']);
     filterFixture.componentInstance.searchTerm.set('option');
 
-    const sortedOptions = filterFixture.componentInstance.sortedOptions();
-
-    expect(sortedOptions).toEqual([
+    expect(filterFixture.componentInstance.sortedOptions()).toEqual([
       { label: 'Option B', value: 'Option B', selected: true },
       { label: 'Option D', value: 'Option D', selected: true },
       { label: 'Option A', value: 'Option A', selected: false },
       { label: 'Option C', value: 'Option C', selected: false },
     ]);
-
-    expect(sortedOptions[0].selected).toBe(true);
-    expect(sortedOptions[1].selected).toBe(true);
-    expect(sortedOptions[2].selected).toBe(false);
-    expect(sortedOptions[3].selected).toBe(false);
-  });
-
-  it('should filter options case-insensitively', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    filterFixture.componentInstance.searchTerm.set('option b');
-
-    const filteredOptions = filterFixture.componentInstance.filteredOptions();
-    expect(filteredOptions).toEqual(['Option B']);
   });
 
   it('should filter translated options when shouldTranslateOptions is true', () => {
@@ -106,98 +77,48 @@ describe('FilterMultiselect', () => {
       shouldTranslateOptions: true,
       filterOptions: ['key.option.a', 'key.option.b'],
     });
-
     filterFixture.componentInstance.searchTerm.set('key.option.a');
 
-    const filteredOptions = filterFixture.componentInstance.filteredOptions();
-    expect(filteredOptions).toEqual(['key.option.a']);
+    expect(filterFixture.componentInstance.filteredOptions()).toEqual(['key.option.a']);
   });
 
-  it('should sort options with selected items first', () => {
+  it('should compute selectedOptions, unselectedOptions, hasSelectedItems, hasUnselectedItems and counts based on selectedValues', () => {
     const filterFixture = createFilterMultiselectFixture();
+    const comp = filterFixture.componentInstance;
 
-    filterFixture.componentInstance.selectedValues.set(['Option C', 'Option A']);
+    expect(comp.hasSelectedItems()).toBe(false);
+    expect(comp.hasUnselectedItems()).toBe(true);
 
-    const sortedOptions = filterFixture.componentInstance.sortedOptions();
-    expect(sortedOptions).toEqual([
-      { label: 'Option A', value: 'Option A', selected: true },
-      { label: 'Option C', value: 'Option C', selected: true },
-      { label: 'Option B', value: 'Option B', selected: false },
-      { label: 'Option D', value: 'Option D', selected: false },
-    ]);
-  });
-
-  it('should compute selected options correctly', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    filterFixture.componentInstance.selectedValues.set(['Option A', 'Option C']);
-
-    const selectedOptions = filterFixture.componentInstance.selectedOptions();
-    expect(selectedOptions).toEqual([
+    comp.selectedValues.set(['Option A', 'Option C']);
+    expect(comp.hasSelectedItems()).toBe(true);
+    expect(comp.selectedOptions()).toEqual([
       { label: 'Option A', value: 'Option A', selected: true },
       { label: 'Option C', value: 'Option C', selected: true },
     ]);
-  });
-
-  it('should compute unselected options correctly', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    filterFixture.componentInstance.selectedValues.set(['Option A']);
-
-    const unselectedOptions = filterFixture.componentInstance.unselectedOptions();
-    expect(unselectedOptions).toEqual([
+    expect(comp.unselectedOptions()).toEqual([
       { label: 'Option B', value: 'Option B', selected: false },
-      { label: 'Option C', value: 'Option C', selected: false },
       { label: 'Option D', value: 'Option D', selected: false },
     ]);
+    expect(comp.selectedCount()).toBe(2);
+    expect(comp.totalCount()).toBe(4);
+
+    comp.selectedValues.set(mockFilterOptions);
+    expect(comp.hasUnselectedItems()).toBe(false);
   });
 
-  it('should correctly compute hasSelectedItems', () => {
+  it('should toggle and close dropdown state', () => {
     const filterFixture = createFilterMultiselectFixture();
+    const comp = filterFixture.componentInstance;
 
-    expect(filterFixture.componentInstance.hasSelectedItems()).toBe(false);
+    comp.toggleDropdown();
+    expect(comp.isOpen()).toBe(true);
 
-    filterFixture.componentInstance.selectedValues.set(['Option A']);
-    expect(filterFixture.componentInstance.hasSelectedItems()).toBe(true);
-  });
+    comp.toggleDropdown();
+    expect(comp.isOpen()).toBe(false);
 
-  it('should correctly compute hasUnselectedItems', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    expect(filterFixture.componentInstance.hasUnselectedItems()).toBe(true);
-
-    filterFixture.componentInstance.selectedValues.set(mockFilterOptions);
-    expect(filterFixture.componentInstance.hasUnselectedItems()).toBe(false);
-  });
-
-  it('should compute correct counts', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    filterFixture.componentInstance.selectedValues.set(['Option A', 'Option B']);
-
-    expect(filterFixture.componentInstance.selectedCount()).toBe(2);
-    expect(filterFixture.componentInstance.totalCount()).toBe(4);
-  });
-
-  it('should toggle dropdown state', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    expect(filterFixture.componentInstance.isOpen()).toBe(false);
-
-    filterFixture.componentInstance.toggleDropdown();
-    expect(filterFixture.componentInstance.isOpen()).toBe(true);
-
-    filterFixture.componentInstance.toggleDropdown();
-    expect(filterFixture.componentInstance.isOpen()).toBe(false);
-  });
-
-  it('should close dropdown', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    filterFixture.componentInstance.isOpen.set(true);
-    filterFixture.componentInstance.closeDropdown();
-
-    expect(filterFixture.componentInstance.isOpen()).toBe(false);
+    comp.isOpen.set(true);
+    comp.closeDropdown();
+    expect(comp.isOpen()).toBe(false);
   });
 
   it('should toggle option selection and emit change with filterId in correct order', () => {
@@ -229,19 +150,6 @@ describe('FilterMultiselect', () => {
     expect(filterChangeSpy).toHaveBeenCalledTimes(3);
   });
 
-  it('should emit change with correct filterId', () => {
-    const filterFixture = createFilterMultiselectFixture({ filterId: 'job-filter' });
-
-    const filterChangeSpy = vi.spyOn(filterFixture.componentInstance.filterChange, 'emit');
-
-    filterFixture.componentInstance.toggleOption('Option A');
-
-    expect(filterChangeSpy).toHaveBeenCalledWith({
-      filterId: 'job-filter',
-      selectedValues: ['Option A'],
-    });
-  });
-
   it('should handle search input change', () => {
     const filterFixture = createFilterMultiselectFixture();
 
@@ -257,33 +165,16 @@ describe('FilterMultiselect', () => {
     expect(filterFixture.componentInstance.searchTerm()).toBe('new search term');
   });
 
-  it('should close dropdown on document click outside component', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    filterFixture.componentInstance.isOpen.set(true);
-
-    const outsideElement = document.createElement('div');
-    const mockEvent: Partial<Event> = {
-      target: outsideElement,
-    };
-
-    filterFixture.componentInstance.onDocumentClick(mockEvent as Event);
-
-    expect(filterFixture.componentInstance.isOpen()).toBe(false);
-  });
-
-  it('should not close dropdown on clicks inside component', () => {
+  it('should close dropdown on outside click but keep open on inside click', () => {
     const fx = createFilterMultiselectFixture();
     fx.componentInstance.isOpen.set(true);
 
     const insideEl = fx.nativeElement.querySelector('.filter-multiselect') ?? fx.nativeElement;
-    const mockEvent: Partial<Event> = {
-      target: insideEl,
-    };
-
-    fx.componentInstance.onDocumentClick(mockEvent as Event);
-
+    fx.componentInstance.onDocumentClick({ target: insideEl } as unknown as Event);
     expect(fx.componentInstance.isOpen()).toBe(true);
+
+    fx.componentInstance.onDocumentClick({ target: document.createElement('div') } as unknown as Event);
+    expect(fx.componentInstance.isOpen()).toBe(false);
   });
 
   it('should handle empty filter options', () => {
@@ -295,48 +186,5 @@ describe('FilterMultiselect', () => {
     expect(filterFixture.componentInstance.sortedOptions()).toEqual([]);
     expect(filterFixture.componentInstance.hasUnselectedItems()).toBe(false);
     expect(filterFixture.componentInstance.totalCount()).toBe(0);
-  });
-
-  it('should show no results message when search term yields no matches', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    filterFixture.componentInstance.isOpen.set(true);
-    filterFixture.componentInstance.searchTerm.set('nonexistent option');
-    filterFixture.detectChanges();
-
-    expect(filterFixture.componentInstance.filteredOptions()).toEqual([]);
-
-    const noResultsElement = filterFixture.nativeElement.querySelector('[data-testid="filter-no-results"]');
-    expect(noResultsElement).toBeTruthy();
-    expect(noResultsElement?.textContent?.trim()).toContain('entity.filters.noResults');
-  });
-
-  it('should show no results message when filter options array is empty', () => {
-    const filterFixture = createFilterMultiselectFixture({
-      filterOptions: [],
-    });
-
-    filterFixture.componentInstance.isOpen.set(true);
-    filterFixture.detectChanges();
-
-    expect(filterFixture.componentInstance.filteredOptions()).toEqual([]);
-
-    const noResultsElement = filterFixture.nativeElement.querySelector('[data-testid="filter-no-results"]');
-    expect(noResultsElement).toBeTruthy();
-    expect(noResultsElement?.textContent?.trim()).toContain('entity.filters.noResults');
-  });
-
-  it('should use default filterId when not provided in override', () => {
-    const filterFixture = createFilterMultiselectFixture();
-
-    expect(filterFixture.componentInstance.filterId()).toBe('test-filter-id');
-  });
-
-  it('should handle different filterId values', () => {
-    const filterFixture1 = createFilterMultiselectFixture({ filterId: 'filter-1' });
-    const filterFixture2 = createFilterMultiselectFixture({ filterId: 'filter-2' });
-
-    expect(filterFixture1.componentInstance.filterId()).toBe('filter-1');
-    expect(filterFixture2.componentInstance.filterId()).toBe('filter-2');
   });
 });

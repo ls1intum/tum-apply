@@ -20,7 +20,7 @@ describe('Comment', () => {
   });
 
   // ---------------- CAN SAVE ----------------
-  it('canSave true in create mode when draft has text', () => {
+  it('should allow saving in create mode when draft has text', () => {
     fixture.componentRef.setInput('isCreate', true);
     fixture.detectChanges();
 
@@ -29,7 +29,7 @@ describe('Comment', () => {
     expect(component['canSave']()).toBe(true);
   });
 
-  it('canSave false when not edit and not create', () => {
+  it('should not allow saving when not in edit or create mode', () => {
     fixture.componentRef.setInput('isCreate', false);
     component['draft'].set('something');
     component.text.set('something');
@@ -38,7 +38,7 @@ describe('Comment', () => {
     expect(component['canSave']()).toBe(false);
   });
 
-  it('canSave true in edit mode when draft differs from text', () => {
+  it('should allow saving in edit mode when draft differs from text', () => {
     fixture.componentRef.setInput('commentId', '1');
     fixture.componentRef.setInput('editingId', '1');
     component.text.set('old');
@@ -49,51 +49,21 @@ describe('Comment', () => {
     expect(component['canSave']()).toBe(true);
   });
 
-  // ---------------- UPDATE DRAFT EFFECT ----------------
-  it('updates draft when creating', () => {
-    fixture.componentRef.setInput('isCreate', true);
-    component.text.set('draftText');
+  it.each<[boolean, string, string]>([
+    [true, 'hello', 'hello'],
+    [false, 'world', ''],
+  ])('should update draft and text=%s on input when isCreate=%s', (isCreate, draftValue, textValue) => {
+    fixture.componentRef.setInput('isCreate', isCreate);
     fixture.detectChanges();
 
-    expect(component['draft']()).toBe('draftText');
-  });
+    component.onInput({ target: { value: draftValue } } as unknown as InputEvent);
 
-  it('updates draft when not editing', () => {
-    fixture.componentRef.setInput('isCreate', false);
-    fixture.componentRef.setInput('editingId', 'x');
-    fixture.componentRef.setInput('commentId', 'y');
-    component.text.set('abc');
-    fixture.detectChanges();
-
-    expect(component['isEdit']()).toBe(false);
-    expect(component['draft']()).toBe('abc');
-  });
-
-  // ---------------- ONINPUT ----------------
-  it('onInput updates draft and text in create mode', () => {
-    fixture.componentRef.setInput('isCreate', true);
-    fixture.detectChanges();
-
-    const event = { target: { value: 'hello' } } as unknown as InputEvent;
-    component.onInput(event);
-
-    expect(component['draft']()).toBe('hello');
-    expect(component.text()).toBe('hello');
-  });
-
-  it('onInput updates draft only when not create', () => {
-    fixture.componentRef.setInput('isCreate', false);
-    fixture.detectChanges();
-
-    const event = { target: { value: 'world' } } as unknown as InputEvent;
-    component.onInput(event);
-
-    expect(component['draft']()).toBe('world');
-    expect(component.text()).toBe('');
+    expect(component['draft']()).toBe(draftValue);
+    expect(component.text()).toBe(textValue);
   });
 
   // ---------------- START / CANCEL / SAVE ----------------
-  it('startEdit copies text to draft and emits enterEdit', () => {
+  it('should copy text to draft and emit enterEdit on startEdit', () => {
     const spy = vi.fn();
     component.text.set('copyMe');
     component.enterEdit.subscribe(spy);
@@ -101,19 +71,19 @@ describe('Comment', () => {
     component.startEdit();
 
     expect(component['draft']()).toBe('copyMe');
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
-  it('onCancel emits exitEdit', () => {
+  it('should emit exitEdit on cancel', () => {
     const spy = vi.fn();
     component.exitEdit.subscribe(spy);
 
     component.onCancel();
 
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledOnce();
   });
 
-  it('onSave emits saved and exitEdit', () => {
+  it('should emit saved and exitEdit on save', () => {
     const savedSpy = vi.fn();
     const exitSpy = vi.fn();
     component.saved.subscribe(savedSpy);
@@ -123,6 +93,6 @@ describe('Comment', () => {
     component.onSave();
 
     expect(savedSpy).toHaveBeenCalledWith('final');
-    expect(exitSpy).toHaveBeenCalled();
+    expect(exitSpy).toHaveBeenCalledOnce();
   });
 });

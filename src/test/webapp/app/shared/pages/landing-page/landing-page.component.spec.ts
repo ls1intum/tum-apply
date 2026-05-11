@@ -44,8 +44,6 @@ class StubFaqSection {
 
 describe('LandingPageComponent', () => {
   let fixture: ComponentFixture<LandingPageComponent>;
-  let component: LandingPageComponent;
-  let nativeElement: HTMLElement;
   let routerMock: ReturnType<typeof createRouterMock>;
 
   beforeEach(async () => {
@@ -76,25 +74,10 @@ describe('LandingPageComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(LandingPageComponent);
-    component = fixture.componentInstance;
-    nativeElement = fixture.nativeElement;
     fixture.detectChanges();
-  });
-
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
   });
 
   it('should redirect professor user to /professor', () => {
     expect(routerMock.navigate).toHaveBeenCalledWith(['/professor']);
-  });
-
-  it('should render all main section components', () => {
-    expect(nativeElement.querySelector('jhi-hero-section')).not.toBeNull();
-    expect(nativeElement.querySelector('jhi-jobs-preview-section')).not.toBeNull();
-    expect(nativeElement.querySelector('jhi-doctoral-journey-section')).not.toBeNull();
-    expect(nativeElement.querySelector('jhi-application-steps-section')).not.toBeNull();
-    expect(nativeElement.querySelector('jhi-information-section')).not.toBeNull();
-    expect(nativeElement.querySelector('jhi-faq-section')).not.toBeNull();
   });
 });

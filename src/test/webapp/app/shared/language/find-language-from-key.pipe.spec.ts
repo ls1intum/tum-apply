@@ -7,15 +7,14 @@ describe('FindLanguageFromKeyPipe', () => {
     pipe = new FindLanguageFromKeyPipe();
   });
 
-  it('should return English for en', () => {
-    expect(pipe.transform('en')).toBe('English');
+  it.each([
+    ['en', 'English'],
+    ['de', 'Deutsch'],
+  ])('should return %s as %s', (key, expected) => {
+    expect(pipe.transform(key)).toBe(expected);
   });
 
-  it('should return Deutsch for de', () => {
-    expect(pipe.transform('de')).toBe('Deutsch');
-  });
-
-  it('should throw or return undefined for unknown language', () => {
+  it('should throw for unknown language', () => {
     expect(() => pipe.transform('fr')).toThrowError();
   });
 });

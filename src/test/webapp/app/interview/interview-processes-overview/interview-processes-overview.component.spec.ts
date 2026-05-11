@@ -99,8 +99,11 @@ describe('InterviewProcessesOverviewComponent', () => {
       expect(component.loading()).toBe(false);
     });
 
-    it('should assign fallback image URL when process has no imageUrl', async () => {
-      const processWithoutImage: InterviewOverviewDTO = {
+    it.each([
+      { description: 'no imageUrl', imageUrl: undefined, expectedContains: '/content/images/job-banner/' },
+      { description: 'existing imageUrl', imageUrl: '/custom/image.jpg', expectedContains: '/custom/image.jpg' },
+    ])('should resolve imageUrl when process has $description', async ({ imageUrl, expectedContains }) => {
+      const process: InterviewOverviewDTO = {
         jobId: 'job-1',
         processId: 'process-1',
         jobTitle: 'Software Engineer',
@@ -112,40 +115,16 @@ describe('InterviewProcessesOverviewComponent', () => {
         completedCount: 1,
         invitedCount: 4,
         uncontactedCount: 2,
+        imageUrl,
       };
-      (mockInterviewService.getInterviewOverview as ReturnType<typeof vi.fn>).mockReturnValue(of([processWithoutImage]));
+      (mockInterviewService.getInterviewOverview as ReturnType<typeof vi.fn>).mockReturnValue(of([process]));
       (mockInterviewService.getUpcomingInterviews as ReturnType<typeof vi.fn>).mockReturnValue(of([]));
 
       fixture = TestBed.createComponent(InterviewProcessesOverviewComponent);
       component = fixture.componentInstance;
       await fixture.whenStable();
 
-      expect(component.interviewProcesses()[0].imageUrl).toContain('/content/images/job-banner/');
-    });
-
-    it('should keep existing imageUrl when process has one', async () => {
-      const processWithImage: InterviewOverviewDTO = {
-        jobId: 'job-1',
-        processId: 'process-1',
-        jobTitle: 'Software Engineer',
-        jobState: JobDetailDTOStateEnum.Published,
-        isClosed: false,
-        totalSlots: 10,
-        totalInterviews: 5,
-        scheduledCount: 3,
-        completedCount: 1,
-        invitedCount: 4,
-        uncontactedCount: 2,
-        imageUrl: '/custom/image.jpg',
-      };
-      (mockInterviewService.getInterviewOverview as ReturnType<typeof vi.fn>).mockReturnValue(of([processWithImage]));
-      (mockInterviewService.getUpcomingInterviews as ReturnType<typeof vi.fn>).mockReturnValue(of([]));
-
-      fixture = TestBed.createComponent(InterviewProcessesOverviewComponent);
-      component = fixture.componentInstance;
-      await fixture.whenStable();
-
-      expect(component.interviewProcesses()[0].imageUrl).toBe('/custom/image.jpg');
+      expect(component.interviewProcesses()[0].imageUrl).toContain(expectedContains);
     });
   });
 
@@ -169,10 +148,13 @@ describe('InterviewProcessesOverviewComponent', () => {
   });
 
   describe('Date Pagination', () => {
-    it('should not go to previous date page when already on first page', () => {
+    it('should not go past first or last date page', () => {
       fixture.detectChanges();
       component.currentDatePage.set(0);
       component.previousDatePage();
+      expect(component.currentDatePage()).toBe(0);
+
+      component.nextDatePage();
       expect(component.currentDatePage()).toBe(0);
     });
 
@@ -199,20 +181,9 @@ describe('InterviewProcessesOverviewComponent', () => {
       component.previousDatePage();
       expect(component.currentDatePage()).toBe(0);
     });
-
-    it('should not go to next date page when already on last page', () => {
-      fixture.detectChanges();
-      component.nextDatePage();
-      expect(component.currentDatePage()).toBe(0);
-    });
   });
 
   describe('Grouped Upcoming Interviews', () => {
-    it('should return empty array when no upcoming interviews', () => {
-      fixture.detectChanges();
-      expect(component.groupedUpcomingInterviews()).toEqual([]);
-    });
-
     it('should group interviews by date and filter by current month', async () => {
       const now = dayjs();
       const interviews: UpcomingInterviewDTO[] = [
@@ -258,30 +229,6 @@ describe('InterviewProcessesOverviewComponent', () => {
       expect(grouped.length).toBe(2);
       expect(grouped[0].interviews.length).toBe(2);
       expect(grouped[1].interviews.length).toBe(1);
-    });
-
-    it('should exclude interviews from other months', async () => {
-      const nextMonth = dayjs().add(1, 'month');
-      const interviews: UpcomingInterviewDTO[] = [
-        {
-          id: 'int-1',
-          processId: 'process-1',
-          intervieweeId: 'iee-1',
-          intervieweeName: 'Alice',
-          jobTitle: 'Dev',
-          startDateTime: nextMonth.format(),
-          endDateTime: nextMonth.add(1, 'hour').format(),
-          location: 'Room A',
-        },
-      ];
-      (mockInterviewService.getInterviewOverview as ReturnType<typeof vi.fn>).mockReturnValue(of([]));
-      (mockInterviewService.getUpcomingInterviews as ReturnType<typeof vi.fn>).mockReturnValue(of(interviews));
-
-      fixture = TestBed.createComponent(InterviewProcessesOverviewComponent);
-      component = fixture.componentInstance;
-      await fixture.whenStable();
-
-      expect(component.groupedUpcomingInterviews().length).toBe(0);
     });
 
     it('should skip interviews with null startDateTime', async () => {

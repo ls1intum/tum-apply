@@ -19,6 +19,7 @@ import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated
 import { provideHttpClientMock } from 'util/http-client.mock';
 import { provideToastServiceMock } from 'util/toast-service.mock';
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
+import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 
 describe('ApplicationPage1Component', () => {
   let accountService: Pick<AccountService, 'signedIn'>;
@@ -59,49 +60,16 @@ describe('ApplicationPage1Component', () => {
     fixture.detectChanges();
   });
 
-  it('should create the component and initial form is invalid', () => {
-    expect(comp).toBeTruthy();
-    const form = comp.page1Form();
-    expect(form).toBeDefined();
-    expect(form.valid).toBe(false);
+  it('should be invalid initially when required fields empty', () => {
+    expect(comp.page1Form().valid).toBe(false);
   });
 
-  it('should become valid when all required fields are filled and postal code passes validation', () => {
+  it.each([
+    { postcode: '80331', valid: true },
+    { postcode: '987877', valid: false },
+  ])('postcode=$postcode -> valid=$valid for German country', ({ postcode, valid }) => {
     const countryOption = { value: 'DE', name: 'Germany' };
-    comp.data.set({
-      ...comp.data(),
-      firstName: '',
-      lastName: '',
-      email: '',
-      phoneNumber: '',
-      street: '',
-      city: '',
-      country: countryOption,
-      postcode: '',
-      gender: undefined,
-      nationality: undefined,
-      dateOfBirth: '',
-      website: '',
-      linkedIn: '',
-    });
-
-    const form = comp.page1Form();
-
-    // Set required values
-    form.controls.firstName.setValue('Alice');
-    form.controls.lastName.setValue('Smith');
-    form.controls.email.setValue('alice@example.com');
-    form.controls.phoneNumber.setValue('123456');
-    form.controls.street.setValue('Main St');
-    form.controls.city.setValue('Munich');
-    form.controls.postcode.setValue('80331'); // Valid German postcode
-
-    form.updateValueAndValidity();
-
-    expect(form.valid).toBe(true);
-  });
-
-  it('should mark invalidPostalCode error when country is set and postal code is invalid', () => {
+    comp.data.set(Object.assign({}, comp.data(), { country: countryOption }));
     const form = comp.page1Form();
     form.controls.firstName.setValue('Alice');
     form.controls.lastName.setValue('Smith');
@@ -109,15 +77,11 @@ describe('ApplicationPage1Component', () => {
     form.controls.phoneNumber.setValue('123456');
     form.controls.street.setValue('Main St');
     form.controls.city.setValue('Munich');
-
-    const countryOption = { value: 'DE', name: 'Germany' };
-    comp.data.set({ ...comp.data(), country: countryOption });
-
-    form.controls.postcode.setValue('987877');
+    form.controls.postcode.setValue(postcode);
     form.updateValueAndValidity();
 
-    expect(form.valid).toBe(false);
-    expect(form.controls.postcode.errors).toHaveProperty('invalidPostalCode');
+    expect(form.valid).toBe(valid);
+    if (!valid) expect(form.controls.postcode.errors).toHaveProperty('invalidPostalCode');
   });
 
   it('getPage1FromApplication maps fields properly', () => {
@@ -162,8 +126,8 @@ describe('ApplicationPage1Component', () => {
     comp.changed.subscribe(changedSpy);
     comp.valid.subscribe(validSpy);
     form.controls.firstName.setValue('Bob');
-    expect(changedSpy).toHaveBeenCalled();
-    expect(validSpy).toHaveBeenCalled();
+    expect(changedSpy).toHaveBeenCalledOnce();
+    expect(validSpy).toHaveBeenCalledTimes(2);
   });
 
   it('setDateOfBirth should update data and emit changed', () => {
@@ -172,7 +136,7 @@ describe('ApplicationPage1Component', () => {
 
     comp.setDateOfBirth('2000-12-31');
     expect(comp.data().dateOfBirth).toBe('2000-12-31');
-    expect(changedSpy).toHaveBeenCalled();
+    expect(changedSpy).toHaveBeenCalledOnce();
   });
 
   it('updateSelect should update select fields and emit changed', () => {
@@ -182,28 +146,16 @@ describe('ApplicationPage1Component', () => {
     const nationalityOption = { value: 'FR', name: 'France' };
     comp.updateSelect('nationality', nationalityOption);
     expect(comp.data().nationality).toBe(nationalityOption);
-    expect(changedSpy).toHaveBeenCalled();
+    expect(changedSpy).toHaveBeenCalledOnce();
   });
 
-  it('should not return an error when country is undefined in postalCodeValidator', () => {
-    const validator = postalCodeValidator(() => undefined);
-    const control = { value: '12345' } as AbstractControl;
-    const result = validator(control);
-    expect(result).toEqual({}); // No validation error
-  });
-
-  it('should not return an error when postal code is empty', () => {
-    const validator = postalCodeValidator(() => 'DE');
-    const control = { value: '' } as AbstractControl;
-    const result = validator(control);
-    expect(result).toEqual({}); // No error when value is empty
-  });
-
-  it('should return an error when country code is invalid or unsupported', () => {
-    const validator = postalCodeValidator(() => 'ZZ'); // ZZ is unsupported
-    const control = { value: '12345' } as AbstractControl;
-    const result = validator(control);
-    expect(result).toEqual({ invalidPostalCode: 'entity.applicationPage1.validation.postalCode' });
+  it.each([
+    [() => undefined, '12345', {}],
+    [() => 'DE', '', {}],
+    [() => 'ZZ', '12345', { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' }],
+  ])('postalCodeValidator with country/value -> result', (countryFn, value, expected) => {
+    const validator = postalCodeValidator(countryFn as () => string | undefined);
+    expect(validator({ value } as AbstractControl)).toEqual(expected);
   });
 
   it('updateSelect should allow setting undefined value', () => {
@@ -211,7 +163,7 @@ describe('ApplicationPage1Component', () => {
     comp.changed.subscribe(changedSpy);
     comp.updateSelect('gender', undefined);
     expect(comp.data().gender).toBeUndefined();
-    expect(changedSpy).toHaveBeenCalled();
+    expect(changedSpy).toHaveBeenCalledOnce();
   });
 
   it('setDateOfBirth should handle undefined input', () => {
@@ -219,30 +171,7 @@ describe('ApplicationPage1Component', () => {
     comp.changed.subscribe(changedSpy);
     comp.setDateOfBirth(undefined);
     expect(comp.data().dateOfBirth).toBe('');
-    expect(changedSpy).toHaveBeenCalled();
-  });
-
-  it('should include optional fields in form and allow valid values', () => {
-    comp.data.set({
-      ...comp.data(),
-      firstName: 'Foo',
-      lastName: 'Bar',
-      email: 'foo@bar.com',
-      phoneNumber: '55555',
-      street: '123 Street',
-      city: 'Townsville',
-      postcode: '80331',
-      country: { value: 'DE', name: 'Germany' },
-      gender: { value: 'male', name: 'Male' },
-      nationality: { value: 'FR', name: 'France' },
-      dateOfBirth: '1990-01-01',
-      website: 'https://example.com',
-      linkedIn: 'https://linkedin.com/in/example',
-    });
-
-    const form = comp.page1Form();
-    form.updateValueAndValidity();
-    expect(form.valid).toBe(true);
+    expect(changedSpy).toHaveBeenCalledOnce();
   });
 
   it('getPage1FromApplication handles missing fields gracefully', () => {
@@ -261,19 +190,13 @@ describe('ApplicationPage1Component', () => {
     expect(page1.gender).toBeUndefined();
   });
 
-  describe('CV Validation', () => {
-    it('should set cvValid to false when cvDocs is undefined or empty', () => {
-      comp.cvDocsSetValidity(undefined);
-      expect(comp.cvValid()).toBe(false);
-
-      comp.cvDocsSetValidity([]);
-      expect(comp.cvValid()).toBe(false);
-    });
-
-    it('should set cvValid to true when cvDocs is provided', () => {
-      comp.cvDocsSetValidity([{ id: '1', size: 1 }]);
-      expect(comp.cvValid()).toBe(true);
-    });
+  it.each([
+    [undefined, false],
+    [[], false],
+    [[{ id: '1', size: 1 }], true],
+  ])('cvDocsSetValidity(%j) -> cvValid=%s', (docs, expected) => {
+    comp.cvDocsSetValidity(docs as DocumentInformationHolderDTO[] | undefined);
+    expect(comp.cvValid()).toBe(expected);
   });
 
   describe('onAiDataExtracted', () => {
@@ -303,7 +226,7 @@ describe('ApplicationPage1Component', () => {
 
     it('does not overwrite existing country dropdown selection', () => {
       const preset = { value: 'fr', name: 'countries.fr' };
-      comp.data.set({ ...comp.data(), country: preset });
+      comp.data.set(Object.assign({}, comp.data(), { country: preset }));
 
       const extracted: ExtractedApplicationDataDTO = { country: 'de' };
       comp.onAiDataExtracted(extracted);
@@ -312,21 +235,12 @@ describe('ApplicationPage1Component', () => {
     });
   });
 
-  describe('Document Input Handling', () => {
-    it('should return array with doc if documentIdsCv is defined', () => {
-      const doc = { id: '1', size: 1 };
-
-      fixture.componentRef.setInput('documentIdsCv', doc);
-      fixture.detectChanges();
-
-      expect(comp.computedDocumentIdsCvSet()).toEqual([doc]);
-    });
-
-    it('should return undefined if documentIdsCv is undefined', () => {
-      fixture.componentRef.setInput('documentIdsCv', undefined);
-      fixture.detectChanges();
-
-      expect(comp.computedDocumentIdsCvSet()).toBeUndefined();
-    });
+  it.each([
+    [{ id: '1', size: 1 }, [{ id: '1', size: 1 }]],
+    [undefined, undefined],
+  ])('computedDocumentIdsCvSet(%j) -> %j', (doc, expected) => {
+    fixture.componentRef.setInput('documentIdsCv', doc);
+    fixture.detectChanges();
+    expect(comp.computedDocumentIdsCvSet()).toEqual(expected);
   });
 });

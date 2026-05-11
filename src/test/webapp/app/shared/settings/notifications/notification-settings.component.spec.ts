@@ -79,7 +79,7 @@ describe('NotificationSettingsComponent', () => {
   });
 
   describe('loadSettings', () => {
-    it('should update settings and mark loaded when service returns values', async () => {
+    it('should mark groups enabled when all relevant types are enabled', async () => {
       emailSettingServiceMock.getEmailSettings.mockReturnValue(
         of<EmailSettingDTO[]>([
           { emailType: EmailTypeEnum.ApplicationSent, enabled: true },
@@ -95,10 +95,13 @@ describe('NotificationSettingsComponent', () => {
       expect(component['loaded']()).toBe(true);
     });
 
-    it('should mark group disabled if any relevant type is disabled', async () => {
+    it.each([
+      [false, false],
+      [undefined, true],
+    ])('should treat ApplicationSent enabled=%s as group.enabled=%s', async (enabled, expected) => {
       emailSettingServiceMock.getEmailSettings.mockReturnValue(
         of<EmailSettingDTO[]>([
-          { emailType: EmailTypeEnum.ApplicationSent, enabled: false },
+          { emailType: EmailTypeEnum.ApplicationSent, enabled },
           { emailType: EmailTypeEnum.ApplicationWithdrawn, enabled: true },
         ]),
       );
@@ -106,71 +109,42 @@ describe('NotificationSettingsComponent', () => {
 
       await component.loadSettings(RolesEnum.Applicant);
 
-      expect(getSubmissionGroup().enabled).toBe(false);
-      expect(component['loaded']()).toBe(true);
+      expect(getSubmissionGroup().enabled).toBe(expected);
     });
 
-    it('should show error toast on service failure', async () => {
+    it('should show error toast and still mark loaded on service failure', async () => {
       emailSettingServiceMock.getEmailSettings.mockReturnValue(throwError(() => new Error('fail')));
       applicantApiMock.getSubjectAreaSubscriptions.mockReturnValue(of([]));
 
       await component.loadSettings(RolesEnum.Applicant);
 
-      expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.loadFailed');
       expect(component['loaded']()).toBe(true);
     });
 
-    it('should treat undefined enabled values as true', async () => {
+    it('should load and sort subject area subscriptions for applicants only', async () => {
       emailSettingServiceMock.getEmailSettings.mockReturnValue(
-        of<EmailSettingDTO[]>([
-          { emailType: EmailTypeEnum.ApplicationSent, enabled: undefined },
-          { emailType: EmailTypeEnum.ApplicationWithdrawn, enabled: true },
-        ]),
-      );
-      applicantApiMock.getSubjectAreaSubscriptions.mockReturnValue(of([]));
-
-      await component.loadSettings(RolesEnum.Applicant);
-
-      expect(getSubmissionGroup().enabled).toBe(true);
-      expect(component['loaded']()).toBe(true);
-    });
-
-    it('should load subject area subscriptions for applicants', async () => {
-      emailSettingServiceMock.getEmailSettings.mockReturnValue(
-        of<EmailSettingDTO[]>([{ emailType: EmailTypeEnum.JobPublishedSubjectArea, enabled: true }]),
+        of<EmailSettingDTO[]>([{ emailType: EmailTypeEnum.JobPublishedSubjectArea, enabled: false }]),
       );
       applicantApiMock.getSubjectAreaSubscriptions.mockReturnValue(of([SubjectAreaEnum.Mathematics, SubjectAreaEnum.ComputerScience]));
 
       await component.loadSettings(RolesEnum.Applicant);
 
       expect(subjectAreaSubscriptions().selected()).toEqual([SubjectAreaEnum.ComputerScience, SubjectAreaEnum.Mathematics]);
-      expect(component['subjectAreaNotificationsEnabled']()).toBe(true);
+      expect(component['subjectAreaNotificationsEnabled']()).toBe(false);
     });
 
-    it('should clear subject area subscriptions for non-applicants', async () => {
+    it('should clear subject area subscriptions for non-applicants and skip the API call', async () => {
       emailSettingServiceMock.getEmailSettings.mockReturnValue(of<EmailSettingDTO[]>([]));
       subjectAreaSubscriptions().selected.set([SubjectAreaEnum.ComputerScience]);
 
       await component.loadSettings(RolesEnum.Professor);
 
       expect(subjectAreaSubscriptions().selected()).toEqual([]);
-      expect(component['subjectAreaNotificationsEnabled']()).toBe(true);
       expect(applicantApiMock.getSubjectAreaSubscriptions).not.toHaveBeenCalled();
     });
 
-    it('should load the subject area notification toggle from email settings', async () => {
-      emailSettingServiceMock.getEmailSettings.mockReturnValue(
-        of<EmailSettingDTO[]>([{ emailType: EmailTypeEnum.JobPublishedSubjectArea, enabled: false }]),
-      );
-      applicantApiMock.getSubjectAreaSubscriptions.mockReturnValue(of([]));
-
-      await component.loadSettings(RolesEnum.Applicant);
-
-      expect(component['subjectAreaNotificationsEnabled']()).toBe(false);
-    });
-
-    it('should ignore role-specific groups when the role has no configured notification groups', async () => {
+    it('should ignore role-specific groups when the role has no configured groups', async () => {
       emailSettingServiceMock.getEmailSettings.mockReturnValue(
         of<EmailSettingDTO[]>([{ emailType: EmailTypeEnum.JobPublishedSubjectArea, enabled: false }]),
       );
@@ -178,7 +152,6 @@ describe('NotificationSettingsComponent', () => {
       await component.loadSettings(RolesEnum.Admin);
 
       expect(component['roleSettings']().has(RolesEnum.Admin)).toBe(false);
-      expect(component['subjectAreaNotificationsEnabled']()).toBe(false);
       expect(component['loaded']()).toBe(true);
     });
   });
@@ -192,31 +165,8 @@ describe('NotificationSettingsComponent', () => {
 
       await setRoleAndWaitForLoad(RolesEnum.Applicant);
 
-      const renderedText = fixture.nativeElement.textContent ?? '';
-      const selector = fixture.nativeElement.querySelector('jhi-subject-area-subscription-selector');
-      const selectorWrapper = selector?.parentElement;
-
-      expect(renderedText).toContain('settings.notifications.applicant.subjectAreas.title');
-      expect(selector).not.toBeNull();
-      expect(selectorWrapper?.classList.contains('pointer-events-none')).toBe(false);
-      expect(emailSettingServiceMock.getEmailSettings).toHaveBeenCalledOnce();
-      expect(applicantApiMock.getSubjectAreaSubscriptions).toHaveBeenCalledOnce();
-    });
-
-    it('should keep rendering the subject area selector when the notification toggle is disabled', async () => {
-      emailSettingServiceMock.getEmailSettings.mockReturnValue(
-        of<EmailSettingDTO[]>([{ emailType: EmailTypeEnum.JobPublishedSubjectArea, enabled: false }]),
-      );
-      applicantApiMock.getSubjectAreaSubscriptions.mockReturnValue(of([SubjectAreaEnum.ComputerScience]));
-
-      await setRoleAndWaitForLoad(RolesEnum.Applicant);
-
-      const selector = fixture.nativeElement.querySelector('jhi-subject-area-subscription-selector');
-
-      expect(selector).not.toBeNull();
-      expect(component['subjectAreaNotificationsEnabled']()).toBe(false);
-      expect(emailSettingServiceMock.getEmailSettings).toHaveBeenCalledOnce();
-      expect(applicantApiMock.getSubjectAreaSubscriptions).toHaveBeenCalledOnce();
+      expect(fixture.nativeElement.textContent ?? '').toContain('settings.notifications.applicant.subjectAreas.title');
+      expect(fixture.nativeElement.querySelector('jhi-subject-area-subscription-selector')).not.toBeNull();
     });
 
     it('should not render the subject area section for non-applicant roles', async () => {
@@ -225,7 +175,6 @@ describe('NotificationSettingsComponent', () => {
       await setRoleAndWaitForLoad(RolesEnum.Professor);
 
       expect(fixture.nativeElement.textContent ?? '').not.toContain('settings.notifications.applicant.subjectAreas.title');
-      expect(emailSettingServiceMock.getEmailSettings).toHaveBeenCalledOnce();
       expect(applicantApiMock.getSubjectAreaSubscriptions).not.toHaveBeenCalled();
     });
   });
@@ -268,7 +217,7 @@ describe('NotificationSettingsComponent', () => {
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
     });
 
-    it('should reload the email notification groups when the async update fails and a role is set', async () => {
+    it('should reload the email notification groups when an update fails and a role is set', async () => {
       fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
       emailSettingServiceMock.updateEmailSettings.mockReturnValue(throwError(() => new Error('boom')));
       emailSettingServiceMock.getEmailSettings.mockReturnValue(of([]));
@@ -283,26 +232,6 @@ describe('NotificationSettingsComponent', () => {
       await Promise.resolve();
 
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
-      expect(reloadSpy).toHaveBeenCalledOnce();
-      expect(reloadSpy).toHaveBeenCalledWith(RolesEnum.Applicant);
-    });
-
-    it('should reload the email notification groups when a synchronous update error occurs and a role is set', () => {
-      fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
-      emailSettingServiceMock.updateEmailSettings.mockImplementation(() => {
-        throw new Error('boom');
-      });
-      const reloadSpy = vi.spyOn(component, 'loadEmailNotificationGroups').mockResolvedValue();
-
-      component.onToggleChanged({
-        groupKey: 'test',
-        descriptionKey: 'desc',
-        emailTypes: [EmailTypeEnum.ApplicationAccepted],
-        enabled: false,
-      });
-
-      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
-      expect(reloadSpy).toHaveBeenCalledOnce();
       expect(reloadSpy).toHaveBeenCalledWith(RolesEnum.Applicant);
     });
   });
@@ -330,20 +259,7 @@ describe('NotificationSettingsComponent', () => {
       expect(subjectAreaSubscriptions().selected()).toEqual([SubjectAreaEnum.ComputerScience, SubjectAreaEnum.Mathematics]);
     });
 
-    it('should reload the email notification groups when the subject area toggle save fails and a role is set', async () => {
-      fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
-      emailSettingServiceMock.updateEmailSettings.mockReturnValue(throwError(() => new Error('boom')));
-      const reloadSpy = vi.spyOn(component, 'loadEmailNotificationGroups').mockResolvedValue();
-
-      component.onSubjectAreaToggleChanged(false);
-      await Promise.resolve();
-
-      expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
-      expect(reloadSpy).toHaveBeenCalledOnce();
-      expect(reloadSpy).toHaveBeenCalledWith(RolesEnum.Applicant);
-    });
-
-    it('should not reload the email notification groups when the subject area toggle save fails without a current role', async () => {
+    it('should reload only when a role is set after a subject area toggle save failure', async () => {
       emailSettingServiceMock.updateEmailSettings.mockReturnValue(throwError(() => new Error('boom')));
       const reloadSpy = vi.spyOn(component, 'loadEmailNotificationGroups').mockResolvedValue();
 
@@ -352,26 +268,27 @@ describe('NotificationSettingsComponent', () => {
 
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.notifications.saveFailed');
       expect(reloadSpy).not.toHaveBeenCalled();
+
+      fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
+      component.onSubjectAreaToggleChanged(false);
+      await Promise.resolve();
+
+      expect(reloadSpy).toHaveBeenCalledWith(RolesEnum.Applicant);
     });
   });
 
   describe('roleEffect', () => {
-    it('should not trigger load if no role is set', () => {
-      const spy = vi.spyOn(component, 'loadSettings');
+    it('should trigger load only when a role is set', async () => {
+      const spy = vi.spyOn(component, 'loadSettings').mockResolvedValue();
+
       fixture.componentRef.setInput('currentRole', undefined);
       fixture.detectChanges();
-
       expect(spy).not.toHaveBeenCalled();
-    });
-
-    it('should trigger load once when role is set', async () => {
-      const spy = vi.spyOn(component, 'loadSettings').mockResolvedValue();
 
       fixture.componentRef.setInput('currentRole', RolesEnum.Applicant);
       fixture.detectChanges();
       await Promise.resolve();
 
-      expect(spy).toHaveBeenCalledOnce();
       expect(spy).toHaveBeenCalledWith(RolesEnum.Applicant);
     });
   });

@@ -39,6 +39,8 @@ api/public-config-resource-api.ts
 api/public-config-resource-resources.ts
 api/rating-resource-api.ts
 api/rating-resource-resources.ts
+api/reference-request-resource-api.ts
+api/reference-request-resource-resources.ts
 api/research-group-resource-api.ts
 api/research-group-resource-resources.ts
 api/school-resource-api.ts
@@ -73,6 +75,7 @@ model/cancel-interview-dto.ts
 model/compliance-issue.ts
 model/conflict-data-dto.ts
 model/counts.ts
+model/create-reference-request-dto.ts
 model/create-slots-dto.ts
 model/created-job-dto.ts
 model/data-export-status-dto.ts
@@ -126,6 +129,7 @@ model/prof-onboarding-dto.ts
 model/professor-dto.ts
 model/rating-dto.ts
 model/rating-overview-dto.ts
+model/reference-request-dto.ts
 model/reject-dto.ts
 model/research-group-admin-dto.ts
 model/research-group-dto.ts

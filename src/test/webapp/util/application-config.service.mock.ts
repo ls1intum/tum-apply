@@ -17,30 +17,29 @@ export interface ApplicationConfigServiceMock extends Partial<ApplicationConfigS
  */
 export function createApplicationConfigServiceMock(overrides: Partial<ApplicationConfigServiceMock> = {}): ApplicationConfigServiceMock {
   const defaultConfig: ApplicationConfigServiceMock = {
-    keycloak: {
-      url: 'http://mock-keycloak',
-      realm: 'mock-realm',
-      clientId: 'mock-client',
-      ...overrides.keycloak,
-    },
-    otp: {
-      length: 4,
-      ttlSeconds: 300,
-      resendCooldownSeconds: 60,
-      ...overrides.otp,
-    },
-    appConfig: {
-      ...overrides.appConfig,
-    },
+    keycloak: Object.assign(
+      {
+        url: 'http://mock-keycloak',
+        realm: 'mock-realm',
+        clientId: 'mock-client',
+      },
+      overrides.keycloak ?? {},
+    ),
+    otp: Object.assign(
+      {
+        length: 4,
+        ttlSeconds: 300,
+        resendCooldownSeconds: 60,
+      },
+      overrides.otp ?? {},
+    ),
+    appConfig: Object.assign({}, overrides.appConfig ?? {}),
     setAppConfig: vi.fn(),
     getAppConfig: vi.fn(),
     getEndpointFor: vi.fn(api => api),
   };
 
-  return {
-    ...defaultConfig,
-    ...overrides,
-  };
+  return Object.assign({}, defaultConfig, overrides);
 }
 
 /**

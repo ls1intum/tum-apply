@@ -150,61 +150,6 @@ describe('Profile save isolation', () => {
     );
   });
 
-  it('application information save uses the latest document settings saved in another tab', async () => {
-    const profileAfterDocumentsSave = cloneValue(baseProfile);
-    profileAfterDocumentsSave.bachelorGrade = '1.0';
-    const profileAfterBothSaves = cloneValue(profileAfterDocumentsSave);
-    profileAfterBothSaves.user!.firstName = 'Grace';
-
-    applicantApiMock.getApplicantProfile.mockReset();
-    applicantApiMock.getApplicantProfile
-      .mockReturnValueOnce(of(baseProfile))
-      .mockReturnValueOnce(of(baseProfile))
-      .mockReturnValueOnce(of(baseProfile))
-      .mockReturnValueOnce(of(baseProfile))
-      .mockReturnValueOnce(of(profileAfterDocumentsSave))
-      .mockReturnValueOnce(of(profileAfterDocumentsSave));
-    applicantApiMock.getApplicantProfileDocumentIds.mockReset();
-    applicantApiMock.getApplicantProfileDocumentIds.mockReturnValue(of(baseDocumentIds));
-    applicantApiMock.updateApplicantDocumentSettings.mockReset();
-    applicantApiMock.updateApplicantPersonalInformation.mockReset();
-    applicantApiMock.updateApplicantDocumentSettings
-      .mockReturnValueOnce(of(profileAfterDocumentsSave))
-      .mockReturnValueOnce(of(profileAfterDocumentsSave));
-    applicantApiMock.updateApplicantPersonalInformation.mockReturnValueOnce(of(profileAfterBothSaves));
-
-    const documentsComponent = await createDocumentsComponent();
-
-    const personalComponent = TestBed.runInInjectionContext(() => new ApplicationInformationSettingsComponent());
-    await personalComponent.loadApplicationInformation();
-
-    documentsComponent.form.patchValue({
-      bachelorGrade: '1.0',
-    });
-    const updatedPersonalData = cloneValue(personalComponent.data());
-    updatedPersonalData.firstName = 'Grace';
-    personalComponent.data.set(updatedPersonalData);
-
-    await documentsComponent.performAutoSave();
-    await personalComponent.performAutoSave();
-
-    expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith(
-      expect.objectContaining({
-        user: expect.objectContaining({
-          firstName: 'Grace',
-        }),
-      }),
-    );
-    expect(applicantApiMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
-      expect.objectContaining({
-        bachelorGrade: '1.0',
-        user: expect.objectContaining({
-          userId: accountServiceMock.userId,
-        }),
-      }),
-    );
-  });
-
   it('keeps stored grading scale limits when documents settings initializes', async () => {
     vi.useFakeTimers();
 

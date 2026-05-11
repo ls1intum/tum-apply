@@ -71,6 +71,8 @@ export interface JobDetails {
   applicationState?: ApplicationStateEnum;
 
   suitableForDisabled?: boolean;
+
+  referenceLettersRequired: number;
 }
 
 @Component({
@@ -538,6 +540,10 @@ export class JobDetailComponent {
       researchGroupStreet,
       researchGroupPostalCode,
       researchGroupCity,
+
+      referenceLettersRequired: isForm
+        ? ((data as JobFormDTO).referenceLettersRequired ?? 0)
+        : (jobDetailDTO.referenceLettersRequired ?? 0),
 
       jobState: isForm ? JobDetailDTOStateEnum.Draft : jobDetailDTO.state,
       belongsToResearchGroup: !isForm && jobDetailDTO.researchGroup.researchGroupId === user?.researchGroup?.researchGroupId,
