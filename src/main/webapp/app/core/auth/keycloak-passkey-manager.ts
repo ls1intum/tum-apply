@@ -152,7 +152,7 @@ export class KeycloakPasskeyManager {
       (await navigator.credentials.create({
         publicKey: {
           challenge: this.fromBase64Url(challenge.challenge),
-          rp: { name: 'TUM AET', id: this.getRelyingPartyId() },
+          rp: { name: 'TUM Apply', id: this.getRelyingPartyId() },
           user: { id: userIdBytes, name: username, displayName },
           pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
           authenticatorSelection: { residentKey: 'required', userVerification: 'required' },

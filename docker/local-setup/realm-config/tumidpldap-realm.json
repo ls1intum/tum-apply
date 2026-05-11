@@ -609,7 +609,7 @@
         "refresh.token.lifespan": "1800"
       },
       "redirectUris": [],
-      "webOrigins": [],
+      "webOrigins": ["http://localhost:4200"],
       "secret": "tumapply-server-secret",
       "protocolMappers": [
         {
@@ -636,7 +636,7 @@
       "directAccessGrantsEnabled": false,
       "authorizationServicesEnabled": false,
       "redirectUris": [],
-      "webOrigins": [],
+      "webOrigins": ["http://localhost:4200"],
       "secret": "tumapply-admin-api-secret",
       "protocolMappers": [
         {
