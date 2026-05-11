@@ -204,17 +204,18 @@ public class KeycloakAuthenticationService {
             return buildSessionFromActiveAccessTokenOrThrow(accessToken, jwt);
         }
 
-        AuthResponseDTO viaAccessToken = tryRefreshUsingActiveAccessToken(jwt, refreshToken, preferredRealm, fallbackRealm, refreshFailures);
-        if (viaAccessToken != null) {
-            return viaAccessToken;
-        }
-
-        AuthResponseDTO viaRefreshToken = tryRefreshUsingRefreshTokenOnly(
+        AuthResponseDTO viaAccessToken = tryRefreshUsingActiveAccessToken(
+            jwt,
             refreshToken,
             preferredRealm,
             fallbackRealm,
             refreshFailures
         );
+        if (viaAccessToken != null) {
+            return viaAccessToken;
+        }
+
+        AuthResponseDTO viaRefreshToken = tryRefreshUsingRefreshTokenOnly(refreshToken, preferredRealm, fallbackRealm, refreshFailures);
         if (viaRefreshToken != null) {
             return viaRefreshToken;
         }

@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.core.exception.UnauthorizedException;
@@ -98,7 +98,9 @@ class KeycloakAuthenticationServiceTest {
 
         @Test
         void shouldThrowUnauthorizedWhenExternalRealmAuthenticationFails() {
-            when(externalAuthzClient.obtainAccessToken("applicant@tum.de", "wrong-secret")).thenThrow(new RuntimeException("invalid_grant"));
+            when(externalAuthzClient.obtainAccessToken("applicant@tum.de", "wrong-secret")).thenThrow(
+                new RuntimeException("invalid_grant")
+            );
             when(tumAuthzClient.obtainAccessToken("applicant@tum.de", "wrong-secret")).thenThrow(new RuntimeException("invalid_grant"));
 
             assertThatThrownBy(() -> service.loginWithCredentials("applicant@tum.de", "wrong-secret"))

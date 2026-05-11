@@ -24,7 +24,13 @@ import tech.jhipster.config.JHipsterConstants;
 
 @SpringBootApplication
 @EnableConfigurationProperties(
-    { LiquibaseProperties.class, ApplicationProperties.class, UserRetentionProperties.class, ApplicantRetentionProperties.class, KeycloakProperties.class }
+    {
+        LiquibaseProperties.class,
+        ApplicationProperties.class,
+        UserRetentionProperties.class,
+        ApplicantRetentionProperties.class,
+        KeycloakProperties.class,
+    }
 )
 public class TumApplyApp {
 
