@@ -22,6 +22,7 @@ export class ApplicationConfigService {
       externalLoginRealm: keycloak?.externalLoginRealm ?? '',
       clientId: keycloak?.clientId ?? '',
       relyingPartyId: keycloak?.relyingPartyId ?? '',
+      externalRelyingPartyId: keycloak?.externalRelyingPartyId ?? '',
     };
   }
 

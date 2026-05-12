@@ -340,6 +340,7 @@ export class KeycloakAuthenticationService {
       externalRealmName: this.config.keycloak.externalLoginRealm,
       clientId: this.config.keycloak.clientId,
       relyingPartyId: this.config.keycloak.relyingPartyId,
+      externalRelyingPartyId: this.config.keycloak.externalRelyingPartyId,
       getTokenParsed: () => (this.keycloak?.tokenParsed ?? {}) as Record<string, unknown>,
       canManagePasskeys: () => this.canManagePasskeys(),
       getPasskeyUserIdentity: () => this.getPasskeyUserIdentity(),

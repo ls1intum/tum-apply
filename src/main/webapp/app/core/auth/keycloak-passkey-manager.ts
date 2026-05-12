@@ -38,6 +38,7 @@ interface PasskeyManagerDependencies {
   externalRealmName: string;
   clientId: string;
   relyingPartyId: string;
+  externalRelyingPartyId: string;
   getTokenParsed: () => Record<string, unknown>;
   canManagePasskeys: () => boolean;
   getPasskeyUserIdentity: () => { id: string; username: string; displayName: string } | undefined;
@@ -74,7 +75,7 @@ export class KeycloakPasskeyManager {
     const challenge = await this.getPasskeyChallenge(realmKind);
     const publicKey: PublicKeyCredentialRequestOptions = {
       challenge: this.fromBase64Url(challenge.challenge),
-      rpId: this.getRelyingPartyId(),
+      rpId: this.getRelyingPartyIdForRealm(realmKind),
       userVerification: 'required',
     };
 
@@ -137,6 +138,7 @@ export class KeycloakPasskeyManager {
     const username = getFirstNonEmptyString([claims.preferred_username, claims.email, fallbackIdentity?.username, userId]) ?? '';
     const displayName = getFirstNonEmptyString([claims.name, fallbackIdentity?.displayName, username]) ?? username;
     const relyingPartyName = this.getRelyingPartyName(claims);
+    const relyingPartyId = this.getRelyingPartyIdForClaims(claims);
 
     if (userId === '' || username === '') {
       throw new Error('Missing user identity claims for passkey registration');
@@ -153,7 +155,7 @@ export class KeycloakPasskeyManager {
       (await navigator.credentials.create({
         publicKey: {
           challenge: this.fromBase64Url(challenge.challenge),
-          rp: { name: relyingPartyName, id: this.getRelyingPartyId() },
+          rp: { name: relyingPartyName, id: relyingPartyId },
           user: { id: userIdBytes, name: username, displayName },
           pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
           authenticatorSelection: { residentKey: 'required', userVerification: 'required' },
@@ -317,10 +319,17 @@ export class KeycloakPasskeyManager {
     return Uint8Array.from(atob(padded), character => character.charCodeAt(0)).buffer;
   }
 
-  /** Returns configured RP ID, falling back to current hostname. */
-  private getRelyingPartyId(): string {
-    const relyingPartyId = this.deps.relyingPartyId;
+  /** Returns configured RP ID for the requested realm, falling back to current hostname. */
+  private getRelyingPartyIdForRealm(realmKind: KeycloakRealmKind): string {
+    const relyingPartyId = realmKind === KeycloakRealmKind.External ? this.deps.externalRelyingPartyId : this.deps.relyingPartyId;
     return relyingPartyId.trim() !== '' ? relyingPartyId : window.location.hostname;
+  }
+
+  private getRelyingPartyIdForClaims(claims: Record<string, unknown>): string {
+    const issuer = typeof claims.iss === 'string' ? claims.iss : '';
+    const tumRealmMarker = `/realms/${this.deps.tumRealmName}`;
+    const realmKind = issuer.includes(tumRealmMarker) ? KeycloakRealmKind.Tum : KeycloakRealmKind.External;
+    return this.getRelyingPartyIdForRealm(realmKind);
   }
 
   /** Returns RP display name based on the authenticated realm. */

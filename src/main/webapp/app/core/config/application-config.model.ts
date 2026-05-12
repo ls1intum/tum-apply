@@ -9,6 +9,7 @@ export interface KeycloakConfig {
   externalLoginRealm: string;
   clientId: string;
   relyingPartyId: string;
+  externalRelyingPartyId: string;
 }
 
 export interface OtpConfig {

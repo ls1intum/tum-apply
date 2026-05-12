@@ -22,6 +22,7 @@ export function createApplicationConfigServiceMock(overrides: Partial<Applicatio
     externalLoginRealm: 'external-login',
     clientId: 'mock-client',
     relyingPartyId: '',
+    externalRelyingPartyId: '',
   };
   const otpDefaults: OtpConfig = {
     length: 4,

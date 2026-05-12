@@ -29,6 +29,7 @@ describe('ApplicationConfigService', () => {
           externalLoginRealm: 'external-login',
           clientId: 'client',
           relyingPartyId: 'localhost',
+          externalRelyingPartyId: 'external.localhost',
         },
         otp: { length: 3, ttlSeconds: 120, resendCooldownSeconds: 30 },
       };
@@ -53,6 +54,7 @@ describe('ApplicationConfigService', () => {
           externalLoginRealm: 'ext',
           clientId: 'c',
           relyingPartyId: '',
+          externalRelyingPartyId: '',
         },
       });
       service.setAppConfig({
@@ -62,6 +64,7 @@ describe('ApplicationConfigService', () => {
           externalLoginRealm: 'ext',
           clientId: 'c',
           relyingPartyId: '',
+          externalRelyingPartyId: '',
         },
       });
       expect(service.getAppConfig().keycloak?.url).toBe('second');
@@ -78,6 +81,7 @@ describe('ApplicationConfigService', () => {
         externalLoginRealm: '',
         clientId: '',
         relyingPartyId: '',
+        externalRelyingPartyId: '',
       });
       expect(service.otp).toEqual({ length: 4, ttlSeconds: 300, resendCooldownSeconds: 60 });
     });
@@ -90,6 +94,7 @@ describe('ApplicationConfigService', () => {
           externalLoginRealm: 'external-login',
           clientId: 'cli',
           relyingPartyId: 'apply.in.tum.de',
+          externalRelyingPartyId: 'apply.external.tum.de',
         },
         otp: { length: 8, ttlSeconds: 600, resendCooldownSeconds: 120 },
       });
@@ -100,6 +105,7 @@ describe('ApplicationConfigService', () => {
         externalLoginRealm: 'external-login',
         clientId: 'cli',
         relyingPartyId: 'apply.in.tum.de',
+        externalRelyingPartyId: 'apply.external.tum.de',
       });
       expect(service.otp).toEqual({ length: 8, ttlSeconds: 600, resendCooldownSeconds: 120 });
     });
@@ -113,6 +119,7 @@ describe('ApplicationConfigService', () => {
         externalLoginRealm: 'ext',
         clientId: 'C',
         relyingPartyId: '',
+        externalRelyingPartyId: '',
       },
       otp: { length: 7, ttlSeconds: 111, resendCooldownSeconds: 22 },
     });

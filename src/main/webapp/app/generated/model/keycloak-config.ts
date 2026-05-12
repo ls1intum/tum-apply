@@ -12,6 +12,7 @@
 export interface KeycloakConfig {
     readonly clientId?: string;
     readonly externalLoginRealm?: string;
+    readonly externalRelyingPartyId?: string;
     readonly relyingPartyId?: string;
     readonly tumLoginRealm?: string;
     readonly url?: string;

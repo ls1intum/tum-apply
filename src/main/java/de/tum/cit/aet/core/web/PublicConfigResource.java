@@ -28,7 +28,8 @@ public class PublicConfigResource {
             env.getProperty("keycloak.tum-login-realm"),
             env.getProperty("keycloak.external-login-realm"),
             env.getProperty("keycloak.client-id"),
-            env.getProperty("keycloak.relying-party-id", "")
+            env.getProperty("keycloak.relying-party-id", ""),
+            env.getProperty("keycloak.external-relying-party-id", "")
         );
 
         PublicConfigDTO.OtpConfig otp = new PublicConfigDTO.OtpConfig(

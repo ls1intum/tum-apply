@@ -12,6 +12,7 @@ public class KeycloakProperties {
     private String externalLoginRealm;
     private String clientId;
     private String relyingPartyId;
+    private String externalRelyingPartyId;
     private Users users = new Users();
     private Server server = new Server();
     private Admin admin = new Admin();

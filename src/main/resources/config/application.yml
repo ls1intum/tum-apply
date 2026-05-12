@@ -313,6 +313,8 @@ keycloak:
   client-id: ${KEYCLOAK_CLIENT_ID:tumapply-client}
   # WebAuthn relying party ID used for passkey registration; leave empty to fall back to the current hostname
   relying-party-id: ${KEYCLOAK_RELYING_PARTY_ID:}
+  # WebAuthn relying party ID used for external-realm passkey flows; leave empty to fall back to relying-party-id/hostname logic
+  external-relying-party-id: ${KEYCLOAK_EXTERNAL_RELYING_PARTY_ID:}
   # Admin user to create initial users in Keycloak
   users:
     admin:
