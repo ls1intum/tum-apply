@@ -339,7 +339,7 @@ export class KeycloakPasskeyManager {
     };
     // Prefer Client Hints platform, then legacy navigator.platform, then a stable fallback.
     const userAgentDataPlatform = navigatorWithUaData.userAgentData?.platform?.trim() ?? '';
-    const navigatorPlatformRaw = (navigator as unknown as Record<string, unknown>)['platform'];
+    const navigatorPlatformRaw = (navigator as unknown as Record<string, unknown>).platform;
     const navigatorPlatform = typeof navigatorPlatformRaw === 'string' ? navigatorPlatformRaw.trim() : '';
     const rawPlatform =
       userAgentDataPlatform !== '' ? userAgentDataPlatform : navigatorPlatform !== '' ? navigatorPlatform : 'Unknown Platform';
@@ -361,7 +361,7 @@ export class KeycloakPasskeyManager {
             entry.brand !== undefined && !(entry.brand.toLowerCase().startsWith('not') && entry.brand.toLowerCase().endsWith('brand')),
         )
         ?.brand?.trim() ?? '';
-    const userAgentRaw = (navigator as unknown as Record<string, unknown>)['userAgent'];
+    const userAgentRaw = (navigator as unknown as Record<string, unknown>).userAgent;
     const userAgent = typeof userAgentRaw === 'string' ? userAgentRaw : '';
     let browser = browserFromBrands;
     if (browser === '') {
