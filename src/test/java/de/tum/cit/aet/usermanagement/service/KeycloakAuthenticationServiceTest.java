@@ -110,6 +110,38 @@ class KeycloakAuthenticationServiceTest {
             verify(externalAuthzClient).obtainAccessToken("applicant@tum.de", "wrong-secret");
             verify(tumAuthzClient).obtainAccessToken("applicant@tum.de", "wrong-secret");
         }
+
+        @Test
+        void shouldFallBackToTumRealmWhenExternalAuthenticationFails() {
+            AccessTokenResponse tumToken = new AccessTokenResponse();
+            tumToken.setToken("tum-access-token");
+            tumToken.setRefreshToken("tum-refresh-token");
+            tumToken.setExpiresIn(600);
+            tumToken.setRefreshExpiresIn(7200);
+
+            when(externalAuthzClient.obtainAccessToken("applicant@tum.de", "secret")).thenThrow(new RuntimeException("invalid_grant"));
+            when(tumAuthzClient.obtainAccessToken("applicant@tum.de", "secret")).thenReturn(tumToken);
+
+            AuthResponseDTO actual = service.loginWithCredentials("applicant@tum.de", "secret");
+
+            assertThat(actual.accessToken()).isEqualTo("tum-access-token");
+            assertThat(actual.refreshToken()).isEqualTo("tum-refresh-token");
+            assertThat(actual.expiresIn()).isEqualTo(600);
+            assertThat(actual.refreshExpiresIn()).isEqualTo(7200);
+            verify(externalAuthzClient).obtainAccessToken("applicant@tum.de", "secret");
+            verify(tumAuthzClient).obtainAccessToken("applicant@tum.de", "secret");
+        }
+    }
+
+    @Nested
+    class InvalidateRefreshToken {
+
+        @Test
+        void shouldReturnWithoutCallingKeycloakWhenRefreshTokenIsBlank() {
+            service.invalidateRefreshToken("   ");
+
+            verifyNoInteractions(jwtService, keycloakUserService, externalAuthzClient, tumAuthzClient);
+        }
     }
 
     @Nested
