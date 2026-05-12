@@ -151,7 +151,10 @@ describe('KeycloakPasskeyManager', () => {
     const credentialsGet = vi
       .fn()
       .mockResolvedValue(
-        new MockPublicKeyCredential(buffer([4, 5, 6]), new MockAuthenticatorAssertionResponse(buffer([7]), buffer([8]), buffer([9]), undefined)),
+        new MockPublicKeyCredential(
+          buffer([4, 5, 6]),
+          new MockAuthenticatorAssertionResponse(buffer([7]), buffer([8]), buffer([9]), undefined),
+        ),
       );
     stubWebAuthn({ get: credentialsGet });
     fetchMock.mockResolvedValueOnce({
