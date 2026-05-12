@@ -39,7 +39,7 @@ export class OnboardingOrchestratorService {
   // Prevents opening multiple dialogs concurrently.
   private opened = false;
 
-  private readonly suppressesFollowupPromptsState = signal(false);
+  private readonly suppressesFollowupPromptsState = signal(true);
 
   private readonly checkTrigger$ = new Subject<void>();
   private readonly checkResult = toSignal<ProfOnboardingDTO | undefined>(

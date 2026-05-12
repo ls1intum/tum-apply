@@ -33,7 +33,7 @@ export class PasskeyRegistrationPromptComponent {
 
   readonly loggedIn = computed(() => this.accountService.signedIn());
   readonly promptHeaderKey = computed(() =>
-    this.keycloakAuthenticationService.isTumRealmSession() ? 'auth.passkey.prompt.tum.header' : 'auth.passkey.prompt.header',
+    this.keycloakAuthenticationService.isTumRealmSession() ? 'auth.passkey.prompt.tum.modalHeader' : 'auth.passkey.prompt.header',
   );
   readonly visible = signal(false);
   readonly neverAskAgain = signal(false);
