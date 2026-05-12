@@ -16,6 +16,8 @@ import {
 } from 'app/generated/model/document-information-holder-dto';
 import { FileSelectEvent } from 'primeng/fileupload';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { DocumentDialog } from 'app/shared/components/molecules/document-dialog/document-dialog';
+import type { DocumentHolder } from 'app/shared/components/organisms/document-section/document-section';
 
 import { ButtonComponent } from '../button/button.component';
 
@@ -34,14 +36,14 @@ export type UploadTarget = 'application' | 'applicantProfile';
  */
 @Component({
   selector: 'jhi-upload-button',
-  imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateDirective, ConfirmDialog],
+  imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateDirective, ConfirmDialog, DocumentDialog],
   templateUrl: './upload-button.component.html',
   standalone: true,
 })
 export class UploadButtonComponent {
   readonly maxUploadSizeInMb = 25;
   readonly inputClass =
-    'w-full px-1 py-1 border-b border-dashed outline-none transition-all hover:border-solid focus:border-solid focus:border-primary';
+    'w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap px-1 py-1 border-b border-dashed outline-none transition-all hover:border-solid focus:border-solid focus:border-primary';
   readonly rowClass = 'transition-colors hover:bg-background-surface';
 
   fileUploadComponent = viewChild<FileUpload>(FileUpload);
@@ -69,6 +71,18 @@ export class UploadButtonComponent {
   queuedFilesById = signal<Map<string, File>>(new Map());
   queuedFiles = computed(() => Array.from(this.queuedFilesById().values()));
   compact = input<boolean>(false);
+  previewDialogVisible = signal(false);
+  previewSelectedId = signal<string | undefined>(undefined);
+  previewDocumentHolders = computed<DocumentHolder[]>(() =>
+    (this.documentIds() ?? [])
+      .filter(documentInfo => this.hasPreview(documentInfo))
+      .map(documentInfo => ({
+        label: documentInfo.name ?? '',
+        document: documentInfo,
+        file: this.queuedFilesById().get(documentInfo.id),
+        shouldTranslateLabel: false,
+      })),
+  );
 
   // Duplicate dialog state
   pendingDuplicateFile = signal<File | null>(null);
@@ -250,6 +264,15 @@ export class UploadButtonComponent {
     this.resetNativeFileInput();
   }
 
+  openPreview(documentInfo: DocumentInformationHolderDTO): void {
+    if (!this.hasPreview(documentInfo)) {
+      return;
+    }
+
+    this.previewSelectedId.set(documentInfo.id);
+    this.previewDialogVisible.set(true);
+  }
+
   /**
    * Persists an inline filename edit when possible.
    *
@@ -303,6 +326,14 @@ export class UploadButtonComponent {
     const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
     const size = bytes / Math.pow(k, i);
     return `${parseFloat(size.toFixed(1))} ${sizes[i]}`;
+  }
+
+  hasPreview(documentInfo: DocumentInformationHolderDTO): boolean {
+    if (documentInfo.id.startsWith('temp-')) {
+      return this.queuedFilesById().has(documentInfo.id);
+    }
+
+    return true;
   }
 
   /**

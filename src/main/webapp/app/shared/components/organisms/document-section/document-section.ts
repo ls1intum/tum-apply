@@ -19,6 +19,8 @@ import { DocumentDialog } from '../../molecules/document-dialog/document-dialog'
 export interface DocumentHolder {
   label: string;
   document: DocumentInformationHolderDTO;
+  file?: File;
+  shouldTranslateLabel?: boolean;
 }
 
 @Component({
@@ -67,17 +69,23 @@ export class DocumentSection {
       return;
     }
 
-    const result: { label: string; document: DocumentInformationHolderDTO }[] = [];
+    const result: DocumentHolder[] = [];
 
-    dto.masterDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeMaster', document: d }));
+    dto.masterDocumentIds?.forEach(d =>
+      result.push({ label: 'evaluation.details.documentTypeMaster', document: d, shouldTranslateLabel: true }),
+    );
 
     if (dto.cvDocumentId) {
-      result.push({ label: 'evaluation.details.documentTypeCV', document: dto.cvDocumentId });
+      result.push({ label: 'evaluation.details.documentTypeCV', document: dto.cvDocumentId, shouldTranslateLabel: true });
     }
 
-    dto.bachelorDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeBachelor', document: d }));
+    dto.bachelorDocumentIds?.forEach(d =>
+      result.push({ label: 'evaluation.details.documentTypeBachelor', document: d, shouldTranslateLabel: true }),
+    );
 
-    dto.referenceDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeReference', document: d }));
+    dto.referenceDocumentIds?.forEach(d =>
+      result.push({ label: 'evaluation.details.documentTypeReference', document: d, shouldTranslateLabel: true }),
+    );
 
     this.documentsCount.set(result.length);
 

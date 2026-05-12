@@ -21,6 +21,8 @@ import {
   createApplicantResourceApiMock,
   provideApplicantResourceApiMock,
 } from 'util/applicant-resource-api.service.mock';
+import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
+import { DocumentCacheService } from 'app/service/document-cache.service';
 
 describe('UploadButtonComponent', () => {
   let applicationApi: ApplicationResourceApiMock;
@@ -55,6 +57,8 @@ describe('UploadButtonComponent', () => {
         provideFontAwesomeTesting(),
         provideTranslateMock(),
         provideNoopAnimations(),
+        { provide: DocumentResourceApi, useValue: { downloadDocument: vi.fn().mockReturnValue(of({ body: new ArrayBuffer(0) })) } },
+        { provide: DocumentCacheService, useValue: { get: vi.fn(), set: vi.fn() } },
       ],
     }).compileComponents();
   });
@@ -256,6 +260,45 @@ describe('UploadButtonComponent', () => {
     expect(component.documentIds()).toBe(undefined);
 
     firstValueFromSpy.mockRestore();
+  });
+
+  it('should open the preview dialog for persisted documents', () => {
+    const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
+    const component = fixture.componentInstance;
+    const document = { id: '1', name: 'cv.pdf', size: 1234 };
+
+    component.documentIds.set([document]);
+    component.openPreview(document);
+
+    expect(component.previewSelectedId()).toBe('1');
+    expect(component.previewDialogVisible()).toBe(true);
+    expect(component.previewDocumentHolders()).toEqual([
+      {
+        label: 'cv.pdf',
+        document,
+        file: undefined,
+        shouldTranslateLabel: false,
+      },
+    ]);
+  });
+
+  it('should only allow preview for deferred documents while the local file is available', async () => {
+    const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV', deferUpload: true });
+    const component = fixture.componentInstance;
+    component.fileUploadComponent = signal({ clear: vi.fn() } as unknown as FileUpload);
+
+    const file = new File(['pdf'], 'queued.pdf', { type: 'application/pdf' });
+    await component.onFileSelected({ currentFiles: [file] } as FileSelectEvent);
+
+    const queuedDocument = component.documentIds()?.[0];
+    expect(queuedDocument).toBeDefined();
+    expect(component.hasPreview(queuedDocument!)).toBe(true);
+    expect(component.previewDocumentHolders()[0]?.file).toBe(file);
+
+    component.queuedFilesById.set(new Map());
+
+    expect(component.hasPreview(queuedDocument!)).toBe(false);
+    expect(component.previewDocumentHolders()).toEqual([]);
   });
 
   it('should rename document if name is valid and update documentIds correctly', async () => {

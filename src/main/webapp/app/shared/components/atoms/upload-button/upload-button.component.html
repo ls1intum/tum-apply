@@ -15,7 +15,7 @@
             <th class="w-1/10"></th>
             <th></th>
             <th class="w-3/20"></th>
-            <th class="w-1/10"></th>
+            <th class="w-1/5"></th>
           </tr>
         </thead>
         <tbody>
@@ -30,7 +30,7 @@
                 <td class="pr-3">
                   <input [(ngModel)]="file.name" [class]="inputClass" />
                 </td>
-                <td class="text-center">
+                <td class="text-center whitespace-nowrap" [class.pr-4]="compact()">
                   <small class="text-muted">{{ formatSize(file.size) }}</small>
                 </td>
                 <td>
@@ -65,17 +65,22 @@
                   <small class="text-muted">{{ formatSize(info.size) }}</small>
                 </td>
                 <td>
-                  <jhi-confirm-dialog
-                    label="button.delete"
-                    header="entity.upload.deleteDocument.confirm.header"
-                    message="entity.upload.deleteDocument.confirm.message"
-                    [severity]="'danger'"
-                    confirmIcon="trash"
-                    [iconOnly]="true"
-                    tooltip="button.delete"
-                    size="sm"
-                    (confirmed)="deleteDictionary(info)"
-                  />
+                  <div class="flex items-center justify-end">
+                    @if (hasPreview(info)) {
+                      <jhi-button icon="eye" variant="text" size="sm" tooltip="button.view" (click)="openPreview(info)" />
+                    }
+                    <jhi-confirm-dialog
+                      label="button.delete"
+                      header="entity.upload.deleteDocument.confirm.header"
+                      message="entity.upload.deleteDocument.confirm.message"
+                      [severity]="'danger'"
+                      confirmIcon="trash"
+                      [iconOnly]="true"
+                      tooltip="button.delete"
+                      size="sm"
+                      (confirmed)="deleteDictionary(info)"
+                    />
+                  </div>
                 </td>
               </tr>
             }
@@ -132,3 +137,5 @@
   (confirmed)="onConfirmReplacement()"
   (closed)="showReplacementDialog.set(false)"
 />
+
+<jhi-document-dialog [(isOpen)]="previewDialogVisible" [(selectedId)]="previewSelectedId" [documentHolders]="previewDocumentHolders()" />

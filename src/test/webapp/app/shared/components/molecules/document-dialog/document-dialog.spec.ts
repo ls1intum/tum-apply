@@ -52,10 +52,10 @@ describe('DocumentDialog', () => {
       expected: 'doc1',
     },
     {
-      desc: 'should not override selectedId if already set',
+      desc: 'should fall back to the first document when selectedId is not present in the current list',
       holders: [createHolder('doc1', 'Doc 1')],
       selected: 'customId',
-      expected: 'customId',
+      expected: 'doc1',
     },
   ])('initialization', ({ desc, holders, selected, expected }) => {
     it(desc, () => {
@@ -78,10 +78,10 @@ describe('DocumentDialog', () => {
       expected: 'doc2',
     },
     {
-      desc: 'should return undefined if selectedId not found',
+      desc: 'should fall back to the first document if selectedId is missing from the list',
       holders: [createHolder('doc1', 'Doc 1')],
       selected: 'missing',
-      expected: undefined,
+      expected: 'doc1',
     },
   ])('selectedDocument', ({ desc, holders, selected, expected }) => {
     it(desc, () => {
