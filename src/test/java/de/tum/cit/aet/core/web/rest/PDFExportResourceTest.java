@@ -156,6 +156,11 @@ class PDFExportResourceTest extends AbstractResourceTest {
         labels.put("tvlGrade", "Pay Grade");
         labels.put("startDate", "Start Date");
         labels.put("endDate", "End Date");
+        labels.put("suitableForDisabled", "Suitable for Disabled");
+        labels.put("uponAgreement", "Upon agreement");
+        labels.put("extendable", "Extension possible");
+        labels.put("yes", "Yes");
+        labels.put("no", "No");
         labels.put("jobDescription", "Job Description");
     }
 
@@ -421,11 +426,14 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 null,
                 null,
                 null,
+                0,
                 "Job Description",
                 "Stellenbeschreibung",
                 JobState.DRAFT,
                 null,
                 true,
+                false,
+                false,
                 null,
                 null,
                 null
@@ -489,11 +497,14 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 3,
                 FundingType.FULLY_FUNDED,
                 TvlGrade.E15,
+                1,
                 "Description",
                 "Beschreibung",
                 JobState.DRAFT,
                 null,
                 true,
+                false,
+                false,
                 null,
                 null,
                 null

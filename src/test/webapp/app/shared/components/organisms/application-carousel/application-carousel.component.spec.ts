@@ -91,29 +91,15 @@ describe('ApplicationCarouselComponent', () => {
       component['updateVisibleCards']();
     }
 
-    it('sets 1 when width < md', () => {
-      setup(600);
-      expect(component.cardsVisible()).toBe(1);
-    });
-
-    it('sets 2 when width between md and smallDesktop', () => {
-      setup(780);
-      expect(component.cardsVisible()).toBe(2);
-    });
-
-    it('sets 3 when width between smallDesktop and xl', () => {
-      setup(1000);
-      expect(component.cardsVisible()).toBe(3);
-    });
-
-    it('sets 5 when width between xl and ultraWide', () => {
-      setup(1600);
-      expect(component.cardsVisible()).toBe(5);
-    });
-
-    it('sets 6 when width ≥ ultraWide', () => {
-      setup(2100);
-      expect(component.cardsVisible()).toBe(6);
+    it.each<[number, number]>([
+      [600, 1],
+      [780, 2],
+      [1000, 3],
+      [1600, 5],
+      [2100, 6],
+    ])('should set cardsVisible based on width: width=%i -> %i cards', (width, expected) => {
+      setup(width);
+      expect(component.cardsVisible()).toBe(expected);
     });
   });
   // ---------------- VISIBLE APPLICATIONS ----------------
@@ -153,63 +139,42 @@ describe('ApplicationCarouselComponent', () => {
 
   // ---------------- MIDDLE INDEX ----------------
   describe('middle index', () => {
-    it('should compute middle index correctly', () => {
-      component.cardsVisible.set(5);
-      expect(component.middle()).toBe(2);
-
-      component.cardsVisible.set(3);
-      expect(component.middle()).toBe(1);
-
-      component.cardsVisible.set(1);
-      expect(component.middle()).toBe(0);
-    });
-
-    it('should compute middle correctly for even cardsVisible', () => {
-      component.cardsVisible.set(4);
-      expect(component.middle()).toBe(2);
-
-      component.cardsVisible.set(6);
-      expect(component.middle()).toBe(3);
+    it.each<[number, number]>([
+      [1, 0],
+      [3, 1],
+      [4, 2],
+      [5, 2],
+      [6, 3],
+    ])('should compute middle index for cardsVisible=%i as %i', (cardsVisible, expected) => {
+      component.cardsVisible.set(cardsVisible);
+      expect(component.middle()).toBe(expected);
     });
   });
 
-  // ---------------- OUTPUT EVENTS ----------------
   describe('output events', () => {
-    it('should emit next event when loadNext is called', () => {
+    it.each<['next' | 'prev', 'loadNext' | 'loadPrev']>([
+      ['next', 'loadNext'],
+      ['prev', 'loadPrev'],
+    ])('should emit %s event when %s is called', (event, method) => {
       const spy = vi.fn();
-      component.next.subscribe(spy);
+      component[event].subscribe(spy);
 
-      component.loadNext();
+      component[method]();
 
-      expect(spy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should emit prev event when loadPrev is called', () => {
-      const spy = vi.fn();
-      component.prev.subscribe(spy);
-
-      component.loadPrev();
-
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledOnce();
     });
   });
 
-  // ---------------- KEYBOARD HANDLING ----------------
   describe('keyboard handling', () => {
-    it('should call loadNext when ArrowRight is pressed', () => {
-      const spy = vi.spyOn(component, 'loadNext');
+    it.each<['ArrowRight' | 'ArrowLeft', 'loadNext' | 'loadPrev']>([
+      ['ArrowRight', 'loadNext'],
+      ['ArrowLeft', 'loadPrev'],
+    ])('should call %s when %s is pressed', (key, method) => {
+      const spy = vi.spyOn(component, method);
 
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key }));
 
-      expect(spy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call loadPrev when ArrowLeft is pressed', () => {
-      const spy = vi.spyOn(component, 'loadPrev');
-
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
-
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledOnce();
     });
 
     it('should not call navigation methods for other keys', () => {
@@ -222,51 +187,33 @@ describe('ApplicationCarouselComponent', () => {
       expect(spyPrev).not.toHaveBeenCalled();
     });
 
-    it('should not navigate when focus is inside a textarea', () => {
-      const textarea = document.createElement('textarea');
-      document.body.appendChild(textarea);
-      textarea.focus();
+    it.each<['textarea' | 'input' | 'div', boolean]>([
+      ['textarea', false],
+      ['input', false],
+      ['div', true],
+    ])('should not navigate when focus is inside %s', (tag, contenteditable) => {
+      const el = document.createElement(tag);
+      if (contenteditable) {
+        el.setAttribute('contenteditable', 'true');
+      }
+      document.body.appendChild(el);
+      el.focus();
 
       const spyNext = vi.spyOn(component, 'loadNext');
       component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
 
       expect(spyNext).not.toHaveBeenCalled();
 
-      document.body.removeChild(textarea);
+      document.body.removeChild(el);
     });
 
-    it('should not navigate when focus is inside an input', () => {
-      const input = document.createElement('input');
-      document.body.appendChild(input);
-      input.focus();
-
-      const spyPrev = vi.spyOn(component, 'loadPrev');
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
-
-      expect(spyPrev).not.toHaveBeenCalled();
-
-      document.body.removeChild(input);
-    });
-
-    it('should not navigate when an element with contenteditable is focused', () => {
-      const div = document.createElement('div');
-      div.setAttribute('contenteditable', 'true');
-      document.body.appendChild(div);
-      div.focus();
-
+    it.each([
+      ['ctrlKey', { ctrlKey: true }],
+      ['metaKey', { metaKey: true }],
+      ['altKey', { altKey: true }],
+    ])('should not navigate when %s modifier is pressed', (_desc, modifiers) => {
       const spyNext = vi.spyOn(component, 'loadNext');
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-
-      expect(spyNext).not.toHaveBeenCalled();
-
-      document.body.removeChild(div);
-    });
-
-    it('should not navigate when modifier keys are pressed', () => {
-      const spyNext = vi.spyOn(component, 'loadNext');
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight', ctrlKey: true }));
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight', metaKey: true }));
-      component.handleGlobalKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight', altKey: true }));
+      component.handleGlobalKeyDown(new KeyboardEvent('keydown', Object.assign({ key: 'ArrowRight' }, modifiers)));
 
       expect(spyNext).not.toHaveBeenCalled();
     });

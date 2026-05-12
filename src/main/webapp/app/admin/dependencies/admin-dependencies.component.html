@@ -119,7 +119,7 @@
 
   <!-- Custom column templates (outside conditional so viewChild can resolve them) -->
   <ng-template #versionTemplate let-dep>
-    <jhi-tag [text]="dep.version ?? ''" color="info" />
+    <jhi-tag [text]="dep.version ?? ''" color="info" [shouldTranslate]="false" />
   </ng-template>
 
   <ng-template #securityTemplate let-dep>
@@ -139,7 +139,7 @@
               rel="noopener noreferrer"
               class="no-underline hover:opacity-70 transition-opacity"
             >
-              <jhi-tag [text]="vuln.id ?? ''" color="info" />
+              <jhi-tag [text]="vuln.id ?? ''" color="info" [shouldTranslate]="false" />
             </a>
           }
           @if (dep.vulnerabilities.length > 3) {

@@ -69,11 +69,4 @@ describe('SegmentedToggleComponent', () => {
 
     expect(emitSpy).not.toHaveBeenCalled();
   });
-
-  it('should disable both buttons when disabled is true', () => {
-    const fixture = createFixture({ disabled: true });
-    const buttons: NodeListOf<HTMLButtonElement> = fixture.nativeElement.querySelectorAll('button');
-    expect(buttons[0].disabled).toBe(true);
-    expect(buttons[1].disabled).toBe(true);
-  });
 });

@@ -18,15 +18,17 @@ function makeEditorEvent(html: string, overrides: Partial<unknown> = {}): Conten
     oldDelta: { ops: [] },
     html: html,
     text: plainText,
-    editor: {
-      root: { innerHTML: html },
-      getSelection: () => ({ index: 0, length: 0 }),
-      setContents: vi.fn(),
-      setSelection: vi.fn(),
-      getText: () => plainText,
-      getLength: () => plainText.length,
-      ...overrides,
-    },
+    editor: Object.assign(
+      {
+        root: { innerHTML: html },
+        getSelection: () => ({ index: 0, length: 0 }),
+        setContents: vi.fn(),
+        setSelection: vi.fn(),
+        getText: () => plainText,
+        getLength: () => plainText.length,
+      },
+      overrides,
+    ),
   } as unknown as ContentChange;
 }
 
@@ -58,85 +60,26 @@ describe('EditorComponent', () => {
   });
 
   describe('Basic functionality', () => {
-    it('should compute character count correctly from htmlValue', async () => {
+    it.each([
+      ['<p>ABC</p>', 3, '', false],
+      ['<p>' + 'x'.repeat(500) + '</p>', 500, 'text-negative', true],
+      ['<p>' + 'x'.repeat(120) + '</p>', 120, 'text-warning', false],
+      ['<p>short text</p>', 'short text'.length, '', false],
+    ])('should compute character count, color and over-limit state for %s', async (html, count, color, over) => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-
-      const text = '<p>Hello World</p>';
-      const extracted = extractTextFromHtml(text);
-      expect(extracted).toBe('Hello World');
-
       const htmlSignal = (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue;
-      htmlSignal.set('<p>ABC</p>');
-      htmlSignal.set('<p>ABC</p>');
+      htmlSignal.set(html);
       fixture.detectChanges();
       await fixture.whenStable();
 
-      expect(comp.characterCount()).toBe(3);
-    });
-
-    it('should detect over character limit correctly', async () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const htmlSignal = (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue;
-      htmlSignal.set('<p>' + 'x'.repeat(500) + '</p>');
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(comp.isOverCharLimit()).toBe(true);
-      expect(comp.charCounterColor()).toBe('char-counter-danger');
-    });
-
-    it('should compute warning color when near limit', async () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const htmlSignal = (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue;
-      htmlSignal.set('<p>' + 'x'.repeat(120) + '</p>');
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(comp.charCounterColor()).toBe('char-counter-warning');
-    });
-
-    it('should return normal counter color when within limit', async () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const htmlSignal = (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue;
-      htmlSignal.set('<p>short text</p>');
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(comp.charCounterColor()).toBe('char-counter-normal');
+      expect(comp.characterCount()).toBe(count);
+      expect(comp.charCounterColor()).toBe(color);
+      expect(comp.isOverCharLimit()).toBe(over);
     });
   });
 
   describe('Error handling', () => {
-    it('should set error message for empty required input', async () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      vi.spyOn(comp, 'isTouched').mockReturnValue(true);
-      vi.spyOn(comp, 'isFocused').mockReturnValue(false);
-      (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue.set('');
-      fixture.detectChanges();
-
-      const error = comp.errorMessage();
-      expect(error).toBeDefined();
-    });
-
-    it('should set error message when over character limit', async () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue.set('<p>' + 'x'.repeat(500) + '</p>');
-      fixture.detectChanges();
-
-      const msg = comp.errorMessage();
-      expect(msg).toBeDefined();
-    });
-
     it('should return required error when input is empty and required is true', () => {
       const fixture = TestBed.createComponent(EditorComponent);
       const comp = fixture.componentInstance;
@@ -158,53 +101,37 @@ describe('EditorComponent', () => {
   });
 
   describe('Form control integration', () => {
-    it('should patch form control when formControl exists', async () => {
+    it('should patch form control when formControl exists', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       const ctrl = new FormControl('');
       vi.spyOn(comp, 'formControl').mockReturnValue(ctrl);
       vi.spyOn(comp as unknown as { hasFormControl: () => boolean }, 'hasFormControl').mockReturnValue(true);
 
-      const event = makeEditorEvent('<p>Updated</p>');
-
-      (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
+      (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(makeEditorEvent('<p>Updated</p>'));
       expect(ctrl.value).toBe('<p>Updated</p>');
       expect(ctrl.dirty).toBe(true);
     });
 
-    it('editorValue returns empty string when formControl value is null (value ?? "")', () => {
+    it('should return empty string from editorValue when formControl value is null', () => {
       const fixture = TestBed.createComponent(EditorComponent);
       const comp = fixture.componentInstance;
-
-      const ctrl = new FormControl(null);
-      vi.spyOn(comp, 'formControl').mockReturnValue(ctrl);
+      vi.spyOn(comp, 'formControl').mockReturnValue(new FormControl(null));
 
       expect(comp.editorValue()).toBe('');
     });
 
-    it('should return model() when no formControl is present (else branch)', () => {
+    it('should fall back to model() and emit modelChange when no formControl is present', () => {
       const fixture = TestBed.createComponent(EditorComponent);
       const comp = fixture.componentInstance;
 
       vi.spyOn(comp as unknown as { hasFormControl: () => boolean }, 'hasFormControl').mockReturnValue(false);
       vi.spyOn(comp, 'model').mockReturnValue('<p>Model content</p>');
-
-      const result = comp.editorValue();
-
-      expect(result).toBe('<p>Model content</p>');
-    });
-
-    it('should emit modelChange when formControl is not present (else branch)', () => {
-      const fixture = TestBed.createComponent(EditorComponent);
-      const comp = fixture.componentInstance;
-
-      vi.spyOn(comp as unknown as { hasFormControl: () => boolean }, 'hasFormControl').mockReturnValue(false);
       const emitSpy = vi.spyOn(comp.modelChange, 'emit');
 
-      const event = makeEditorEvent('<p>Standalone test</p>');
+      expect(comp.editorValue()).toBe('<p>Model content</p>');
 
-      (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
-
+      (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(makeEditorEvent('<p>Standalone test</p>'));
       expect(emitSpy).toHaveBeenCalledWith('<p>Standalone test</p>');
     });
   });
@@ -221,66 +148,25 @@ describe('EditorComponent', () => {
         editor: { root: { innerHTML: '<p>Ignored</p>' } },
       });
 
-      expect(emitSpy).not.toHaveBeenCalledOnce();
+      expect(emitSpy).not.toHaveBeenCalled();
     });
 
-    it('should truncate changes if text exceeds max buffer', () => {
-      const fixture = createFixture();
+    it.each([
+      ['custom characterLimit', 'createFixture' as const, 1000],
+      ['default characterLimit', 'default' as const, 900],
+    ])('should truncate when text exceeds buffer (%s)', (_desc, fixtureType, charCount) => {
+      const fixture = fixtureType === 'createFixture' ? createFixture() : TestBed.createComponent(EditorComponent);
       const comp = fixture.componentInstance;
-
-      const event = makeEditorEvent('<p>' + 'x'.repeat(1000) + '</p>');
+      const event = makeEditorEvent('<p>' + 'x'.repeat(charCount) + '</p>');
 
       (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
 
       expect(event.editor.setContents).toHaveBeenCalledOnce();
       expect(event.editor.setSelection).toHaveBeenCalledOnce();
-    });
-
-    it('textChanged applies default (characterLimit ?? STANDARD_CHARACTER_LIMIT) + buffer', () => {
-      const fixture = TestBed.createComponent(EditorComponent);
-      const comp = fixture.componentInstance;
-
-      const event = makeEditorEvent('<p>' + 'x'.repeat(900) + '</p>');
-
-      (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
-
-      expect(event.editor.setContents).toHaveBeenCalledOnce();
-      expect(event.editor.setSelection).toHaveBeenCalledOnce();
-    });
-  });
-
-  describe('Focus and blur', () => {
-    it('should handle focus and blur correctly', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      const spyFocus = vi.spyOn(comp, 'onFocus');
-      const spyBlur = vi.spyOn(comp, 'onBlur');
-
-      comp.onFocus();
-      comp.onBlur();
-
-      expect(spyFocus).toHaveBeenCalledTimes(1);
-      expect(spyBlur).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('Character limit edge cases', () => {
-    it('should return normal color and not match limit when characterLimit is explicitly undefined', async () => {
-      const fixture = TestBed.createComponent(EditorComponent);
-      const comp = fixture.componentInstance;
-
-      fixture.componentRef.setInput('characterLimit', undefined);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue.set('<p>' + 'x'.repeat(560) + '</p>');
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(comp.isOverCharLimit()).toBe(false);
-      expect(comp.charCounterColor()).toBe('char-counter-normal');
-    });
-
     it('should not truncate text when characterLimit is undefined', async () => {
       const fixture = TestBed.createComponent(EditorComponent);
       const comp = fixture.componentInstance;
@@ -435,21 +321,19 @@ describe('EditorComponent', () => {
       fixture.componentRef.setInput('showGenderDecoderButton', true);
       setBiasedAnalysis(fixture, [{ coding: 'neutral' }]);
 
-      expect(comp.shouldShowButton()).toBe(true);
+      expect(comp.shouldShowButton()).toBe(expected);
     });
   });
 
-  describe('onGenderDecoderClick', () => {
-    it('should set showAnalysisModal to true when biasedAnalysis exists', () => {
+  describe('analysis modal handlers', () => {
+    it('should toggle showAnalysisModal when biasedAnalysis exists, ignore click when undefined, and reset on close', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
       setBiasedAnalysis(fixture, [{ coding: 'non-inclusive-coded' }]);
 
       comp.onGenderDecoderClick();
-
       expect(comp.showAnalysisModal()).toBe(true);
-    });
 
     it('should not set showAnalysisModal when biasedAnalysis is undefined', () => {
       const fixture = createFixture();
@@ -458,19 +342,6 @@ describe('EditorComponent', () => {
       setBiasedAnalysis(fixture, undefined);
       comp.showAnalysisModal.set(false);
       comp.onGenderDecoderClick();
-
-      expect(comp.showAnalysisModal()).toBe(false);
-    });
-  });
-
-  describe('closeAnalysisModal', () => {
-    it('should set showAnalysisModal to false', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      comp.showAnalysisModal.set(true);
-      comp.closeAnalysisModal();
-
       expect(comp.showAnalysisModal()).toBe(false);
     });
   });

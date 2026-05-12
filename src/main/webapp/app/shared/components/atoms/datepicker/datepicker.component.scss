@@ -1,19 +1,5 @@
 .datepicker-container {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  .fa-circle-info {
-    color: var(--p-primary-color);
-  }
-
-  // Add styling for labels on the top of the field
-  &.label-top .custom-label {
-    margin-bottom: 0.25rem;
-  }
-
   .custom-datepicker {
-    flex: 1;
-
     .p-inputtext {
       border: 0.1rem solid var(--p-border-default);
 
@@ -76,8 +62,4 @@
       }
     }
   }
-}
-
-.custom-label {
-  margin-right: 1rem;
 }

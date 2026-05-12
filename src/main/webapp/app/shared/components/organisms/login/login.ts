@@ -13,7 +13,6 @@ import { OtpInput } from '../../atoms/otp-input/otp-input';
   selector: 'jhi-login',
   imports: [CredentialsGroupComponent, TranslateDirective, OtpInput, ButtonComponent],
   templateUrl: './login.html',
-  styleUrl: './login.scss',
 })
 export class Login {
   readonly authFacade = inject(AuthFacadeService);

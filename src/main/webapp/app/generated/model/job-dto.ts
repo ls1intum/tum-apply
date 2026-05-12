@@ -15,6 +15,7 @@ export interface JobDTO {
     readonly biasedIssues?: Array<BiasedIssue>;
     readonly complianceIssues?: Array<ComplianceIssue>;
     readonly contractDuration?: number;
+    readonly contractExtendable?: boolean;
     readonly endDate?: string;
     readonly fundingType?: JobDTOFundingTypeEnum;
     readonly genderBiasScore?: number;
@@ -26,6 +27,7 @@ export interface JobDTO {
     readonly location?: JobDTOLocationEnum;
     readonly researchArea?: string;
     readonly startDate?: string;
+    readonly startDateByArrangement?: boolean;
     readonly state: JobDTOStateEnum;
     readonly subjectArea?: JobDTOSubjectAreaEnum;
     readonly suitableForDisabled?: boolean;

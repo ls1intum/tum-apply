@@ -1,9 +1,4 @@
-@use '../../../../../content/scss/breakpoints' as bp;
-
 .search-filter-sort-bar {
-  display: flex;
-  flex-direction: column;
-
   .p-inputtext {
     width: 100%;
     border: var(--p-border-default) solid 0.1rem;

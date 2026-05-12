@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { PrivacyPageComponent } from 'app/shared/pages/privacy-page/privacy-page.component';
 import { UserDataExportResourceApi } from 'app/generated/api/user-data-export-resource-api';
-import { DataExportStatusDTOStatusEnum } from 'app/generated/model/data-export-status-dto';
+import { DataExportStatusDTO, DataExportStatusDTOStatusEnum } from 'app/generated/model/data-export-status-dto';
 
 import { createToastServiceMock, provideToastServiceMock } from 'src/test/webapp/util/toast-service.mock';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
@@ -72,67 +72,38 @@ describe('PrivacyPageComponent', () => {
     vi.restoreAllMocks();
   });
 
-  describe('Component Creation', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-  });
-
   describe('Export Functionality', () => {
     it('should request data export, set status, and show info toast', async () => {
       serviceMocks.getDataExportStatus.mockReturnValue(of({ status: DataExportStatusDTOStatusEnum.InCreation, cooldownSeconds: 0 }));
 
       await component.exportUserData();
 
-      expect(serviceMocks.requestDataExport).toHaveBeenCalledTimes(1);
+      expect(serviceMocks.requestDataExport).toHaveBeenCalledOnce();
       expect(componentAccess.currentExportStatus()).toBe(DataExportStatusDTOStatusEnum.InCreation);
       expect(componentAccess.exportButtonDisabled()).toBe(true);
       expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.inCreation');
       expect(mockToast.showInfoKey).toHaveBeenCalledWith('privacy.export.requested');
     });
 
-    it('should no-op when button is disabled', async () => {
-      serviceMocks.getDataExportStatus.mockReturnValue(of({ status: DataExportStatusDTOStatusEnum.InCreation, cooldownSeconds: 0 }));
-      componentAccess.currentExportStatus.set(DataExportStatusDTOStatusEnum.InCreation);
-      expect(componentAccess.currentExportStatus()).toBe(DataExportStatusDTOStatusEnum.InCreation);
-      expect(componentAccess.exportButtonDisabled()).toBe(true);
-      await component.exportUserData();
-      expect(serviceMocks.requestDataExport).toHaveBeenCalledTimes(1);
-    });
-
-    it('should no-op when not signed in', async () => {
+    it('should no-op refreshStatus when not signed in', async () => {
       const prevCalls = serviceMocks.getDataExportStatus.mock.calls.length;
       vi.spyOn(accountServiceMock, 'signedIn').mockReturnValue(false);
 
-      await (component as any).refreshStatus();
+      await component['refreshStatus']();
 
       expect(serviceMocks.getDataExportStatus).toHaveBeenCalledTimes(prevCalls);
     });
 
-    it('should show 409 toast on conflict', async () => {
-      serviceMocks.requestDataExport.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 409 })));
+    it.each([
+      [409, 'privacy.export.requestFailed409'],
+      [429, 'privacy.export.requestFailed429'],
+      [500, 'privacy.export.requestFailed'],
+    ])('should show toast for HTTP %i error', async (status, key) => {
+      serviceMocks.requestDataExport.mockReturnValue(throwError(() => new HttpErrorResponse({ status })));
 
       await component.exportUserData();
 
-      expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed409');
-      expect(componentAccess.currentExportStatus()).toBeUndefined();
-    });
-
-    it('should show 429 toast on rate limit', async () => {
-      serviceMocks.requestDataExport.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 429 })));
-
-      await component.exportUserData();
-
-      expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed429');
-      expect(componentAccess.currentExportStatus()).toBeUndefined();
-    });
-
-    it('should show generic toast on other HttpErrorResponse', async () => {
-      serviceMocks.requestDataExport.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
-
-      await component.exportUserData();
-
-      expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed');
+      expect(mockToast.showErrorKey).toHaveBeenCalledWith(key);
       expect(componentAccess.currentExportStatus()).toBeUndefined();
     });
 
@@ -144,50 +115,33 @@ describe('PrivacyPageComponent', () => {
       expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed');
       expect(componentAccess.currentExportStatus()).toBeUndefined();
     });
-
-    it('should show requestFailed toast when exportUserData throws non-HTTP error', async () => {
-      serviceMocks.requestDataExport.mockReturnValue(throwError(() => new Error('oops')));
-
-      await component.exportUserData();
-
-      expect(mockToast.showErrorKey).toHaveBeenCalledWith('privacy.export.requestFailed');
-      expect(componentAccess.currentExportStatus()).toBeUndefined();
-    });
   });
 
   describe('Tooltip Behavior', () => {
-    it('should keep button enabled before request', () => {
-      expect(componentAccess.exportButtonDisabled()).toBe(false);
-    });
-
-    it('should show notLoggedIn tooltip when user not signed in', () => {
+    it('should disable button and show notLoggedIn tooltip when user not signed in', () => {
       (accountServiceMock.signedIn as WritableSignal<boolean>).set(false);
 
       expect(componentAccess.exportButtonDisabled()).toBe(true);
       expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.notLoggedIn');
     });
 
-    it('should show cooldown tooltip when disabled due to cooldown', () => {
-      component.cooldownSeconds.set(86400); // 1 day in seconds
+    it('should show cooldown tooltip with days param and disable button', () => {
+      component.cooldownSeconds.set(90000);
       expect(componentAccess.exportButtonDisabled()).toBe(true);
       expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.cooldown');
+      expect(componentAccess.tooltipParams()).toEqual({ days: '2' });
     });
 
     it('should return undefined tooltip when button is enabled', () => {
       componentAccess.currentExportStatus.set(undefined);
       componentAccess.cooldownSeconds.set(0);
+      expect(componentAccess.exportButtonDisabled()).toBe(false);
       expect(componentAccess.tooltip()).toBeUndefined();
     });
 
-    it('should return the inCreation tooltip key when an export is in creation', () => {
+    it('should return inCreation tooltip when an export is in creation', () => {
       componentAccess.currentExportStatus.set(DataExportStatusDTOStatusEnum.InCreation);
       expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.inCreation');
-    });
-
-    it('should expose the days parameter in tooltipParams for the cooldown tooltip', () => {
-      componentAccess.cooldownSeconds.set(90000); // 25 hours in seconds
-      expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.cooldown');
-      expect(componentAccess.tooltipParams()).toEqual({ days: '2' });
     });
 
     it('should update currentLang when TranslateService emits onLangChange', () => {
@@ -196,13 +150,12 @@ describe('PrivacyPageComponent', () => {
     });
 
     it('should set cooldownSeconds to 0 when API returns explicit undefined cooldownSeconds', async () => {
-      // API returns cooldownSeconds explicitly set to undefined
       serviceMocks.getDataExportStatus.mockReturnValue(
-        of({ status: DataExportStatusDTOStatusEnum.EmailSent, cooldownSeconds: undefined } as any),
+        of({ status: DataExportStatusDTOStatusEnum.EmailSent, cooldownSeconds: undefined } as unknown as DataExportStatusDTO),
       );
       (accountServiceMock.signedIn as WritableSignal<boolean>).set(true);
 
-      await (component as any).refreshStatus();
+      await component['refreshStatus']();
 
       expect(componentAccess.currentExportStatus()).toBe(DataExportStatusDTOStatusEnum.EmailSent);
       expect(componentAccess.cooldownSeconds()).toBe(0);

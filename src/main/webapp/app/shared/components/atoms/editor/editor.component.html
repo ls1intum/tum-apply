@@ -62,8 +62,12 @@
             <span class="ql-formats ml-auto !flex items-center gap-2 flex-shrink-0 max-w-full">
               @if (codingDisplay(); as coding) {
                 <span
-                  class="px-3 py-1 rounded text-xs break-words"
-                  [class]="biasedAnalysis()?.[0]?.coding === 'non-inclusive-coded' ? 'gender-badge-warn' : 'gender-badge-secondary'"
+                  class="px-3 py-1 rounded text-xs break-words text-text-primary"
+                  [class]="
+                    biasedAnalysis()?.[0]?.coding === 'non-inclusive-coded'
+                      ? 'bg-[var(--p-warn-hover-color-outlined)]'
+                      : 'bg-secondary-hover-outlined'
+                  "
                 >
                   {{ coding }}
                 </span>
@@ -86,10 +90,10 @@
         </div>
       </quill-editor>
     </div>
-    <div class="editor-footer">
-      <div class="error-text">
+    <div class="editor-footer flex justify-between min-h-8">
+      <div class="error-text flex flex-col">
         @if (helperText(); as helperText) {
-          <span class="helper-text">{{ displayHelperText() }}</span>
+          <span class="helper-text text-[0.8rem] text-text-primary">{{ displayHelperText() }}</span>
         }
         @if (isEmpty() || isOverCharLimit()) {
           {{ errorMessage() }}

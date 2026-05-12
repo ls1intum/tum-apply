@@ -126,6 +126,7 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
   readonly publishButtonSeverity = 'primary' as ButtonColor;
   readonly publishButtonIcon = 'paper-plane';
+  readonly stepContainerClass = 'mx-auto w-full max-w-4xl px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10';
   /** Width of the compliance popover, used to clamp its position within the viewport.
    * matches the width w-72 set in ai-compliance-popover.component.html.
    */
@@ -1210,9 +1211,11 @@ export class JobCreationFormComponent {
       fundingType: [undefined],
       tvlGrade: [undefined],
       startDate: [''],
+      startDateByArrangement: [false],
       applicationDeadline: [''],
       workload: [undefined],
       contractDuration: [undefined],
+      contractExtendable: [false],
       suitableForDisabled: [true],
     });
   }
@@ -1268,9 +1271,11 @@ export class JobCreationFormComponent {
       jobDescriptionDE: jobDescriptionDE ?? undefined,
 
       startDate: positionDetailsValue.startDate ?? undefined,
+      startDateByArrangement: positionDetailsValue.startDateByArrangement ?? false,
       endDate: positionDetailsValue.applicationDeadline ?? undefined,
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
+      contractExtendable: positionDetailsValue.contractExtendable ?? false,
       fundingType: positionDetailsValue.fundingType?.value as JobFormDTOFundingTypeEnum,
       tvlGrade: positionDetailsValue.tvlGrade?.value as JobFormDTOTvlGradeEnum,
       imageId: imageValue.imageId ?? null,
@@ -1423,9 +1428,11 @@ export class JobCreationFormComponent {
 
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',
+      startDateByArrangement: job?.startDateByArrangement ?? false,
       applicationDeadline: job?.endDate ?? '',
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
+      contractExtendable: job?.contractExtendable ?? false,
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
       tvlGrade: this.findDropdownOption(DropdownOptions.tvlGrades, job?.tvlGrade),
       suitableForDisabled: job?.suitableForDisabled ?? true,
