@@ -360,7 +360,7 @@ export class ApplicationInformationSettingsComponent {
 
   private revealPostcodeCountryMismatch(): void {
     const postcodeControl = this.applicationInfoForm().controls.postcode;
-    const postcodeValue = `${postcodeControl.value ?? ''}`.trim();
+    const postcodeValue = (postcodeControl.value ?? '').trim();
     if (postcodeValue.length === 0) {
       return;
     }

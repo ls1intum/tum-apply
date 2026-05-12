@@ -281,7 +281,7 @@ export default class ApplicationCreationPage1Component {
 
   private revealPostcodeCountryMismatch(): void {
     const postcodeControl = this.page1Form().controls.postcode;
-    const postcodeValue = `${postcodeControl.value ?? ''}`.trim();
+    const postcodeValue = (postcodeControl.value ?? '').trim();
     if (postcodeValue.length === 0) {
       return;
     }
