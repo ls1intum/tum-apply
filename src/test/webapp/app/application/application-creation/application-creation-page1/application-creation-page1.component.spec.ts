@@ -64,6 +64,10 @@ describe('ApplicationPage1Component', () => {
     expect(comp.page1Form().valid).toBe(false);
   });
 
+  it('renders the required-fields hint above the form content', () => {
+    expect(fixture.nativeElement.textContent).toContain('global.input.requiredHint');
+  });
+
   it.each([
     { postcode: '80331', valid: true },
     { postcode: '987877', valid: false },

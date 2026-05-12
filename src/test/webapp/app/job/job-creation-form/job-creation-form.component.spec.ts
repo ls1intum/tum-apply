@@ -191,6 +191,12 @@ describe('JobCreationFormComponent', () => {
     expect(mockLocation.back).toHaveBeenCalledOnce();
   });
 
+  it('renders the required-fields hint in the basic information step', () => {
+    component.isLoading.set(false);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('global.input.requiredHint');
+  });
+
   it('should navigate to login when no user is loaded', async () => {
     mockAccountService.user.set(undefined as unknown as User);
     const fixture2 = TestBed.createComponent(JobCreationFormComponent);

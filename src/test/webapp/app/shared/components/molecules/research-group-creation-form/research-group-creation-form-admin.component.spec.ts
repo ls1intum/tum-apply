@@ -143,6 +143,10 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       expect(mockGetCurrentUser).not.toHaveBeenCalled();
     });
 
+    it('renders the required-fields hint at the top of the form', () => {
+      expect(fixture.nativeElement.textContent).toContain('global.input.requiredHint');
+    });
+
     it('should disable personal information fields in admin mode', () => {
       expect(component.form.get('title')?.disabled).toBe(true);
       expect(component.form.get('firstName')?.disabled).toBe(true);

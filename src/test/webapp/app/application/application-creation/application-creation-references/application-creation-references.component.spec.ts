@@ -78,6 +78,10 @@ describe('ApplicationCreationReferencesComponent', () => {
       ]);
     });
 
+    it('renders the required-fields hint above the add-reference form', () => {
+      expect(fixture.nativeElement.textContent).toContain('global.input.requiredHint');
+    });
+
     it('should toast an error when the initial load fails', async () => {
       referenceApi = createReferenceRequestResourceApiMock();
       referenceApi.getReferences.mockReturnValueOnce(throwError(() => new Error('boom')));

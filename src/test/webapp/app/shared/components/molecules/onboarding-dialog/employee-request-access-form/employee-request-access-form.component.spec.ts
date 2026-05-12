@@ -57,6 +57,10 @@ describe('EmployeeRequestAccessFormComponent', () => {
   });
 
   describe('Form Validation', () => {
+    it('renders the required-fields hint at the top of the form', () => {
+      expect(fixture.nativeElement.textContent).toContain('global.input.requiredHint');
+    });
+
     it('should enforce required and minimum length 3 on professorName', () => {
       const control = component.employeeForm.get('professorName');
       control?.setValue('');

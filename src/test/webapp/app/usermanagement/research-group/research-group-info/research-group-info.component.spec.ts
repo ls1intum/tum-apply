@@ -72,6 +72,11 @@ describe('ResearchGroupInfoComponent', () => {
   });
 
   describe('Form Validation', () => {
+    it('renders the required-fields hint below the description', () => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('global.input.requiredHint');
+    });
+
     it('should require name and head fields', () => {
       const nameControl = component.form.controls.name;
       const headControl = component.form.controls.head;
