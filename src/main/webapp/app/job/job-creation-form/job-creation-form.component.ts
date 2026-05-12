@@ -908,7 +908,7 @@ export class JobCreationFormComponent {
    * Handles highlights after reload, page switches, language switches or new analysis.
    * Skips while AI is actively generating new draft or translating.
    */
-  highlightsEffect = effect(() => {
+  private highlightsEffect = effect(() => {
     const editor = this.jobDescriptionEditor();
     const lang = this.currentDescriptionLanguage();
     const issues = this.complianceIssues();
