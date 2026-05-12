@@ -180,6 +180,7 @@ export class KeycloakPasskeyManager {
         Authorization: `Bearer ${actionToken.accessToken}`,
       },
       body: JSON.stringify({
+        deviceName: this.getDeviceName(),
         credentialId: this.toBase64Url(credential.rawId),
         clientDataJSON: this.toBase64Url(response.clientDataJSON),
         attestationObject: this.toBase64Url(response.attestationObject),
@@ -330,6 +331,54 @@ export class KeycloakPasskeyManager {
     const tumRealmMarker = `/realms/${this.deps.tumRealmName}`;
     const realmKind = issuer.includes(tumRealmMarker) ? KeycloakRealmKind.Tum : KeycloakRealmKind.External;
     return this.getRelyingPartyIdForRealm(realmKind);
+  }
+
+  private getDeviceName(): string {
+    const navigatorWithUaData = navigator as Navigator & {
+      userAgentData?: { platform?: string; brands?: { brand?: string }[] };
+    };
+    // Prefer Client Hints platform, then legacy navigator.platform, then a stable fallback.
+    const userAgentDataPlatform = navigatorWithUaData.userAgentData?.platform?.trim() ?? '';
+    const navigatorPlatformRaw = (navigator as unknown as Record<string, unknown>)['platform'];
+    const navigatorPlatform = typeof navigatorPlatformRaw === 'string' ? navigatorPlatformRaw.trim() : '';
+    const rawPlatform =
+      userAgentDataPlatform !== '' ? userAgentDataPlatform : navigatorPlatform !== '' ? navigatorPlatform : 'Unknown Platform';
+    // Normalize noisy platform strings to concise labels used in the saved device name.
+    const platform = rawPlatform.startsWith('Mac')
+      ? 'Mac'
+      : rawPlatform.startsWith('Win')
+        ? 'Win'
+        : rawPlatform.startsWith('Linux')
+          ? 'Linux'
+          : rawPlatform;
+
+    const brands = navigatorWithUaData.userAgentData?.brands ?? [];
+    // Use browser brand hints first; if unavailable, infer from user agent.
+    const browserFromBrands =
+      brands
+        .find(
+          entry =>
+            entry.brand !== undefined && !(entry.brand.toLowerCase().startsWith('not') && entry.brand.toLowerCase().endsWith('brand')),
+        )
+        ?.brand?.trim() ?? '';
+    const userAgentRaw = (navigator as unknown as Record<string, unknown>)['userAgent'];
+    const userAgent = typeof userAgentRaw === 'string' ? userAgentRaw : '';
+    let browser = browserFromBrands;
+    if (browser === '') {
+      if (userAgent.includes('Firefox')) {
+        browser = 'Firefox';
+      } else if (userAgent.includes('Edg')) {
+        browser = 'Edge';
+      } else if (userAgent.includes('Chrome')) {
+        browser = 'Chrome';
+      } else if (userAgent.includes('Safari')) {
+        browser = 'Safari';
+      } else {
+        browser = 'Unknown Browser';
+      }
+    }
+
+    return `${platform} - ${browser}`;
   }
 
   /** Returns RP display name based on the authenticated realm. */

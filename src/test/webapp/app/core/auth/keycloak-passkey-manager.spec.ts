@@ -36,6 +36,24 @@ function stubWebAuthn(credentials: { create?: ReturnType<typeof vi.fn>; get?: Re
   vi.stubGlobal('navigator', Object.assign({}, navigator, { credentials }));
 }
 
+function stubNavigatorDevice(platform: string, browserBrand?: string, userAgent?: string): void {
+  const currentNavigator = navigator as Navigator & { userAgentData?: { platform?: string } };
+  vi.stubGlobal(
+    'navigator',
+    Object.assign({}, currentNavigator, {
+      platform,
+      userAgent: userAgent ?? currentNavigator.userAgent,
+      userAgentData:
+        browserBrand !== undefined
+          ? {
+              platform,
+              brands: [{ brand: 'Not_A Brand' }, { brand: browserBrand }],
+            }
+          : undefined,
+    }),
+  );
+}
+
 type PasskeyManagerDependencies = ConstructorParameters<typeof KeycloakPasskeyManager>[0];
 
 describe('KeycloakPasskeyManager', () => {
@@ -186,6 +204,7 @@ describe('KeycloakPasskeyManager', () => {
       name: 'Jane Doe',
     };
     deps.externalRelyingPartyId = 'apply.example.test';
+    stubNavigatorDevice('macOS', 'Chrome');
     const credentialsCreate = vi
       .fn()
       .mockResolvedValue(new MockPublicKeyCredential(buffer([12]), new MockAuthenticatorAttestationResponse(buffer([13]), buffer([14]))));
@@ -225,6 +244,7 @@ describe('KeycloakPasskeyManager', () => {
       Authorization: 'Bearer mock-action-token',
     });
     expect(JSON.parse(saveRequest.body as string)).toEqual({
+      deviceName: 'macOS - Chrome',
       credentialId: 'DA',
       clientDataJSON: 'DQ',
       attestationObject: 'Dg',
@@ -279,6 +299,7 @@ describe('KeycloakPasskeyManager', () => {
       iss: 'http://mock-keycloak/realms/external-login',
     };
     deps.externalRelyingPartyId = 'external.apply.example.test';
+    stubNavigatorDevice('Windows', 'Edge');
     const credentialsCreate = vi
       .fn()
       .mockResolvedValue(new MockPublicKeyCredential(buffer([1]), new MockAuthenticatorAttestationResponse(buffer([2]), buffer([3]))));
@@ -325,6 +346,35 @@ describe('KeycloakPasskeyManager', () => {
 
     const credentialCreation = credentialsCreate.mock.calls[0][0] as CredentialCreationOptions;
     expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM Apply', id: window.location.hostname });
+  });
+
+  it('should send Unknown as device name when platform cannot be determined', async () => {
+    tokenParsed = {
+      sub: 'subject-123',
+      preferred_username: 'jane',
+    };
+    stubNavigatorDevice('   ', undefined, 'UnknownAgent/1.0');
+    const credentialsCreate = vi
+      .fn()
+      .mockResolvedValue(new MockPublicKeyCredential(buffer([1]), new MockAuthenticatorAttestationResponse(buffer([2]), buffer([3]))));
+    stubWebAuthn({ create: credentialsCreate });
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: vi.fn().mockResolvedValue({ challenge: 'AQID' }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+      });
+
+    await manager.registerPasskey();
+
+    const saveRequest = fetchMock.mock.calls[1][1] as RequestInit;
+    expect(JSON.parse(saveRequest.body as string)).toMatchObject({
+      deviceName: 'Unknown Platform - Unknown Browser',
+    });
   });
 
   it('should list passkeys returned by the server', async () => {
