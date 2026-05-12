@@ -1667,7 +1667,9 @@ export class JobCreationFormComponent {
             let mappedIssues: ComplianceIssue[] = [];
             if (sourceIssues.length > 0 || hasTargetIssues) {
               mappedIssues = await firstValueFrom(
-                this.aiApi.mapComplianceIssues(targetLang, jobId, {
+                this.aiApi.mapComplianceIssues({
+                  toLang: targetLang,
+                  jobId,
                   text: extractTextFromHtml(text),
                   translatedText: extractTextFromHtml(finalContent),
                   complianceIssues: sourceIssues,
