@@ -120,7 +120,10 @@ describe('JobCreationFormComponent', () => {
   let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
   let mockAiStreamingService: ReturnType<typeof createAiStreamingServiceMock>;
   let mockResearchGroupApi: ReturnType<typeof createResearchGroupResourceApiMock>;
-  let mockUserApi: ReturnType<typeof createUserResourceApiMock>;
+  let mockAiStreamingServiceWithTranslation: ReturnType<typeof createAiStreamingServiceMock> & {
+    translateJobDescriptionStream: ReturnType<typeof vi.fn>;
+  };
+  let mockUserApi: ReturnType<typeof createUserResourceApiMock> & { updateAiConsent: ReturnType<typeof vi.fn> };
   let mockAiFeatureToggleApi: { getAiStatus: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
@@ -145,11 +148,16 @@ describe('JobCreationFormComponent', () => {
     mockLocation = createLocationMock();
     mockActivatedRoute = createActivatedRouteMock({}, {}, [new UrlSegment('job', {}), new UrlSegment('create', {})]);
     mockAiStreamingService = createAiStreamingServiceMock();
-    mockAiStreamingService.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
-    mockAiStreamingService.translateJobDescriptionStream.mockResolvedValue('<p>Translated content</p>');
+    mockAiStreamingServiceWithTranslation = Object.assign(mockAiStreamingService, {
+      translateJobDescriptionStream: vi.fn(),
+    });
+    mockAiStreamingServiceWithTranslation.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
+    mockAiStreamingServiceWithTranslation.translateJobDescriptionStream.mockResolvedValue('<p>Translated content</p>');
     mockResearchGroupApi = createResearchGroupResourceApiMock();
     mockResearchGroupApi.getResearchGroupProfessors.mockReturnValue(of([]));
-    mockUserApi = createUserResourceApiMock();
+    mockUserApi = Object.assign(createUserResourceApiMock(), {
+      updateAiConsent: vi.fn(),
+    });
     mockUserApi.getAiConsent.mockReturnValue(of(true));
     mockUserApi.updateAiConsent.mockReturnValue(of({}));
     mockAiFeatureToggleApi = {
@@ -168,7 +176,7 @@ describe('JobCreationFormComponent', () => {
         provideRouterMock(mockRouter),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
-        provideAiStreamingServiceMock(mockAiStreamingService),
+        provideAiStreamingServiceMock(mockAiStreamingServiceWithTranslation),
         provideResearchGroupResourceApiMock(mockResearchGroupApi),
         provideUserResourceApiMock(mockUserApi),
         { provide: AiFeatureToggleResourceApi, useValue: mockAiFeatureToggleApi },
@@ -250,25 +258,6 @@ describe('JobCreationFormComponent', () => {
       expect(mockJobApi.updateJob).toHaveBeenCalledWith('job123', expect.any(Object));
     });
 
-    it('should not persist and should enter validation-blocked state when date order is invalid', async () => {
-      mockJobApi.createJob.mockClear();
-      mockJobApi.updateJob.mockClear();
-
-      component.positionDetailsForm.patchValue({
-        applicationDeadline: '2025-03-10',
-        startDate: '2025-03-09',
-      });
-      component.positionDetailsForm.updateValueAndValidity();
-
-      await getPrivate(component).runAutoSave();
-
-      expect(mockJobApi.createJob).not.toHaveBeenCalled();
-      expect(mockJobApi.updateJob).not.toHaveBeenCalled();
-      expect(component.autoSave.state()).toBe('VALIDATION_BLOCKED');
-      expect(component.positionDetailsForm.get('applicationDeadline')?.touched).toBe(true);
-      expect(component.positionDetailsForm.get('startDate')?.touched).toBe(true);
-    });
-
     it('should debounce form value changes', () => {
       getPrivate(component).autoSaveInitialized = true;
       const notifySpy = vi.spyOn(component.autoSave, 'notifyChanged');
@@ -326,6 +315,7 @@ describe('JobCreationFormComponent', () => {
       fillValidJobForm(component);
       fixture.detectChanges();
       component.jobId.set('id123');
+      component.aiToggleSignal.set(false);
 
       const draftSave = new Subject<JobFormDTO>();
       mockJobApi.updateJob = vi

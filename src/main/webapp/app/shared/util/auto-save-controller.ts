@@ -82,13 +82,9 @@ export class AutoSaveController {
     this._state.set(SavingStates.SAVING);
     try {
       const saved = await this.options.save();
-      if (this._state() === SavingStates.SAVING) {
-        this._state.set(saved ? SavingStates.SAVED : SavingStates.FAILED);
-      }
+      this._state.set(saved ? SavingStates.SAVED : SavingStates.FAILED);
     } catch {
-      if (this._state() === SavingStates.SAVING) {
-        this._state.set(SavingStates.FAILED);
-      }
+      this._state.set(SavingStates.FAILED);
     }
   }
 }

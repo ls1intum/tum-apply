@@ -347,8 +347,7 @@
       "status": {
         "SAVING": "Änderungen werden gespeichert...",
         "SAVED": "Änderungen gespeichert",
-        "FAILED": "Speichern fehlgeschlagen",
-        "VALIDATION_BLOCKED": "Das Startdatum muss an oder nach der Bewerbungsfrist liegen"
+        "FAILED": "Speichern fehlgeschlagen"
       }
     },
     "aiExtraction": {

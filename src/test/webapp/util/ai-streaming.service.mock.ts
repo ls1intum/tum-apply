@@ -4,13 +4,11 @@ import { vi } from 'vitest';
 
 export type AiStreamingServiceMock = {
   generateJobApplicationDraftStream: ReturnType<typeof vi.fn>;
-  translateJobDescriptionStream: ReturnType<typeof vi.fn>;
 };
 
 export function createAiStreamingServiceMock(): AiStreamingServiceMock {
   return {
     generateJobApplicationDraftStream: vi.fn(),
-    translateJobDescriptionStream: vi.fn(),
   };
 }
 

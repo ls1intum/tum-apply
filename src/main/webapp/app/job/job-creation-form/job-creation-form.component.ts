@@ -1569,13 +1569,6 @@ export class JobCreationFormComponent {
   }
 
   private async executeAutoSave(): Promise<boolean> {
-    if (this.positionDetailsForm.hasError(INVALID_DATE_ORDER_ERROR)) {
-      this.positionDetailsForm.get('applicationDeadline')?.markAsTouched();
-      this.positionDetailsForm.get('startDate')?.markAsTouched();
-      this.autoSave.setState(SavingStates.VALIDATION_BLOCKED);
-      return false;
-    }
-
     // 1) Capture current form state before any async work
     this.syncCurrentEditorIntoLanguageSignals();
     const currentLang = this.currentDescriptionLanguage();

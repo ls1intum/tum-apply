@@ -7,11 +7,10 @@ const STATE_COLOR_CLASS: Record<SavingState, string> = {
   [SavingStates.SAVED]: 'text-positive-default',
   [SavingStates.SAVING]: 'text-warning-default',
   [SavingStates.FAILED]: 'text-negative-default',
-  [SavingStates.VALIDATION_BLOCKED]: 'text-negative-default',
 };
 
 /**
- * Inline status pill showing whether the surrounding form is `SAVED`, `SAVING`, `FAILED`, or validation-blocked.
+ * Inline status pill showing whether the surrounding form is `SAVED`, `SAVING`, or `FAILED`.
  * Drives off the same SavingState the AutoSaveController emits.
  */
 @Component({
