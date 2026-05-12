@@ -508,6 +508,7 @@ public class ApplicationService {
     /**
      * Retrieves the detail DTO for the given application.
      *
+     *
      * @param applicationId the UUID of the application
      * @return the {@link ApplicationDetailDTO}
      */
@@ -515,7 +516,10 @@ public class ApplicationService {
         if (applicationId == null) {
             throw new IllegalArgumentException("The applicationId may not be null.");
         }
-        Application application = assertCanManageApplication(applicationId);
+        Application application = applicationRepository
+            .findByIdWithApplicantJobAndReferences(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
         return ApplicationDetailDTO.getFromEntity(application, application.getJob());
     }
 

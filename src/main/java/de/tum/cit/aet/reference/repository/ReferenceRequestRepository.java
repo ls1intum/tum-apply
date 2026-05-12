@@ -64,4 +64,15 @@ public interface ReferenceRequestRepository extends JpaRepository<ReferenceReque
      * @return the number of requests matching the status
      */
     long countByApplicationApplicationIdAndStatus(UUID applicationId, ReferenceRequestStatus status);
+
+    /**
+     * Loads all reference requests linked to any of the given applications. Used to batch-attach
+     * the {@code referenceRequests} collection on applications returned by criteria queries that
+     * cannot join-fetch the collection (e.g. paginated evaluation list).
+     *
+     * @param applicationIds the owning application ids
+     * @return all matching reference requests
+     */
+    @Query("SELECT r FROM ReferenceRequest r WHERE r.application.applicationId IN :applicationIds")
+    List<ReferenceRequest> findByApplicationIds(@Param("applicationIds") List<UUID> applicationIds);
 }

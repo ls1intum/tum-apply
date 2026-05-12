@@ -2832,6 +2832,9 @@ components:
         jobTitle: {type: string}
         motivation: {type: string}
         projects: {type: string}
+        references:
+          type: array
+          items: {$ref: '#/components/schemas/ReferenceRequestDTO'}
         researchGroup: {type: string}
         specialSkills: {type: string}
         supervisingProfessorName: {type: string}

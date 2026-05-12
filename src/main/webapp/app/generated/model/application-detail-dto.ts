@@ -9,6 +9,7 @@
  */
 
 import type { ApplicantForApplicationDetailDTO } from './applicant-for-application-detail-dto';
+import type { ReferenceRequestDTO } from './reference-request-dto';
 
 export interface ApplicationDetailDTO {
     readonly applicant?: ApplicantForApplicationDetailDTO;
@@ -20,6 +21,7 @@ export interface ApplicationDetailDTO {
     readonly jobTitle?: string;
     readonly motivation?: string;
     readonly projects?: string;
+    readonly references?: Array<ReferenceRequestDTO>;
     readonly researchGroup: string;
     readonly specialSkills?: string;
     readonly supervisingProfessorName: string;

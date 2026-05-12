@@ -29,6 +29,8 @@ import de.tum.cit.aet.job.service.JobService;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
+import de.tum.cit.aet.reference.domain.ReferenceRequest;
+import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -37,6 +39,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -61,6 +64,7 @@ public class ApplicationEvaluationService {
     private final CurrentUserService currentUserService;
     private final ZipExportService zipExportService;
     private final RatingRepository ratingRepository;
+    private final ReferenceRequestRepository referenceRequestRepository;
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
         ApplicationState.SENT,
@@ -265,6 +269,7 @@ public class ApplicationEvaluationService {
         Pageable pageable = new OffsetPageRequest(start, end - start, sortDTO.toSpringSort(SORTABLE_FIELDS));
 
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
+        attachReferenceRequests(applicationsPage);
         return ApplicationEvaluationDetailListDTO.fromApplications(
             applicationsPage,
             totalRecords,
@@ -296,6 +301,7 @@ public class ApplicationEvaluationService {
         Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
         String searchQuery = filterDTO.getSearch();
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
+        attachReferenceRequests(applicationsPage);
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
         return ApplicationEvaluationDetailListDTO.fromApplications(
             applicationsPage,
@@ -428,6 +434,27 @@ public class ApplicationEvaluationService {
         String searchQuery
     ) {
         return applicationEvaluationRepository.findApplications(researchGroupId, VIEWABLE_STATES, pageable, dynamicFilters, searchQuery);
+    }
+
+    /**
+     * Eagerly attaches the {@code referenceRequests} collection to applications produced by the
+     * criteria query, which cannot join-fetch a collection without breaking pagination. OSIV is
+     * disabled, so we must hydrate the collection before the entity leaves the service layer.
+     *
+     * @param applications the applications to hydrate
+     */
+    private void attachReferenceRequests(List<Application> applications) {
+        if (applications.isEmpty()) {
+            return;
+        }
+        List<UUID> applicationIds = applications.stream().map(Application::getApplicationId).toList();
+        Map<UUID, Set<ReferenceRequest>> byApplication = referenceRequestRepository
+            .findByApplicationIds(applicationIds)
+            .stream()
+            .collect(Collectors.groupingBy(r -> r.getApplication().getApplicationId(), Collectors.toCollection(HashSet::new)));
+        for (Application application : applications) {
+            application.setReferenceRequests(byApplication.getOrDefault(application.getApplicationId(), new HashSet<>()));
+        }
     }
 
     /**

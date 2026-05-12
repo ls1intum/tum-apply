@@ -24,7 +24,6 @@ import { ApplicationResourceApi } from '../../generated/api/application-resource
 import { ApplicationDetailDTO } from '../../generated/model/application-detail-dto';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/application-document-ids-dto';
 import { ReferenceRequestDTO } from '../../generated/model/reference-request-dto';
-import { ReferenceRequestResourceApi } from '../../generated/api/reference-request-resource-api';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 
@@ -59,7 +58,6 @@ export default class ApplicationDetailForApplicantComponent {
   actualDetailData = signal<ApplicationDetailDTO | null>(null);
   actualDocumentDataExists = signal<boolean>(false);
   actualDocumentData = signal<ApplicationDocumentIdsDTO | null>(null);
-  actualReferences = signal<ReferenceRequestDTO[]>([]);
 
   applicationId = signal<string>('');
 
@@ -78,15 +76,15 @@ export default class ApplicationDetailForApplicantComponent {
 
   /**
    * Effective list of reference requests visible on this page: the preview list when the parent
-   * provides one (summary page during creation), otherwise the list fetched on init for the real
-   * detail page. Used to render the referee summary card and any uploaded letter previews.
+   * provides one (summary page during creation), otherwise the list inlined into the detail DTO.
+   * Used to render the referee summary card and any uploaded letter previews.
    */
   references = computed<ReferenceRequestDTO[]>(() => {
     const preview = this.previewReferences();
     if (preview.length > 0) {
       return preview;
     }
-    return this.actualReferences();
+    return this.application()?.references ?? [];
   });
 
   /**
@@ -228,7 +226,6 @@ export default class ApplicationDetailForApplicantComponent {
 
   readonly dropDownOptions = DropDownOptions;
   private applicationApi = inject(ApplicationResourceApi);
-  private referenceApi = inject(ReferenceRequestResourceApi);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private readonly router = inject(Router);
@@ -271,16 +268,6 @@ export default class ApplicationDetailForApplicantComponent {
       this.actualDocumentDataExists.set(true);
     } catch {
       this.toastService.showErrorKey(`${this.translationKey}.fetchDocumentIdsFailed`);
-    }
-
-    try {
-      const references = await firstValueFrom(this.referenceApi.getReferences(this.applicationId()));
-      this.actualReferences.set(references);
-    } catch {
-      // The references panel is additive: if the call fails (network blip, legacy application
-      // without the relation, applicant has no refs) we leave the list empty rather than disrupt
-      // the page with a toast — the rest of the detail view is still meaningful on its own.
-      this.actualReferences.set([]);
     }
   }
 
