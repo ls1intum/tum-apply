@@ -97,20 +97,10 @@ export class AiResourceApi {
     /**
      * 
      * 
-     * @param toLang 
-     * @param jobId 
      * @param mapComplianceIssuesRequestDTO 
      */
-    mapComplianceIssues(toLang: string, jobId: string, mapComplianceIssuesRequestDTO: MapComplianceIssuesRequestDTO): Observable<Array<ComplianceIssue>> {
-        const queryParams = new URLSearchParams();
-        if (toLang !== undefined && toLang !== null) {
-            queryParams.set('toLang', String(toLang));
-        }
-        if (jobId !== undefined && jobId !== null) {
-            queryParams.set('jobId', String(jobId));
-        }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/ai/map-compliance-issues${queryString ? `?${queryString}` : ''}`;
+    mapComplianceIssues(mapComplianceIssuesRequestDTO: MapComplianceIssuesRequestDTO): Observable<Array<ComplianceIssue>> {
+        const url = `${this.basePath}/api/ai/map-compliance-issues`;
         return this.http.post<Array<ComplianceIssue>>(url, mapComplianceIssuesRequestDTO);
     }
 
