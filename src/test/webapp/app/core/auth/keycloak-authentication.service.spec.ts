@@ -53,7 +53,7 @@ describe('KeycloakAuthenticationService', () => {
       const result = await service.init();
 
       expect(result).toBe(true);
-      expect(keycloakInstance.init).toHaveBeenCalledTimes(1);
+      expect(keycloakInstance.init).toHaveBeenCalledOnce();
       expect(keycloakInstance.init).toHaveBeenCalledWith(expect.objectContaining({ silentCheckSsoFallback: false }));
     });
 

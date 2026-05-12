@@ -14,7 +14,7 @@ class MockAuthenticatorAssertionResponse {
     readonly clientDataJSON: ArrayBuffer,
     readonly authenticatorData: ArrayBuffer,
     readonly signature: ArrayBuffer,
-    readonly userHandle: ArrayBuffer | null,
+    readonly userHandle: ArrayBuffer | undefined,
   ) {}
 }
 
@@ -151,7 +151,7 @@ describe('KeycloakPasskeyManager', () => {
     const credentialsGet = vi
       .fn()
       .mockResolvedValue(
-        new MockPublicKeyCredential(buffer([4, 5, 6]), new MockAuthenticatorAssertionResponse(buffer([7]), buffer([8]), buffer([9]), null)),
+        new MockPublicKeyCredential(buffer([4, 5, 6]), new MockAuthenticatorAssertionResponse(buffer([7]), buffer([8]), buffer([9]), undefined)),
       );
     stubWebAuthn({ get: credentialsGet });
     fetchMock.mockResolvedValueOnce({
@@ -162,7 +162,7 @@ describe('KeycloakPasskeyManager', () => {
 
     await expect(manager.loginWithPasskey(KeycloakRealmKind.Tum)).rejects.toThrow('Passkey did not return a user handle');
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledOnce();
   });
 
   it('should authenticate against external realm when requested', async () => {
@@ -232,7 +232,7 @@ describe('KeycloakPasskeyManager', () => {
       userVerification: 'required',
     });
 
-    expect(deps.createPasskeyActionToken).toHaveBeenCalledTimes(1);
+    expect(deps.createPasskeyActionToken).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenNthCalledWith(1, 'http://mock-keycloak/realms/external-login/passkey/mock-action-client/challenge', {
       credentials: 'include',
     });
@@ -389,7 +389,7 @@ describe('KeycloakPasskeyManager', () => {
       { id: 'passkey-1', label: 'MacBook Pro', createdDate: 1_710_000_000_000 },
       { id: 'passkey-2', label: 'Backup key' },
     ]);
-    expect(deps.listPasskeys).toHaveBeenCalledTimes(1);
+    expect(deps.listPasskeys).toHaveBeenCalledOnce();
   });
 
   it('should surface API errors when loading passkeys fails', async () => {
