@@ -6,8 +6,10 @@ import { signal, TemplateRef } from '@angular/core';
 
 import { JobCreationFormComponent } from 'app/job/job-creation-form/job-creation-form.component';
 import { AiFeatureToggleResourceApi } from 'app/generated/api/ai-feature-toggle-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
+import { AiStreamingService } from 'app/service/ai-streaming.service';
 import { User } from 'app/core/auth/account.service';
 import {
   JobFormDTO,
@@ -32,12 +34,10 @@ import { createLocationMock, provideLocationMock } from '../../../util/location.
 import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
 import { createJobResourceApiMock, provideJobResourceApiMock } from '../../../util/job-resource-api.service.mock';
 import { createImageResourceApiMock, provideImageResourceApiMock } from '../../../util/image-resource-api.service.mock';
-import { createAiStreamingServiceMock, provideAiStreamingServiceMock } from '../../../util/ai-streaming.service.mock';
 import {
   createResearchGroupResourceApiMock,
   provideResearchGroupResourceApiMock,
 } from '../../../util/research-group-resource-api.service.mock';
-import { createUserResourceApiMock, provideUserResourceApiMock } from '../../../util/user-resource-api.service.mock';
 
 interface Step {
   name: string;
@@ -118,12 +118,15 @@ describe('JobCreationFormComponent', () => {
   let mockRouter: ReturnType<typeof createRouterMock>;
   let mockLocation: ReturnType<typeof createLocationMock>;
   let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
-  let mockAiStreamingService: ReturnType<typeof createAiStreamingServiceMock>;
   let mockResearchGroupApi: ReturnType<typeof createResearchGroupResourceApiMock>;
-  let mockAiStreamingServiceWithTranslation: ReturnType<typeof createAiStreamingServiceMock> & {
+  let mockAiStreamingService: {
+    generateJobApplicationDraftStream: ReturnType<typeof vi.fn>;
     translateJobDescriptionStream: ReturnType<typeof vi.fn>;
   };
-  let mockUserApi: ReturnType<typeof createUserResourceApiMock> & { updateAiConsent: ReturnType<typeof vi.fn> };
+  let mockUserApi: {
+    getAiConsent: ReturnType<typeof vi.fn>;
+    updateAiConsent: ReturnType<typeof vi.fn>;
+  };
   let mockAiFeatureToggleApi: { getAiStatus: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
@@ -147,17 +150,18 @@ describe('JobCreationFormComponent', () => {
     mockRouter = createRouterMock();
     mockLocation = createLocationMock();
     mockActivatedRoute = createActivatedRouteMock({}, {}, [new UrlSegment('job', {}), new UrlSegment('create', {})]);
-    mockAiStreamingService = createAiStreamingServiceMock();
-    mockAiStreamingServiceWithTranslation = Object.assign(mockAiStreamingService, {
+    mockAiStreamingService = {
+      generateJobApplicationDraftStream: vi.fn(),
       translateJobDescriptionStream: vi.fn(),
-    });
-    mockAiStreamingServiceWithTranslation.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
-    mockAiStreamingServiceWithTranslation.translateJobDescriptionStream.mockResolvedValue('<p>Translated content</p>');
+    };
+    mockAiStreamingService.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
+    mockAiStreamingService.translateJobDescriptionStream.mockResolvedValue('<p>Translated content</p>');
     mockResearchGroupApi = createResearchGroupResourceApiMock();
     mockResearchGroupApi.getResearchGroupProfessors.mockReturnValue(of([]));
-    mockUserApi = Object.assign(createUserResourceApiMock(), {
+    mockUserApi = {
+      getAiConsent: vi.fn(),
       updateAiConsent: vi.fn(),
-    });
+    };
     mockUserApi.getAiConsent.mockReturnValue(of(true));
     mockUserApi.updateAiConsent.mockReturnValue(of({}));
     mockAiFeatureToggleApi = {
@@ -176,9 +180,9 @@ describe('JobCreationFormComponent', () => {
         provideRouterMock(mockRouter),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
-        provideAiStreamingServiceMock(mockAiStreamingServiceWithTranslation),
         provideResearchGroupResourceApiMock(mockResearchGroupApi),
-        provideUserResourceApiMock(mockUserApi),
+        { provide: AiStreamingService, useValue: mockAiStreamingService },
+        { provide: UserResourceApi, useValue: mockUserApi },
         { provide: AiFeatureToggleResourceApi, useValue: mockAiFeatureToggleApi },
       ],
     })
