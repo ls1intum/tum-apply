@@ -5,6 +5,7 @@ import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
+import de.tum.cit.aet.ai.dto.MapComplianceIssuesRequestDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
@@ -407,37 +408,28 @@ public class AiService {
      * Maps the snippets of an existing source-language compliance analysis onto the
      * translated job description, avoiding a second full LLM compliance analysis.
      *
-     * @param jobId          the job whose compliance issues should be updated for the target language
-     * @param sourceIssues   the issues produced by the analysis of the source-language description
-     * @param originalText   plain-text source-language description
-     * @param translatedText plain-text translated description
-     * @param toLang         target language code, expected to be "de" or "en"
+     * @param request DTO containing the source compliance issues, original text, translated text, target language, and job ID
      * @return the persisted list of mapped issues, in the same order as sourceIssues
      */
-    public List<ComplianceIssue> mapComplianceIssues(
-        UUID jobId,
-        List<ComplianceIssue> sourceIssues,
-        String originalText,
-        String translatedText,
-        String toLang
-    ) {
-        if (sourceIssues == null) {
+    public List<ComplianceIssue> mapComplianceIssues(MapComplianceIssuesRequestDTO request) {
+        if (request.complianceIssues() == null) {
             return List.of();
         }
         // Empty source issues mean "no issues found" -> clear stale target-language issues.
-        if (sourceIssues.isEmpty()) {
-            jobService.updateComplianceIssues(jobId, List.of(), toLang);
+        if (request.complianceIssues().isEmpty()) {
+            jobService.updateComplianceIssues(request.jobId(), List.of(), request.toLang());
             return List.of();
         }
         // Missing target text only means "cannot map" -> do not clear existing issues.
-        if (translatedText == null || translatedText.isBlank()) {
+        if (request.translatedText() == null || request.translatedText().isBlank()) {
             return List.of();
         }
         if (!aiFeatureToggleService.isAiAvailable()) {
             return List.of();
         }
 
-        String snippets = sourceIssues
+        String snippets = request
+            .complianceIssues()
             .stream()
             .map(i -> i.getText().trim())
             .collect(Collectors.joining("\n"));
@@ -450,8 +442,8 @@ public class AiService {
                     u
                         .text(snippetMappingResource)
                         .param("snippets", snippets)
-                        .param("jobDescription", originalText)
-                        .param("translatedText", translatedText)
+                        .param("jobDescription", request.text())
+                        .param("translatedText", request.translatedText())
                 )
                 .call()
                 .entity(new ParameterizedTypeReference<List<String>>() {});
@@ -461,14 +453,14 @@ public class AiService {
             throw new InternalServerException("Compliance issue mapping failed", e);
         }
 
-        if (mappedTexts == null || mappedTexts.size() != sourceIssues.size()) {
+        if (mappedTexts == null || mappedTexts.size() != request.complianceIssues().size()) {
             aiFeatureToggleService.recordFailure();
             throw new InternalServerException("Mapping returned an invalid number of snippets");
         }
 
         List<ComplianceIssue> mappedIssues = new ArrayList<>();
-        for (int i = 0; i < sourceIssues.size(); i++) {
-            ComplianceIssue sourceIssue = sourceIssues.get(i);
+        for (int i = 0; i < request.complianceIssues().size(); i++) {
+            ComplianceIssue sourceIssue = request.complianceIssues().get(i);
             mappedIssues.add(
                 new ComplianceIssue(
                     sourceIssue.getId(),
@@ -477,12 +469,12 @@ public class AiService {
                     sourceIssue.getArticle(),
                     sourceIssue.getExplanation(),
                     sourceIssue.getAction(),
-                    toLang
+                    request.toLang()
                 )
             );
         }
 
-        jobService.updateComplianceIssues(jobId, mappedIssues, toLang);
+        jobService.updateComplianceIssues(request.jobId(), mappedIssues, request.toLang());
         return mappedIssues;
     }
 }

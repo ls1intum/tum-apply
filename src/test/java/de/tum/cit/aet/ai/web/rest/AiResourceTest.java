@@ -107,21 +107,18 @@ class AiResourceTest extends AbstractResourceTest {
             List<ComplianceIssue> sourceIssues = List.of(createComplianceIssue("I don't allow disabled applicants", "en"));
             List<ComplianceIssue> mappedIssues = List.of(createComplianceIssue("Ich erlaube keine Bewerber mit Behinderung", "de"));
             MapComplianceIssuesRequestDTO request = new MapComplianceIssuesRequestDTO(
+                "de",
+                JOB_ID,
                 "I don't allow disabled applicants",
                 "Ich erlaube keine Bewerber mit Behinderung",
                 sourceIssues
             );
 
-            given(aiService.mapComplianceIssues(any(UUID.class), any(), anyString(), anyString(), anyString())).willReturn(mappedIssues);
+            given(aiService.mapComplianceIssues(any(MapComplianceIssuesRequestDTO.class))).willReturn(mappedIssues);
 
             List<ComplianceIssue> response = api
                 .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
-                .postAndRead(
-                    MAP_COMPLIANCE_URL + "?toLang=de&jobId=" + JOB_ID,
-                    request,
-                    new TypeReference<List<ComplianceIssue>>() {},
-                    200
-                );
+                .postAndRead(MAP_COMPLIANCE_URL, request, new TypeReference<List<ComplianceIssue>>() {}, 200);
 
             assertThat(response).hasSize(1);
             assertThat(response.getFirst().getText()).isEqualTo("Ich erlaube keine Bewerber mit Behinderung");
@@ -129,11 +126,17 @@ class AiResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldReturnBadRequestWhenMappingRequestIsMissingTranslatedText() {
-            MapComplianceIssuesRequestDTO request = new MapComplianceIssuesRequestDTO("I don't allow disabled applicants", null, List.of());
+            MapComplianceIssuesRequestDTO request = new MapComplianceIssuesRequestDTO(
+                "de",
+                JOB_ID,
+                "I don't allow disabled applicants",
+                null,
+                List.of()
+            );
 
             api
                 .with(JwtPostProcessors.jwtUser(PROFESSOR_USER_ID, "ROLE_PROFESSOR"))
-                .postAndRead(MAP_COMPLIANCE_URL + "?toLang=de&jobId=" + JOB_ID, request, Void.class, 400);
+                .postAndRead(MAP_COMPLIANCE_URL, request, Void.class, 400);
         }
     }
 
