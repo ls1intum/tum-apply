@@ -11,7 +11,7 @@ import { PasskeyCredentialSummary } from 'app/core/auth/models/auth.model';
 import { PasskeySettingsComponent } from 'app/shared/settings/passkey-settings/passkey-settings.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
-import { provideTranslateMock } from 'util/translate.mock';
+import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock } from 'util/translate.mock';
 import { ToastServiceMock } from '../../../../util/toast-service.mock';
 
 describe('PasskeySettingsComponent', () => {
@@ -21,6 +21,7 @@ describe('PasskeySettingsComponent', () => {
   let authFacadeMock: AuthFacadeServiceMock;
   let keycloakAuthenticationServiceMock: KeycloakAuthenticationServiceMock;
   let toastServiceMock: ToastServiceMock;
+  let translateServiceMock: TranslateServiceMock;
 
   const existingPasskeys: PasskeyCredentialSummary[] = [
     { id: 'passkey-1', label: 'MacBook Pro', createdDate: 1_710_000_000_000 },
@@ -39,6 +40,7 @@ describe('PasskeySettingsComponent', () => {
     authFacadeMock = createAuthFacadeServiceMock();
     keycloakAuthenticationServiceMock = createKeycloakAuthenticationServiceMock();
     toastServiceMock = createToastServiceMock();
+    translateServiceMock = createTranslateServiceMock();
 
     await TestBed.configureTestingModule({
       imports: [PasskeySettingsComponent],
@@ -46,7 +48,7 @@ describe('PasskeySettingsComponent', () => {
         provideAuthFacadeServiceMock(authFacadeMock),
         provideKeycloakAuthenticationServiceMock(keycloakAuthenticationServiceMock),
         provideToastServiceMock(toastServiceMock),
-        provideTranslateMock(),
+        provideTranslateMock(translateServiceMock),
         provideFontAwesomeTesting(),
       ],
     }).compileComponents();
@@ -151,5 +153,19 @@ describe('PasskeySettingsComponent', () => {
       { id: 'passkey-1', label: 'Passkey 1', createdAtLabel: undefined, removeDisabled: true, removing: false },
       { id: 'passkey-2', label: 'Passkey 2', createdAtLabel: undefined, removeDisabled: false, removing: true },
     ]);
+  });
+
+  it('should format passkey dates using the current translation language', async () => {
+    await createComponent();
+
+    component.passkeys.set([{ id: 'passkey-1', label: 'Phone', createdDate: Date.UTC(2024, 2, 9, 12, 0, 0) }]);
+    const englishLabel = component.passkeyItems()[0]?.createdAtLabel;
+    expect(englishLabel).toBeDefined();
+
+    translateServiceMock.use('de');
+    fixture.detectChanges();
+    const germanLabel = component.passkeyItems()[0]?.createdAtLabel;
+    expect(germanLabel).toBeDefined();
+    expect(germanLabel).not.toBe(englishLabel);
   });
 });

@@ -2,7 +2,6 @@
   [visible]="visible()"
   (visibleChange)="close()"
   [header]="promptHeaderKey()"
-  [showHeader]="!keycloakAuthenticationService.isTumRealmSession()"
   width="32rem"
   contentStyleClass="!p-0"
   [dismissableMask]="false"
@@ -10,7 +9,7 @@
   [closable]="false"
 >
   @if (keycloakAuthenticationService.isTumRealmSession()) {
-    <div class="flex flex-col gap-4 px-6 pt-5 pb-6">
+    <div class="flex flex-col gap-4 px-6 pb-6">
       <p class="text-text-secondary" jhiTranslate="auth.passkey.prompt.tum.eyebrow"></p>
 
       <div class="flex gap-3">
