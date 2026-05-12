@@ -53,13 +53,14 @@ describe('StringInputComponent', () => {
     it('should return true when input has been blurred (onBlur called)', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
+      fixture.detectChanges();
       comp.onBlur();
       fixture.detectChanges();
 
       expect(comp.isTouched()).toBe(true);
     });
 
-    it('should return false when control.touched is true but only has required error', () => {
+    it('should mirror programmatic touched state from the bound control', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       const ctrl = new FormControl('', []);
@@ -68,7 +69,7 @@ describe('StringInputComponent', () => {
       ctrl.markAsTouched();
       fixture.detectChanges();
 
-      expect(comp.isTouched()).toBe(false);
+      expect(comp.isTouched()).toBe(true);
     });
   });
 
@@ -82,6 +83,7 @@ describe('StringInputComponent', () => {
       const comp = fixture.componentInstance;
       const ctrl = new FormControl(value, validator ? { validators: validator } : {});
       fixture.componentRef.setInput('control', ctrl);
+      fixture.detectChanges();
       if (blur) {
         comp.onBlur();
         fixture.detectChanges();

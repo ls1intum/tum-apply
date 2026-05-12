@@ -239,6 +239,9 @@ export default class ApplicationCreationPage1Component {
       ...this.data(),
       [field]: value,
     });
+    if (field === 'country') {
+      this.revealPostcodeCountryMismatch();
+    }
     this.emitChanged();
   }
 
@@ -274,5 +277,18 @@ export default class ApplicationCreationPage1Component {
     }
 
     this.educationDataExtracted.emit(extractedData.education);
+  }
+
+  private revealPostcodeCountryMismatch(): void {
+    const postcodeControl = this.page1Form().controls.postcode;
+    const postcodeValue = `${postcodeControl.value ?? ''}`.trim();
+    if (postcodeValue.length === 0) {
+      return;
+    }
+
+    postcodeControl.updateValueAndValidity();
+    if (postcodeControl.hasError('invalidPostalCode')) {
+      postcodeControl.markAsTouched();
+    }
   }
 }

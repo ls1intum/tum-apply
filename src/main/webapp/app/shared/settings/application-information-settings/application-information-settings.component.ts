@@ -261,12 +261,17 @@ export class ApplicationInformationSettingsComponent {
     const updatedData = structuredClone(this.data());
     updatedData.dateOfBirth = $event ?? '';
     this.data.set(updatedData);
+    this.queueAutoSaveIfNeeded();
   }
 
   updateSelect(field: keyof ApplicationInformationData, value: SelectOption | undefined): void {
     const updatedData = structuredClone(this.data());
     updatedData[field] = value as never;
     this.data.set(updatedData);
+    if (field === 'country') {
+      this.revealPostcodeCountryMismatch();
+    }
+    this.queueAutoSaveIfNeeded();
   }
 
   async performAutoSave(): Promise<boolean> {
@@ -351,5 +356,30 @@ export class ApplicationInformationSettingsComponent {
       country: data.country?.value,
       postcode: data.postcode,
     };
+  }
+
+  private revealPostcodeCountryMismatch(): void {
+    const postcodeControl = this.applicationInfoForm().controls.postcode;
+    const postcodeValue = `${postcodeControl.value ?? ''}`.trim();
+    if (postcodeValue.length === 0) {
+      return;
+    }
+
+    postcodeControl.updateValueAndValidity();
+    if (postcodeControl.hasError('invalidPostalCode')) {
+      postcodeControl.markAsTouched();
+    }
+  }
+
+  private queueAutoSaveIfNeeded(): void {
+    if (this.initialDataSnapshot() === undefined) {
+      return;
+    }
+
+    const form = this.applicationInfoForm();
+    this.isValid.set(form.valid);
+    if (form.valid && this.hasChanges()) {
+      this.autoSave.notifyChanged();
+    }
   }
 }

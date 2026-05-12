@@ -149,6 +149,22 @@ describe('ApplicationPage1Component', () => {
     expect(changedSpy).toHaveBeenCalledOnce();
   });
 
+  it('shows the postcode mismatch error when country changes after a prefilled postcode', () => {
+    comp.data.set({
+      ...comp.data(),
+      country: { value: 'DE', name: 'Germany' },
+      postcode: '80331',
+    });
+    fixture.detectChanges();
+
+    comp.updateSelect('country', { value: 'NL', name: 'Netherlands' });
+    fixture.detectChanges();
+
+    expect(comp.page1Form().controls.postcode.touched).toBe(true);
+    expect(comp.page1Form().controls.postcode.errors).toHaveProperty('invalidPostalCode');
+    expect(fixture.nativeElement.textContent).toContain('entity.applicationPage1.validation.postalCode');
+  });
+
   it.each([
     [() => undefined, '12345', {}],
     [() => 'DE', '', {}],

@@ -89,13 +89,14 @@ export abstract class BaseInputDirective<T> {
   constructor() {
     effect(onCleanup => {
       const ctrl = this.formControl();
+      this.isTouched.set(ctrl.touched);
       const statusSub = ctrl.statusChanges.subscribe(() => {
         this.formValidityVersion.update(v => v + 1);
       });
-      // Clear local touched flag when the bound control is reset to untouched (e.g. via form.reset / markAsUntouched).
+      // Keep the local touched flag in sync with programmatic form control updates.
       const eventsSub = ctrl.events.subscribe(event => {
-        if (event instanceof TouchedChangeEvent && !event.touched) {
-          this.isTouched.set(false);
+        if (event instanceof TouchedChangeEvent) {
+          this.isTouched.set(event.touched);
         }
       });
       onCleanup(() => {
