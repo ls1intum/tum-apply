@@ -189,6 +189,9 @@ export class JobCreationFormComponent {
   /** Last successfully translated German text (used to avoid redundant translations) */
   lastTranslatedDE = signal<string>('');
 
+  /** Tracks the currently in-flight translation request to deduplicate identical calls. */
+  private activeTranslationRequest: { sourceLang: Language; sourceText: string; targetLang: Language } | undefined;
+
   /** Last analyzed description text per language (used to avoid redundant compliance analysis) */
   private lastAnalyzedText: Record<string, string> = {};
 
@@ -310,6 +313,7 @@ export class JobCreationFormComponent {
 
   /** Returns the explanation of a compliance issue whose text appears in the job title, if any. */
   readonly titleComplianceError = computed(() => {
+    this.basicInfoFormValueSignal();
     const title = (this.basicInfoForm.get('title')?.value ?? '').toLowerCase();
     if (!title) return undefined;
     for (const issue of this.complianceIssues()) {
@@ -605,6 +609,7 @@ export class JobCreationFormComponent {
       this.translationAbortController.abort();
       this.translationAbortController = undefined;
     }
+    this.activeTranslationRequest = undefined;
     this.isTranslating.set(false);
     this.translationTargetLang.set(undefined);
   }
@@ -882,14 +887,27 @@ export class JobCreationFormComponent {
 
   /**
    * Handles category filter changes from the AI assistant sidebar.
-   * Filters highlights to show only the selected category, or all if cleared.
+   * Updates filter signal to show only the selected category
    */
   onComplianceFilterChange(category: string | undefined): void {
     this.activeComplianceFilter.set(category);
-    const lang = this.currentDescriptionLanguage();
-    const filtered = category ? this.complianceIssues().filter(i => i.category === category) : this.complianceIssues();
-    this.applyHighlights(filtered, lang);
   }
+
+  /**
+   * Handles highlights after reload, page switches, language switches or new analysis.
+   * Skips while AI is actively generating new draft or translating.
+   */
+  private highlightsEffect = effect(() => {
+    const editor = this.jobDescriptionEditor();
+    const lang = this.currentDescriptionLanguage();
+    const issues = this.complianceIssues();
+    const filter = this.activeComplianceFilter();
+    if (!editor) return;
+    if (untracked(() => this.isGeneratingDraft() || (this.isTranslating() && this.translationTargetLang() === lang))) return;
+    const filtered = filter ? issues.filter(i => i.category === filter) : issues;
+
+    this.applyHighlights(filtered, lang);
+  });
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI GENERATION METHODS
@@ -1023,10 +1041,9 @@ export class JobCreationFormComponent {
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
       this.autoSave.setState(SavingStates.SAVED);
 
-      // 3) Start translation only — analysis runs once at the end of translation,
-      //    after both languages are available, for the most accurate score.
+      // 3) Analyze source language first so the user sees highlights + score immediately.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
-        void this.translateAndStoreOtherLanguage(sourceLang, sourceText);
+        void Promise.all([this.analyzeAndUpdateScore(sourceLang), this.translateAndStoreOtherLanguage(sourceLang, sourceText)]);
       }
     } catch {
       this.autoSave.setState(SavingStates.FAILED);
@@ -1388,9 +1405,6 @@ export class JobCreationFormComponent {
     });
 
     this.jobDescriptionSignal.set(en);
-    this.jobDescriptionEditor()?.forceUpdate(en, () => {
-      this.applyHighlights(this.complianceIssues(), 'en');
-    });
 
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',
@@ -1569,7 +1583,8 @@ export class JobCreationFormComponent {
       //    of translation after both languages are available — avoids duplicate
       //    analysis calls that cause score flash issues.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
-        void this.translateAndStoreOtherLanguage(currentLang, description);
+        // highlighting before translation
+        void Promise.all([this.analyzeAndUpdateScore(currentLang), this.translateAndStoreOtherLanguage(currentLang, description)]);
       }
       return true;
     } catch {
@@ -1592,14 +1607,23 @@ export class JobCreationFormComponent {
     const jobId = this.jobId();
     if (!jobId) return;
 
+    const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
+    // If an identical translation is already in flight, skips the call to avoid a redundant LLM request.
+    const active = this.activeTranslationRequest;
+    if (active?.sourceLang === currentLang && active.sourceText === text && active.targetLang === targetLang) {
+      return;
+    }
+
     // 1) Skip if the text hasn't changed since the last translation
     const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
     if (text === lastBaseline) return;
 
     // 2) Cancel any active translation and set up fresh state
     this.cancelTranslation();
-    const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
     const abortController = new AbortController();
+    // If a newer request exists, keep it to avoid breaking duplicate checks.
+    const activeRequest = { sourceLang: currentLang, sourceText: text, targetLang };
+    this.activeTranslationRequest = activeRequest;
     this.translationAbortController = abortController;
     this.isTranslating.set(true);
     this.translationTargetLang.set(targetLang);
@@ -1652,7 +1676,7 @@ export class JobCreationFormComponent {
             this.jobDescriptionEditor()?.forceUpdate(finalContent);
           }
 
-          // 7) Persist the translated content and run compliance analysis.
+          // 7) Persist the translated content and run target compliance analysis.
           //    Set isAnalyzing BEFORE the finally block clears isTranslating,
           //    so isScoreLoading never drops to false between the two states.
           try {
@@ -1699,6 +1723,10 @@ export class JobCreationFormComponent {
         this.isTranslating.set(false);
         this.translationTargetLang.set(undefined);
         this.translationAbortController = undefined;
+      }
+      // Clear only if this is still the same request.
+      if (this.activeTranslationRequest === activeRequest) {
+        this.activeTranslationRequest = undefined;
       }
     }
   }
