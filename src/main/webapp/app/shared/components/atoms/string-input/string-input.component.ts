@@ -4,14 +4,12 @@ import { FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/fo
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { AutoFocusModule } from 'primeng/autofocus';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
 @Component({
   selector: 'jhi-string-input',
   templateUrl: './string-input.component.html',
-  styleUrls: ['./string-input.component.scss'],
   standalone: true,
   providers: [
     {
@@ -20,7 +18,7 @@ import { BaseInputDirective } from '../base-input/base-input.component';
       multi: true,
     },
   ],
-  imports: [AutoFocusModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule, TranslateModule],
+  imports: [AutoFocusModule, FormsModule, FontAwesomeModule, InputTextModule, ReactiveFormsModule, TooltipModule],
 })
 export class StringInputComponent extends BaseInputDirective<string> {
   tooltipText = input<string | undefined>(undefined);

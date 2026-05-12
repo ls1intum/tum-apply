@@ -15,6 +15,7 @@
         "viewDetails": "Details anzeigen"
       },
       "status": {
+        "active": "Aktiv",
         "closed": "Geschlossen"
       },
       "stats": {
@@ -35,10 +36,10 @@
       }
     },
     "warning": {
-      "notEnoughSlots": "{{invited}} Bewerbende eingeladen, aber nur {{slots}} Slots verfügbar. Bitte erstelle mehr Termine.",
-      "notEnoughSlotsSingular": "{{invited}} Bewerbende eingeladen, aber nur {{slots}} Slots verfügbar. Bitte erstelle mehr Termine.",
-      "zeroSlots": "{{invited}} Bewerbende eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine.",
-      "zeroSlotsSingular": "{{invited}} Bewerbende eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine."
+      "notEnoughSlots": "{invited} Bewerbende eingeladen, aber nur {slots} Slots verfügbar. Bitte erstelle mehr Termine.",
+      "notEnoughSlotsSingular": "{invited} Bewerbende eingeladen, aber nur {slots} Slots verfügbar. Bitte erstelle mehr Termine.",
+      "zeroSlots": "{invited} Bewerbende eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine.",
+      "zeroSlotsSingular": "{invited} Bewerbende eingeladen, aber es sind keine Termine verfügbar. Bitte erstelle neue Termine."
     },
     "detail": {
       "error": {
@@ -56,7 +57,7 @@
         "description": "Erstelle deine ersten Interview Termine.",
         "closedDescription": "Für diesen geschlossenen Prozess können keine Termine erstellt werden."
       },
-      "noSlotsInMonth": "Keine Termine in {{month}}",
+      "noSlotsInMonth": "Keine Termine in {month}",
       "showLess": "Weniger anzeigen"
     },
     "slots": {
@@ -70,7 +71,7 @@
       "error": {
         "loadFailed": {
           "summary": "Interview Termine konnten nicht geladen werden",
-          "detail": "Die Interview Termine konnten nicht geladen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Die Interview Termine konnten nicht geladen werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         }
       },
       "status": {
@@ -83,7 +84,7 @@
       "create": {
         "title": "Interview Termin erstellen",
         "removeSlot": "Termin entfernen",
-        "slotNumber": "Termin {{number}}",
+        "slotNumber": "Termin {number}",
         "date": "Datum",
         "selectDate": "Datum auswählen...",
         "startTime": "Startzeit",
@@ -122,8 +123,8 @@
           "required": "Dieses Feld ist erforderlich",
           "endBeforeStart": "Endzeit muss nach Startzeit liegen",
           "conflict": "Zeitkonflikt mit einem anderen Termin",
-          "conflictSameProcess": "Konflikt mit bestehendem Termin ({{time}}) in diesem Interviewprozess",
-          "conflictBookedOther": "Konflikt mit einem gebuchten Termin ({{time}}) in einem anderen Interviewprozess",
+          "conflictSameProcess": "Konflikt mit bestehendem Termin ({time}) in diesem Interviewprozess",
+          "conflictBookedOther": "Konflikt mit einem gebuchten Termin ({time}) in einem anderen Interviewprozess",
           "hasConflicts": "Bitte behebe alle Zeitkonflikte vor dem Speichern",
           "streamLinkRequired": "Meeting-Link ist für virtuelle Termine erforderlich",
           "durationPositive": "Die Dauer muss mindestens 1 Minute betragen",
@@ -132,7 +133,7 @@
             "summary": "Ort fehlt",
             "detail": "Ort ist für alle Termine erforderlich"
           },
-          "rangeTooShort": "Der Zeitraum ist zu kurz für ein {{duration}}-minütiges Interview"
+          "rangeTooShort": "Der Zeitraum ist zu kurz für ein {duration}-minütiges Interview"
         },
         "interviewLength": "Interviewdauer",
         "interviewBreaks": "Pausen",
@@ -160,7 +161,13 @@
         "saveSlots": "Termine speichern",
         "locationPlaceholder": "z.B. Raum 01.02.03 oder Zoom Link",
         "useForAll": "Gleicher Ort für alle Termine",
-        "custom": "Eigenes"
+        "custom": "Eigenes",
+        "durations": {
+          "30min": "30 Min.",
+          "45min": "45 Min.",
+          "60min": "60 Min.",
+          "90min": "90 Min."
+        }
       },
       "delete": {
         "confirm": {
@@ -173,7 +180,7 @@
         },
         "error": {
           "summary": "Löschen fehlgeschlagen",
-          "detail": "Der Termin konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Der Termin konnte nicht gelöscht werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "errorBooked": {
           "summary": "Löschen fehlgeschlagen",
@@ -215,7 +222,7 @@
         },
         "error": {
           "summary": "Absage fehlgeschlagen",
-          "detail": "Das Interview konnte nicht abgesagt werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Das Interview konnte nicht abgesagt werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         }
       }
     },
@@ -237,14 +244,14 @@
       "selectAll": "Alle auswählen",
       "noApplicants": "Keine Bewerbenden verfügbar",
       "tryDifferentSearch": "Versuche einen anderen Suchbegriff",
-      "selected": "{{count}} Bewerbende ausgewählt",
+      "selected": "{count} Bewerbende ausgewählt",
       "addSelected": "Hinzufügen",
       "tableColumns": {
         "name": "Bewerbende"
       },
       "addSuccess": {
         "summary": "Bewerbende hinzugefügt",
-        "detail": "{{count}} Bewerbende erfolgreich hinzugefügt"
+        "detail": "{count} Bewerbende erfolgreich hinzugefügt"
       },
       "filter": {
         "ALL": "Alle",
@@ -289,15 +296,15 @@
         },
         "success": {
           "summary": "Einladung gesendet",
-          "detail": "{{count}} Einladung(en) erfolgreich gesendet"
+          "detail": "{count} Einladung(en) erfolgreich gesendet"
         },
         "partial": {
-          "summary": "{{sent}} gesendet, {{failed}} fehlgeschlagen",
-          "detail": "Fehlgeschlagen: {{emails}}. Bitte versuche erneut, die Einladungen zu senden."
+          "summary": "{sent} gesendet, {failed} fehlgeschlagen",
+          "detail": "Fehlgeschlagen: {emails}. Bitte versuche erneut, die Einladungen zu senden."
         },
         "error": {
           "summary": "Senden fehlgeschlagen",
-          "detail": "Einladung konnte nicht gesendet werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Einladung konnte nicht gesendet werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "noSlots": {
           "summary": "Keine Termine verfügbar",
@@ -339,11 +346,7 @@
       },
       "notes": {
         "label": "Interview Notiz",
-        "empty": "Noch keine Notizen hinzugefügt.",
-        "saved": {
-          "summary": "Gespeichert",
-          "detail": "Die Interview Notiz wurde erfolgreich gespeichert."
-        }
+        "empty": "Noch keine Notizen hinzugefügt."
       },
       "error": {
         "saveFailed": {

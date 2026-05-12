@@ -1,59 +1,44 @@
-<div class="page-container">
-  <div class="header-container !items-center">
+<div class="page-container flex flex-col">
+  <div class="header-container">
     <div class="page-header">
       <div class="flex items-center gap-2">
         <jhi-back-button />
-        <h1 jhiTranslate="researchGroup.emailTemplatesHeader"></h1>
+        <h1>
+          <span jhiTranslate="sidebar.researchgroup.title"></span>
+          -
+          <span jhiTranslate="researchGroup.emailTemplatesHeader"></span>
+        </h1>
       </div>
     </div>
-    <div
-      class="flex items-center gap-2"
-      [class.text-positive-default]="savingState() === 'SAVED'"
-      [class.text-warning-default]="savingState() === 'SAVING'"
-      [class.text-negative-default]="savingState() === 'UNSAVED'"
-    >
-      <fa-icon icon="floppy-disk" />
-      <span [jhiTranslate]="'researchGroup.emailTemplates.' + savingState().toLocaleLowerCase()"></span>
-    </div>
+    <jhi-saving-badge [state]="autoSave.state()" />
   </div>
-  <div class="meta-info">
-    <jhi-string-input
-      class="template-name-input"
-      [model]="templateDisplayName()"
-      [required]="true"
-      [label]="'researchGroup.emailTemplates.templateName' | translate"
-      [placeholder]="'researchGroup.emailTemplates.addTemplateName' | translate"
-      [disabled]="formModel().isDefault ?? true"
-      (modelChange)="setTemplateName($event)"
-    />
+  <div class="w-full flex flex-row gap-8 mb-4">
     <jhi-select
-      class="template-type-select"
-      [label]="'researchGroup.emailTemplates.sendWhen' | translate"
-      [placeholder]="'researchGroup.emailTemplates.selectSendWhen' | translate"
+      class="w-full max-w-md"
+      label="researchGroup.emailTemplates.sendWhen"
+      placeholder="researchGroup.emailTemplates.selectSendWhen"
       [items]="selectOptions()"
       [translateItems]="true"
       [selected]="preselectedEmailType()"
       [required]="true"
-      [disabled]="formModel().isDefault ?? true"
       (selectedChange)="setSelectedEmailType($event)"
     />
   </div>
 
   <p-tabs value="0" class="basic-tabs">
-    <p-tablist class="tab-list">
+    <p-tablist class="mb-4">
       <p-tab value="0" class="basic-tab" jhiTranslate="researchGroup.emailTemplates.english" />
       <p-tab value="1" class="basic-tab" jhiTranslate="researchGroup.emailTemplates.german" />
     </p-tablist>
 
-    <p-tabpanel value="0" class="tab-panel">
+    <p-tabpanel value="0" class="px-4 flex flex-col gap-12">
       <div>
-        <label class="subject-label" jhiTranslate="researchGroup.emailTemplates.subject"></label>
-
-        <div class="subject-wrapper">
-          <span class="subject-prefix">TUMApply -</span>
+        <span class="block text-text-primary font-medium mb-2" jhiTranslate="researchGroup.emailTemplates.subject"></span>
+        <div class="flex flex-row items-center gap-4 w-full">
+          <span class="whitespace-nowrap">TUMApply -</span>
           <jhi-string-input
-            class="subject-input"
-            [placeholder]="'researchGroup.emailTemplates.addSubject' | translate"
+            class="w-full"
+            placeholder="researchGroup.emailTemplates.addSubject"
             [model]="english().subject"
             [errorEnabled]="false"
             (modelChange)="updateEnglishSubject($event)"
@@ -62,7 +47,7 @@
       </div>
 
       <div>
-        <label class="message-label" jhiTranslate="researchGroup.emailTemplates.message"></label>
+        <span class="block text-text-primary font-medium mb-2" jhiTranslate="researchGroup.emailTemplates.message"></span>
         <!-- TODO: adapt to jhi-editor when preset input is enabled -->
         <quill-editor
           class="custom-quill-editor"
@@ -74,14 +59,14 @@
       </div>
     </p-tabpanel>
 
-    <p-tabpanel value="1" class="tab-panel">
+    <p-tabpanel value="1" class="px-4 flex flex-col gap-12">
       <div>
-        <label class="subject-label" jhiTranslate="researchGroup.emailTemplates.subject"></label>
-        <div class="subject-wrapper">
-          <span class="subject-prefix">TUMApply -</span>
+        <span class="block text-text-primary font-medium mb-2" jhiTranslate="researchGroup.emailTemplates.subject"></span>
+        <div class="flex flex-row items-center gap-4 w-full">
+          <span class="whitespace-nowrap">TUMApply -</span>
           <jhi-string-input
-            class="subject-input"
-            [placeholder]="'researchGroup.emailTemplates.addSubject' | translate"
+            class="w-full"
+            placeholder="researchGroup.emailTemplates.addSubject"
             [model]="german().subject"
             [errorEnabled]="false"
             (modelChange)="updateGermanSubject($event)"
@@ -90,7 +75,7 @@
       </div>
 
       <div>
-        <label class="message-label" jhiTranslate="researchGroup.emailTemplates.message"></label>
+        <span class="block text-text-primary font-medium mb-2" jhiTranslate="researchGroup.emailTemplates.message"></span>
         <!-- TODO: adapt to jhi-editor when preset input is enabled -->
         <quill-editor
           class="custom-quill-editor"

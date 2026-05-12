@@ -8,9 +8,9 @@ import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
-import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.dto.DataExportEmailContextDTO;
 import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTO;
+import de.tum.cit.aet.notification.dto.ReferenceLetterInvitationContextDTO;
 import de.tum.cit.aet.notification.dto.ResearchGroupEmailContextDTO;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -47,17 +47,6 @@ public class TemplateProcessingService {
     }
 
     /**
-     * Renders the email subject line for display in the final email using the provided content for variable binding.
-     *
-     * @param emailTemplateTranslation the email template translation
-     * @param content                  the domain object for variable binding
-     * @return the prefixed subject line
-     */
-    public String renderSubject(EmailTemplateTranslation emailTemplateTranslation, Object content) {
-        return renderSubject(emailTemplateTranslation.getSubject(), content);
-    }
-
-    /**
      * Renders a raw subject string using FreeMarker variables.
      *
      * @param rawSubject the raw subject string
@@ -79,39 +68,23 @@ public class TemplateProcessingService {
     /**
      * Renders the HTML email body using FreeMarker and applies layout formatting.
      *
-     * @param emailTemplateTranslation the template translation containing raw HTML
-     *                                 and language
-     * @param content                  the domain object (e.g. Application, Job) for
-     *                                 variable binding
+     * @param language the email language
+     * @param bodyHtml the raw template body (FreeMarker source)
+     * @param content  the domain object (e.g. Application, Job) for variable binding
      * @return the fully rendered HTML email body
      * @throws TemplateProcessingException if template parsing or rendering fails
      */
-    public String renderTemplate(@NonNull EmailTemplateTranslation emailTemplateTranslation, @NonNull Object content) {
+    public String renderTemplate(@NonNull Language language, @NonNull String bodyHtml, @NonNull Object content) {
         try {
             Map<String, Object> dataModel = createDataModel(content);
-            addMetaData(emailTemplateTranslation.getLanguage(), dataModel);
+            addMetaData(language, dataModel);
 
-            String templateName =
-                emailTemplateTranslation.getEmailTemplate().getTemplateName() != null
-                    ? emailTemplateTranslation.getEmailTemplate().getTemplateName()
-                    : "inline";
-
-            Template inlineTemplate = new Template(
-                templateName,
-                new StringReader(asHtmlTemplate(emailTemplateTranslation.getBodyHtml())),
-                freemarkerConfig
-            );
+            Template inlineTemplate = new Template("inline", new StringReader(asHtmlTemplate(bodyHtml)), freemarkerConfig);
 
             String htmlBody = render(inlineTemplate, dataModel);
-            return renderLayout(emailTemplateTranslation.getLanguage(), htmlBody, false);
+            return renderLayout(language, htmlBody, false);
         } catch (IOException ex) {
-            throw new TemplateProcessingException(
-                "Failed to process inline FreeMarker template: " +
-                    emailTemplateTranslation.getEmailTemplate().getTemplateName() +
-                    " for language: " +
-                    emailTemplateTranslation.getLanguage(),
-                ex
-            );
+            throw new TemplateProcessingException("Failed to process inline FreeMarker template for language: " + language, ex);
         }
     }
 
@@ -189,6 +162,7 @@ public class TemplateProcessingService {
             case Interviewee interviewee -> addIntervieweeData(dataModel, interviewee);
             case DataExportEmailContextDTO ctx -> addDataExportContextData(dataModel, ctx);
             case JobPublicationEmailContextDTO ctx -> addJobPublicationContextData(dataModel, ctx);
+            case ReferenceLetterInvitationContextDTO ctx -> addReferenceLetterInvitationContextData(dataModel, ctx);
             case User user -> addUserData(dataModel, user);
             default -> throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
         }
@@ -312,6 +286,24 @@ public class TemplateProcessingService {
         dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_EMAIL.getValue(), ctx.supervisingProfessorEmail());
         dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), ctx.researchGroupName());
         dataModel.put(TemplateVariable.SUBJECT_AREA.getValue(), ctx.subjectArea());
+    }
+
+    /**
+     * Adds variables related to reference letter invitations to the template data model.
+     *
+     * @param dataModel the data model map
+     * @param ctx       the invitation context for the external referee
+     */
+    private void addReferenceLetterInvitationContextData(Map<String, Object> dataModel, ReferenceLetterInvitationContextDTO ctx) {
+        dataModel.put(TemplateVariable.REFEREE_NAME_TITLE.getValue(), ctx.refereeNameTitle());
+        dataModel.put(TemplateVariable.REFEREE_FIRST_NAME.getValue(), ctx.refereeFirstName());
+        dataModel.put(TemplateVariable.REFEREE_LAST_NAME.getValue(), ctx.refereeLastName());
+        dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), ctx.applicantFirstName());
+        dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), ctx.applicantLastName());
+        dataModel.put(TemplateVariable.JOB_TITLE.getValue(), ctx.jobTitle());
+        dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), ctx.researchGroupName());
+        dataModel.put(TemplateVariable.REFERENCE_LINK.getValue(), ctx.referenceLink());
+        dataModel.put(TemplateVariable.REFERENCE_DEADLINE.getValue(), ctx.referenceDeadline());
     }
 
     /**

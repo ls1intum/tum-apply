@@ -12,7 +12,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 import './config/dayjs';
-import { MissingTranslationHandler, provideTranslateService } from '@ngx-translate/core';
+import { MissingTranslationHandler, TranslateCompiler, provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
@@ -36,8 +36,8 @@ import { AuthInterceptor } from './core/interceptor/auth.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
 import { AuthFacadeService } from './core/auth/auth-facade.service';
+import { IcuTranslateCompiler } from './shared/language/icu-translate-compiler';
 import { PrimengTranslationService } from './shared/language/primeng-translation.service';
-import { LoadingInterceptor } from './core/interceptor/loading.interceptor';
 
 /**
  * Application initializer that enforces strict order:
@@ -88,6 +88,10 @@ export const appConfig: ApplicationConfig = {
         useFactory: missingTranslationHandler,
       },
     }),
+    {
+      provide: TranslateCompiler,
+      useClass: IcuTranslateCompiler,
+    },
     provideHttpClient(withInterceptorsFromDi()),
     Title,
     { provide: LOCALE_ID, useValue: 'en' },
@@ -113,11 +117,6 @@ export const appConfig: ApplicationConfig = {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorHandlerInterceptor,
-      multi: true,
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: LoadingInterceptor,
       multi: true,
     },
     {

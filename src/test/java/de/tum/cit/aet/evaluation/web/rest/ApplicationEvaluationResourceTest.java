@@ -8,10 +8,9 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.documents.repository.DocumentRepository;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
-import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.evaluation.dto.AcceptDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
@@ -39,6 +38,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -72,9 +73,6 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     @Autowired
     DocumentRepository documentRepository;
-
-    @Autowired
-    DocumentDictionaryRepository documentDictionaryRepository;
 
     @Autowired
     MvcTestClient api;
@@ -308,9 +306,10 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     @Nested
     class RejectApplication {
 
-        @Test
-        void inReviewBecomesRejectedAndStoresReason() {
-            RejectDTO payload = new RejectDTO(RejectReason.OTHER_REASON, true);
+        @ParameterizedTest(name = "should reject in-review application with reason {0} and notify={1}")
+        @CsvSource({ "OTHER_REASON, true", "FAILED_REQUIREMENTS, false" })
+        void shouldRejectInReviewApplicationForVariousReasonAndNotifyCombinations(RejectReason reason, boolean notify) {
+            RejectDTO payload = new RejectDTO(reason, notify);
 
             Void result = api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -346,20 +345,6 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
                 .postAndRead("/api/evaluation/applications/" + randomId + "/reject", payload, Void.class, 404);
 
             assertThat(result).isNull();
-        }
-
-        @Test
-        void withoutNotifyApplicantStillRejects() {
-            RejectDTO payload = new RejectDTO(RejectReason.FAILED_REQUIREMENTS, false);
-
-            Void result = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead("/api/evaluation/applications/" + inReviewApp.getApplicationId() + "/reject", payload, Void.class, 204);
-
-            assertThat(result).isNull();
-
-            Application updated = applicationRepository.findById(inReviewApp.getApplicationId()).orElseThrow();
-            assertThat(updated.getState()).isEqualTo(ApplicationState.REJECTED);
         }
     }
 
@@ -410,10 +395,9 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
             int i = 1;
             for (Map.Entry<DocumentType, String> entry : expectedFileNames.entrySet()) {
-                DocumentTestData.savedDictionaryWithDocument(
+                DocumentTestData.savedDocumentWithFile(
                     storageRootConfig,
                     documentRepository,
-                    documentDictionaryRepository,
                     professor,
                     sentApp,
                     null,
@@ -475,10 +459,9 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
         @Test
         void multipleSameTypeAddsNumbering() throws Exception {
-            DocumentTestData.savedDictionaryWithDocument(
+            DocumentTestData.savedDocumentWithFile(
                 storageRootConfig,
                 documentRepository,
-                documentDictionaryRepository,
                 professor,
                 sentApp,
                 null,
@@ -487,10 +470,9 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
                 DocumentType.CV,
                 "cv"
             );
-            DocumentTestData.savedDictionaryWithDocument(
+            DocumentTestData.savedDocumentWithFile(
                 storageRootConfig,
                 documentRepository,
-                documentDictionaryRepository,
                 professor,
                 sentApp,
                 null,

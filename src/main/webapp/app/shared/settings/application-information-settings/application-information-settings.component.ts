@@ -10,21 +10,22 @@ import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-appli
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
-import { DocumentInformationHolderDTODocumentTypeEnum } from 'app/generated/model/document-information-holder-dto';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
 import { selectGender } from 'app/shared/constants/genders';
+import { SavingState } from 'app/shared/constants/saving-states';
 import { postalCodeValidator } from 'app/shared/validators/custom-validators';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { AiExtractionBoxComponent, setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
-import { ProfileDocumentService } from 'app/shared/settings/profile-document.service';
+import { AutoSaveController } from 'app/shared/util/auto-save-controller';
 
 import { SelectComponent, SelectOption } from '../../components/atoms/select/select.component';
 import { DatePickerComponent } from '../../components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../components/atoms/string-input/string-input.component';
-import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
+import { SavingBadgeComponent } from '../../components/atoms/saving-badge/saving-badge.component';
+import { StickyFooterShellComponent } from '../../components/molecules/sticky-footer-shell/sticky-footer-shell.component';
 
 export interface ApplicationInformationData {
   firstName: string;
@@ -68,9 +69,10 @@ interface ApplicationInformationSnapshot {
     StringInputComponent,
     TranslateModule,
     TranslateDirective,
-    ButtonComponent,
     UploadButtonComponent,
     AiExtractionBoxComponent,
+    SavingBadgeComponent,
+    StickyFooterShellComponent,
   ],
   templateUrl: './application-information-settings.component.html',
   standalone: true,
@@ -94,26 +96,19 @@ export class ApplicationInformationSettingsComponent {
 
   // Document tracking for CV
   cvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  initialCvDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  queuedCvFiles = signal<File[]>([]);
 
-  // Placeholder ID to render the same upload UI structure as application page 1.
-  applicationIdForDocuments = signal<string>('00000000-0000-0000-0000-000000000000');
+  readonly uploadHostId = '00000000-0000-0000-0000-000000000000';
 
   isValid = signal<boolean>(false);
   loadedProfile = signal<ApplicantDTO | undefined>(undefined);
   initialDataSnapshot = signal<ApplicationInformationSnapshot | undefined>(undefined);
+  savingState = computed<SavingState>(() => this.autoSave.state());
   hasChanges = computed(() => {
     const initial = this.initialDataSnapshot();
     if (initial === undefined) {
       return false;
     }
-    const personalChanged = !deepEqual(this.toSnapshot(this.data()), initial);
-    const cvChanged = !deepEqual(
-      this.profileDocumentService.normalizedDocuments(this.cvDocuments()),
-      this.profileDocumentService.normalizedDocuments(this.initialCvDocuments()),
-    );
-    return personalChanged || cvChanged;
+    return !deepEqual(this.toSnapshot(this.data()), initial);
   });
 
   readonly disabledEmail = true;
@@ -131,7 +126,6 @@ export class ApplicationInformationSettingsComponent {
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
   applicantApi = inject(ApplicantResourceApi);
-  profileDocumentService = inject(ProfileDocumentService);
   toastService = inject(ToastService);
 
   currentLang = toSignal(this.translate.onLangChange);
@@ -204,6 +198,9 @@ export class ApplicationInformationSettingsComponent {
       };
       this.data.set(nextData);
       this.isValid.set(form.valid);
+      if (this.initialDataSnapshot() !== undefined && form.valid && this.hasChanges()) {
+        this.autoSave.notifyChanged();
+      }
     });
 
     const statusSubscription = form.statusChanges.subscribe(() => {
@@ -217,6 +214,8 @@ export class ApplicationInformationSettingsComponent {
       statusSubscription.unsubscribe();
     });
   });
+
+  private readonly autoSave = new AutoSaveController({ save: () => this.performAutoSave() });
 
   constructor() {
     // Load initial data from backend API
@@ -252,9 +251,7 @@ export class ApplicationInformationSettingsComponent {
       this.loadedProfile.set(profile);
       this.data.set(applicationInformation);
       this.initialDataSnapshot.set(this.toSnapshot(applicationInformation));
-      this.cvDocuments.set(profileDocumentIds.cvDocumentDictionaryId != null ? [profileDocumentIds.cvDocumentDictionaryId] : []);
-      this.initialCvDocuments.set(this.profileDocumentService.normalizedDocuments(this.cvDocuments()));
-      this.queuedCvFiles.set([]);
+      this.cvDocuments.set(profileDocumentIds.cvDocumentId != null ? [profileDocumentIds.cvDocumentId] : []);
     } catch {
       this.toastService.showErrorKey('settings.applicationInformation.loadFailed');
     }
@@ -272,12 +269,12 @@ export class ApplicationInformationSettingsComponent {
     this.data.set(updatedData);
   }
 
-  async onSave(): Promise<void> {
+  async performAutoSave(): Promise<boolean> {
     try {
       const loadedUser = this.accountService.loadedUser();
       if (loadedUser?.id == null) {
         this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
-        return;
+        return false;
       }
 
       const data = this.data();
@@ -313,16 +310,13 @@ export class ApplicationInformationSettingsComponent {
       };
 
       await firstValueFrom(this.applicantApi.updateApplicantPersonalInformation(applicantDTO));
-      await this.saveDeferredCvChanges();
-      await this.loadApplicationInformation();
-      this.toastService.showSuccessKey('settings.applicationInformation.saved');
+      this.loadedProfile.update(current => (current != null ? { ...current, ...applicantDTO } : current));
+      this.initialDataSnapshot.set(this.toSnapshot(this.data()));
+      return true;
     } catch {
       this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
+      return false;
     }
-  }
-
-  onCvQueuedFilesChange(files: File[]): void {
-    this.queuedCvFiles.set(files);
   }
 
   onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
@@ -339,15 +333,6 @@ export class ApplicationInformationSettingsComponent {
     setIfEmpty(form, patch, 'postcode', extractedData.postalCode);
 
     form.patchValue(patch);
-  }
-
-  private async saveDeferredCvChanges(): Promise<void> {
-    await this.profileDocumentService.commitDocumentTypeChanges(this.initialCvDocuments(), this.cvDocuments());
-    await this.profileDocumentService.uploadQueuedByType(
-      DocumentInformationHolderDTODocumentTypeEnum.Cv,
-      this.queuedCvFiles(),
-      this.cvDocuments,
-    );
   }
 
   private toSnapshot(data: ApplicationInformationData): ApplicationInformationSnapshot {

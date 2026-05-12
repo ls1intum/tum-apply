@@ -2,7 +2,7 @@
   [header]="'evaluation.details.documentTitle'"
   [draggable]="false"
   [(visible)]="isOpen"
-  [styleClass]="'max-h-[90vh] w-3/5 max-w-[100rem]'"
+  [classStyling]="'max-h-[90vh] w-3/5 max-w-[100rem]'"
 >
   <div class="flex flex-col md:flex-row gap-6 h-[70vh] max-h-[calc(90vh-8rem)] overflow-hidden">
     <!-- LEFT: List of documents -->
@@ -41,7 +41,7 @@
     <div class="h-full flex items-center justify-center overflow-hidden md:flex-1">
       @if (selectedDocument(); as doc) {
         <div class="h-full w-full max-w-full rounded-lg overflow-hidden bg-white">
-          <jhi-document-viewer class="w-full h-full object-contain" [documentDictionaryId]="doc" />
+          <jhi-document-viewer class="w-full h-full object-contain" [documentId]="doc" />
         </div>
       }
     </div>

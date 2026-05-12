@@ -50,11 +50,7 @@ describe('AuthCardComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('onClose should call authOrchestrator.close', () => {
+  it('should call authOrchestrator.close on onClose', () => {
     component.onClose();
     expect(authOrchestrator.close).toHaveBeenCalledOnce();
   });

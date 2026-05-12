@@ -1,13 +1,14 @@
 package de.tum.cit.aet.application.domain;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
+import de.tum.cit.aet.core.documents.domain.ApplicationDocument;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
-import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.domain.export.ExportedUserData;
 import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -137,11 +138,11 @@ public class Application extends AbstractAuditingEntity {
     private String applicantMasterUniversity;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
-    private Set<CustomFieldAnswer> customFieldAnswers;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<InternalComment> internalComments;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
-    private Set<DocumentDictionary> documentDictionaries;
+    private Set<ApplicationDocument> applicationDocuments;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
+    private Set<ReferenceRequest> referenceRequests;
 }

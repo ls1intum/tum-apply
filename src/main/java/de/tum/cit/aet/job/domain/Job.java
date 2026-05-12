@@ -6,10 +6,7 @@ import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.domain.export.ExportedUserData;
 import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
-import de.tum.cit.aet.job.constants.Campus;
-import de.tum.cit.aet.job.constants.FundingType;
-import de.tum.cit.aet.job.constants.JobState;
-import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.job.constants.*;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
@@ -72,6 +69,10 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "funding_type")
     private FundingType fundingType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tvl_grade")
+    private TvlGrade tvlGrade;
+
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -91,12 +92,17 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "start_date")
     private LocalDate startDate;
 
+    @Column(name = "start_date_by_arrangement", nullable = false)
+    private Boolean startDateByArrangement = false;
+
+    @Column(name = "contract_extendable", nullable = false)
+    private Boolean contractExtendable = false;
+
     @Column(name = "suitable_for_disabled")
     private Boolean suitableForDisabled;
 
-    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("sequence ASC")
-    private List<CustomField> customFields;
+    @Column(name = "reference_letters_required", nullable = false)
+    private Integer referenceLettersRequired = 0;
 
     // Contains all the Applications that are submitted to this Job
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)

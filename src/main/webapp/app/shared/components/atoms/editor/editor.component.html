@@ -2,21 +2,13 @@
   <div class="label-top label-input-wrapper">
     @if (label(); as label) {
       <label class="custom-label" [for]="id()">
-        @if (shouldTranslate()) {
-          {{ label | translate }}
-        } @else {
-          {{ label }}
-        }
+        {{ displayLabel() }}
         @if (required()) {
           <span class="required">*</span>
         }
         @if (icon(); as icon) {
           @if (icon === 'circle-info' && tooltipText()) {
-            @if (shouldTranslate()) {
-              <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? '' | translate" tooltipPosition="top" />
-            } @else {
-              <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? ''" tooltipPosition="top" />
-            }
+            <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="displayTooltipText()" tooltipPosition="top" />
           } @else {
             <fa-icon class="icon" [icon]="['fas', icon]" />
           }
@@ -43,7 +35,7 @@
         (onBlur)="onBlur()"
         [ngModel]="editorValue()"
         [modules]="quillModules"
-        [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
+        [placeholder]="displayPlaceholder()"
         (onContentChanged)="textChanged($event)"
       >
         <div quill-editor-toolbar>
@@ -52,12 +44,6 @@
             <button type="button" class="ql-italic" aria-label="Italic"></button>
             <button type="button" class="ql-underline" aria-label="Underline"></button>
           </span>
-          <!-- temporarily disable QL coloring as it is not displayed in the detail pages
-           <span class="ql-formats">
-            <select class="ql-color" aria-label="color"></select>
-            <select class="ql-background" aria-label="background"></select>
-          </span>
-          -->
           <span class="ql-formats">
             <button class="ql-list" value="ordered" aria-label="Ordered List" type="button"></button>
             <button class="ql-list" value="bullet" aria-label="Unordered List" type="button"></button>
@@ -76,44 +62,45 @@
             <span class="ql-formats ml-auto !flex items-center gap-2 flex-shrink-0 max-w-full">
               @if (codingDisplay(); as coding) {
                 <span
-                  class="px-3 py-1 rounded text-xs break-words"
-                  [ngClass]="analysisResult()?.coding === 'non-inclusive-coded' ? 'gender-badge-warn' : 'gender-badge-secondary'"
+                  class="px-3 py-1 rounded text-xs break-words text-text-primary"
+                  [class]="
+                    analysisResult()?.coding === 'non-inclusive-coded'
+                      ? 'bg-[var(--p-warn-hover-color-outlined)]'
+                      : 'bg-secondary-hover-outlined'
+                  "
                 >
                   {{ coding }}
                 </span>
               }
               @if (shouldShowButton()) {
-                <button
-                  type="button"
-                  class="whitespace-nowrap w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center cursor-pointer hover:brightness-93 flex-shrink-0"
-                  [style]="'color: var(--p-primary-color); border: 1px solid var(--p-primary-color); background-color: var(--p-background-default);'"
-                  (click)="onGenderDecoderClick()"
-                  [pTooltip]="'genderDecoder.openAnaylsis' | translate"
-                  tooltipPosition="top"
+                <jhi-info-icon
+                  class="[&_button]:!float-none [&_button]:!h-auto [&_button]:!w-auto [&_button]:!p-0"
+                  [clickable]="true"
+                  size="sm"
                   [disabled]="!analysisResult()"
-                >
-                  ?
-                </button>
+                  tooltip="genderDecoder.openAnaylsis"
+                  tooltipPosition="top"
+                  ariaLabel="genderDecoder.openAnaylsis"
+                  [shouldTranslate]="true"
+                  (clicked)="onGenderDecoderClick()"
+                />
               }
             </span>
           }
         </div>
       </quill-editor>
     </div>
-    <div class="editor-footer">
-      <div class="error-text">
+    <div class="editor-footer flex justify-between min-h-8">
+      <div class="error-text flex flex-col">
         @if (helperText(); as helperText) {
-          <!-- Translation Pipe is necessary here since the translation of the ql headers is not working with the jhiTranslate directive -->
-          <!--            <span class="helper-text" jhiTranslate="{{ helperText() }}"></span>-->
-          <span class="helper-text">{{ helperText | translate }}</span>
+          <span class="helper-text text-[0.8rem] text-text-primary">{{ displayHelperText() }}</span>
         }
         @if (isEmpty() || isOverCharLimit()) {
           {{ errorMessage() }}
         }
       </div>
-      <!-- Character Count Display -->
       @if (characterLimit() !== undefined && characterLimit() !== null) {
-        <div [ngClass]="charCounterColor()">{{ characterCount() }}/{{ characterLimit() }}</div>
+        <div [class]="charCounterColor()">{{ characterCount() }}/{{ characterLimit() }}</div>
       }
     </div>
   </div>

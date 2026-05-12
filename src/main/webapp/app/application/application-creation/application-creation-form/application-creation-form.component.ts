@@ -18,7 +18,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
 import { CheckboxModule } from 'primeng/checkbox';
-import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { SavingStates } from 'app/shared/constants/saving-states';
+import { AutoSaveController } from 'app/shared/util/auto-save-controller';
+import { SavingBadgeComponent } from 'app/shared/components/atoms/saving-badge/saving-badge.component';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
@@ -32,6 +34,7 @@ import { ApplicationResourceApi } from 'app/generated/api/application-resource-a
 import { UpdateApplicationDTO } from 'app/generated/model/update-application-dto';
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
 import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
+import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
 
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
@@ -45,6 +48,7 @@ import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
   getPage1FromApplication,
 } from '../application-creation-page1/application-creation-page1.component';
+import ApplicationCreationReferencesComponent from '../application-creation-references/application-creation-references.component';
 
 const applyflow = 'entity.toast.applyFlow';
 
@@ -58,15 +62,16 @@ const applyflow = 'entity.toast.applyFlow';
     ApplicationCreationPage1Component,
     ApplicationCreationPage2Component,
     ApplicationCreationPage3Component,
+    ApplicationCreationReferencesComponent,
     FontAwesomeModule,
     TranslateModule,
     ConfirmDialog,
     ApplicationDetailForApplicantComponent,
     TranslateDirective,
     MessageComponent,
+    SavingBadgeComponent,
   ],
   templateUrl: './application-creation-form.component.html',
-  styleUrl: './application-creation-form.component.scss',
   providers: [DialogService],
   standalone: true,
 })
@@ -116,6 +121,7 @@ export default class ApplicationCreationFormComponent {
   personalInfoPanel = viewChild<TemplateRef<ApplicationCreationPage1Component>>('personalInfoPanel');
   educationPanel = viewChild<TemplateRef<ApplicationCreationPage2Component>>('educationPanel');
   applicationDetailsPanel = viewChild<TemplateRef<ApplicationCreationPage3Component>>('applicationDetailsPanel');
+  referencesPanel = viewChild<TemplateRef<ApplicationCreationReferencesComponent>>('referencesPanel');
   summaryPanel = viewChild<TemplateRef<ApplicationDetailForApplicantComponent>>('summaryPanel');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
   showSendDialog = signal(false);
@@ -126,24 +132,25 @@ export default class ApplicationCreationFormComponent {
   applicantId = signal<string>('');
   applicationId = signal<string>('');
   applicationState = signal<ApplicationForApplicantDTOApplicationStateEnum>(ApplicationForApplicantDTOApplicationStateEnum.Saved);
-  savingState = signal<SavingState>(SavingStates.SAVED);
 
-  savingBadgeCalculatedClass = computed<string>(
-    () =>
-      `flex flex-wrap justify-around content-center gap-1 ${
-        this.savingState() === SavingStates.SAVED
-          ? 'saved_color'
-          : this.savingState() === SavingStates.FAILED
-            ? 'failed_color'
-            : 'saving_color'
-      }`,
-  );
+  /** Debounced auto-save controller. Owns the timer and the badge state. */
+  readonly autoSave = new AutoSaveController({ save: () => this.executeAutoSave() });
 
   personalInfoDataValid = signal<boolean>(false);
   educationDataValid = signal<boolean>(false);
   applicationDetailsDataValid = signal<boolean>(false);
+  referencesValid = signal<boolean>(true);
+  references = signal<ReferenceRequestDTO[]>([]);
+  referenceLettersRequired = signal<number>(0);
+  referenceLettersEnabled = computed(() => this.referenceLettersRequired() > 0);
   savingTick = signal<number>(0);
-  allPagesValid = computed(() => this.personalInfoDataValid() && this.educationDataValid() && this.applicationDetailsDataValid());
+  allPagesValid = computed(
+    () =>
+      this.personalInfoDataValid() &&
+      this.educationDataValid() &&
+      this.applicationDetailsDataValid() &&
+      (!this.referenceLettersEnabled() || this.referencesValid()),
+  );
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
   readonly formbuilder = inject(FormBuilder);
 
@@ -176,16 +183,20 @@ export default class ApplicationCreationFormComponent {
     const personalInfoPanel = this.personalInfoPanel();
     const educationPanel = this.educationPanel();
     const applicationDetailsPanel = this.applicationDetailsPanel();
+    const referencesPanel = this.referencesPanel();
     const summaryPanel = this.summaryPanel();
     const applicantId = this.applicantId();
     const personalInfoDataValid = this.personalInfoDataValid();
     const educationDataValid = this.educationDataValid();
     const applicationDetailsDataValid = this.applicationDetailsDataValid();
+    const referencesEnabled = this.referenceLettersEnabled();
+    const referencesValid = this.referencesValid();
     const personalInfoAndEducationDataValid = personalInfoDataValid && educationDataValid;
-    const allDataValid = personalInfoDataValid && educationDataValid && applicationDetailsDataValid;
+    const referencesGate = !referencesEnabled || referencesValid;
+    const allDataValid = personalInfoDataValid && educationDataValid && applicationDetailsDataValid && referencesGate;
     const allPagesValid = this.allPagesValid();
     const location = this.location;
-    const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
+    const flushAutoSave: () => Promise<void> = () => this.autoSave.flush();
     const statusPanel = this.savedStatusPanel();
     const updateDocumentInformation = this.updateDocumentInformation.bind(this);
 
@@ -201,7 +212,7 @@ export default class ApplicationCreationFormComponent {
             icon: 'arrow-left',
             onClick(): void {
               void (async () => {
-                await performAutomaticSaveLocal();
+                await flushAutoSave();
                 location.back();
               })();
             },
@@ -302,6 +313,43 @@ export default class ApplicationCreationFormComponent {
       });
     }
 
+    if (referencesEnabled && referencesPanel) {
+      steps.push({
+        name: 'entity.applicationSteps.references',
+        shouldTranslate: true,
+        panelTemplate: referencesPanel,
+        buttonGroupPrev: [
+          {
+            variant: 'outlined',
+            severity: 'primary',
+            icon: 'chevron-left',
+            onClick() {
+              updateDocumentInformation();
+            },
+            disabled: false,
+            label: 'button.back',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        buttonGroupNext: [
+          {
+            severity: 'primary',
+            icon: 'chevron-right',
+            onClick() {
+              updateDocumentInformation();
+            },
+            disabled: !referencesValid,
+            label: 'button.next',
+            shouldTranslate: true,
+            changePanel: true,
+          },
+        ],
+        disabled: !applicationDetailsDataValid || !applicantId,
+        status: statusPanel,
+      });
+    }
+
     if (summaryPanel) {
       steps.push({
         name: 'entity.applicationSteps.summary',
@@ -361,13 +409,6 @@ export default class ApplicationCreationFormComponent {
     }
   });
 
-  private automaticSaveEffect = effect(() => {
-    const intervalId = setInterval(() => {
-      void this.performAutomaticSave();
-    }, 3000);
-    return () => clearInterval(intervalId);
-  });
-
   async init(): Promise<void> {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
 
@@ -393,6 +434,9 @@ export default class ApplicationCreationFormComponent {
         if (application.job.title && application.job.title.trim().length > 0) {
           this.title.set(application.job.title);
         }
+        const required = application.job.referenceLettersRequired ?? 0;
+        this.referenceLettersRequired.set(required);
+        this.referencesValid.set(required === 0);
 
         this.applicationState.set(application.applicationState);
         this.useLocalStorage.set(false);
@@ -424,6 +468,7 @@ export default class ApplicationCreationFormComponent {
           if (jobDetails.title) {
             this.title.set(jobDetails.title);
           }
+          this.referenceLettersRequired.set(jobDetails.referenceLettersRequired ?? 0);
         })
         .catch(() => {
           // Silently ignore errors when fetching job title - this is non-critical for the application flow
@@ -466,20 +511,12 @@ export default class ApplicationCreationFormComponent {
     return application;
   }
 
-  async performAutomaticSave(): Promise<void> {
-    if (this.savingState() === SavingStates.SAVING) {
-      let savedSuccessFully;
-      if (this.useLocalStorage()) {
-        savedSuccessFully = this.saveToLocalStorage();
-      } else {
-        savedSuccessFully = await this.sendCreateApplicationData(this.applicationState(), false);
-      }
-      if (savedSuccessFully) {
-        this.savingState.set(SavingStates.SAVED);
-      } else {
-        this.savingState.set(SavingStates.FAILED);
-      }
+  /** Save callback invoked by the {@link AutoSaveController} when its debounce timer fires. */
+  async executeAutoSave(): Promise<boolean> {
+    if (this.useLocalStorage()) {
+      return this.saveToLocalStorage();
     }
+    return this.sendCreateApplicationData(this.applicationState(), false);
   }
 
   onConfirmSend(): void {
@@ -539,7 +576,7 @@ export default class ApplicationCreationFormComponent {
       return;
     }
 
-    firstValueFrom(this.applicationApi.getDocumentDictionaryIds(this.applicationId()))
+    firstValueFrom(this.applicationApi.getDocumentIds(this.applicationId()))
       .then(ids => {
         this.documentIds.set(ids);
       })
@@ -547,7 +584,7 @@ export default class ApplicationCreationFormComponent {
   }
 
   onValueChanged(): void {
-    this.savingState.set(SavingStates.SAVING);
+    this.autoSave.notifyChanged();
   }
 
   onPersonalInfoDataValidityChanged(isValid: boolean): void {
@@ -575,8 +612,18 @@ export default class ApplicationCreationFormComponent {
     this.applicationDetailsDataValid.set(isValid);
   }
 
-  // Handles the Next action from Step 1: runs OTP flow, refreshes user, and migrates draft
-  private handleNextFromStep1(): void {
+  onReferencesValidityChanged(isValid: boolean): void {
+    this.referencesValid.set(isValid);
+  }
+
+  onReferencesChanged(list: ReferenceRequestDTO[]): void {
+    this.references.set(list);
+  }
+
+  // Authenticates the current visitor (OTP) and ensures a server-side application exists.
+  // Resolves once `applicationId` is populated, or earlier (no-op) when validation
+  // failed and the user needs to fill in missing fields before retrying.
+  async requestAuthAndApplication(): Promise<void> {
     if (this.applicantId()) {
       return;
     }
@@ -585,19 +632,46 @@ export default class ApplicationCreationFormComponent {
     const firstName = this.personalInfoData().firstName;
     const lastName = this.personalInfoData().lastName;
 
+    await this.openOtpAndWaitForLogin(email, firstName, lastName);
+
+    // Validation inside openOtpAndWaitForLogin returns early without authenticating.
+    // Bail here too so we don't try to create or migrate an application against
+    // an unauthenticated session (which would fire "Session expired" toasts).
+    const userId = this.accountService.loadedUser()?.id;
+    if (!userId) {
+      return;
+    }
+
+    this.applicantId.set(userId);
+    await this.migrateDraftIfNeeded();
+  }
+
+  // Handles the Next action from Step 1: runs OTP flow, refreshes user, migrates draft, advances stepper.
+  private handleNextFromStep1(): void {
+    if (this.applicantId()) {
+      return;
+    }
+
     void (async () => {
       try {
-        await this.openOtpAndWaitForLogin(email, firstName, lastName);
-        this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
-        void this.migrateDraftIfNeeded();
-        this.progressStepper()?.goToStep(2);
+        await this.requestAuthAndApplication();
+        if (this.applicantId()) {
+          this.progressStepper()?.goToStep(2);
+        }
       } catch {
-        this.toastService.showErrorKey(`${applyflow}.otpVerificationFailed`);
+        // Inner methods (openOtpAndWaitForLogin, migrateDraftIfNeeded) already
+        // surface a specific toast for the failure cause; just don't advance.
       }
     })();
   }
 
+  // Bound to <jhi-application-creation-page1 [requestAuth]>. Arrow-function so `this` is preserved.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly requestAuthCallback = (): Promise<void> => this.requestAuthAndApplication();
+
   // Opens the OTP dialog and waits until the user is effectively logged in or a timeout occurs.
+  // Returns early (without authenticating) when required fields are missing — the corresponding
+  // toast is shown for the user, and the caller should detect the still-empty session.
   private async openOtpAndWaitForLogin(email: string, firstName: string, lastName: string): Promise<void> {
     const normalizedEmail = email.trim();
     if (!normalizedEmail) {
@@ -661,8 +735,9 @@ export default class ApplicationCreationFormComponent {
       const application = await this.initPageCreateApplication(jobId);
       this.useLocalStorage.set(false);
       this.applicationId.set(application.applicationId ?? this.applicationId());
-      this.savingState.set(SavingStates.SAVING);
-      await this.sendCreateApplicationData(this.applicationState(), false);
+      this.autoSave.setState(SavingStates.SAVING);
+      const saved = await this.sendCreateApplicationData(this.applicationState(), false);
+      this.autoSave.setState(saved ? SavingStates.SAVED : SavingStates.FAILED);
       // TODO: remove application from local storage
     } catch {
       this.toastService.showErrorKey(`${applyflow}.migrationFailed`);

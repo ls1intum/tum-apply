@@ -9,7 +9,6 @@ import { InformationCardComponent } from '../../landing-page/information-section
   standalone: true,
   imports: [InformationCardComponent, TranslateModule, TranslateDirective],
   templateUrl: './professor-information-section.component.html',
-  styleUrl: './professor-information-section.component.scss',
 })
 export class ProfessorInformationSectionComponent {
   readonly translationKey = 'professorLandingPage.informationSection.tiles';

@@ -6,6 +6,7 @@ import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.job.constants.TvlGrade;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
@@ -24,12 +25,15 @@ public record JobDTO(
     Integer workload,
     Integer contractDuration,
     FundingType fundingType,
+    TvlGrade tvlGrade,
     String jobDescriptionEN,
     String jobDescriptionDE,
     @NotNull JobState state,
     UUID imageId,
     String imageUrl,
     Boolean suitableForDisabled,
+    Boolean startDateByArrangement,
+    Boolean contractExtendable,
     Integer genderBiasScore,
     List<ComplianceIssue> complianceIssues
 ) {}

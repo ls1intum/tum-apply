@@ -19,7 +19,7 @@ describe('RatingComponent', () => {
   });
 
   // ---------------- ON SECTION CLICK ----------------
-  it('does nothing when not selectable', () => {
+  it('should do nothing when not selectable', () => {
     fixture.componentRef.setInput('selectable', false);
     fixture.detectChanges();
 
@@ -27,7 +27,7 @@ describe('RatingComponent', () => {
     expect(component.rating()).toBeUndefined();
   });
 
-  it('selects and toggles off when selectable', () => {
+  it('should select and toggle off when selectable', () => {
     fixture.componentRef.setInput('selectable', true);
     fixture.detectChanges();
 
@@ -39,7 +39,7 @@ describe('RatingComponent', () => {
     expect(component.rating()).toBeUndefined();
   });
 
-  it('changes rating when selecting different value', () => {
+  it('should change rating when selecting different value', () => {
     fixture.componentRef.setInput('selectable', true);
     fixture.detectChanges();
 
@@ -50,68 +50,36 @@ describe('RatingComponent', () => {
     expect(component.rating()).toBe(2);
   });
 
-  // ---------------- GET SECTION COLOR ----------------
-  it('returns background color when rating is undefined', () => {
-    fixture.componentRef.setInput('rating', undefined);
+  it.each<[number | undefined, number, string]>([
+    [undefined, 0, 'var(--p-background-surface-alt)'],
+    [-2, 0, 'var(--color-negative-active)'],
+    [-1, 1, 'var(--color-negative-hover)'],
+    [0, 2, 'var(--color-warning-default)'],
+    [1, 3, 'var(--color-positive-hover)'],
+    [2, 4, 'var(--color-positive-active)'],
+    [2, 0, 'var(--p-background-surface-alt)'],
+  ])('should return %s for rating=%s section=%s', (rating, section, expected) => {
+    fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
-
-    expect(component.getSectionColor(0)).toBe('var(--p-background-surface-alt)');
+    expect(component.getSectionColor(section)).toBe(expected);
   });
 
-  it('returns correct colors for each likert value', () => {
-    fixture.componentRef.setInput('rating', -2);
-    fixture.detectChanges();
-    expect(component.getSectionColor(0)).toBe('var(--color-negative-active)');
-
-    fixture.componentRef.setInput('rating', -1);
-    fixture.detectChanges();
-    expect(component.getSectionColor(1)).toBe('var(--color-negative-hover)');
-
-    fixture.componentRef.setInput('rating', 0);
-    fixture.detectChanges();
-    expect(component.getSectionColor(2)).toBe('var(--color-warning-default)');
-
-    fixture.componentRef.setInput('rating', 1);
-    fixture.detectChanges();
-    expect(component.getSectionColor(3)).toBe('var(--color-positive-hover)');
-
-    fixture.componentRef.setInput('rating', 2);
-    fixture.detectChanges();
-    expect(component.getSectionColor(4)).toBe('var(--color-positive-active)');
+  // ---------------- TOOLTIP TEXTS ----------------
+  it('should expose translated tooltip text for every likert value', () => {
+    const tooltips = component.tooltipTexts();
+    expect(tooltips[0]).toBe('evaluation.ratings.very_bad');
+    expect(tooltips[1]).toBe('evaluation.ratings.bad');
+    expect(tooltips[2]).toBe('evaluation.ratings.neutral');
+    expect(tooltips[3]).toBe('evaluation.ratings.good');
+    expect(tooltips[4]).toBe('evaluation.ratings.very_good');
   });
 
-  it('falls back to background color when section does not match current rating', () => {
-    fixture.componentRef.setInput('rating', 2);
+  it.each<[boolean, string]>([
+    [true, 'pointer'],
+    [false, 'default'],
+  ])('should return cursor=%s for selectable=%s', (selectable, expected) => {
+    fixture.componentRef.setInput('selectable', selectable);
     fixture.detectChanges();
-
-    expect(component.getSectionColor(0)).toBe('var(--p-background-surface-alt)');
-  });
-
-  // ---------------- GET TOOLTIP ----------------
-  it('returns expected tooltip key', () => {
-    expect(component.getTooltip(0)).toBe('evaluation.ratings.very_bad');
-    expect(component.getTooltip(1)).toBe('evaluation.ratings.bad');
-    expect(component.getTooltip(2)).toBe('evaluation.ratings.neutral');
-    expect(component.getTooltip(3)).toBe('evaluation.ratings.good');
-    expect(component.getTooltip(4)).toBe('evaluation.ratings.very_good');
-  });
-
-  it('returns undefined tooltip key for invalid value', () => {
-    expect(component.getTooltip(10)).toBe('evaluation.ratings.undefined');
-  });
-
-  // ---------------- GET CURSOR ----------------
-  it('returns pointer when selectable', () => {
-    fixture.componentRef.setInput('selectable', true);
-    fixture.detectChanges();
-
-    expect(component.getCursor()).toBe('pointer');
-  });
-
-  it('returns default when not selectable', () => {
-    fixture.componentRef.setInput('selectable', false);
-    fixture.detectChanges();
-
-    expect(component.getCursor()).toBe('default');
+    expect(component.getCursor()).toBe(expected);
   });
 });

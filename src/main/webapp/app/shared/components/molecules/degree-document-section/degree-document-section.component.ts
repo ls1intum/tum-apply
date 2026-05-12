@@ -1,6 +1,7 @@
 import { AbstractControl } from '@angular/forms';
-import { Component, computed, input, model, output } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { Component, computed, inject, input, model, output } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslateService } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AiExtractionBoxComponent } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
@@ -11,26 +12,19 @@ import {
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
-import { UploadButtonComponent } from '../../atoms/upload-button/upload-button.component';
+import { UploadButtonComponent, UploadTarget } from '../../atoms/upload-button/upload-button.component';
 import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-degree-document-section',
   standalone: true,
-  imports: [
-    FontAwesomeModule,
-    StringInputComponent,
-    TooltipModule,
-    TranslateModule,
-    UploadButtonComponent,
-    AiExtractionBoxComponent,
-    TranslateDirective,
-  ],
+  imports: [FontAwesomeModule, StringInputComponent, TooltipModule, UploadButtonComponent, AiExtractionBoxComponent, TranslateDirective],
   templateUrl: './degree-document-section.component.html',
 })
 export class DegreeDocumentSectionComponent {
   applicationId = input<string | undefined>(undefined);
   deferUpload = input<boolean>(false);
+  uploadTarget = input<UploadTarget>('application');
   required = input<boolean>(false);
 
   // Bachelor-specific bindings
@@ -39,6 +33,7 @@ export class DegreeDocumentSectionComponent {
   bachelorDegreeUniversityControl = input<AbstractControl | undefined>(undefined);
   bachelorGradeControl = input<AbstractControl | undefined>(undefined);
   bachelorGradeHelperText = input<string>('');
+  bachelorGradeHelperTextParams = input<Record<string, unknown>>({});
   bachelorGradeWarningText = input<string>('');
   bachelorQueuedFilesChange = output<File[]>();
   bachelorChangeScale = output();
@@ -49,6 +44,7 @@ export class DegreeDocumentSectionComponent {
   masterDegreeUniversityControl = input<AbstractControl | undefined>(undefined);
   masterGradeControl = input<AbstractControl | undefined>(undefined);
   masterGradeHelperText = input<string>('');
+  masterGradeHelperTextParams = input<Record<string, unknown>>({});
   masterGradeWarningText = input<string>('');
   masterQueuedFilesChange = output<File[]>();
   masterChangeScale = output();
@@ -78,5 +74,13 @@ export class DegreeDocumentSectionComponent {
   readonly bachelorGradeTooltipKey = 'entity.applicationPage2.tooltip.bachelorGrade';
   readonly masterGradeTooltipKey = 'entity.applicationPage2.tooltip.masterGrade';
 
+  readonly filenamePrivacyTooltip = computed(() => {
+    this.langChange();
+    return this.translateService.instant('entity.applicationPage2.tooltip.filenamePrivacy');
+  });
+
   protected readonly DocumentInformationHolderDTODocumentTypeEnum = DocumentInformationHolderDTODocumentTypeEnum;
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 }

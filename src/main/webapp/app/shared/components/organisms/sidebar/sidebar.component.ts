@@ -2,7 +2,6 @@ import { Component, inject, input, output } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { PanelModule } from 'primeng/panel';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { ButtonModule } from 'primeng/button';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
@@ -15,9 +14,8 @@ type SidebarCategory = { title: string; buttons: SidebarButton[] };
 
 @Component({
   selector: 'jhi-sidebar',
-  imports: [ButtonModule, DividerModule, PanelModule, SidebarButtonComponent, TranslateModule, TranslateDirective],
+  imports: [ButtonModule, DividerModule, PanelModule, SidebarButtonComponent, TranslateDirective],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
   isSidebarCollapsed = input.required<boolean>();

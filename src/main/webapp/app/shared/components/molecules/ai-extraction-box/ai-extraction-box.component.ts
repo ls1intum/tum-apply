@@ -8,9 +8,11 @@ import { DocumentInformationHolderDTO } from 'app/generated/model/document-infor
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ToastService } from 'app/service/toast-service';
+import { AiFeatureStatusService } from 'app/service/ai-feature-status.service';
 import { AiConsentModalComponent } from 'app/shared/settings/ai-consent-settings/ai-consent-modal/ai-consent-modal.component';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
+import { InfoIconComponent } from '../../atoms/info-icon/info-icon.component';
 import { ProgressSpinnerComponent } from '../../atoms/progress-spinner/progress-spinner.component';
 import TranslateDirective from '../../../language/translate.directive';
 
@@ -19,7 +21,7 @@ const activeExtractions = new Map<string, Observable<ExtractedApplicationDataDTO
 @Component({
   selector: 'jhi-ai-extraction-box',
   standalone: true,
-  imports: [ButtonComponent, ProgressSpinnerComponent, AiConsentModalComponent, TranslateDirective],
+  imports: [ButtonComponent, InfoIconComponent, ProgressSpinnerComponent, AiConsentModalComponent, TranslateDirective],
   templateUrl: './ai-extraction-box.component.html',
 })
 export class AiExtractionBoxComponent {
@@ -44,6 +46,14 @@ export class AiExtractionBoxComponent {
   /** emitted with extracted data on successful extraction */
   extracted = output<ExtractedApplicationDataDTO>();
 
+  /**
+   * Optional callback that authenticates the visitor and yields a real
+   * `applicationId`. Invoked when the user clicks Extract while no
+   * `applicationId` is set. The Promise must resolve only after the parent
+   * has propagated the new `applicationId` into this component's input.
+   */
+  requestAuth = input<() => Promise<void>>();
+
   /** whether AI features are enabled (loaded from user consent) */
   aiFeaturesEnabled = signal<boolean>(false);
 
@@ -53,10 +63,13 @@ export class AiExtractionBoxComponent {
   /** controls consent modal visibility */
   aiConsentVisible = signal<boolean>(false);
 
+  /** Whether AI features are available system-wide (kill switch / circuit breaker). */
+  aiSystemEnabled = inject(AiFeatureStatusService).aiSystemEnabled;
+
   /**
    * Whether the extract button should be disabled.
    *
-   * @return true when there are no persisted documents and no queued files to extract from
+   * @return true when there are no documents to extract from
    */
   disabled = computed(() => {
     const hasPersistedDocs = this.documentIds().some(d => d.id && !d.id.startsWith('temp-'));
@@ -83,13 +96,38 @@ export class AiExtractionBoxComponent {
     }
   });
 
-  constructor() {
+  // The consent endpoint requires authentication; calling it anonymously fires a 401
+  // which the global interceptor surfaces as "Session expired" and redirects home.
+  // Defer the load until applicationId is set (i.e. the user has authenticated).
+  private consentRequested = false;
+  private loadConsentEffect = effect(() => {
+    if (this.consentRequested) return;
+    if (!this.applicationId()) return;
+    this.consentRequested = true;
     void this.loadAiConsent();
-  }
+  });
   /**
    * Triggers AI data extraction from the available documents.
    */
-  extractAiData(): void {
+  async extractAiData(): Promise<void> {
+    // 0) If no applicationId yet, run the auth callback first and bail out on
+    //    failure so we don't attempt extraction without a target application.
+    if (!this.applicationId()) {
+      const trigger = this.requestAuth();
+      if (!trigger) return;
+      try {
+        await trigger();
+      } catch {
+        return;
+      }
+      if (!this.applicationId()) return;
+    }
+
+    if (!this.aiSystemEnabled()) {
+      this.toastService.showErrorKey('ai.featureToggle.systemDisabled');
+      return;
+    }
+
     // 1) Build the extraction key and collect persisted document IDs and queued files
     const key = this.extractionKey();
     const appId = this.applicationId();

@@ -19,11 +19,8 @@ export class DynamicTableColumn {
   standalone: true,
   imports: [CommonModule, TableModule, ButtonModule, TranslateDirective, ProgressSpinnerComponent],
   templateUrl: './dynamic-table.component.html',
-  styleUrls: ['./dynamic-table.component.scss'],
 })
 export class DynamicTableComponent {
-  readonly paginator = true;
-  readonly lazy = true;
   loading = input<boolean>(false);
 
   columns = input<DynamicTableColumn[]>([]);
@@ -33,6 +30,8 @@ export class DynamicTableComponent {
   page = input<number>(0);
   selectable = input<boolean>(false);
   hideHeader = input<boolean>(false);
+  paginator = input<boolean>(true);
+  lazy = input<boolean>(true);
 
   lazyLoad = output<TableLazyLoadEvent>();
 

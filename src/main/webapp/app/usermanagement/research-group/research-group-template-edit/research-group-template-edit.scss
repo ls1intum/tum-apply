@@ -1,90 +1,4 @@
 /**
-  Layout
- */
-
-.page-container {
-  display: flex;
-  flex-direction: column;
-
-  .meta-info {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    gap: 2rem;
-
-    .template-name-input {
-      min-width: 65%;
-    }
-
-    .template-type-select {
-      width: 100%;
-    }
-  }
-
-  .tab-list {
-    margin-bottom: 2rem;
-  }
-
-  .tab-panel {
-    padding: 0 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-
-    .subject-label,
-    .message-label {
-      display: block;
-      color: var(--p-text-color);
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-    }
-  }
-
-  .subject-wrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-
-    .subject-prefix {
-      white-space: nowrap;
-    }
-
-    .subject-input {
-      width: 100%;
-    }
-  }
-
-  .actions {
-    padding: 0 1rem;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-
-    .saving-state {
-      display: flex;
-      flex-direction: row;
-      gap: 0.5rem;
-
-      &.saved {
-        color: var(--p-success-color);
-      }
-
-      &.saving {
-        color: var(--p-warn-color);
-      }
-
-      &.unsaved {
-        color: var(--p-danger-color);
-      }
-    }
-  }
-}
-
-/**
   Quill Mention styling
   TODO: Will be moved once adapted to <jhi-editor>
   Copied and adapted from https://github.com/quill-mention/quill-mention/blob/master/src/quill.mention.css
@@ -167,10 +81,5 @@
   .ql-container {
     border-top: none;
     border-radius: 0 0 0.5rem 0.5rem;
-
-    .ql-editor {
-      font-size: 1rem;
-      line-height: 1.8rem;
-    }
   }
 }

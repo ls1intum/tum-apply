@@ -11,8 +11,8 @@
 import type { DocumentInformationHolderDTO } from './document-information-holder-dto';
 
 export interface ApplicationDocumentIdsDTO {
-    readonly bachelorDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
-    readonly cvDocumentDictionaryId?: DocumentInformationHolderDTO;
-    readonly masterDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
-    readonly referenceDocumentDictionaryIds?: Array<DocumentInformationHolderDTO>;
+    readonly bachelorDocumentIds?: Array<DocumentInformationHolderDTO>;
+    readonly cvDocumentId?: DocumentInformationHolderDTO;
+    readonly masterDocumentIds?: Array<DocumentInformationHolderDTO>;
+    readonly referenceDocumentIds?: Array<DocumentInformationHolderDTO>;
 }

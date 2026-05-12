@@ -1,4 +1,4 @@
-<div class="page-container">
+<div class="page-container flex flex-col">
   <div class="header-container">
     <div class="page-header">
       <h1>
@@ -10,31 +10,34 @@
     <jhi-button label="researchGroup.emailTemplates.newTemplate" icon="plus" [shouldTranslate]="true" (click)="navigateToCreate()" />
   </div>
 
-  <div class="table-wrapper">
+  <div class="flex flex-col w-full self-center">
     <jhi-dynamic-table
       [columns]="columns()"
       [data]="tableData()"
+      [rows]="pageSize()"
       [totalRecords]="total()"
       [page]="pageNumber()"
-      [rows]="pageSize()"
       (lazyLoad)="onTableEmit($event)"
     />
 
     <ng-template #actionsTemplate let-template>
       <div class="flex justify-end gap-1">
-        <jhi-button variant="text" icon="pen" [tooltip]="'button.edit' | translate" (click)="navigateToEdit(template.emailTemplateId)" />
-        @if (!isEmployee()) {
-          <jhi-confirm-dialog
-            [label]="'button.delete' | translate"
-            [header]="'researchGroup.emailTemplates.deleteTemplateModal.title' | translate"
-            [message]="'researchGroup.emailTemplates.deleteTemplateModal.message' | translate"
-            confirmIcon="trash"
-            (confirmed)="delete(template.emailTemplateId)"
-            severity="danger"
-            [tooltip]="(template.isDefault ? 'researchGroup.emailTemplates.deleteDefaultDisabled' : 'button.delete') | translate"
-            [iconOnly]="true"
-            [disabled]="template.isDefault"
-          />
+        @if (template.isCustom) {
+          <jhi-button variant="text" icon="pen" tooltip="button.edit" (click)="navigateToEdit(template.emailTemplateId)" />
+          @if (!isEmployee()) {
+            <jhi-confirm-dialog
+              label="button.delete"
+              header="researchGroup.emailTemplates.deleteTemplateModal.title"
+              message="researchGroup.emailTemplates.deleteTemplateModal.message"
+              confirmIcon="trash"
+              (confirmed)="delete(template.emailTemplateId)"
+              severity="danger"
+              tooltip="button.delete"
+              [iconOnly]="true"
+            />
+          }
+        } @else {
+          <jhi-button variant="text" icon="eye" tooltip="button.view" (click)="navigateToView(template.emailType)" />
         }
       </div>
     </ng-template>

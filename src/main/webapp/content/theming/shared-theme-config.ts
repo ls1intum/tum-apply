@@ -72,13 +72,13 @@ export const sharedComponentConfig = {
             hoverBorderColor: '{warn.hoverColor}',
           },
           info: {
-            background: '{neutral.color}',
-            color: '{neutral.inverseColor}',
-            hoverBackground: '{neutral.hoverColor}',
-            hoverColor: '{neutral.inverseColor}',
-            hoverBorderColor: '{neutral.hoverColor}',
-            activeBackground: '{neutral.activeColor}',
-            borderColor: '{neutral.color}',
+            background: '{info.color}',
+            color: '{info.inverseColor}',
+            hoverBackground: '{info.hoverColor}',
+            hoverColor: '{info.inverseColor}',
+            hoverBorderColor: '{info.hoverColor}',
+            activeBackground: '{info.activeColor}',
+            borderColor: '{info.color}',
           },
         },
         outlined: {
@@ -101,10 +101,10 @@ export const sharedComponentConfig = {
             hoverBackground: '{success.hoverColorOutlined}',
           },
           info: {
-            activeBackground: '{neutral.activeColor}',
-            borderColor: '{neutral.color}',
-            color: '{neutral.color}',
-            hoverBackground: '{neutral.hoverColorOutlined}',
+            activeBackground: '{info.activeColor}',
+            borderColor: '{info.color}',
+            color: '{info.color}',
+            hoverBackground: '{info.hoverColorOutlined}',
           },
           warn: {
             activeBackground: '{warn.activeColor}',
@@ -154,9 +154,9 @@ export const sharedComponentConfig = {
             hoverBackground: '{success.hoverColorOutlined}',
           },
           info: {
-            activeBackground: '{neutral.activeColor}',
-            color: '{neutral.color}',
-            hoverBackground: '{neutral.hoverColorOutlined}',
+            activeBackground: '{info.activeColor}',
+            color: '{info.color}',
+            hoverBackground: '{info.hoverColorOutlined}',
           },
           warn: {
             activeBackground: '{warn.activeColor}',
@@ -278,7 +278,7 @@ export const sharedComponentConfig = {
           color: '{base.black}',
         },
         info: {
-          background: '{neutral.100}',
+          background: '{info.100}',
           color: '{info.inverseColor}',
         },
         success: {

@@ -6,8 +6,8 @@
   (ngModelChange)="onValueChange($event)"
   placeholder="--:--"
   [disabled]="disabled()"
-  [styleClass]="
-    'w-17 h-8 text-sm text-center font-normal border border-border-default focus:border-primary-default outline-none shadow-none ' +
-    styleClass()
+  [class]="
+    '[&_input]:w-17 [&_input]:h-8 [&_input]:text-sm [&_input]:text-center [&_input]:font-normal [&_input]:border [&_input]:border-border-default [&_input]:focus:border-primary-default [&_input]:outline-none [&_input]:shadow-none ' +
+    classStyling()
   "
 />

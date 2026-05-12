@@ -55,10 +55,10 @@ describe('DocumentSection', () => {
 
     it('should populate documents and extraDocuments correctly', () => {
       const dto: ApplicationDocumentIdsDTO = {
-        masterDocumentDictionaryIds: [{ id: 'm1' } as DocumentInformationHolderDTO, { id: 'm2' } as DocumentInformationHolderDTO],
-        cvDocumentDictionaryId: { id: 'cv' } as DocumentInformationHolderDTO,
-        bachelorDocumentDictionaryIds: [{ id: 'b1' } as DocumentInformationHolderDTO],
-        referenceDocumentDictionaryIds: [{ id: 'r1' } as DocumentInformationHolderDTO, { id: 'r2' } as DocumentInformationHolderDTO],
+        masterDocumentIds: [{ id: 'm1' } as DocumentInformationHolderDTO, { id: 'm2' } as DocumentInformationHolderDTO],
+        cvDocumentId: { id: 'cv' } as DocumentInformationHolderDTO,
+        bachelorDocumentIds: [{ id: 'b1' } as DocumentInformationHolderDTO],
+        referenceDocumentIds: [{ id: 'r1' } as DocumentInformationHolderDTO, { id: 'r2' } as DocumentInformationHolderDTO],
       };
       fixture.componentRef.setInput('idsDTO', dto);
       fixture.detectChanges();
@@ -66,12 +66,6 @@ describe('DocumentSection', () => {
       expect(component.documentsCount()).toBe(6);
       expect(component.documents().length).toBe(3);
       expect(component.extraDocuments().length).toBe(3);
-    });
-
-    it('should compute hasDocuments correctly', () => {
-      expect(component.hasDocuments()).toBe(false);
-      component.documents.set([{ label: 'lbl', document: { id: 'd1' } as DocumentInformationHolderDTO }]);
-      expect(component.hasDocuments()).toBe(true);
     });
 
     it('should compute allDocumentsTooltip using translate.instant', () => {
@@ -129,7 +123,7 @@ describe('DocumentSection', () => {
 
       expect(mockApi.downloadAll).toHaveBeenCalledWith('app-1');
       expect(createObjectSpy).toHaveBeenCalledWith(blob);
-      expect(clickSpy).toHaveBeenCalled();
+      expect(clickSpy).toHaveBeenCalledOnce();
       expect(anchor.download).toBe('documents.zip');
       expect(revokeObjectSpy).toHaveBeenCalledWith('blob:url');
     });

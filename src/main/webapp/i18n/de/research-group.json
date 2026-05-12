@@ -8,7 +8,7 @@
     "imageHeader": "Bilder",
     "groupInfo": {
       "description": "Bearbeite die grundlegenden Informationen über deine Forschungsgruppe.",
-      "organizationInfo": "Um das Department und die School zu ändern, wende dich bitte an eine:n Administrator:in.",
+      "organizationInfo": "Bitte kontaktiere uns, um das Department und die School zu ändern.",
       "noDepartment": "Kein Department",
       "noSchool": "Keine School",
       "fields": {
@@ -42,9 +42,9 @@
       },
       "toasts": {
         "updated": "Forschungsgruppeninformationen erfolgreich aktualisiert.",
-        "saveFailed": "Fehler beim Speichern. Bitte versuche es erneut oder kontaktiere einen Admin.",
-        "loadFailed": "Fehler beim Laden. Bitte lade die Seite neu oder kontaktiere einen Admin.",
-        "noId": "Keine Forschungsgruppe gefunden. Kontaktiere deinen Admin."
+        "saveFailed": "Fehler beim Speichern. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht.",
+        "loadFailed": "Fehler beim Laden. Bitte lade die Seite neu, oder kontaktiere uns, wenn das Problem weiterhin besteht.",
+        "noId": "Keine Forschungsgruppe gefunden. Bitte kontaktiere uns."
       }
     },
     "emailTemplates": {
@@ -72,29 +72,19 @@
       "addSubject": "Betreff der Email...",
       "addVariable": "Drücke '$', um eine Variable einzufügen",
       "message": "Nachricht",
-      "saved": "Gespeichert",
-      "saving": "Änderungen werden gespeichert",
-      "unsaved": "Änderungen nicht gespeichert",
       "messageType": {
-        "APPLICATION_ACCEPTED": "Bewerbung wurde angenommen",
+        "APPLICATION_ACCEPTED": "Bewerbung angenommen",
+        "APPLICATION_REJECTED_JOB_FILLED": "Bewerbung abgelehnt - Stelle bereits besetzt",
+        "APPLICATION_REJECTED_JOB_OUTDATED": "Bewerbung abgelehnt - Stelle nicht mehr aktuell",
+        "APPLICATION_REJECTED_FAILED_REQUIREMENTS": "Bewerbung abgelehnt - Anforderungen nicht erfüllt",
+        "APPLICATION_REJECTED_OTHER_REASON": "Bewerbung abgelehnt - Anderer Grund",
         "APPLICATION_SENT": "Bewerbung empfangen",
-        "APPLICATION_REJECTED": "Bewerbung abgelehnt",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt",
-        "INTERVIEW_LOCATION_CHANGED": "Vorstellungsgespräch: Ort geändert"
-      },
-      "default": {
-        "APPLICATION_ACCEPTED": "Bewerbung: Angenommen",
-        "APPLICATION_SENT": "Bewerbung: Eingangsbestätigung",
-        "APPLICATION_REJECTED-JOB_FILLED": "Bewerbung: Abgelehnt - Stelle bereits besetzt",
-        "APPLICATION_REJECTED-JOB_OUTDATED": "Bewerbung: Abgelehnt - Stelle nicht mehr aktuell",
-        "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Bewerbung: Abgelehnt - Anforderungen nicht erfüllt",
-        "APPLICATION_REJECTED-OTHER_REASON": "Bewerbung: Abgelehnt - Anderer Grund",
-        "INTERVIEW_INVITATION": "Vorstellungsgespräch: Einladung",
-        "INTERVIEW_SELF_SCHEDULING_INVITATION": "Vorstellungsgespräch: Einladung zur Terminbuchung",
-        "INTERVIEW_CANCELLED": "Vorstellungsgespräch: Abgesagt",
-        "INTERVIEW_LOCATION_CHANGED": "Vorstellungsgespräch: Ort geändert",
-        "INTERVIEW_RESCHEDULE_REQUESTED": "Vorstellungsgespräch: Terminverschiebung angefragt",
-        "RESEARCH_GROUP_MEMBER_ADDED": "Forschungsgruppe: Mitglied hinzugefügt"
+        "INTERVIEW_INVITATION": "Einladung zum Vorstellungsgespräch",
+        "INTERVIEW_SELF_SCHEDULING_INVITATION": "Einladung zur Terminbuchung",
+        "INTERVIEW_CANCELLED": "Vorstellungsgespräch abgesagt",
+        "INTERVIEW_LOCATION_CHANGED": "Ort des Vorstellungsgesprächs geändert",
+        "INTERVIEW_RESCHEDULE_REQUESTED": "Terminverschiebung des Vorstellungsgesprächs angefragt",
+        "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt"
       },
       "variables": {
         "APPLICANT_FIRST_NAME": "Vorname Bewerber:in",
@@ -119,7 +109,7 @@
     },
     "members": {
       "noUsers": "Keine verfügbaren Benutzer:innen gefunden.",
-      "emptySearch": "Bitte gib mindestens {{minLength}} Zeichen ein, um zu suchen.",
+      "emptySearch": "Bitte gib mindestens {minLength} Zeichen ein, um zu suchen.",
       "you": "Du",
       "notice": "Die Mitglieder werden per E-Mail benachrichtigt, wenn sie zur Forschungsgruppe hinzugefügt werden.",
       "manageMembers": "Mitglieder verwalten",
@@ -128,8 +118,8 @@
       "searchPlaceholder": "Suche nach einem Mitglied mit Namen oder E-Mail...",
       "singleEntity": "Benutzer:in",
       "multipleEntities": "Benutzer:innen",
-      "selectedCountSingle": "{{count}} Mitglied ausgewählt",
-      "selectedCountMultiple": "{{count}} Mitglieder ausgewählt",
+      "selectedCountSingle": "{count} Mitglied ausgewählt",
+      "selectedCountMultiple": "{count} Mitglieder ausgewählt",
       "tableColumns": {
         "name": "Name",
         "email": "E-Mail",
@@ -142,7 +132,7 @@
       "toastMessages": {
         "loadFailed": {
           "summary": "Fehler beim Laden",
-          "detail": "Fehler beim Laden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Fehler beim Laden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "loadUsersFailed": {
           "summary": "Fehler beim Laden",
@@ -170,11 +160,11 @@
         },
         "removeSuccess": {
           "summary": "Mitglied entfernt",
-          "detail": "{{memberName}} wurde aus der Forschungsgruppe entfernt."
+          "detail": "{memberName} wurde aus der Forschungsgruppe entfernt."
         },
         "removeFailed": {
           "summary": "Fehler beim Entfernen",
-          "detail": "Fehler beim Entfernen. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Fehler beim Entfernen. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         }
       },
       "noRole": "Keine Rolle"
@@ -312,7 +302,7 @@
         },
         "save": {
           "summary": "Fehler",
-          "detail": "Fehler beim Speichern der Forschungsgruppeninformationen. Bitte versuche es erneut oder kontaktiere einen Admin."
+          "detail": "Fehler beim Speichern der Forschungsgruppeninformationen. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "loadDepartments": {
           "summary": "Fehler",

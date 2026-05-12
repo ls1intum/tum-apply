@@ -10,7 +10,7 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 vi.mock('@angular/common', async importOriginal => {
   const actual = await importOriginal<typeof import('@angular/common')>();
-  return { ...actual, registerLocaleData: vi.fn() };
+  return Object.assign({}, actual, { registerLocaleData: vi.fn() });
 });
 
 vi.mock('app/layouts/main/main.component', () => {

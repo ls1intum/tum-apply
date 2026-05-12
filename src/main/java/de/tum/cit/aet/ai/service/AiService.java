@@ -6,13 +6,15 @@ import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.InternalServerException;
 import de.tum.cit.aet.core.exception.PDFExtractionException;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
+import de.tum.cit.aet.core.util.CountryCodeNormalizer;
+import de.tum.cit.aet.core.util.DateNormalizer;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import java.awt.image.BufferedImage;
@@ -43,6 +45,10 @@ import reactor.core.publisher.Flux;
 @Slf4j
 public class AiService {
 
+    // Document & page limit for AI extraction
+    private static final int MAX_DOCS = 5;
+    private static final int MAX_PAGES_PER_DOC = 5;
+
     @Value("classpath:prompts/JobDescriptionGeneration.st")
     private Resource jobGenerationResource;
 
@@ -64,7 +70,7 @@ public class AiService {
 
     private final ApplicationService applicationService;
 
-    private final DocumentDictionaryService documentDictionaryService;
+    private final DocumentService documentService;
 
     private final CurrentUserService currentUserService;
 
@@ -72,22 +78,26 @@ public class AiService {
 
     private final ComplianceScoreService complianceScoreService;
 
+    private final AiFeatureToggleService aiFeatureToggleService;
+
     public AiService(
         ChatClient.Builder chatClientBuilder,
         JobService jobService,
         ApplicationService applicationService,
-        DocumentDictionaryService documentDictionaryService,
+        DocumentService documentService,
         CurrentUserService currentUserService,
         GenderBiasAnalysisService genderBiasAnalysisService,
-        ComplianceScoreService complianceScoreService
+        ComplianceScoreService complianceScoreService,
+        AiFeatureToggleService aiFeatureToggleService
     ) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
         this.applicationService = applicationService;
-        this.documentDictionaryService = documentDictionaryService;
+        this.documentService = documentService;
         this.currentUserService = currentUserService;
         this.genderBiasAnalysisService = genderBiasAnalysisService;
         this.complianceScoreService = complianceScoreService;
+        this.aiFeatureToggleService = aiFeatureToggleService;
     }
 
     /**
@@ -125,6 +135,8 @@ public class AiService {
             )
             .stream()
             .content()
+            .doOnComplete(() -> aiFeatureToggleService.recordSuccess())
+            .doOnError(e -> aiFeatureToggleService.recordFailure())
             .delayElements(Duration.ofMillis(35));
     }
 
@@ -152,6 +164,8 @@ public class AiService {
             )
             .stream()
             .content()
+            .doOnComplete(() -> aiFeatureToggleService.recordSuccess())
+            .doOnError(e -> aiFeatureToggleService.recordFailure())
             .delayElements(Duration.ofMillis(35));
     }
 
@@ -171,14 +185,16 @@ public class AiService {
         Class<?> targetClass = isCv ? ExtractedApplicationDataDTO.class : ExtractedCertificateDataDTO.class;
 
         try {
-            for (Resource pdfFile : pdfFiles) {
+            int docsToProcess = Math.min(pdfFiles.size(), MAX_DOCS);
+            for (int i = 0; i < docsToProcess; i++) {
+                Resource pdfFile = pdfFiles.get(i);
                 try (PDDocument document = Loader.loadPDF(pdfFile.getContentAsByteArray())) {
                     // 1) Render each PDF page as a PNG image
                     PDFRenderer pdfRenderer = new PDFRenderer(document);
-                    int pageCount = document.getNumberOfPages();
+                    int pagesToProcess = Math.min(document.getNumberOfPages(), MAX_PAGES_PER_DOC);
 
-                    for (int i = 0; i < pageCount; i++) {
-                        BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300);
+                    for (int j = 0; j < pagesToProcess; j++) {
+                        BufferedImage image = pdfRenderer.renderImageWithDPI(j, 300);
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                         ImageIO.write(image, "png", byteArrayOutputStream);
                         pageImages.add(new ByteArrayResource(byteArrayOutputStream.toByteArray()));
@@ -187,25 +203,59 @@ public class AiService {
             }
 
             // 2) Send the images to the LLM with the extraction prompt
-            Object result = chatClient
-                .prompt()
-                .user(u -> {
-                    u.text(prompt);
-                    for (ByteArrayResource pageImage : pageImages) {
-                        u.media(MediaType.IMAGE_PNG, pageImage);
-                    }
-                })
-                .call()
-                .entity(targetClass);
+            Object result;
+            try {
+                result = chatClient
+                    .prompt()
+                    .user(u -> {
+                        u.text(prompt);
+                        for (ByteArrayResource pageImage : pageImages) {
+                            u.media(MediaType.IMAGE_PNG, pageImage);
+                        }
+                    })
+                    .call()
+                    .entity(targetClass);
+                aiFeatureToggleService.recordSuccess();
+            } catch (Exception e) {
+                aiFeatureToggleService.recordFailure();
+                throw e;
+            }
 
             if (isCv) {
-                return (ExtractedApplicationDataDTO) result;
+                return normalizeStructuredFields((ExtractedApplicationDataDTO) result);
             } else {
                 return ExtractedApplicationDataDTO.onlyEducationDTO((ExtractedCertificateDataDTO) result);
             }
         } catch (IOException e) {
             throw new PDFExtractionException("PDF conversion failed", e);
         }
+    }
+
+    /**
+     * Returns a copy of the given DTO with country, nationality, and dateOfBirth
+     * normalized to canonical formats (ISO alpha-2 lowercase / ISO YYYY-MM-DD).
+     * Unrecognized values become {@code null} so the frontend dropdown / date
+     * picker stays empty rather than displaying garbage.
+     */
+    private ExtractedApplicationDataDTO normalizeStructuredFields(ExtractedApplicationDataDTO extracted) {
+        if (extracted == null) {
+            return null;
+        }
+        return new ExtractedApplicationDataDTO(
+            extracted.firstName(),
+            extracted.lastName(),
+            extracted.phoneNumber(),
+            extracted.website(),
+            extracted.linkedinUrl(),
+            extracted.gender(),
+            CountryCodeNormalizer.normalize(extracted.nationality()),
+            CountryCodeNormalizer.normalize(extracted.country()),
+            DateNormalizer.normalize(extracted.dateOfBirth()),
+            extracted.street(),
+            extracted.city(),
+            extracted.postalCode(),
+            extracted.education()
+        );
     }
 
     /**
@@ -233,7 +283,7 @@ public class AiService {
         // 1) Download documents from UUIDs if provided
         if (docIds != null) {
             for (String docId : docIds) {
-                docs.add(documentDictionaryService.downloadDocument(UUID.fromString(docId)));
+                docs.add(documentService.downloadDocument(UUID.fromString(docId)));
             }
         }
 
@@ -313,22 +363,29 @@ public class AiService {
         GenderBiasAnalysisResponse translatedAnalysis
     ) {
         List<ComplianceIssue> complianceIssues;
-        try {
-            complianceIssues = chatClient
-                .prompt()
-                .user(u ->
-                    u
-                        .text(complianceResource)
-                        .param("descriptionLanguage", lang)
-                        .param("userLang", userLang)
-                        .param("jobDescription", text)
-                        .param("title", title != null ? title : "")
-                )
-                .call()
-                .entity(new ParameterizedTypeReference<>() {});
-            complianceIssues.forEach(issue -> issue.setLanguage(lang));
-        } catch (Exception e) {
-            throw new InternalServerException("Compliance analysis parsing failed", e);
+        if (aiFeatureToggleService.isAiAvailable()) {
+            try {
+                complianceIssues = chatClient
+                    .prompt()
+                    .user(u ->
+                        u
+                            .text(complianceResource)
+                            .param("descriptionLanguage", lang)
+                            .param("userLang", userLang)
+                            .param("jobDescription", text)
+                            .param("title", title != null ? title : "")
+                    )
+                    .call()
+                    .entity(new ParameterizedTypeReference<>() {});
+                complianceIssues.forEach(issue -> issue.setLanguage(lang));
+                aiFeatureToggleService.recordSuccess();
+            } catch (Exception e) {
+                aiFeatureToggleService.recordFailure();
+                throw new InternalServerException("Compliance analysis parsing failed", e);
+            }
+        } else {
+            // AI is disabled: skip the LLM-based legal analysis but keep rule-based gender scoring.
+            complianceIssues = List.of();
         }
 
         int genderScore = complianceScoreService.calculateGenderScore(analysis, translatedAnalysis);

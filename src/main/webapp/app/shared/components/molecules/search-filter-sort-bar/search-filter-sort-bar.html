@@ -1,4 +1,4 @@
-<div class="search-filter-sort-bar">
+<div class="search-filter-sort-bar flex flex-col">
   <div class="flex flex-row justify-between gap-2">
     <div class="flex flex-1 flex-row items-center gap-2 flex-wrap">
       <p-iconfield iconPosition="left" class="w-full" [class]="searchFieldClass()">
@@ -38,8 +38,8 @@
           [icon]="'filter'"
           [size]="'sm'"
           [variant]="'text'"
-          [styleClass]="'!border !border-border-default'"
-          [tooltip]="'entity.filters.sortingAndFilter' | translate"
+          [classStyling]="'!border !border-border-default'"
+          tooltip="entity.filters.sortingAndFilter"
           [tooltipOptions]="{ showDelay: 500 }"
           tooltipPosition="left"
           (click)="openMobileSidebar()"
@@ -58,13 +58,7 @@
     </div>
   </div>
 
-  <p-drawer
-    [(visible)]="isMobileSidebarOpen"
-    position="right"
-    [dismissible]="true"
-    [showCloseIcon]="false"
-    styleClass="w-[90vw] max-w-[20rem]"
-  >
+  <p-drawer [(visible)]="isMobileSidebarOpen" position="right" [dismissible]="true" [showCloseIcon]="false" class="w-[90vw] max-w-xs">
     <ng-template #header>
       <div class="flex h-full flex-1 items-center justify-between font-semibold">
         <span jhiTranslate="entity.filters.sortingAndFilter"></span>
@@ -96,7 +90,6 @@
                 [selectedValuesInput]="getSelectedFilterValues(filter.filterId)"
                 (filterChange)="onFilterChange($event)"
                 [shouldTranslateOptions]="filter.shouldTranslateOptions ?? false"
-                [showSelectedChipsInTrigger]="false"
               />
             }
           </div>
@@ -109,36 +102,35 @@
           color="primary"
           variant="outlined"
           (click)="clearAllFilter()"
-          [label]="'entity.filters.resetFilter' | translate"
+          label="entity.filters.resetFilter"
         />
       }
-      <jhi-button
-        type="button"
-        [fullWidth]="true"
-        color="primary"
-        (click)="closeMobileSidebar()"
-        [label]="'entity.filters.show' | translate"
-      />
+      <jhi-button type="button" [fullWidth]="true" color="primary" (click)="closeMobileSidebar()" label="entity.filters.show" />
     </div>
   </p-drawer>
-  <div class="flex flex-row pt-1 gap-2">
-    <div
-      class="text-xs"
-      jhiTranslate="entity.filters.recordsFound"
-      [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
-    ></div>
-    @if (hasActiveFilters()) {
-      <span class="text-xs">-</span>
-      <button
-        type="button"
-        class="text-xs text-primary-default cursor-pointer hover:underline"
-        (click)="clearAllFilter(); $event.stopPropagation()"
-      >
-        {{ 'entity.filters.resetFilter' | translate }}
-      </button>
-    }
+  <div class="flex flex-row justify-between pt-1 w-full">
+    <!-- Left Side: Count and Reset -->
+    <div class="flex flex-row gap-2">
+      <div
+        class="text-xs"
+        jhiTranslate="entity.filters.recordsFound"
+        [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
+      ></div>
+      @if (hasActiveFilters()) {
+        <span class="text-xs">-</span>
+        <button
+          type="button"
+          class="text-xs text-primary-default cursor-pointer hover:underline"
+          (click)="clearAllFilter(); $event.stopPropagation()"
+        >
+          {{ resetFilterLabel() }}
+        </button>
+      }
+    </div>
+
+    <!-- Right Side: Records Extra -->
+    <div class="text-xs text-text-secondary">
+      <ng-content select="[records-extra]" />
+    </div>
   </div>
-  <span class="ml-auto">
-    <ng-content select="[records-extra]" />
-  </span>
 </div>

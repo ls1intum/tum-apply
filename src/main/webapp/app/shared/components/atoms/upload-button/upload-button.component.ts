@@ -1,13 +1,15 @@
 import { Component, ElementRef, computed, inject, input, model, output, signal, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastService } from 'app/service/toast-service';
 import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
+import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import {
   DocumentInformationHolderDTO,
   DocumentInformationHolderDTODocumentTypeEnum,
@@ -18,6 +20,7 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { ButtonComponent } from '../button/button.component';
 
 export type DocumentType = DocumentInformationHolderDTODocumentTypeEnum;
+export type UploadTarget = 'application' | 'applicantProfile';
 
 /**
  * Generic PDF upload control used by applicant document flows.
@@ -31,7 +34,7 @@ export type DocumentType = DocumentInformationHolderDTODocumentTypeEnum;
  */
 @Component({
   selector: 'jhi-upload-button',
-  imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateModule, TranslateDirective, ConfirmDialog],
+  imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateDirective, ConfirmDialog],
   templateUrl: './upload-button.component.html',
   standalone: true,
 })
@@ -44,10 +47,19 @@ export class UploadButtonComponent {
   fileUploadComponent = viewChild<FileUpload>(FileUpload);
 
   documentType = input.required<DocumentType>();
-  applicationId = input.required<string>();
+  applicationId = input<string | undefined>();
+  uploadTarget = input<UploadTarget>('application');
   documentIds = model<DocumentInformationHolderDTO[] | undefined>();
   valid = output<boolean>();
   queuedFilesChange = output<File[]>();
+
+  /**
+   * Optional callback that authenticates the visitor and yields a real
+   * `applicationId`. Invoked the first time the user picks a file while
+   * `applicationId` is empty. The Promise must resolve only after the parent
+   * has propagated the new `applicationId` into this component's input.
+   */
+  requestAuth = input<() => Promise<void>>();
 
   selectedFiles = signal<File[] | undefined>(undefined);
   isUploading = signal<boolean>(false);
@@ -68,12 +80,30 @@ export class UploadButtonComponent {
   showDuplicateDialog = signal(false);
   showReplacementDialog = signal(false);
 
+  toUploadTooltip = computed(() => {
+    this.langChange();
+    return this.translateService.instant('entity.upload.tooltip.to_upload');
+  });
+  alreadyUploadedTooltip = computed(() => {
+    this.langChange();
+    return this.translateService.instant('entity.upload.tooltip.already_uploaded');
+  });
+
   private applicationApi = inject(ApplicationResourceApi);
+  private applicantApi = inject(ApplicantResourceApi);
   private toastService = inject(ToastService);
   private elementRef = inject(ElementRef);
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   async onFileSelected(event: FileSelectEvent): Promise<void> {
     const files: File[] = event.currentFiles;
+
+    if (!(await this.ensureAuthenticated())) {
+      this.fileUploadComponent()?.clear();
+      this.resetNativeFileInput();
+      return;
+    }
 
     // For single-file mode, check if document already exists
     if (!this.allowMultiple() && (this.documentIds()?.length ?? 0) > 0) {
@@ -124,7 +154,7 @@ export class UploadButtonComponent {
         this.removeQueuedFileFor(existingDoc.id);
       } else {
         try {
-          await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(existingDoc.id));
+          await this.deletePersistedDocument(existingDoc.id);
           const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
           this.documentIds.set(updatedList);
         } catch {
@@ -160,7 +190,7 @@ export class UploadButtonComponent {
     } else {
       for (const doc of existingDocs) {
         try {
-          await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(doc.id));
+          await this.deletePersistedDocument(doc.id);
         } catch {
           this.toastService.showErrorKey('entity.upload.error.replace_failed');
           return;
@@ -181,9 +211,7 @@ export class UploadButtonComponent {
 
     this.isUploading.set(true);
     try {
-      const uploadedPromises = files.map(file =>
-        firstValueFrom(this.applicationApi.uploadDocuments(this.applicationId(), this.documentType(), file)),
-      );
+      const uploadedPromises = files.map(file => this.uploadDocument(file));
       const uploadResults = await Promise.all(uploadedPromises);
       const allUploadedIds = uploadResults.flat();
       this.documentIds.set(allUploadedIds);
@@ -209,7 +237,7 @@ export class UploadButtonComponent {
     }
 
     try {
-      await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(documentId));
+      await this.deletePersistedDocument(documentId);
       const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
       this.documentIds.set(updatedList);
     } catch {
@@ -251,7 +279,7 @@ export class UploadButtonComponent {
     }
 
     try {
-      await firstValueFrom(this.applicationApi.renameDocument(documentId, newName));
+      await this.renamePersistedDocument(documentId, newName);
       const updatedDocs =
         this.documentIds()?.map(doc =>
           doc.id === documentId
@@ -275,6 +303,31 @@ export class UploadButtonComponent {
     const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
     const size = bytes / Math.pow(k, i);
     return `${parseFloat(size.toFixed(1))} ${sizes[i]}`;
+  }
+
+  /**
+   * Ensures an `applicationId` is available before any upload action proceeds.
+   * Returns true when already set, or after a successful `requestAuth()` call.
+   * Returns false when no callback is provided and the id is missing, or when
+   * the callback rejects (user cancelled / validation failed upstream).
+   */
+  private async ensureAuthenticated(): Promise<boolean> {
+    if (this.uploadTarget() === 'applicantProfile') {
+      return true;
+    }
+    if (this.applicationId()) {
+      return true;
+    }
+    const trigger = this.requestAuth();
+    if (!trigger) {
+      return false;
+    }
+    try {
+      await trigger();
+    } catch {
+      return false;
+    }
+    return Boolean(this.applicationId());
   }
 
   private isDuplicateFilename(filename: string): boolean {
@@ -403,5 +456,36 @@ export class UploadButtonComponent {
 
   private emitQueuedFilesChange(): void {
     this.queuedFilesChange.emit(this.queuedFiles());
+  }
+
+  private uploadDocument(file: File): Promise<DocumentInformationHolderDTO[]> {
+    if (this.uploadTarget() === 'applicantProfile') {
+      return firstValueFrom(this.applicantApi.uploadApplicantProfileDocuments(this.documentType(), file));
+    }
+
+    const appId = this.applicationId();
+    if (appId == null) {
+      return Promise.resolve([]);
+    }
+
+    return firstValueFrom(this.applicationApi.uploadDocuments(appId, this.documentType(), file));
+  }
+
+  private async deletePersistedDocument(documentId: string): Promise<void> {
+    if (this.uploadTarget() === 'applicantProfile') {
+      await firstValueFrom(this.applicantApi.deleteApplicantProfileDocument(documentId));
+      return;
+    }
+
+    await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(documentId));
+  }
+
+  private async renamePersistedDocument(documentId: string, newName: string): Promise<void> {
+    if (this.uploadTarget() === 'applicantProfile') {
+      await firstValueFrom(this.applicantApi.renameApplicantProfileDocument(documentId, newName));
+      return;
+    }
+
+    await firstValueFrom(this.applicationApi.renameDocument(documentId, newName));
   }
 }

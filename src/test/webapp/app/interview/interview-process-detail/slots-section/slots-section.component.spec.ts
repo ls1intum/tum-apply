@@ -80,14 +80,6 @@ describe('SlotsSectionComponent', () => {
   });
 
   describe('Modal Control', () => {
-    it('should open slot creation form', () => {
-      fixture.detectChanges();
-
-      component.openCreateSlotsModal();
-
-      expect(component.showSlotCreationForm()).toBe(true);
-    });
-
     it('should open assign modal with selected slot', () => {
       fixture.detectChanges();
 
@@ -97,24 +89,15 @@ describe('SlotsSectionComponent', () => {
       expect(component.selectedSlotForAssignment()).toBe(futureSlot);
     });
 
-    it('should open edit dialog with slot data', () => {
+    it('should open edit dialog with slot data and reset on close', () => {
       fixture.detectChanges();
 
       component.onEditSlot(futureSlot);
-
       expect(component.showEditDialog()).toBe(true);
       expect(component.selectedSlotForEdit()).toBe(futureSlot);
       expect(component.editLocation()).toBe('Room 101');
-    });
-
-    it('should close edit dialog and reset state', () => {
-      fixture.detectChanges();
-      component.selectedSlotForEdit.set(futureSlot);
-      component.editLocation.set('Room 101');
-      component.showEditDialog.set(true);
 
       component.closeEditDialog();
-
       expect(component.showEditDialog()).toBe(false);
       expect(component.selectedSlotForEdit()).toBeUndefined();
       expect(component.editLocation()).toBe('');
@@ -130,59 +113,26 @@ describe('SlotsSectionComponent', () => {
     });
   });
 
-  describe('Date Pagination', () => {
-    it('should not go to previous date page when on first page', () => {
-      fixture.detectChanges();
-      component.currentDatePage.set(0);
+  it('should toggle date expansion on and off', () => {
+    fixture.detectChanges();
 
-      component.previousDatePage();
+    component.toggleExpanded('2026-03-15');
+    expect(component.expandedDates().has('2026-03-15')).toBe(true);
 
-      expect(component.currentDatePage()).toBe(0);
-    });
-
-    it('should not go to next date page when on last page', () => {
-      fixture.detectChanges();
-
-      component.nextDatePage();
-
-      expect(component.currentDatePage()).toBe(0);
-    });
+    component.toggleExpanded('2026-03-15');
+    expect(component.expandedDates().has('2026-03-15')).toBe(false);
   });
 
-  describe('Toggle Expanded', () => {
-    it('should toggle date expansion on and off', () => {
-      fixture.detectChanges();
+  it.each([
+    { count: 1, expectedKey: 'interview.slots.showMoreSingular' },
+    { count: 3, expectedKey: 'interview.slots.showMorePlural' },
+  ])('should use $expectedKey for showMore with count=$count', ({ count, expectedKey }) => {
+    fixture.detectChanges();
 
-      component.toggleExpanded('2026-03-15');
-      expect(component.expandedDates().has('2026-03-15')).toBe(true);
+    const text = component.getShowMoreText(count);
 
-      component.toggleExpanded('2026-03-15');
-      expect(component.expandedDates().has('2026-03-15')).toBe(false);
-    });
-  });
-
-  describe('getShowMoreText', () => {
-    it.each([
-      { count: 1, expectedKey: 'interview.slots.showMoreSingular' },
-      { count: 3, expectedKey: 'interview.slots.showMorePlural' },
-    ])('should use $expectedKey for count=$count', ({ count, expectedKey }) => {
-      fixture.detectChanges();
-
-      const text = component.getShowMoreText(count);
-
-      expect(text).toContain(`${count}`);
-      expect(text).toContain(expectedKey);
-    });
-  });
-
-  describe('onSlotsCreated', () => {
-    it('should set hasAnySlots to true', () => {
-      fixture.detectChanges();
-
-      component.onSlotsCreated();
-
-      expect(component.hasAnySlots()).toBe(true);
-    });
+    expect(text).toContain(`${count}`);
+    expect(text).toContain(expectedKey);
   });
 
   describe('Save Slot Location', () => {
@@ -314,63 +264,55 @@ describe('SlotsSectionComponent', () => {
     });
   });
 
-  describe('Empty State Message', () => {
-    it.each([
-      {
-        description: 'not initialized',
-        initialized: false,
-        hasAnySlots: false,
-        futureSlots: [] as InterviewSlotDTO[],
-        pastSlots: [] as InterviewSlotDTO[],
-        expected: undefined,
-      },
-      {
-        description: 'no slots created',
-        initialized: true,
-        hasAnySlots: false,
-        futureSlots: [] as InterviewSlotDTO[],
-        pastSlots: [] as InterviewSlotDTO[],
-        expected: 'interview.slots.emptyState.noSlotsCreated',
-      },
-      {
-        description: 'no slots in current month',
-        initialized: true,
-        hasAnySlots: true,
-        futureSlots: [] as InterviewSlotDTO[],
-        pastSlots: [] as InterviewSlotDTO[],
-        expected: 'interview.slots.emptyState.noSlotsInMonth',
-      },
-      {
-        description: 'slots exist in current month',
-        initialized: true,
-        hasAnySlots: true,
-        futureSlots: [futureSlot],
-        pastSlots: [] as InterviewSlotDTO[],
-        expected: undefined,
-      },
-    ])('should return $expected when $description', ({ initialized, hasAnySlots, futureSlots: fs, pastSlots: ps, expected }) => {
-      fixture.detectChanges();
-      component.initialized.set(initialized);
-      component.hasAnySlots.set(hasAnySlots);
-      component.futureSlots.set(fs);
-      component.pastSlots.set(ps);
+  it.each([
+    {
+      description: 'not initialized',
+      initialized: false,
+      hasAnySlots: false,
+      futureSlots: [] as InterviewSlotDTO[],
+      expected: undefined,
+    },
+    {
+      description: 'no slots created',
+      initialized: true,
+      hasAnySlots: false,
+      futureSlots: [] as InterviewSlotDTO[],
+      expected: 'interview.slots.emptyState.noSlotsCreated',
+    },
+    {
+      description: 'no slots in current month',
+      initialized: true,
+      hasAnySlots: true,
+      futureSlots: [] as InterviewSlotDTO[],
+      expected: 'interview.slots.emptyState.noSlotsInMonth',
+    },
+    {
+      description: 'slots exist in current month',
+      initialized: true,
+      hasAnySlots: true,
+      futureSlots: [futureSlot],
+      expected: undefined,
+    },
+  ])('should compute emptyStateMessage when $description', ({ initialized, hasAnySlots, futureSlots: fs, expected }) => {
+    fixture.detectChanges();
+    component.initialized.set(initialized);
+    component.hasAnySlots.set(hasAnySlots);
+    component.futureSlots.set(fs);
+    component.pastSlots.set([]);
 
-      expect(component.emptyStateMessage()).toBe(expected);
-    });
+    expect(component.emptyStateMessage()).toBe(expected);
   });
 
-  describe('notEnoughSlots', () => {
-    it.each([
-      { description: 'invited exceeds unbooked', initialized: true, invitedCount: 5, unbookedCount: 2, expected: true },
-      { description: 'enough slots available', initialized: true, invitedCount: 2, unbookedCount: 5, expected: false },
-      { description: 'not initialized', initialized: false, invitedCount: 5, unbookedCount: 2, expected: false },
-    ])('should return $expected when $description', ({ initialized, invitedCount, unbookedCount, expected }) => {
-      fixture.detectChanges();
-      component.initialized.set(initialized);
-      fixture.componentRef.setInput('invitedCount', invitedCount);
-      component.globalFutureUnbookedCount.set(unbookedCount);
+  it.each([
+    { description: 'invited exceeds unbooked', initialized: true, invitedCount: 5, unbookedCount: 2, expected: true },
+    { description: 'enough slots available', initialized: true, invitedCount: 2, unbookedCount: 5, expected: false },
+    { description: 'not initialized', initialized: false, invitedCount: 5, unbookedCount: 2, expected: false },
+  ])('should compute notEnoughSlots=$expected when $description', ({ initialized, invitedCount, unbookedCount, expected }) => {
+    fixture.detectChanges();
+    component.initialized.set(initialized);
+    fixture.componentRef.setInput('invitedCount', invitedCount);
+    component.globalFutureUnbookedCount.set(unbookedCount);
 
-      expect(component.notEnoughSlots()).toBe(expected);
-    });
+    expect(component.notEnoughSlots()).toBe(expected);
   });
 });

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SidebarButtonComponent } from 'app/shared/components/atoms/sidebar-button/sidebar-button.component';
 import { provideFontAwesomeTesting } from '../../../../../util/fontawesome.testing';
+import { provideTranslateMock } from '../../../../../util/translate.mock';
 import { TooltipModule } from 'primeng/tooltip';
 import { createRouterMock, provideRouterMock, RouterMock } from '../../../../../util/router.mock';
 
@@ -16,7 +17,7 @@ describe('SidebarButtonComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [SidebarButtonComponent, TooltipModule],
-      providers: [provideFontAwesomeTesting(), provideRouterMock(router)],
+      providers: [provideFontAwesomeTesting(), provideTranslateMock(), provideRouterMock(router)],
     });
 
     fixture = TestBed.createComponent(SidebarButtonComponent);
@@ -35,25 +36,13 @@ describe('SidebarButtonComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
   describe('navigation', () => {
-    it('should call router.navigate on click', () => {
-      const navigateSpy = vi.spyOn(router, 'navigate');
-      const buttonDiv = fixture.debugElement.query(de => de.nativeElement?.matches?.('.sidebar-button'));
-
-      buttonDiv.triggerEventHandler('click', null);
-
-      expect(navigateSpy).toHaveBeenCalledWith(['/']);
-    });
-
-    it('should log an error if navigation fails', async () => {
+    it('should call router.navigate on click and log an error if navigation fails', async () => {
       const error = new Error('Test Navigation Error');
       const navigateSpy = vi.spyOn(router, 'navigate').mockRejectedValue(error);
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      const buttonDiv = fixture.debugElement.query(de => de.nativeElement?.matches?.('.sidebar-button'));
+      const buttonDiv = fixture.debugElement.query(de => de.nativeElement?.getAttribute?.('role') === 'button');
       buttonDiv.triggerEventHandler('click', null);
 
       await fixture.whenStable();

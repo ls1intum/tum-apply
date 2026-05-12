@@ -44,6 +44,16 @@ DB_PORT="3306"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SQL_PATH="$SCRIPT_DIR"
 
+# Sample document for the documents seed (08a_documents.sql).
+# DocumentService stores files at "{aet.storage.root}/{sha256}.{ext}".
+# We copy the bundled sample-document.pdf to that hash-named location so the seeded
+# rows resolve to a real, readable file when downloaded through the UI.
+SAMPLE_PDF_SRC="$SCRIPT_DIR/sample-document.pdf"
+SAMPLE_PDF_SHA256="ab0fdaa9227be587287f3b3880eed317d795fd8727f3bc55fa6f949d8c54c2f2"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+STORAGE_ROOT="${AET_STORAGE_ROOT:-$PROJECT_ROOT/storage/docs}"
+SAMPLE_PDF_DEST="$STORAGE_ROOT/$SAMPLE_PDF_SHA256.pdf"
+
 echo "Importing SQL test data into MySQL database '$DB_NAME'..."
 echo "Searching for SQL files in: $SQL_PATH"
 
@@ -76,9 +86,21 @@ while true; do
   fi
 done
 
+# Copy the sample document into the configured storage root under its SHA-256 filename
+# so 08a_documents.sql can reference a real, readable file on disk.
+if [ -f "$SAMPLE_PDF_SRC" ]; then
+  mkdir -p "$STORAGE_ROOT"
+  cp "$SAMPLE_PDF_SRC" "$SAMPLE_PDF_DEST"
+  echo "Copied sample document to: $SAMPLE_PDF_DEST"
+else
+  echo "WARNING: Sample document not found at $SAMPLE_PDF_SRC. Seeded documents will not be downloadable."
+fi
+
 # Find and run only SQL files under testdata folder (and subfolders)
 # Find and run all SQL files except the reset script
-find "$SQL_PATH" -type f -name "*.sql" ! -name "00_drop_all_tables.sql" | sort | while IFS= read -r file; do
+# The combined/ subfolder holds a single concatenated dump for one-shot execution
+# on deployed environments — skip it locally so we don't double-run every statement.
+find "$SQL_PATH" -type f -name "*.sql" ! -name "00_drop_all_tables.sql" ! -path "*/combined/*" | sort | while IFS= read -r file; do
   echo "Attempting to run: $file"
   mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" --password="$DB_PASS" "$DB_NAME" < "$file"
 

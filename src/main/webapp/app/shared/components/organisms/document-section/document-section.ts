@@ -69,15 +69,15 @@ export class DocumentSection {
 
     const result: { label: string; document: DocumentInformationHolderDTO }[] = [];
 
-    dto.masterDocumentDictionaryIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeMaster', document: d }));
+    dto.masterDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeMaster', document: d }));
 
-    if (dto.cvDocumentDictionaryId) {
-      result.push({ label: 'evaluation.details.documentTypeCV', document: dto.cvDocumentDictionaryId });
+    if (dto.cvDocumentId) {
+      result.push({ label: 'evaluation.details.documentTypeCV', document: dto.cvDocumentId });
     }
 
-    dto.bachelorDocumentDictionaryIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeBachelor', document: d }));
+    dto.bachelorDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeBachelor', document: d }));
 
-    dto.referenceDocumentDictionaryIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeReference', document: d }));
+    dto.referenceDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeReference', document: d }));
 
     this.documentsCount.set(result.length);
 

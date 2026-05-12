@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import ApplicationDetailForApplicantComponent from 'app/application/application-detail-for-applicant/application-detail-for-applicant.component';
-import { convertToParamMap, ActivatedRoute } from '@angular/router';
 import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 import { TranslateService } from '@ngx-translate/core';
 import { createTranslateServiceMock, TranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
@@ -19,10 +18,7 @@ import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-docum
 import { createPdfExportResourceApiMock, providePdfExportResourceApiMock } from 'util/pdf-export-resource-api.service.mock';
 
 function setupTest(paramId: string | null, appApiOverrides?: Partial<ApplicationResourceApiMock>) {
-  const applicationApi: ApplicationResourceApiMock = {
-    ...createApplicationResourceApiMock(),
-    ...(appApiOverrides ?? {}),
-  };
+  const applicationApi: ApplicationResourceApiMock = Object.assign({}, createApplicationResourceApiMock(), appApiOverrides ?? {});
 
   const routeMock = createActivatedRouteMock(paramId ? { application_id: paramId } : {});
   const translate: TranslateServiceMock = createTranslateServiceMock();
@@ -58,7 +54,7 @@ const DEFAULT_APPLICATION_DETAIL: ApplicationDetailDTO = {
 } as ApplicationDetailDTO;
 
 function makeDetail(overrides: Partial<ApplicationDetailDTO> = {}): ApplicationDetailDTO {
-  return { ...DEFAULT_APPLICATION_DETAIL, ...overrides } as ApplicationDetailDTO;
+  return Object.assign({}, DEFAULT_APPLICATION_DETAIL, overrides) as ApplicationDetailDTO;
 }
 
 describe('ApplicationDetailForApplicantComponent', () => {
@@ -66,373 +62,226 @@ describe('ApplicationDetailForApplicantComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('initializes and fetches application & document IDs when param provided', async () => {
-    const appData = makeDetail({ applicationId: 'APP1', jobId: 'JOB123' });
-    const docIds: ApplicationDocumentIdsDTO = {};
-    const { component } = setupTest('APP1', {
-      getApplicationForDetailPage: vi.fn((applicationId: string) => of(appData)),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of(docIds)),
-    });
-    await component.init();
-    expect(component.applicationId()).toBe('APP1');
-    expect(component.application()).toEqual(appData);
-    expect(component.documentIds()).toEqual(docIds);
-  });
-
-  describe('init() success flow (split AAA)', () => {
-    const appData = { jobId: 'JOB123', id: 'APP1' };
-    const docIds = { transcriptId: 'D1' };
-    let component: ApplicationDetailForApplicantComponent;
-    let applicationApi: ApplicationResourceApiMock;
-    let toast: ToastServiceMock;
-
-    beforeEach(async () => {
-      // Arrange
-      const setup = setupTest('APP1', {
-        getApplicationForDetailPage: vi.fn((applicationId: string) => of(appData)),
-        getDocumentDictionaryIds: vi.fn((applicationId: string) => of(docIds)),
+  describe('init', () => {
+    it('should initialize and store application and document IDs on success', async () => {
+      const appData = makeDetail({ applicationId: 'APP1', jobId: 'JOB123' });
+      const docIds: ApplicationDocumentIdsDTO = { transcriptId: 'D1' } as ApplicationDocumentIdsDTO;
+      const { component, applicationApi, toast } = setupTest('APP1', {
+        getApplicationForDetailPage: vi.fn(() => of(appData)),
+        getDocumentIds: vi.fn(() => of(docIds)),
       });
-      component = setup.component;
-      applicationApi = setup.applicationApi;
-      toast = setup.toast;
-      // Act
       await component.init();
-    });
-
-    it('sets applicationId and invokes both fetch services', () => {
-      // Assert
       expect(component.applicationId()).toBe('APP1');
-      expect(applicationApi.getApplicationForDetailPage).toHaveBeenCalledWith('APP1');
-      expect(applicationApi.getDocumentDictionaryIds).toHaveBeenCalledWith('APP1');
-    });
-
-    it('stores application and document data in signals', () => {
-      // Assert
       expect(component.application()).toEqual(appData);
       expect(component.documentIds()).toEqual(docIds);
-    });
-
-    it('does not emit an error toast on successful init', () => {
-      // Assert
+      expect(applicationApi.getApplicationForDetailPage).toHaveBeenCalledWith('APP1');
+      expect(applicationApi.getDocumentIds).toHaveBeenCalledWith('APP1');
       expect(toast.showErrorKey).not.toHaveBeenCalled();
     });
+
+    it('should show error when application id missing', async () => {
+      const { component, toast } = setupTest(null, {
+        getApplicationForDetailPage: vi.fn(() => of(makeDetail())),
+        getDocumentIds: vi.fn(() => of({} as ApplicationDocumentIdsDTO)),
+      });
+      await component.init();
+      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidApplicationId');
+    });
+
+    it('should handle application fetch error', async () => {
+      const { component, toast, applicationApi } = setupTest('APP2', {
+        getApplicationForDetailPage: vi.fn(() => throwError(() => new Error('fail'))),
+        getDocumentIds: vi.fn(() => of({} as ApplicationDocumentIdsDTO)),
+      });
+      await component.init();
+      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.fetchApplicationFailed');
+      expect(applicationApi.getDocumentIds).toHaveBeenCalledTimes(2);
+    });
+
+    it('should handle document ID fetch error', async () => {
+      const { component, toast } = setupTest('APP3', {
+        getApplicationForDetailPage: vi.fn(() => of(makeDetail({ applicationId: 'APP3' }))),
+        getDocumentIds: vi.fn(() => throwError(() => new Error('fail'))),
+      });
+      await component.init();
+      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.fetchDocumentIdsFailed');
+    });
   });
 
-  it('shows error when application id missing', async () => {
-    const { component, toast } = setupTest(null, {
-      getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'MISSING', jobId: 'JOBX' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
-    });
-    await component.init();
-    expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidApplicationId');
-  });
+  describe('onViewJobDetails', () => {
+    it.each([
+      ['JOBX', true, ['/job/detail', 'JOBX'], false],
+      ['', false, null, true],
+    ])('should navigate=%s when jobId=%j', (jobId, shouldNavigate, expectedNav, shouldToast) => {
+      const { component, router, toast } = setupTest('APP', {
+        getApplicationForDetailPage: vi.fn(() => of(makeDetail({ applicationId: 'APP', jobId }))),
+        getDocumentIds: vi.fn(() => of({} as ApplicationDocumentIdsDTO)),
+      });
+      component.applicationId.set('APP');
+      component.actualDetailData.set({ jobId, applicationId: 'APP' } as ApplicationDetailDTO);
+      component.actualDetailDataExists.set(true);
+      component.onViewJobDetails();
 
-  it('handles application fetch error', async () => {
-    const { component, toast, applicationApi } = setupTest('APP2', {
-      getApplicationForDetailPage: vi.fn((applicationId: string) => throwError(() => new Error('fail'))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
-    });
-    await component.init();
-    expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.fetchApplicationFailed');
-    expect(applicationApi.getDocumentDictionaryIds).toHaveBeenCalled();
-  });
-
-  it('handles document ID fetch error', async () => {
-    const { component, toast } = setupTest('APP3', {
-      getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP3' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => throwError(() => new Error('fail'))),
-    });
-    await component.init();
-    expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.fetchDocumentIdsFailed');
-  });
-
-  it('navigates to job detail when jobId present', () => {
-    const { component, router } = setupTest('APP4', {
-      getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP4', jobId: 'JOBX' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
-    });
-    component.applicationId.set('APP4');
-    // Supply minimal ApplicationDetailDTO required fields
-    component.actualDetailData.set({
-      jobId: 'JOBX',
-      applicationId: 'APP4',
-      applicationState: 'OPEN',
-      researchGroup: null,
-      supervisingProfessorName: '',
-    } as unknown as any);
-    component.actualDetailDataExists.set(true);
-    component.onViewJobDetails();
-    expect(router.navigate).toHaveBeenCalledWith(['/job/detail', 'JOBX']);
-  });
-
-  it('shows error when jobId missing on view job details', () => {
-    const { component, router, toast } = setupTest('APP5', {
-      getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP5', jobId: '' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
-    });
-    component.applicationId.set('APP5');
-    component.actualDetailData.set({
-      jobId: '',
-      applicationId: 'APP5',
-      applicationState: 'OPEN',
-      researchGroup: null,
-      supervisingProfessorName: '',
-    } as unknown as any);
-    component.actualDetailDataExists.set(true);
-    component.onViewJobDetails();
-    expect(router.navigate).not.toHaveBeenCalled();
-    expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.jobIdNotAvailable');
-  });
-
-  it('deletes application successfully', () => {
-    const delete$ = of(void 0);
-    const { component, applicationApi, toast, router } = setupTest('APP6', {
-      getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP6' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
-      deleteApplication: vi.fn((applicationId: string) => delete$),
-    });
-    component.applicationId.set('APP6');
-    component.onDeleteApplication();
-    expect(applicationApi.deleteApplication).toHaveBeenCalledWith('APP6');
-    expect(toast.showSuccessKey).toHaveBeenCalledWith('entity.toast.applyFlow.applicationDeleted');
-    expect(router.navigate).toHaveBeenCalledWith(['/application/overview']);
-  });
-
-  it('handles delete application error', () => {
-    const { component, applicationApi, toast } = setupTest('APP7', {
-      getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP7' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
-      deleteApplication: vi.fn((applicationId: string) => throwError(() => new Error('fail'))),
-    });
-    component.applicationId.set('APP7');
-    component.onDeleteApplication();
-    expect(applicationApi.deleteApplication).toHaveBeenCalled();
-    expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.errorDeletingApplication');
-  });
-
-  it('withdraws application successfully and re-inits', () => {
-    const { component, applicationApi, toast } = setupTest('APP8', {
-      getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP8' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
-      withdrawApplication: vi.fn((applicationId: string) => of(void 0)),
-    });
-    component.applicationId.set('APP8');
-    const initSpy = vi.spyOn(component, 'init');
-    component.onWithdrawApplication();
-    expect(applicationApi.withdrawApplication).toHaveBeenCalledWith('APP8');
-    expect(toast.showSuccessKey).toHaveBeenCalledWith('entity.toast.applyFlow.applicationWithdrawn');
-    expect(initSpy).toHaveBeenCalled();
-  });
-
-  it('handles withdraw application error', () => {
-    const { component, applicationApi, toast } = setupTest('APP9', {
-      getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP9' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
-      withdrawApplication: vi.fn((applicationId: string) => throwError(() => new Error('fail'))),
-    });
-    component.applicationId.set('APP9');
-    component.onWithdrawApplication();
-    expect(applicationApi.withdrawApplication).toHaveBeenCalled();
-    expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.errorWithdrawingApplication');
-  });
-
-  it('downloads PDF and uses filename from header', async () => {
-    const { component, pdfExportApi } = setupTest('APP10', {
-      getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP10' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
-    });
-    component.applicationId.set('APP10');
-    const clickSpy = vi.fn();
-    const originalCreate = document.createElement;
-    vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
-      if (tag === 'a') {
-        return { click: clickSpy, href: '', download: '' } as unknown as HTMLAnchorElement;
+      if (shouldNavigate) {
+        expect(router.navigate).toHaveBeenCalledWith(expectedNav);
+      } else {
+        expect(router.navigate).not.toHaveBeenCalled();
       }
-      return originalCreate.call(document, tag);
+      if (shouldToast) {
+        expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.jobIdNotAvailable');
+      }
     });
-    // Provide minimal URL polyfill
-    (globalThis as unknown as { URL: any }).URL = { createObjectURL: vi.fn(() => 'blob:url'), revokeObjectURL: vi.fn() };
-
-    const response = {
-      headers: { get: (name: string) => (name === 'Content-Disposition' ? 'attachment; filename="app10.pdf"' : null) },
-      body: new Blob(['content']),
-    } as { headers: { get: (name: string) => string | null }; body: Blob };
-    pdfExportApi.exportApplicationToPDF.mockReturnValue(of(response));
-
-    await component.onDownloadPDF();
-
-    expect(pdfExportApi.exportApplicationToPDF).toHaveBeenCalledWith(
-      expect.objectContaining({
-        application: expect.any(Object),
-        labels: expect.any(Object),
-      }),
-    );
-    expect(clickSpy).toHaveBeenCalled();
-    expect((globalThis as unknown as { URL: { createObjectURL: Function } }).URL.createObjectURL).toHaveBeenCalled();
   });
 
-  it('falls back to default filename when header missing', async () => {
-    const { component, pdfExportApi } = setupTest('APP11', {
-      getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP11' }))),
-      getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
+  describe('onDeleteApplication', () => {
+    it('should delete successfully and navigate', () => {
+      const { component, applicationApi, toast, router } = setupTest('APP6', {
+        getApplicationForDetailPage: vi.fn(() => of(makeDetail({ applicationId: 'APP6' }))),
+        getDocumentIds: vi.fn(() => of({} as ApplicationDocumentIdsDTO)),
+        deleteApplication: vi.fn(() => of(void 0)),
+      });
+      component.applicationId.set('APP6');
+      component.onDeleteApplication();
+      expect(applicationApi.deleteApplication).toHaveBeenCalledWith('APP6');
+      expect(toast.showSuccessKey).toHaveBeenCalledWith('entity.toast.applyFlow.applicationDeleted');
+      expect(router.navigate).toHaveBeenCalledWith(['/application/overview']);
     });
-    component.applicationId.set('APP11');
-    const anchor: { click: () => void; href: string; download: string } = { click: vi.fn(), href: '', download: '' };
-    vi.spyOn(document, 'createElement').mockImplementation((tag: string) =>
-      tag === 'a' ? (anchor as unknown as HTMLElement) : document.createElement(tag),
-    );
 
-    const response = {
-      headers: { get: () => null },
-      body: new Blob(['c']),
-    };
-    pdfExportApi.exportApplicationToPDF.mockReturnValue(of(response));
-
-    await component.onDownloadPDF();
-
-    expect(pdfExportApi.exportApplicationToPDF).toHaveBeenCalledWith(
-      expect.objectContaining({
-        application: expect.any(Object),
-        labels: expect.any(Object),
-      }),
-    );
-    expect(anchor.download).toBe('application.pdf');
+    it('should toast error on delete failure', () => {
+      const { component, toast } = setupTest('APP7', {
+        getApplicationForDetailPage: vi.fn(() => of(makeDetail({ applicationId: 'APP7' }))),
+        getDocumentIds: vi.fn(() => of({} as ApplicationDocumentIdsDTO)),
+        deleteApplication: vi.fn(() => throwError(() => new Error('fail'))),
+      });
+      component.applicationId.set('APP7');
+      component.onDeleteApplication();
+      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.errorDeletingApplication');
+    });
   });
 
-  it('getApplicationPDFLabels integration returns expected label keys without component', () => {
+  describe('onWithdrawApplication', () => {
+    it('should withdraw successfully and re-init', () => {
+      const { component, applicationApi, toast } = setupTest('APP8', {
+        getApplicationForDetailPage: vi.fn(() => of(makeDetail({ applicationId: 'APP8' }))),
+        getDocumentIds: vi.fn(() => of({} as ApplicationDocumentIdsDTO)),
+        withdrawApplication: vi.fn(() => of(void 0)),
+      });
+      component.applicationId.set('APP8');
+      const initSpy = vi.spyOn(component, 'init');
+      component.onWithdrawApplication();
+      expect(applicationApi.withdrawApplication).toHaveBeenCalledWith('APP8');
+      expect(toast.showSuccessKey).toHaveBeenCalledWith('entity.toast.applyFlow.applicationWithdrawn');
+      expect(initSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should toast error on withdraw failure', () => {
+      const { component, toast } = setupTest('APP9', {
+        getApplicationForDetailPage: vi.fn(() => of(makeDetail({ applicationId: 'APP9' }))),
+        getDocumentIds: vi.fn(() => of({} as ApplicationDocumentIdsDTO)),
+        withdrawApplication: vi.fn(() => throwError(() => new Error('fail'))),
+      });
+      component.applicationId.set('APP9');
+      component.onWithdrawApplication();
+      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.errorWithdrawingApplication');
+    });
+  });
+
+  describe('onDownloadPDF', () => {
+    function setupPdf(filename: string | null) {
+      const { component, pdfExportApi } = setupTest('APP10', {
+        getApplicationForDetailPage: vi.fn(() => of(makeDetail({ applicationId: 'APP10' }))),
+        getDocumentIds: vi.fn(() => of({} as ApplicationDocumentIdsDTO)),
+      });
+      component.applicationId.set('APP10');
+      const anchor: { click: () => void; href: string; download: string } = { click: vi.fn(), href: '', download: '' };
+      const originalCreate = document.createElement;
+      vi.spyOn(document, 'createElement').mockImplementation((tag: string) =>
+        tag === 'a' ? (anchor as unknown as HTMLElement) : originalCreate.call(document, tag),
+      );
+      (globalThis as unknown as { URL: typeof URL }).URL = {
+        createObjectURL: vi.fn(() => 'blob:url'),
+        revokeObjectURL: vi.fn(),
+      } as unknown as typeof URL;
+
+      pdfExportApi.exportApplicationToPDF.mockReturnValue(
+        of({
+          headers: { get: (name: string) => (name === 'Content-Disposition' && filename ? `attachment; filename="${filename}"` : null) },
+          body: new Blob(['content']),
+        }),
+      );
+      return { component, pdfExportApi, anchor };
+    }
+
+    it('should download PDF using filename from header', async () => {
+      const { component, pdfExportApi, anchor } = setupPdf('app10.pdf');
+      await component.onDownloadPDF();
+      expect(pdfExportApi.exportApplicationToPDF).toHaveBeenCalledWith(
+        expect.objectContaining({ application: expect.any(Object), labels: expect.any(Object) }),
+      );
+      expect(anchor.click).toHaveBeenCalledOnce();
+    });
+
+    it('should fall back to default filename when header missing', async () => {
+      const { component, anchor } = setupPdf(null);
+      await component.onDownloadPDF();
+      expect(anchor.download).toBe('application.pdf');
+    });
+  });
+
+  it('should return expected label keys from getApplicationPDFLabels', () => {
     const translate = createTranslateServiceMock();
     const labels = getApplicationPDFLabels(translate as unknown as TranslateService);
     expect(labels.application).toBe('evaluation.application');
     expect(Object.keys(labels)).toContain('grade');
   });
 
-  describe('bachelorGradeDisplay', () => {
-    it('should return "-" when bachelorGrade is missing', () => {
-      const { component } = setupTest(null);
-      component.actualDetailData.set(
-        makeDetail({
-          applicant: {
-            user: {
-              email: '',
-              userId: '1',
-            },
-            bachelorGrade: undefined,
-          },
-        }),
-      );
-      component.actualDetailDataExists.set(true);
+  describe('grade displays', () => {
+    type ApplicantOverrides = {
+      user: { email: string; userId: string };
+      bachelorGrade?: string;
+      bachelorGradeUpperLimit?: string;
+      bachelorGradeLowerLimit?: string;
+      masterGrade?: string;
+      masterGradeUpperLimit?: string;
+      masterGradeLowerLimit?: string;
+    };
 
-      expect(component.bachelorGradeDisplay()).toBe('-');
+    it.each(['bachelor', 'master'] as const)('should return "-" for %s display when grade missing', level => {
+      const { component } = setupTest(null);
+      const applicantOverrides: ApplicantOverrides = { user: { email: '', userId: '1' } };
+      applicantOverrides[`${level}Grade`] = undefined;
+      component.actualDetailData.set(makeDetail({ applicant: applicantOverrides as ApplicationDetailDTO['applicant'] }));
+      component.actualDetailDataExists.set(true);
+      const result = level === 'bachelor' ? component.bachelorGradeDisplay() : component.masterGradeDisplay();
+      expect(result).toBe('-');
     });
 
-    it('should return just the grade when one or both limits are missing', () => {
+    it.each(['bachelor', 'master'] as const)('should return grade only for %s display when limits missing', level => {
       const { component } = setupTest(null);
-      component.actualDetailData.set(
-        makeDetail({
-          applicant: {
-            user: {
-              email: '',
-              userId: '1',
-            },
-            bachelorGrade: '2.3',
-            bachelorGradeUpperLimit: undefined,
-            bachelorGradeLowerLimit: undefined,
-          },
-        }),
-      );
+      const applicantOverrides: ApplicantOverrides = { user: { email: '', userId: '1' } };
+      applicantOverrides[`${level}Grade`] = '2.3';
+      component.actualDetailData.set(makeDetail({ applicant: applicantOverrides as ApplicationDetailDTO['applicant'] }));
       component.actualDetailDataExists.set(true);
-
-      expect(component.bachelorGradeDisplay()).toBe('2.3');
+      const result = level === 'bachelor' ? component.bachelorGradeDisplay() : component.masterGradeDisplay();
+      expect(result).toBe('2.3');
     });
 
-    it('should return grade with formatted scale when both limits are present', () => {
+    it.each(['bachelor', 'master'] as const)('should return grade and scale for %s display when limits present', level => {
       const { component, translate } = setupTest(null);
-
-      component.actualDetailData.set(
-        makeDetail({
-          applicant: {
-            user: {
-              email: '',
-              userId: '',
-            },
-            bachelorGrade: '1.7',
-            bachelorGradeUpperLimit: '4.0',
-            bachelorGradeLowerLimit: '1.0',
-          },
-        }),
-      );
+      const applicantOverrides: ApplicantOverrides = { user: { email: '', userId: '' } };
+      applicantOverrides[`${level}Grade`] = '1.7';
+      applicantOverrides[`${level}GradeUpperLimit`] = '4.0';
+      applicantOverrides[`${level}GradeLowerLimit`] = '1.0';
+      component.actualDetailData.set(makeDetail({ applicant: applicantOverrides as ApplicationDetailDTO['applicant'] }));
       component.actualDetailDataExists.set(true);
 
-      const result = component.bachelorGradeDisplay();
+      const result = level === 'bachelor' ? component.bachelorGradeDisplay() : component.masterGradeDisplay();
 
-      expect(translate.instant).toHaveBeenCalledOnce();
       expect(translate.instant).toHaveBeenCalledWith('entity.applicationPage2.helperText.gradingScale', {
         upperLimit: '4.0',
         lowerLimit: '1.0',
       });
       expect(result).toBe('1.7 (entity.applicationPage2.helperText.gradingScale)');
-    });
-  });
-
-  describe('masterGradeDisplay', () => {
-    it('should return "-" when masterGrade is missing', () => {
-      const { component } = setupTest(null);
-      component.actualDetailData.set(
-        makeDetail({
-          applicant: { user: { email: '', userId: '1' }, masterGrade: undefined },
-        }),
-      );
-      component.actualDetailDataExists.set(true);
-
-      expect(component.masterGradeDisplay()).toBe('-');
-    });
-
-    it('should return just the grade when one or both limits are missing', () => {
-      const { component } = setupTest(null);
-      component.actualDetailData.set(
-        makeDetail({
-          applicant: {
-            user: {
-              email: '',
-              userId: '1',
-            },
-            masterGrade: '1.5',
-            masterGradeUpperLimit: undefined,
-            masterGradeLowerLimit: '1.0',
-          },
-        }),
-      );
-      component.actualDetailDataExists.set(true);
-
-      expect(component.masterGradeDisplay()).toBe('1.5');
-    });
-
-    it('should return grade with formatted scale when both limits are present', () => {
-      const { component, translate } = setupTest(null);
-
-      component.actualDetailData.set(
-        makeDetail({
-          applicant: {
-            user: {
-              email: '',
-              userId: '1',
-            },
-            masterGrade: '1.0',
-            masterGradeUpperLimit: '4.0',
-            masterGradeLowerLimit: '1.0',
-          },
-        }),
-      );
-      component.actualDetailDataExists.set(true);
-
-      const result = component.masterGradeDisplay();
-
-      expect(translate.instant).toHaveBeenCalledOnce();
-      expect(translate.instant).toHaveBeenCalledWith('entity.applicationPage2.helperText.gradingScale', {
-        upperLimit: '4.0',
-        lowerLimit: '1.0',
-      });
-      expect(result).toBe('1.0 (entity.applicationPage2.helperText.gradingScale)');
     });
   });
 });

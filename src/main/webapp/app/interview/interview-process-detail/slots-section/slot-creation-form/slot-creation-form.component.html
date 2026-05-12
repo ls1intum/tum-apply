@@ -5,11 +5,9 @@
   width="95vw"
   maxWidth="80rem"
   height="90vh"
-  [contentStyle]="{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }"
+  [contentStyle]="{ overflow: 'auto', display: 'flex', flexDirection: 'column', height: '100%' }"
 >
-  <div
-    class="flex h-full flex-col gap-6 overflow-y-auto lg:overflow-hidden lg:grid lg:grid-cols-[26rem_auto_1fr] lg:grid-rows-[auto_1fr] lg:gap-x-4 lg:gap-y-6"
-  >
+  <div class="flex h-full flex-col gap-6 lg:grid lg:grid-cols-[26rem_auto_1fr] lg:grid-rows-[auto_1fr] lg:gap-x-4 lg:gap-y-6">
     <!-- Duration-->
     <div class="flex flex-col gap-1 lg:col-start-1 lg:row-start-1">
       <div class="flex items-center gap-2">
@@ -59,7 +57,7 @@
     </div>
 
     <!-- Calendar-->
-    <div class="flex flex-col gap-2 lg:col-start-1 lg:row-start-2">
+    <div class="flex flex-col gap-2 lg:mb-5 lg:col-start-1 lg:row-start-2">
       <h3 class="text-s font-semibold">{{ 'interview.slots.create.selectDates' | translate }}</h3>
       <div [class]="calendarWrapperClass">
         <p-datepicker
@@ -81,7 +79,7 @@
     </div>
 
     <!-- Slots List-->
-    <div class="flex flex-col gap-2 min-h-0 lg:overflow-hidden lg:col-start-3 lg:row-start-1 lg:row-span-2">
+    <div class="flex flex-col gap-2 min-h-0 lg:col-start-3 lg:row-start-1 lg:row-span-2">
       <h3 class="text-s font-semibold">{{ 'interview.slots.create.create' | translate }}</h3>
 
       @if (sortedDates().length === 0) {
@@ -91,7 +89,7 @@
           <p>{{ 'interview.slots.create.noDateSelectedDesc' | translate }}</p>
         </div>
       } @else {
-        <div class="flex-1 lg:overflow-y-auto pr-2">
+        <div class="flex-1 pr-2">
           <div class="flex flex-col gap-4 pb-4">
             @for (date of sortedDates(); track date.getTime(); let i = $index) {
               <jhi-date-slot-card

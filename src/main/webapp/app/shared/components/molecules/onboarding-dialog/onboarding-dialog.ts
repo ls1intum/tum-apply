@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { MessageModule } from 'primeng/message';
 import { firstValueFrom } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -20,9 +20,8 @@ import { EmployeeRequestAccessFormComponent } from './employee-request-access-fo
 @Component({
   selector: 'jhi-onboarding-dialog',
   standalone: true,
-  imports: [ButtonModule, TranslateModule, ButtonComponent, TranslateDirective, MessageModule],
+  imports: [ButtonModule, ButtonComponent, TranslateDirective, MessageModule],
   templateUrl: './onboarding-dialog.html',
-  styleUrls: ['./onboarding-dialog.scss'],
 })
 export class OnboardingDialog {
   private readonly ref = inject(DynamicDialogRef, { optional: true });

@@ -8,10 +8,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationPDFRequest;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.job.constants.Campus;
-import de.tum.cit.aet.job.constants.FundingType;
-import de.tum.cit.aet.job.constants.JobState;
-import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.job.constants.*;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.dto.JobPreviewRequest;
@@ -153,10 +150,17 @@ class PDFExportResourceTest extends AbstractResourceTest {
         labels.put("workload", "Workload");
         labels.put("hoursPerWeek", " hours/week");
         labels.put("duration", "Duration");
+        labels.put("year", " year");
         labels.put("years", " years");
         labels.put("fundingType", "Funding Type");
+        labels.put("tvlGrade", "Pay Grade");
         labels.put("startDate", "Start Date");
         labels.put("endDate", "End Date");
+        labels.put("suitableForDisabled", "Suitable for Disabled");
+        labels.put("uponAgreement", "Upon agreement");
+        labels.put("extendable", "Extension possible");
+        labels.put("yes", "Yes");
+        labels.put("no", "No");
         labels.put("jobDescription", "Job Description");
     }
 
@@ -364,6 +368,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 20,
                 3,
                 FundingType.FULLY_FUNDED,
+                TvlGrade.E13,
                 enDescription,
                 deDescription,
                 JobState.PUBLISHED
@@ -420,11 +425,15 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 20,
                 null,
                 null,
+                null,
+                0,
                 "Job Description",
                 "Stellenbeschreibung",
                 JobState.DRAFT,
                 null,
                 true,
+                false,
+                false,
                 null,
                 null
             );
@@ -486,11 +495,15 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 null,
                 3,
                 FundingType.FULLY_FUNDED,
+                TvlGrade.E15,
+                1,
                 "Description",
                 "Beschreibung",
                 JobState.DRAFT,
                 null,
                 true,
+                false,
+                false,
                 null,
                 null
             );

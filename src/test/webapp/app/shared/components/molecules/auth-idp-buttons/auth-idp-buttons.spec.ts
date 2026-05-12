@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { provideTranslateMock } from 'util/translate.mock';
 import { AuthIdpButtons } from 'app/shared/components/molecules/auth-idp-buttons/auth-idp-buttons';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 import {
@@ -41,18 +42,12 @@ describe('AuthIdpButtons', () => {
       imports: [AuthIdpButtons],
       providers: [
         provideFontAwesomeTesting(),
+        provideTranslateMock(),
         provideAuthFacadeServiceMock(authFacadeMock),
         provideBreakpointObserverMock(breakpointObserverMock),
         { provide: AuthOrchestratorService, useValue: authOrchestratorMock },
       ],
     }).compileComponents();
-  });
-
-  it('should create component', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    expect(component).toBeTruthy();
   });
 
   it('should configure buttons vertically with labels on large screens', () => {

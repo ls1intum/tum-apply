@@ -127,6 +127,9 @@ export class ServerAuthenticationService {
     }
     this.refreshInFlight = firstValueFrom(this.authenticationApi.refresh())
       .then((response: AuthSessionInfoDTO) => {
+        if (response.authenticated === false) {
+          return false;
+        }
         this.startTokenRefreshTimeout(response.expiresIn);
         return true;
       })

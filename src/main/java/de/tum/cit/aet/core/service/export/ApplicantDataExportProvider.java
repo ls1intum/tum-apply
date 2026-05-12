@@ -1,18 +1,22 @@
 package de.tum.cit.aet.core.service.export;
 
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantDataExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantInternalCommentExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantRatingExportDTO;
+import de.tum.cit.aet.core.dto.exportdata.ApplicantReferenceRequestExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantReviewExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicationExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.DocumentExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.IntervieweeExportDTO;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
+import de.tum.cit.aet.reference.domain.ReferenceRequest;
+import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import java.time.ZoneOffset;
@@ -28,12 +32,13 @@ import org.springframework.stereotype.Component;
 public class ApplicantDataExportProvider implements UserDataSectionProvider {
 
     private final ApplicantRepository applicantRepository;
-    private final DocumentDictionaryRepository documentDictionaryRepository;
+    private final DocumentService documentService;
     private final ApplicationRepository applicationRepository;
     private final IntervieweeRepository intervieweeRepository;
     private final ApplicationReviewRepository applicationReviewRepository;
     private final RatingRepository ratingRepository;
     private final InternalCommentRepository internalCommentRepository;
+    private final ReferenceRequestRepository referenceRequestRepository;
 
     @Override
     public void contribute(ExportContext context, UserDataExportBuilder builder) {
@@ -46,17 +51,11 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
     private ApplicantDataExportDTO buildApplicantData(UUID userId) {
         Applicant applicant = applicantRepository.findById(userId).orElseThrow();
 
-        Set<DocumentExportDTO> documents = documentDictionaryRepository
-            .findAllByApplicant(applicant)
+        Set<DocumentExportDTO> documents = documentService
+            .listForApplicant(applicant)
             .stream()
-            .map(dd ->
-                new DocumentExportDTO(
-                    dd.getDocument().getDocumentId(),
-                    dd.getName(),
-                    dd.getDocumentType(),
-                    dd.getDocument().getMimeType(),
-                    dd.getDocument().getSizeBytes()
-                )
+            .map(doc ->
+                new DocumentExportDTO(doc.getDocumentId(), doc.getName(), doc.getDocumentType(), doc.getMimeType(), doc.getSizeBytes())
             )
             .collect(Collectors.toSet());
 
@@ -80,6 +79,7 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
 
         List<IntervieweeExportDTO> interviewees = getInterviewees(userId);
         List<String> subjectAreaSubscriptions = getSubjectAreaSubscriptions(applicant);
+        List<ApplicantReferenceRequestExportDTO> referenceRequests = getReferenceRequests(userId);
 
         return new ApplicantDataExportDTO(
             applicant.getStreet(),
@@ -99,7 +99,32 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             documents,
             applications,
             interviewees,
-            subjectAreaSubscriptions
+            subjectAreaSubscriptions,
+            referenceRequests
+        );
+    }
+
+    private List<ApplicantReferenceRequestExportDTO> getReferenceRequests(UUID applicantUserId) {
+        return applicationRepository
+            .findAllByApplicantId(applicantUserId)
+            .stream()
+            .flatMap(application ->
+                referenceRequestRepository
+                    .findByApplicationApplicationIdOrderByCreatedAtAsc(application.getApplicationId())
+                    .stream()
+                    .map(entry -> toReferenceRequestExportDto(application, entry))
+            )
+            .toList();
+    }
+
+    private ApplicantReferenceRequestExportDTO toReferenceRequestExportDto(Application application, ReferenceRequest entry) {
+        return new ApplicantReferenceRequestExportDTO(
+            application.getJob() != null ? application.getJob().getTitle() : null,
+            entry.getTitle(),
+            entry.getFirstName(),
+            entry.getLastName(),
+            entry.getEmail(),
+            entry.getStatus()
         );
     }
 

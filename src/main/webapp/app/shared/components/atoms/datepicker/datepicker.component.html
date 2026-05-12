@@ -1,5 +1,5 @@
-<div class="relative flex flex-col">
-  <label class="mb-1 mr-4">
+<div [class.active]="isCalendarOpen()" class="label-top datepicker-container flex flex-col relative">
+  <label class="mb-1 mr-4 text-text-primary" [for]="resolvedInputId()">
     @if (label() !== undefined) {
       @if (shouldTranslate()) {
         <span jhiTranslate="{{ label() }}"></span>
@@ -12,11 +12,7 @@
     }
     @if (icon(); as icon) {
       @if (icon === 'circle-info' && tooltipText()) {
-        @if (shouldTranslate()) {
-          <fa-icon class="text-primary-default" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? '' | translate" tooltipPosition="top" />
-        } @else {
-          <fa-icon class="text-primary-default" [icon]="['fas', icon]" [pTooltip]="tooltipText() ?? ''" tooltipPosition="top" />
-        }
+        <fa-icon class="text-primary-default" [icon]="['fas', icon]" [pTooltip]="displayTooltipText() ?? ''" tooltipPosition="top" />
       } @else {
         <fa-icon [icon]="['fas', icon]" />
       }
@@ -27,7 +23,7 @@
     (onHide)="isCalendarOpen.set(false)"
     (onShow)="isCalendarOpen.set(true)"
     [(ngModel)]="modelDate"
-    [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
+    [placeholder]="displayPlaceholder()"
     [disabled]="disabled()"
     [minDate]="effectiveMinDate()"
     [maxDate]="maxDate()"
@@ -40,15 +36,19 @@
     [inputId]="resolvedInputId()"
     showIcon="true"
     [inputStyleClass]="inputStyleClass"
+    [appendTo]="'body'"
   >
     <ng-template pTemplate="date" let-date>
-      @let highlightedDate = highlightedDateParts();
-      @let isHighlighted =
-        highlightedDate?.year === date.year && highlightedDate?.month === date.month && highlightedDate?.day === date.day;
+      @let isHighlighted = isHighlightedDate(date);
       @let tooltipLabel = highlightedDateLabel();
       <span
         class="inline-flex size-full items-center justify-center"
         [class.datepicker-reference-day]="isHighlighted"
+        [class.rounded-full]="isHighlighted"
+        [class.font-semibold]="isHighlighted"
+        [class.ring-2]="isHighlighted"
+        [class.ring-inset]="isHighlighted"
+        [class.ring-primary-default]="isHighlighted"
         [pTooltip]="tooltipLabel ? (shouldTranslate() ? (tooltipLabel | translate) : tooltipLabel) : undefined"
         tooltipPosition="top"
         [tooltipDisabled]="!isHighlighted || !tooltipLabel"

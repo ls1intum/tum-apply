@@ -22,12 +22,7 @@ describe('ApplicationCardComponent', () => {
     fixture.detectChanges();
   });
 
-  // ---------------- applicationDetails ----------------
-  it('returns undefined when application is not set', () => {
-    expect(component.applicationDetails()).toBeUndefined();
-  });
-
-  it('returns applicationDetailDTO when application is provided', () => {
+  it('should return applicationDetailDTO when application is provided', () => {
     const detail: ApplicationDetailDTO = { applicationId: '123' } as ApplicationDetailDTO;
     const app: ApplicationEvaluationDetailDTO = { applicationDetailDTO: detail } as ApplicationEvaluationDetailDTO;
 
@@ -37,30 +32,10 @@ describe('ApplicationCardComponent', () => {
     expect(component.applicationDetails()).toBe(detail);
   });
 
-  // ---------------- stateSeverityMap ----------------
-  it('maps states to severities correctly', () => {
+  it('should map states to severities correctly', () => {
     expect(component.stateSeverityMap.SENT).toBe('info');
     expect(component.stateSeverityMap.ACCEPTED).toBe('success');
     expect(component.stateSeverityMap.REJECTED).toBe('danger');
     expect(component.stateSeverityMap.IN_REVIEW).toBe('warn');
-  });
-
-  // ---------------- PLACEHOLDER STATE ----------------
-
-  it('should render content when placeholder is false', () => {
-    const detail: ApplicationDetailDTO = {
-      applicationId: '123',
-      applicant: { user: { name: 'John Doe' } },
-      applicationState: 'SENT',
-      jobTitle: 'Software Engineer',
-    } as ApplicationDetailDTO;
-    const app: ApplicationEvaluationDetailDTO = { applicationDetailDTO: detail } as ApplicationEvaluationDetailDTO;
-
-    fixture.componentRef.setInput('placeholder', false);
-    fixture.componentRef.setInput('application', app);
-    fixture.detectChanges();
-
-    const header = fixture.nativeElement.querySelector('h2');
-    expect(header).toBeTruthy();
   });
 });

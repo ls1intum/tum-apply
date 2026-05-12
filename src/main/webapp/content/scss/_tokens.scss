@@ -65,6 +65,16 @@
   --color-negative-active: var(--p-danger-active-color);
   --color-negative-disabled: var(--p-danger-disabled-color);
 
+  // Accent Semantic Colors (TUM accent / contrast palette)
+  --color-accent-DEFAULT: var(--p-accent-color);
+  --color-accent-default: var(--p-accent-color);
+  --color-accent-hover: var(--p-accent-hover-color);
+  --color-accent-active: var(--p-accent-active-color);
+
+  // Base / neutral anchors
+  --color-base-black: var(--p-base-black);
+  --color-base-white: var(--p-base-white);
+
   // Background Semantic Colors
   --color-background-default: var(--p-background-default);
   --color-background-disabled: var(--p-background-disabled);
@@ -91,11 +101,21 @@
   --color-text-on-warn: var(--p-text-on-warn);
   --color-text-on-danger: var(--p-text-on-danger);
 
+  // Compliance category colors
+  --color-compliance-critical: var(--p-compliance-critical);
+  --color-compliance-transparency: var(--p-compliance-transparency);
+  --color-compliance-dsgvo: var(--p-compliance-dsgvo);
+  --color-compliance-public-sector: var(--p-compliance-public-sector);
+
   // Quill highlighting Semantic colors
-  --color-compliance-critical-border: var(--color-negative-DEFAULT);
-  --color-compliance-critical-bg: color-mix(in srgb, var(--color-negative-DEFAULT) 18%, transparent);
-  --color-compliance-warning-border: var(--color-warning-DEFAULT);
-  --color-compliance-warning-bg: color-mix(in srgb, var(--color-warning-DEFAULT) 18%, transparent);
+  --color-compliance-critical-border: var(--color-compliance-critical);
+  --color-compliance-critical-bg: color-mix(in srgb, var(--color-compliance-critical) 18%, transparent);
+  --color-compliance-transparency-border: var(--color-compliance-transparency);
+  --color-compliance-transparency-bg: color-mix(in srgb, var(--color-compliance-transparency) 18%, transparent);
+  --color-compliance-dsgvo-border: var(--color-compliance-dsgvo);
+  --color-compliance-dsgvo-bg: color-mix(in srgb, var(--color-compliance-dsgvo) 18%, transparent);
+  --color-compliance-public-sector-border: var(--color-compliance-public-sector);
+  --color-compliance-public-sector-bg: color-mix(in srgb, var(--color-compliance-public-sector) 18%, transparent);
 
   // ========================================================
   // Border Radius Tokens

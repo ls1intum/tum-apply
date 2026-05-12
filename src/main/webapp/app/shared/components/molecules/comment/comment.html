@@ -1,26 +1,26 @@
-<div class="comment">
+<div class="w-full flex flex-col">
   <!-- Header -->
-  <div class="comment-header">
-    <div class="comment-details">
-      <span class="comment-author">{{ author() }}</span>
+  <div class="flex justify-between items-center w-full h-[2.1rem] px-4 py-1 rounded-t-lg border border-border-default">
+    <div class="flex flex-row items-center gap-4">
+      <span class="font-semibold">{{ author() }}</span>
       @if (!isCreate()) {
-        <span class="comment-created-at">
+        <span class="text-[0.8rem] text-text-secondary">
           {{ createdAt() | timeAgo }}
         </span>
       }
     </div>
 
     @if (canEdit() && !isCreate()) {
-      <div class="comment-actions">
-        <jhi-button variant="text" [tooltip]="'button.edit' | translate" icon="pen" (click)="startEdit()" [disabled]="isEdit()" size="sm" />
+      <div class="flex flex-row gap-1">
+        <jhi-button variant="text" tooltip="button.edit" icon="pen" (click)="startEdit()" [disabled]="isEdit()" size="sm" />
         <jhi-confirm-dialog
-          [label]="'button.delete' | translate"
-          [header]="'evaluation.deleteComment.confirm.header' | translate"
-          [message]="'evaluation.deleteComment.confirm.message' | translate"
+          label="button.delete"
+          header="evaluation.deleteComment.confirm.header"
+          message="evaluation.deleteComment.confirm.message"
           [severity]="'danger'"
           confirmIcon="trash"
           [iconOnly]="true"
-          [tooltip]="'button.delete' | translate"
+          tooltip="button.delete"
           size="sm"
           (confirmed)="deleted.emit()"
         />
@@ -29,37 +29,30 @@
   </div>
 
   <!-- Body -->
-  <div class="comment-body">
+  <div class="w-full border border-border-default border-t-0 rounded-b-lg px-4 py-3">
     @if (isEdit() || isCreate()) {
       <textarea
         rows="3"
         pTextarea
-        [placeholder]="'entity.comment.placeholder' | translate"
+        [placeholder]="placeholderText()"
         [autoResize]="true"
         class="w-full"
         [value]="draft()"
         (input)="onInput($event)"
       ></textarea>
     } @else {
-      <div class="comment-text">{{ text() }}</div>
+      <div class="whitespace-pre-wrap break-words">{{ text() }}</div>
     }
   </div>
 
   @if (isEdit()) {
-    <div class="comment-controls">
-      <jhi-button label="button.cancel" [shouldTranslate]="true" variant="text" severity="primary" (click)="onCancel()" />
-      <jhi-button label="button.save" [shouldTranslate]="true" severity="primary" (click)="onSave()" [disabled]="!canSave()" />
+    <div class="flex flex-row justify-end gap-4 mt-4">
+      <jhi-button label="button.cancel" variant="text" severity="primary" (click)="onCancel()" />
+      <jhi-button label="button.save" severity="primary" (click)="onSave()" [disabled]="!canSave()" />
     </div>
   } @else if (isCreate()) {
-    <div class="comment-controls">
-      <jhi-button
-        label="button.send"
-        [shouldTranslate]="true"
-        icon="paper-plane"
-        severity="primary"
-        (click)="onSave()"
-        [disabled]="!canSave()"
-      />
+    <div class="flex flex-row justify-end gap-4 mt-4">
+      <jhi-button label="button.send" icon="paper-plane" severity="primary" (click)="onSave()" [disabled]="!canSave()" />
     </div>
   }
 </div>

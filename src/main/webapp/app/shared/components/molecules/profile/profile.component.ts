@@ -1,6 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -8,9 +7,8 @@ import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator
 
 @Component({
   selector: 'jhi-profile',
-  imports: [ButtonComponent, ReactiveFormsModule, TranslateModule, StringInputComponent],
+  imports: [ButtonComponent, ReactiveFormsModule, StringInputComponent],
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.scss',
 })
 export class ProfileComponent {
   authOrchestrator = inject(AuthOrchestratorService);

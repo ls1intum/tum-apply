@@ -2,10 +2,7 @@ package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
-import de.tum.cit.aet.job.constants.Campus;
-import de.tum.cit.aet.job.constants.FundingType;
-import de.tum.cit.aet.job.constants.JobState;
-import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.job.constants.*;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -24,6 +21,7 @@ public record JobDetailDTO(
     Integer workload,
     Integer contractDuration,
     FundingType fundingType,
+    TvlGrade tvlGrade,
     String jobDescriptionEN,
     String jobDescriptionDE,
     LocalDate startDate,
@@ -34,5 +32,8 @@ public record JobDetailDTO(
     UUID applicationId,
     ApplicationState applicationState,
     Boolean suitableForDisabled,
+    Boolean startDateByArrangement,
+    Boolean contractExtendable,
+    Integer referenceLettersRequired,
     UUID imageId // Job banner image ID for PDF export
 ) {}

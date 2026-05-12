@@ -1,6 +1,7 @@
-import { Component, ViewEncapsulation, computed, effect, input, model, output } from '@angular/core';
+import { Component, ViewEncapsulation, computed, effect, inject, input, model, output } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { TextareaModule } from 'primeng/textarea';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { TimeAgoPipe } from 'app/shared/pipes';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -8,9 +9,8 @@ import { ConfirmDialog } from '../../atoms/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'jhi-comment',
-  imports: [ButtonComponent, TextareaModule, TimeAgoPipe, TranslateModule, ConfirmDialog],
+  imports: [ButtonComponent, TextareaModule, TimeAgoPipe, ConfirmDialog],
   templateUrl: './comment.html',
-  styleUrl: './comment.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class Comment {
@@ -29,6 +29,11 @@ export class Comment {
   exitEdit = output();
 
   protected draft = model<string>('');
+
+  protected placeholderText = computed(() => {
+    this.langChange();
+    return this.translateService.instant('entity.comment.placeholder');
+  });
 
   protected canSave = computed<boolean>(() => {
     if (this.isCreate()) return this.draft().length > 0;
@@ -49,6 +54,9 @@ export class Comment {
       this.draft.set(incoming);
     }
   });
+
+  private translateService = inject(TranslateService);
+  private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   onInput(e: Event): void {
     const value = (e.target as HTMLTextAreaElement).value;

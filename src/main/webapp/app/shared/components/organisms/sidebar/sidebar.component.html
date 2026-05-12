@@ -1,5 +1,8 @@
-<div [class.sidebar-collapsed]="isSidebarCollapsed()" [class.sidebar]="!isSidebarCollapsed()" class="border-r border-divider-default">
-  <div class="sidebar-content">
+<div
+  class="flex flex-col h-full top-0 sticky flex-1 py-4 px-4 w-[var(--sidebar-width)] border-r border-divider-default"
+  [class.items-center]="isSidebarCollapsed()"
+>
+  <div class="flex flex-col items-center w-full flex-1 overflow-y-auto overflow-x-hidden">
     @for (category of categories; track category.title) {
       @if (isSidebarCollapsed()) {
         @if (!$first) {
@@ -7,15 +10,15 @@
         }
       } @else {
         @if (category.title) {
-          <span [jhiTranslate]="category.title" class="section-title"></span>
+          <span [jhiTranslate]="category.title" class="text-xs font-bold py-4 text-text-secondary w-full"></span>
         }
       }
 
-      <div class="buttons">
+      <div class="flex flex-col gap-1 w-full">
         @for (button of category.buttons; track button.text) {
           <jhi-sidebar-button
             [icon]="button.icon"
-            [label]="button.text | translate"
+            [label]="button.text"
             [link]="button.link"
             [isActive]="isActive(button.link)"
             [isCollapsed]="isSidebarCollapsed()"
@@ -24,14 +27,15 @@
       </div>
     }
   </div>
-  <div class="settings-content">
+  <div class="flex flex-col items-center w-full flex-none justify-end pb-4">
     <p-divider />
-    <div class="settings-row">
+    <div class="flex gap-2 w-full justify-between items-center" [class.flex-col]="isSidebarCollapsed()">
       <jhi-sidebar-button
         [isActive]="isActive('/settings')"
         [isCollapsed]="isSidebarCollapsed()"
-        [label]="'settings.header' | translate"
-        class="settings-button"
+        label="settings.header"
+        [class.flex-1]="!isSidebarCollapsed()"
+        [class.w-full]="isSidebarCollapsed()"
         icon="gear"
         link="/settings"
       />
@@ -39,7 +43,8 @@
         (click)="toggleSidebar()"
         [icon]="isSidebarCollapsed() ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'"
         [text]="true"
-        class="sidebar-collapse-button"
+        [class.flex-none]="!isSidebarCollapsed()"
+        [class.w-full]="isSidebarCollapsed()"
       />
     </div>
   </div>

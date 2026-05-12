@@ -10,6 +10,7 @@
 
 
 export interface AuthSessionInfoDTO {
+    readonly authenticated?: boolean;
     readonly expiresIn?: number;
     readonly profileRequired?: boolean;
     readonly refreshExpiresIn?: number;

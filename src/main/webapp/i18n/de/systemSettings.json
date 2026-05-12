@@ -1,0 +1,46 @@
+{
+  "systemSettings": {
+    "title": "Systemeinstellungen",
+    "ai": {
+      "title": "KI-Funktionen",
+      "toggle": {
+        "label": "KI-Funktionen aktivieren",
+        "description": "Wenn deaktiviert, werden alle KI-gestützten Funktionen systemweit abgeschaltet."
+      },
+      "circuitBreaker": {
+        "label": "Circuit Breaker",
+        "description": "Deaktiviert KI automatisch nach aufeinanderfolgenden Fehlern. Wird nach einer Abklingzeit von {cooldown} min zurückgesetzt.",
+        "open": "Offen seit {time} Uhr (KI deaktiviert)",
+        "closed": "Geschlossen (KI betriebsbereit)",
+        "reset": "Circuit Breaker zurücksetzen"
+      },
+      "statusWarning": "KI-Funktionen sind derzeit für alle Benutzer nicht verfügbar.",
+      "toast": {
+        "loadError": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "KI-Funktionsstatus konnte nicht geladen werden."
+        },
+        "enabled": {
+          "summary": "KI aktiviert",
+          "detail": "KI-Funktionen wurden systemweit aktiviert."
+        },
+        "disabled": {
+          "summary": "KI deaktiviert",
+          "detail": "KI-Funktionen wurden systemweit deaktiviert."
+        },
+        "toggleError": {
+          "summary": "Umschaltung fehlgeschlagen",
+          "detail": "Der KI-Funktionsstatus konnte nicht aktualisiert werden."
+        },
+        "circuitBreakerReset": {
+          "summary": "Circuit Breaker zurückgesetzt",
+          "detail": "Der Circuit Breaker wurde zurückgesetzt. KI-Anfragen sind wieder erlaubt."
+        },
+        "resetError": {
+          "summary": "Zurücksetzen fehlgeschlagen",
+          "detail": "Der Circuit Breaker konnte nicht zurückgesetzt werden."
+        }
+      }
+    }
+  }
+}

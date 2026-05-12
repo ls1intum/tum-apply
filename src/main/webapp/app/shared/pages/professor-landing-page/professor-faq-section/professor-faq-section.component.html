@@ -1,20 +1,22 @@
-<div class="faq-container">
-  <h2 class="title" jhiTranslate="professorLandingPage.faq.headline"></h2>
-  <p class="subtitle" jhiTranslate="professorLandingPage.faq.subheadline"></p>
-  <div class="sub-subtitle-container">
+<div class="flex flex-col items-center justify-center gap-5 self-stretch py-12 px-3 sm:py-24 sm:px-12">
+  <h2 class="text-[2rem] font-bold" jhiTranslate="professorLandingPage.faq.headline"></h2>
+  <p class="text-xl font-semibold" jhiTranslate="professorLandingPage.faq.subheadline"></p>
+  <div class="flex items-center gap-2">
     <a class="sub-subtitle-link" href="https://ls1intum.github.io/tum-apply" target="_blank">
       <span jhiTranslate="professorLandingPage.faq.sub-subheadline"></span>
       <fa-icon [icon]="faArrowUpRightFromSquare" class="external-icon" size="xs" />
     </a>
   </div>
-  <p-accordion [value]="0">
+  <p-accordion class="flex flex-col gap-3 w-full max-w-3xl" [value]="0">
     @for (tab of tabs; track tab.value) {
       @if (tab.value !== 'registration' || (loggedIn() && isApplicant())) {
-        <p-accordion-panel [value]="tab.value">
-          <p-accordion-header>{{ tab.title | translate }}</p-accordion-header>
+        <p-accordion-panel class="border border-border-default rounded-xl overflow-hidden" [value]="tab.value">
+          <p-accordion-header class="font-semibold wrap-anywhere [&_.p-accordionheader-toggle-icon]:shrink-0">
+            {{ tab.title | translate }}
+          </p-accordion-header>
           <p-accordion-content>
-            <div [innerHTML]="tab.content | translate"></div>
-            <div class="registration-button">
+            <div class="pt-2 leading-relaxed" [innerHTML]="tab.content | translate"></div>
+            <div class="flex justify-center mt-4">
               @if (tab.value === 'registration') {
                 <jhi-button (click)="openRegistrationForm()" [shouldTranslate]="true" [label]="translationKey + '.registration.button'" />
               }

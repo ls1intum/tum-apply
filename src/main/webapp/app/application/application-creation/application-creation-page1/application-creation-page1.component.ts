@@ -86,6 +86,13 @@ export default class ApplicationCreationPage1Component {
   applicationIdForDocuments = input<string | undefined>();
   documentIdsCv = input<DocumentInformationHolderDTO | undefined>();
 
+  /**
+   * Callback that authenticates the visitor and creates the application.
+   * Forwarded to the upload + AI extraction components, which invoke it
+   * before performing their action when no `applicationId` is set yet.
+   */
+  requestAuth = input<() => Promise<void>>();
+
   valid = output<boolean>();
   changed = output<boolean>();
   educationDataExtracted = output<ExtractedCertificateDataDTO | undefined>();

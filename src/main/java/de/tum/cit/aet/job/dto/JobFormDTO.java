@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
-import de.tum.cit.aet.job.constants.Campus;
-import de.tum.cit.aet.job.constants.FundingType;
-import de.tum.cit.aet.job.constants.JobState;
-import de.tum.cit.aet.job.constants.SubjectArea;
+import de.tum.cit.aet.job.constants.*;
 import de.tum.cit.aet.job.domain.Job;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -27,11 +24,15 @@ public record JobFormDTO(
     Integer workload,
     Integer contractDuration,
     FundingType fundingType,
+    TvlGrade tvlGrade,
+    Integer referenceLettersRequired,
     String jobDescriptionEN,
     String jobDescriptionDE,
     @NotNull JobState state,
     UUID imageId, // Optional job banner image
     Boolean suitableForDisabled, // Position suitable for persons with severe disabilities
+    Boolean startDateByArrangement, // Start date is to be agreed upon individually
+    Boolean contractExtendable, // Contract may be extended beyond the stated duration
     Integer genderBiasScore,
     List<ComplianceIssue> complianceIssues
 ) {
@@ -60,11 +61,15 @@ public record JobFormDTO(
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
+            job.getTvlGrade(),
+            job.getReferenceLettersRequired(),
             HtmlSanitizer.sanitize(job.getJobDescriptionEN()),
             HtmlSanitizer.sanitize(job.getJobDescriptionDE()),
             job.getState(),
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getSuitableForDisabled(),
+            job.getStartDateByArrangement(),
+            job.getContractExtendable(),
             job.getGenderBiasScore(),
             job.getComplianceIssues()
         );

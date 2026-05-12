@@ -2,12 +2,14 @@ package de.tum.cit.aet.application.repository;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Spring Data JPA repository for the {@link Application} entity.
  */
 @Repository
-public interface ApplicationRepository extends TumApplyJpaRepository<Application, UUID>, ApplicationEntityRepository {
+public interface ApplicationRepository extends TumApplyJpaRepository<Application, UUID> {
     @Query(
         """
             SELECT new de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO(
@@ -69,14 +71,14 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     j.startDate,
                     j.endDate,
                     j.contractDuration,
+                    j.referenceLettersRequired,
                     i.url
                 ),
                 a.state,
                 a.desiredStartDate,
                 a.projects,
                 a.specialSkills,
-                a.motivation,
-                NULL
+                a.motivation
             )
             FROM Application a
             LEFT JOIN a.applicant ap
@@ -135,14 +137,14 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     j.startDate,
                     j.endDate,
                     j.contractDuration,
+                    j.referenceLettersRequired,
                     i.url
                 ),
                 a.state,
                 a.desiredStartDate,
                 a.projects,
                 a.specialSkills,
-                a.motivation,
-                NULL
+                a.motivation
             )
             FROM Application a
             LEFT JOIN a.job j
@@ -184,7 +186,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             UPDATE Application a
             SET a.state =
                 CASE
-                    WHEN a.state = 'SAVED' THEN 'JOB_CLOSED'
+                    WHEN a.state = 'SAVED' THEN 'JOB_CLOSED_DRAFT'
                     WHEN a.state IN ('SENT', 'IN_REVIEW', 'INTERVIEW') AND :targetState = 'CLOSED' THEN 'JOB_CLOSED'
                     WHEN a.state IN ('SENT', 'IN_REVIEW', 'INTERVIEW') AND :targetState = 'APPLICANT_FOUND' THEN 'REJECTED'
                     ELSE a.state
@@ -251,6 +253,24 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     )
     Optional<Application> findWithDetailsById(@Param("id") UUID id);
 
+    /**
+     * Loads an application with applicant and job eagerly fetched. Used by callers that need to
+     * perform ownership ({@code applicant.userId}) and job-config ({@code job.referenceLettersRequired})
+     * checks without an open service-level transaction.
+     *
+     * @param id the application id
+     * @return the application with applicant and job, or empty if none
+     */
+    @Query(
+        """
+        SELECT a FROM Application a
+        LEFT JOIN FETCH a.applicant
+        LEFT JOIN FETCH a.job
+        WHERE a.applicationId = :id
+        """
+    )
+    Optional<Application> findByIdWithApplicantAndJob(@Param("id") UUID id);
+
     @Query(
         """
             SELECT DISTINCT a.applicant.user.userId FROM Application a
@@ -279,4 +299,30 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
     )
     Slice<UUID> findApplicationsToBeDeletedBeforeCutoff(LocalDateTime cutoff, Pageable pageable);
+
+    /**
+     * Finds all applications for a specific applicant as overview DTOs, with
+     * pagination and sorting.
+     *
+     * @param applicantId the user ID of the applicant
+     * @param pageable    pagination and sorting (sort by {@code createdAt} by default)
+     * @return a paginated list of application overview DTOs
+     */
+    @Query(
+        """
+            SELECT new de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO(
+                a.applicationId,
+                j.jobId,
+                j.title,
+                rg.name,
+                a.state,
+                a.createdAt
+            )
+            FROM Application a
+            JOIN a.job j
+            JOIN j.researchGroup rg
+            WHERE a.applicant.userId = :applicantId
+        """
+    )
+    Page<ApplicationOverviewDTO> findApplicationsByApplicant(@Param("applicantId") UUID applicantId, Pageable pageable);
 }

@@ -1,12 +1,15 @@
-<div class="rating">
+<div class="flex gap-[2%] w-full max-w-[21rem] h-4 rounded-pill overflow-hidden">
   @for (item of likertValues; track $index) {
     <div
-      class="section"
-      [class.selectable]="selectable()"
+      class="flex-1 transition-colors"
+      [class]="selectable() ? 'cursor-pointer hover:brightness-75' : ''"
       [style.background-color]="getSectionColor($index)"
-      pTooltip="{{ getTooltip($index) | translate }}"
+      [pTooltip]="tooltipTexts()[$index]"
       tooltipPosition="top"
+      tabindex="0"
+      role="button"
       (click)="onSectionClick($index)"
+      (keydown.enter)="onSectionClick($index)"
     ></div>
   }
 </div>

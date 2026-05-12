@@ -9,26 +9,22 @@ import { DocumentCacheService } from 'app/service/document-cache.service';
   selector: 'jhi-document-viewer',
   imports: [],
   templateUrl: './document-viewer.component.html',
-  styleUrl: './document-viewer.component.scss',
   standalone: true,
 })
 export class DocumentViewerComponent {
-  documentDictionaryId = input.required<DocumentInformationHolderDTO>();
+  documentId = input.required<DocumentInformationHolderDTO>();
 
   sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 
   private documentApi = inject(DocumentResourceApi);
   private cache: DocumentCacheService = inject(DocumentCacheService);
 
-  constructor() {
-    effect(() => {
-      void this.initDocument();
-    });
-  }
+  private readonly docDownloadEffect = effect(() => {
+    const docId = this.documentId().id;
+    void this.initDocument(docId);
+  });
 
-  async initDocument(): Promise<void> {
-    const docId = this.documentDictionaryId().id;
-
+  async initDocument(docId: string = this.documentId().id): Promise<void> {
     // check cache first
     const cached = this.cache.get(docId);
     if (cached !== undefined) {

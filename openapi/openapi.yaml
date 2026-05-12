@@ -143,6 +143,41 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ExtractedApplicationDataDTO'}
+  /api/ai/feature-toggle/reset-circuit-breaker:
+    post:
+      tags: [ai-feature-toggle-resource]
+      operationId: resetCircuitBreaker
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AiFeatureStatusDTO'}
+  /api/ai/feature-toggle/status:
+    get:
+      tags: [ai-feature-toggle-resource]
+      operationId: getAiStatus
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AiFeatureStatusDTO'}
+  /api/ai/feature-toggle/toggle:
+    put:
+      tags: [ai-feature-toggle-resource]
+      operationId: toggleAi
+      parameters:
+      - name: enabled
+        in: query
+        required: true
+        schema: {type: boolean}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AiFeatureStatusDTO'}
   /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]
@@ -236,23 +271,23 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicantDTO'}
-  /api/applicants/profile/documents/{documentDictionaryId}:
+  /api/applicants/profile/documents/{documentId}:
     delete:
       tags: [applicant-resource]
       operationId: deleteApplicantProfileDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
-  /api/applicants/profile/documents/{documentDictionaryId}/name:
+  /api/applicants/profile/documents/{documentId}/name:
     put:
       tags: [applicant-resource]
       operationId: renameApplicantProfileDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
@@ -403,23 +438,23 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-  /api/applications/documents/{documentDictionaryId}:
+  /api/applications/documents/{documentId}:
     delete:
       tags: [application-resource]
       operationId: deleteDocumentFromApplication
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
-  /api/applications/documents/{documentDictionaryId}/name:
+  /api/applications/documents/{documentId}/name:
     put:
       tags: [application-resource]
       operationId: renameDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
@@ -432,7 +467,7 @@ paths:
   /api/applications/getDocumentIds/{applicationId}:
     get:
       tags: [application-resource]
-      operationId: getDocumentDictionaryIds
+      operationId: getDocumentIds
       parameters:
       - name: applicationId
         in: path
@@ -622,6 +657,57 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/RatingOverviewDTO'}
+  /api/applications/{applicationId}/references:
+    get:
+      tags: [reference-request-resource]
+      operationId: getReferences
+      parameters:
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ReferenceRequestDTO'}
+    post:
+      tags: [reference-request-resource]
+      operationId: add
+      parameters:
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateReferenceRequestDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferenceRequestDTO'}
+  /api/applications/{applicationId}/references/{referenceId}:
+    delete:
+      tags: [reference-request-resource]
+      operationId: remove
+      parameters:
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: referenceId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
   /api/auth/login:
     post:
       tags: [authentication-resource]
@@ -836,12 +922,12 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DepartmentDTO'}
-  /api/documents/{documentDictionaryId}:
+  /api/documents/{documentId}:
     get:
       tags: [document-resource]
       operationId: downloadDocument
       parameters:
-      - name: documentDictionaryId
+      - name: documentId
         in: path
         required: true
         schema: {type: string, format: uuid}
@@ -851,19 +937,29 @@ paths:
           content:
             application/json:
               schema: {type: string, format: binary}
+    delete:
+      tags: [document-resource]
+      operationId: deleteDocument
+      parameters:
+      - name: documentId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
   /api/email-templates:
     get:
       tags: [email-template-resource]
       operationId: getTemplates
       parameters:
-      - name: pageSize
+      - name: page
         in: query
         required: false
-        schema: {type: integer, format: int32, minimum: 1}
-      - name: pageNumber
+        schema: {type: integer, format: int32, default: 0}
+      - name: size
         in: query
         required: false
-        schema: {type: integer, format: int32, minimum: 0}
+        schema: {type: integer, format: int32, default: 20}
       responses:
         '200':
           description: OK
@@ -1390,6 +1486,21 @@ paths:
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
+  /api/interviews/applications/{applicationId}/rating:
+    get:
+      tags: [interview-resource]
+      operationId: getInterviewRatingForApplication
+      parameters:
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewRatingDTO'}
   /api/interviews/booking/{processId}:
     get:
       tags: [interview-booking-resource]
@@ -2618,6 +2729,14 @@ components:
             APPLICATIONS_ONLY]
         userResearchGroupRoles: {$ref: '#/components/schemas/Counts'}
         users: {$ref: '#/components/schemas/Counts'}
+    AiFeatureStatusDTO:
+      type: object
+      properties:
+        aiEnabled: {type: boolean}
+        circuitBreakerOpen: {type: boolean}
+        coolDownSeconds: {type: integer, format: int64}
+        manuallyDisabled: {type: boolean}
+        openedAt: {type: integer, format: int64}
     ApplicantDTO:
       type: object
       properties:
@@ -2664,7 +2783,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INTERVIEW]
+            JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
         jobLocation:
@@ -2681,16 +2800,16 @@ components:
     ApplicationDocumentIdsDTO:
       type: object
       properties:
-        bachelorDocumentDictionaryIds:
+        bachelorDocumentIds:
           type: array
           items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
           uniqueItems: true
-        cvDocumentDictionaryId: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
-        masterDocumentDictionaryIds:
+        cvDocumentId: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
+        masterDocumentIds:
           type: array
           items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
           uniqueItems: true
-        referenceDocumentDictionaryIds:
+        referenceDocumentIds:
           type: array
           items: {$ref: '#/components/schemas/DocumentInformationHolderDTO'}
           uniqueItems: true
@@ -2723,7 +2842,7 @@ components:
         state:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INTERVIEW]
+            JOB_CLOSED_DRAFT, INTERVIEW]
     ApplicationEvaluationOverviewListDTO:
       type: object
       properties:
@@ -2739,11 +2858,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INTERVIEW]
-        customFields:
-          type: array
-          items: {$ref: '#/components/schemas/CustomFieldAnswerDTO'}
-          uniqueItems: true
+            JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         job: {$ref: '#/components/schemas/JobCardDTO'}
         motivation: {type: string}
@@ -2757,7 +2872,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INTERVIEW]
+            JOB_CLOSED_DRAFT, INTERVIEW]
         createdAt: {type: string, format: date-time}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
@@ -2788,6 +2903,7 @@ components:
     AuthSessionInfoDTO:
       type: object
       properties:
+        authenticated: {type: boolean}
         expiresIn: {type: integer, format: int64}
         profileRequired: {type: boolean}
         refreshExpiresIn: {type: integer, format: int64}
@@ -2826,7 +2942,7 @@ components:
         article: {type: string}
         category:
           type: string
-          enum: [CRITICAL_AGG, TRANSPARENCY, GENDER_INCLUSIVE, GENDER_EXCLUSIVE]
+          enum: [CRITICAL_AGG, TRANSPARENCY, DSGVO_MINIMIZATION, PUBLIC_SECTOR]
         explanation: {type: string}
         id: {type: string}
         language: {type: string}
@@ -2844,6 +2960,14 @@ components:
         expected: {type: integer, format: int32}
         exported: {type: integer, format: int32}
         failed: {type: integer, format: int32}
+    CreateReferenceRequestDTO:
+      type: object
+      properties:
+        email: {type: string, format: email, maxLength: 320, minLength: 0}
+        firstName: {type: string, maxLength: 255, minLength: 0}
+        lastName: {type: string, maxLength: 255, minLength: 0}
+        title: {type: string, maxLength: 32, minLength: 0}
+      required: [email, firstName, lastName]
     CreateSlotsDTO:
       type: object
       properties:
@@ -2866,30 +2990,6 @@ components:
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         title: {type: string}
       required: [jobId, title]
-    CustomFieldAnswerDTO:
-      type: object
-      properties:
-        answers:
-          type: array
-          items: {type: string}
-        customField: {$ref: '#/components/schemas/CustomFieldDTO'}
-        customFieldAnswerId: {type: string, format: uuid}
-        documents:
-          type: array
-          items: {$ref: '#/components/schemas/DocumentDTO'}
-    CustomFieldDTO:
-      type: object
-      properties:
-        answerOptions:
-          type: array
-          items: {type: string}
-        customFieldId: {type: string, format: uuid}
-        customFieldType:
-          type: string
-          enum: [FREE_TEXT, SINGLE_CHOICE, MULTIPLE_CHOICE, FILE_UPLOAD]
-        question: {type: string}
-        required: {type: boolean}
-        sequence: {type: integer, format: int32}
     DataExportStatusDTO:
       type: object
       properties:
@@ -2942,7 +3042,6 @@ components:
         vulnerabilities:
           type: array
           items: {$ref: '#/components/schemas/VulnerabilityDTO'}
-    DocumentDTO: {}
     DocumentInformationHolderDTO:
       type: object
       properties:
@@ -2958,12 +3057,14 @@ components:
       properties:
         emailType:
           type: string
-          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA, INTERVIEW_INVITATION,
-            RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT,
-            INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED,
-            INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED,
-            DATA_EXPORT_READY, USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
+          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED_JOB_FILLED, APPLICATION_REJECTED_JOB_OUTDATED,
+            APPLICATION_REJECTED_FAILED_REQUIREMENTS, APPLICATION_REJECTED_OTHER_REASON,
+            APPLICATION_RECEIVED, APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA,
+            INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED,
+            INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR,
+            INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
+            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
+            APPLICANT_DATA_DELETION_WARNING, REFERENCE_LETTER_INVITATION]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2971,32 +3072,36 @@ components:
         emailTemplateId: {type: string, format: uuid}
         emailType:
           type: string
-          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA, INTERVIEW_INVITATION,
-            RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT,
-            INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED,
-            INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED,
-            DATA_EXPORT_READY, USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
+          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED_JOB_FILLED, APPLICATION_REJECTED_JOB_OUTDATED,
+            APPLICATION_REJECTED_FAILED_REQUIREMENTS, APPLICATION_REJECTED_OTHER_REASON,
+            APPLICATION_RECEIVED, APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA,
+            INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED,
+            INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR,
+            INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
+            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
+            APPLICANT_DATA_DELETION_WARNING, REFERENCE_LETTER_INVITATION]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
-        isDefault: {type: boolean}
-        templateName: {type: string}
     EmailTemplateOverviewDTO:
       type: object
       properties:
         emailTemplateId: {type: string, format: uuid}
         emailType:
           type: string
-          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA, INTERVIEW_INVITATION,
-            RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT,
-            INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_LOCATION_CHANGED,
-            INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED, INTERVIEW_RESCHEDULE_REQUESTED,
-            DATA_EXPORT_READY, USER_DATA_DELETION_WARNING, APPLICANT_DATA_DELETION_WARNING]
+          enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED_JOB_FILLED, APPLICATION_REJECTED_JOB_OUTDATED,
+            APPLICATION_REJECTED_FAILED_REQUIREMENTS, APPLICATION_REJECTED_OTHER_REASON,
+            APPLICATION_RECEIVED, APPLICATION_SENT, APPLICATION_WITHDRAWN, JOB_PUBLISHED_SUBJECT_AREA,
+            INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED, RESEARCH_GROUP_APPROVED,
+            INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR,
+            INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
+            INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
+            APPLICANT_DATA_DELETION_WARNING, REFERENCE_LETTER_INVITATION]
+        english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         firstName: {type: string}
-        isDefault: {type: boolean}
+        german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
+        isCustom: {type: boolean}
+        lastModifiedAt: {type: string, format: date-time}
         lastName: {type: string}
-        templateName: {type: string}
     EmailTemplateTranslationDTO:
       type: object
       properties:
@@ -3097,6 +3202,11 @@ components:
         uncontactedCount: {type: integer, format: int64}
       required: [completedCount, invitedCount, jobId, jobState, jobTitle, processId,
         scheduledCount, totalInterviews, totalSlots, uncontactedCount]
+    InterviewRatingDTO:
+      type: object
+      properties:
+        assessmentNotes: {type: string}
+        rating: {type: integer, format: int32}
     InterviewSlotDTO:
       type: object
       properties:
@@ -3149,7 +3259,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INTERVIEW]
+            JOB_CLOSED_DRAFT, INTERVIEW]
         avatar: {type: string}
         contractDuration: {type: integer, format: int32}
         imageUrl: {type: string}
@@ -3159,6 +3269,7 @@ components:
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
         professorName: {type: string}
+        referenceLettersRequired: {type: integer, format: int32}
         relativeTimeEnglish: {type: string}
         relativeTimeGerman: {type: string}
         startDate: {type: string, format: date}
@@ -3185,6 +3296,7 @@ components:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
         contractDuration: {type: integer, format: int32}
+        contractExtendable: {type: boolean}
         endDate: {type: string, format: date}
         fundingType:
           type: string
@@ -3202,6 +3314,7 @@ components:
             SINGAPORE]
         researchArea: {type: string}
         startDate: {type: string, format: date}
+        startDateByArrangement: {type: boolean}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
@@ -3221,6 +3334,9 @@ components:
         suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
+        tvlGrade:
+          type: string
+          enum: [E10, E11, E12, E13, E14, E15]
         workload: {type: integer, format: int32}
       required: [jobId, state, supervisingProfessor, title]
     JobDetailDTO:
@@ -3230,8 +3346,9 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INTERVIEW]
+            JOB_CLOSED_DRAFT, INTERVIEW]
         contractDuration: {type: integer, format: int32}
+        contractExtendable: {type: boolean}
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
         fundingType:
@@ -3247,9 +3364,11 @@ components:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
+        referenceLettersRequired: {type: integer, format: int32}
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroupSummaryDTO'}
         startDate: {type: string, format: date}
+        startDateByArrangement: {type: boolean}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
@@ -3269,6 +3388,9 @@ components:
         suitableForDisabled: {type: boolean}
         supervisingProfessorName: {type: string}
         title: {type: string}
+        tvlGrade:
+          type: string
+          enum: [E10, E11, E12, E13, E14, E15]
         workload: {type: integer, format: int32}
       required: [createdAt, jobId, lastModifiedAt, researchGroup, subjectArea, supervisingProfessorName,
         title]
@@ -3300,6 +3422,7 @@ components:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
         contractDuration: {type: integer, format: int32}
+        contractExtendable: {type: boolean}
         endDate: {type: string, format: date}
         fundingType:
           type: string
@@ -3314,8 +3437,10 @@ components:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
+        referenceLettersRequired: {type: integer, format: int32}
         researchArea: {type: string}
         startDate: {type: string, format: date}
+        startDateByArrangement: {type: boolean}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
@@ -3335,6 +3460,9 @@ components:
         suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
+        tvlGrade:
+          type: string
+          enum: [E10, E11, E12, E13, E14, E15]
         workload: {type: integer, format: int32}
       required: [location, state, subjectArea, supervisingProfessor, title]
     JobPreviewRequest:
@@ -3511,6 +3639,17 @@ components:
           type: array
           items: {$ref: '#/components/schemas/RatingDTO'}
           uniqueItems: true
+    ReferenceRequestDTO:
+      type: object
+      properties:
+        email: {type: string}
+        firstName: {type: string}
+        lastName: {type: string}
+        referenceRequestId: {type: string, format: uuid}
+        status:
+          type: string
+          enum: [REQUESTED, SUBMITTED, EXPIRED]
+        title: {type: string}
     RejectDTO:
       type: object
       properties:
@@ -3673,7 +3812,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INTERVIEW]
+            JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         motivation: {type: string}
         projects: {type: string}

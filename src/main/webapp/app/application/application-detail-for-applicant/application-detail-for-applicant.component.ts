@@ -23,6 +23,7 @@ import * as DropDownOptions from '../../job/dropdown-options';
 import { ApplicationResourceApi } from '../../generated/api/application-resource-api';
 import { ApplicationDetailDTO } from '../../generated/model/application-detail-dto';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/application-document-ids-dto';
+import { ReferenceRequestDTO } from '../../generated/model/reference-request-dto';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 
@@ -42,7 +43,6 @@ import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
     MenuComponent,
   ],
   templateUrl: './application-detail-for-applicant.component.html',
-  styleUrl: './application-detail-for-applicant.component.scss',
 })
 export default class ApplicationDetailForApplicantComponent {
   showWithdrawDialog = signal(false);
@@ -50,6 +50,7 @@ export default class ApplicationDetailForApplicantComponent {
   // preview application data passed from parent component (if any)
   previewDetailData = input<ApplicationDetailDTO | undefined>();
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
+  previewReferences = input<ReferenceRequestDTO[]>([]);
   isSummaryPage = input<boolean>(false);
 
   // actual application data fetched from the server
@@ -190,6 +191,8 @@ export default class ApplicationDetailForApplicantComponent {
     return `${grade} ${scale}`;
   });
 
+  readonly documentViewerHeightClass = 'h-100 max-lg:h-120 max-md:h-125';
+
   readonly dropDownOptions = DropDownOptions;
   private applicationApi = inject(ApplicationResourceApi);
   private route = inject(ActivatedRoute);
@@ -229,7 +232,7 @@ export default class ApplicationDetailForApplicantComponent {
     }
 
     try {
-      const ids = await firstValueFrom(this.applicationApi.getDocumentDictionaryIds(this.applicationId()));
+      const ids = await firstValueFrom(this.applicationApi.getDocumentIds(this.applicationId()));
       this.actualDocumentData.set(ids);
       this.actualDocumentDataExists.set(true);
     } catch {

@@ -28,7 +28,7 @@ export class InfoBoxComponent {
   /**
    * Whether to translate the message using the translation key.
    */
-  shouldTranslate = input<boolean>(false);
+  shouldTranslate = input<boolean>(true);
 
   /**
    * Custom icon to display. If not provided, uses default based on severity.
@@ -65,7 +65,7 @@ export class InfoBoxComponent {
       secondary: 'bg-border-default border-text-disabled',
       danger: 'bg-background-surface border-negative-default',
       warning: 'bg-[var(--p-warn-hover-color-outlined)] border-warning-default',
-      info: 'bg-background-surface border-primary',
+      info: 'bg-background-surface border-info-default',
     };
     return `${baseClasses} ${severityClasses[this.severity()]}`;
   });
@@ -81,7 +81,7 @@ export class InfoBoxComponent {
       secondary: 'text-text-disabled',
       danger: 'text-negative-default',
       warning: 'text-warning-default',
-      info: 'text-primary',
+      info: 'text-info-default',
     };
     return `${baseClasses} ${severityClasses[this.severity()]}`;
   });

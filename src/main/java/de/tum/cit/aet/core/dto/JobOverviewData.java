@@ -11,6 +11,9 @@ public record JobOverviewData(
     String workload,
     String duration,
     String fundingType,
+    String tvlGrade,
+    Integer referenceLettersRequired,
     String startDate,
-    String endDate
+    String endDate,
+    String suitableForDisabled
 ) {}

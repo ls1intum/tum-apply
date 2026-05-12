@@ -24,12 +24,7 @@
               <tr [class]="rowClass">
                 <td>
                   <span class="inline-flex justify-center w-full h-full">
-                    <fa-icon
-                      icon="cloud-arrow-up"
-                      class="text-warning-default"
-                      [pTooltip]="'entity.upload.tooltip.to_upload' | translate"
-                      tooltipPosition="top"
-                    />
+                    <fa-icon icon="cloud-arrow-up" class="text-warning-default" [pTooltip]="toUploadTooltip()" tooltipPosition="top" />
                   </span>
                 </td>
                 <td class="pr-3">
@@ -56,7 +51,7 @@
               <tr [class]="rowClass">
                 <td>
                   <span class="inline-flex justify-center w-full h-full">
-                    <fa-layers [pTooltip]="'entity.upload.tooltip.already_uploaded' | translate" tooltipPosition="top">
+                    <fa-layers [pTooltip]="alreadyUploadedTooltip()" tooltipPosition="top">
                       <fa-icon icon="file" class="text-primary" />
                       <fa-icon icon="circle" class="text-white" transform="shrink-5 down-4 right-5" />
                       <fa-icon icon="circle-check" class="text-positive-default" transform="shrink-7 down-4 right-5" />
@@ -71,13 +66,13 @@
                 </td>
                 <td>
                   <jhi-confirm-dialog
-                    [label]="'button.delete' | translate"
-                    [header]="'entity.upload.deleteDocument.confirm.header' | translate"
-                    [message]="'entity.upload.deleteDocument.confirm.message' | translate"
+                    label="button.delete"
+                    header="entity.upload.deleteDocument.confirm.header"
+                    message="entity.upload.deleteDocument.confirm.message"
                     [severity]="'danger'"
                     confirmIcon="trash"
                     [iconOnly]="true"
-                    [tooltip]="'button.delete' | translate"
+                    tooltip="button.delete"
                     size="sm"
                     (confirmed)="deleteDictionary(info)"
                   />
@@ -89,7 +84,10 @@
       </table>
       <div
         class="flex flex-1 items-center justify-center gap-3 py-3 cursor-pointer"
+        tabindex="0"
+        role="button"
         (click)="fileupload_component.choose()"
+        (keydown.enter)="fileupload_component.choose()"
         [class.flex-col]="!compact()"
       >
         <span
@@ -113,9 +111,10 @@
 </p-fileupload>
 
 <jhi-confirm-dialog
-  [header]="'entity.upload.duplicate.title' | translate"
-  [message]="'entity.upload.duplicate.message' | translate: { filename: duplicateFileName() }"
-  [label]="'button.replace' | translate"
+  header="entity.upload.duplicate.title"
+  message="entity.upload.duplicate.message"
+  [messageParams]="{ filename: duplicateFileName() }"
+  label="button.replace"
   severity="primary"
   [showOpenButton]="false"
   [visible]="showDuplicateDialog()"
@@ -124,9 +123,9 @@
 />
 
 <jhi-confirm-dialog
-  [header]="'entity.upload.replacement.title' | translate"
-  [message]="'entity.upload.replacement.message' | translate"
-  [label]="'button.replace' | translate"
+  header="entity.upload.replacement.title"
+  message="entity.upload.replacement.message"
+  label="button.replace"
   severity="primary"
   [showOpenButton]="false"
   [visible]="showReplacementDialog()"

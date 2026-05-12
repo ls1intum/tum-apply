@@ -13,6 +13,7 @@ import type { ComplianceIssue } from './compliance-issue';
 export interface JobDTO {
     readonly complianceIssues?: Array<ComplianceIssue>;
     readonly contractDuration?: number;
+    readonly contractExtendable?: boolean;
     readonly endDate?: string;
     readonly fundingType?: JobDTOFundingTypeEnum;
     readonly genderBiasScore?: number;
@@ -24,11 +25,13 @@ export interface JobDTO {
     readonly location?: JobDTOLocationEnum;
     readonly researchArea?: string;
     readonly startDate?: string;
+    readonly startDateByArrangement?: boolean;
     readonly state: JobDTOStateEnum;
     readonly subjectArea?: JobDTOSubjectAreaEnum;
     readonly suitableForDisabled?: boolean;
     readonly supervisingProfessor: string;
     readonly title: string;
+    readonly tvlGrade?: JobDTOTvlGradeEnum;
     readonly workload?: number;
 }
 
@@ -124,4 +127,17 @@ export const JobDTOSubjectAreaEnum = {
 } as const;
 
 export const JobDTOSubjectAreaEnumValues = ['AEROSPACE_ENGINEERING', 'AGRICULTURAL_ENGINEERING', 'AGRICULTURAL_SCIENCE', 'ARCHITECTURE', 'ART_HISTORY', 'AUTOMOTIVE_ENGINEERING', 'BIOENGINEERING', 'BIOCHEMISTRY', 'BIOLOGY', 'BIOMEDICAL_ENGINEERING', 'BIOTECHNOLOGY', 'CHEMISTRY', 'COMPUTER_ENGINEERING', 'COMPUTER_SCIENCE', 'COMPUTER_VISION', 'DATA_SCIENCE', 'ECONOMICS', 'EDUCATION_TECHNOLOGY', 'ELECTRICAL_ENGINEERING', 'ENERGY_SYSTEMS', 'ENVIRONMENTAL_BIOLOGY', 'ENVIRONMENTAL_CHEMISTRY', 'ENVIRONMENTAL_ENGINEERING', 'ENVIRONMENTAL_LAW', 'ENVIRONMENTAL_SCIENCE', 'FINANCIAL_ENGINEERING', 'FOOD_TECHNOLOGY', 'GEOLOGY', 'GEOSCIENCES', 'INDUSTRIAL_ENGINEERING', 'INFORMATION_SYSTEMS', 'LIFE_SCIENCES', 'LINGUISTICS', 'MARINE_BIOLOGY', 'MATERIALS_SCIENCE', 'MATHEMATICS', 'MECHANICAL_ENGINEERING', 'MEDICAL_INFORMATICS', 'NEUROSCIENCE', 'PHILOSOPHY', 'PHYSICS', 'PSYCHOLOGY', 'SOFTWARE_ENGINEERING', 'SPORTS_SCIENCE', 'STATISTICS', 'TELECOMMUNICATIONS', 'URBAN_PLANNING'] as const;
+
+export type JobDTOTvlGradeEnum = 'E10' | 'E11' | 'E12' | 'E13' | 'E14' | 'E15';
+
+export const JobDTOTvlGradeEnum = {
+    E10: 'E10' as const,
+    E11: 'E11' as const,
+    E12: 'E12' as const,
+    E13: 'E13' as const,
+    E14: 'E14' as const,
+    E15: 'E15' as const,
+} as const;
+
+export const JobDTOTvlGradeEnumValues = ['E10', 'E11', 'E12', 'E13', 'E14', 'E15'] as const;
 

@@ -12,7 +12,7 @@
     },
     "dataProcessing": {
       "headline": "Rechtsgrundlagen, besondere Kategorien und Löschfristen",
-      "text": "Die Verarbeitung von Bewerberdaten erfolgt vorrangig auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen) sowie Art. 6 Abs. 1 lit. e DSGVO (Wahrnehmung einer Aufgabe im öffentlichen Interesse) in Verbindung mit dem BayHIG. Soweit in Bewerbungsunterlagen besondere Kategorien personenbezogener Daten enthalten sind, kann die Verarbeitung – soweit einschlägig – zusätzlich auf Art. 9 Abs. 1 lit. b DSGVO gestützt werden. Soweit in Einzelfällen eine Einwilligung erforderlich ist, kann diese jederzeit mit Wirkung für die Zukunft widerrufen werden.<p>Daten aus abgeschlossenen Bewerbungsverfahren (angenommen oder abgelehnt) werden in einem festen Löschzyklus 6 Monate nach der Entscheidung gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.</p>"
+      "text": "Die Verarbeitung von Bewerberdaten erfolgt vorrangig auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen) sowie Art. 6 Abs. 1 lit. e DSGVO (Wahrnehmung einer Aufgabe im öffentlichen Interesse) in Verbindung mit dem BayHIG. Soweit in Bewerbungsunterlagen besondere Kategorien personenbezogener Daten enthalten sind, kann die Verarbeitung – soweit einschlägig – zusätzlich auf Art. 9 Abs. 2 lit. b DSGVO gestützt werden. Soweit in Einzelfällen eine Einwilligung erforderlich ist, kann diese jederzeit mit Wirkung für die Zukunft widerrufen werden.<p>Daten aus abgeschlossenen Bewerbungsverfahren (angenommen oder abgelehnt) werden in einem festen Löschzyklus 6 Monate nach der Entscheidung gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.</p>"
     },
     "complaint": {
       "headline": "Recht auf Beschwerde bei der zuständigen Aufsichtsbehörde",
@@ -66,7 +66,7 @@
       },
       "tooltip": {
         "inCreation": "Ein Export wird derzeit vorbereitet. Du erhältst eine E-Mail, sobald er bereit ist.",
-        "cooldown": "Du kannst einen weiteren Export in {{days}} Tagen anfordern. Eine E-Mail wurde mit deinen Daten versendet.",
+        "cooldown": "Du kannst einen weiteren Export in {days} Tagen anfordern. Eine E-Mail wurde mit deinen Daten versendet.",
         "notLoggedIn": "Bitte melde dich an, um deine Daten zu exportieren."
       }
     },

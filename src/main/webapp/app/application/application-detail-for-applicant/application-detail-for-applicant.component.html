@@ -1,8 +1,8 @@
 <jhi-confirm-dialog
-  class="confirm-dialog"
-  [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
-  [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
-  [label]="'button.withdraw' | translate"
+  class="hidden"
+  header="entity.applicationOverview.dialogs.withdrawHeader"
+  message="entity.applicationOverview.dialogs.withdrawMessage"
+  label="button.withdraw"
   severity="danger"
   confirmIcon="withdraw"
   [showOpenButton]="false"
@@ -11,10 +11,10 @@
   (closed)="showWithdrawDialog.set(false)"
 />
 <jhi-confirm-dialog
-  class="confirm-dialog"
-  [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
-  [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
-  [label]="'button.delete' | translate"
+  class="hidden"
+  header="entity.applicationOverview.dialogs.deleteHeader"
+  message="entity.applicationOverview.dialogs.deleteMessage"
+  label="button.delete"
   severity="danger"
   confirmIcon="trash"
   [showOpenButton]="false"
@@ -87,7 +87,7 @@
             (click)="onViewJobDetails()"
           />
         </div>
-        <div class="overview-content">
+        <div class="flex flex-wrap items-center gap-8">
           <div class="info-item">
             <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
             <span jhiTranslate="entity.application_detail.supervisor"></span>
@@ -127,7 +127,7 @@
     }
 
     <!-- Main Content Grid -->
-    <div class="content-grid">
+    <div class="grid gap-8 mb-8 grid-cols-[1fr_25rem] max-xl:grid-cols-1">
       <!-- Personal Statements Section -->
       <section>
         @if (!previewDetailData()) {
@@ -196,9 +196,9 @@
               </div>
             </div>
             @if (application.applicant?.user?.website || application.applicant?.user?.linkedinUrl) {
-              <div class="links">
+              <div class="flex items-center gap-4 border-t border-border-default mt-4 pt-4">
                 @if (application.applicant?.user?.website) {
-                  <div class="link-container">
+                  <div class="flex items-center gap-2">
                     <fa-icon [icon]="['fas', 'link']" class="icon" />
                     <a class="link" [href]="application.applicant?.user?.website" target="_blank" rel="noopener noreferrer">
                       <span jhiTranslate="entity.detail_card.website"></span>
@@ -206,7 +206,7 @@
                   </div>
                 }
                 @if (application.applicant?.user?.linkedinUrl) {
-                  <div class="link-container">
+                  <div class="flex items-center gap-2">
                     <fa-icon [icon]="['fab', 'linkedin']" class="icon" />
                     <a class="link" [href]="application.applicant?.user?.linkedinUrl" target="_blank" rel="noopener noreferrer">
                       <span jhiTranslate="entity.detail_card.linkedin"></span>
@@ -266,36 +266,57 @@
       </section>
     </div>
 
+    @if (previewReferences().length > 0) {
+      <section>
+        @if (!previewDetailData()) {
+          <h2 class="section-title" jhiTranslate="entity.application_detail.reference_letters"></h2>
+        }
+        <div class="section-detail-card">
+          <div class="section-card-header">
+            <fa-icon [icon]="['fas', 'envelope']" class="icon" />
+            <h3 class="section-card-title" jhiTranslate="entity.application_detail.reference_letters"></h3>
+          </div>
+          <div class="section-card-body">
+            <ul class="list-disc list-inside marker:text-primary">
+              @for (reference of previewReferences(); track reference.referenceRequestId) {
+                <li class="py-1 font-medium">
+                  {{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}
+                  <span class="font-normal text-text-secondary text-sm ml-1"> ({{ reference.email }}) </span>
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </section>
+    }
+
     <!-- Documents Section -->
     @if (documentIds(); as documentIds) {
       <section class="documents-section">
         @if (
-          documentIds.bachelorDocumentDictionaryIds ||
-          documentIds.masterDocumentDictionaryIds ||
-          documentIds.cvDocumentDictionaryId ||
-          documentIds.referenceDocumentDictionaryIds
+          documentIds.bachelorDocumentIds || documentIds.masterDocumentIds || documentIds.cvDocumentId || documentIds.referenceDocumentIds
         ) {
           @if (!previewDetailData()) {
             <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>
           }
         }
         <!-- Document grid for all document types -->
-        <div class="document-container">
-          @if (documentIds.cvDocumentDictionaryId; as cvDoc) {
+        <div class="grid gap-x-8 grid-cols-2 max-md:grid-cols-1 xl:grid-cols-3">
+          @if (documentIds.cvDocumentId; as cvDoc) {
             <div class="section-detail-card">
               <div class="section-card-header">
                 <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
                 <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.CV"></h3>
               </div>
               <div class="section-card-body">
-                <div class="document-viewer">
-                  <jhi-document-viewer [documentDictionaryId]="cvDoc" />
+                <div [class]="documentViewerHeightClass">
+                  <jhi-document-viewer [documentId]="cvDoc" />
                 </div>
               </div>
             </div>
           }
 
-          @if (documentIds.bachelorDocumentDictionaryIds; as bachelorDocs) {
+          @if (documentIds.bachelorDocumentIds; as bachelorDocs) {
             @for (doc of bachelorDocs; track $index) {
               <div class="section-detail-card">
                 <div class="section-card-header">
@@ -303,15 +324,15 @@
                   <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.BACHELOR_TRANSCRIPT"></h3>
                 </div>
                 <div class="section-card-body">
-                  <div class="document-viewer">
-                    <jhi-document-viewer [documentDictionaryId]="doc" />
+                  <div [class]="documentViewerHeightClass">
+                    <jhi-document-viewer [documentId]="doc" />
                   </div>
                 </div>
               </div>
             }
           }
 
-          @if (documentIds.masterDocumentDictionaryIds; as masterDocs) {
+          @if (documentIds.masterDocumentIds; as masterDocs) {
             @for (doc of masterDocs; track $index) {
               <div class="section-detail-card">
                 <div class="section-card-header">
@@ -319,15 +340,15 @@
                   <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.MASTER_TRANSCRIPT"></h3>
                 </div>
                 <div class="section-card-body">
-                  <div class="document-viewer">
-                    <jhi-document-viewer [documentDictionaryId]="doc" />
+                  <div [class]="documentViewerHeightClass">
+                    <jhi-document-viewer [documentId]="doc" />
                   </div>
                 </div>
               </div>
             }
           }
 
-          @if (documentIds.referenceDocumentDictionaryIds; as referenceDocs) {
+          @if (documentIds.referenceDocumentIds; as referenceDocs) {
             @for (doc of referenceDocs; track $index) {
               <div class="section-detail-card">
                 <div class="section-card-header">
@@ -335,8 +356,8 @@
                   <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.REFERENCES"></h3>
                 </div>
                 <div class="section-card-body">
-                  <div class="document-viewer">
-                    <jhi-document-viewer [documentDictionaryId]="doc" />
+                  <div [class]="documentViewerHeightClass">
+                    <jhi-document-viewer [documentId]="doc" />
                   </div>
                 </div>
               </div>

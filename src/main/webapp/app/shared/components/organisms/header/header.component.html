@@ -1,5 +1,5 @@
 <header
-  class="flex items-center justify-between px-6 sticky top-0 z-20 overflow-x-auto h-12 border-b transition-colors duration-300"
+  class="flex items-center justify-between gap-1 sm:gap-0 px-3 sm:px-6 sticky top-0 z-20 overflow-x-auto h-12 border-b transition-colors duration-300"
   [class.border-border-default]="showBorder()"
   [class.border-transparent]="!showBorder()"
   [class.shadow-sm]="showBorder()"
@@ -10,16 +10,17 @@
     class="flex items-center gap-2 text-primary-default text-base font-bold cursor-pointer flex-shrink-0"
   >
     <img alt="TUMApply Logo" class="h-6" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
-    <span>TUMApply</span>
+    <span class="hidden sm:inline">TUMApply</span>
     @if (isProfessorPage()) {
-      <span class="text-secondary-default font-light" jhiTranslate="header.professorTitle"></span>
+      <span class="hidden sm:inline text-secondary-default font-light" jhiTranslate="header.professorTitle"></span>
     }
   </a>
 
   <div class="flex items-center gap-1 flex-shrink-0">
-    <div class="flex items-center gap-1 mr-2">
+    <div class="flex items-center gap-1 sm:mr-2">
       @for (language of languages; track language; let isLast = $last) {
         <button
+          type="button"
           (click)="toggleLanguage(language)"
           class="text-primary-default cursor-pointer hover:underline"
           [class.font-bold]="currentLanguage() === language"
@@ -37,7 +38,7 @@
         class="[&_.p-button]:w-8 [&_.p-button]:h-8 [&_.p-button]:rounded-md"
         (click)="toggleTheme()"
         [icon]="themeIcon()"
-        [tooltip]="themeTooltip() | translate"
+        [tooltip]="themeTooltip()"
         variant="text"
         severity="primary"
       />
@@ -45,21 +46,43 @@
 
     @if (user() === undefined) {
       @if (isProfessorPage()) {
-        <jhi-button
-          [class]="headerButtonClass"
-          (click)="redirectToApplicantLandingPage()"
-          label="{{ 'header.applicant' | translate }}"
-          severity="primary"
-          variant="text"
-        />
+        <span class="hidden sm:inline-flex">
+          <jhi-button
+            [class]="headerButtonClass"
+            (click)="redirectToApplicantLandingPage()"
+            label="header.applicant"
+            severity="primary"
+            variant="text"
+          />
+        </span>
+        <span class="inline-flex sm:hidden">
+          <jhi-button
+            [class]="headerButtonClass"
+            (click)="redirectToApplicantLandingPage()"
+            label="header.applicantShort"
+            severity="primary"
+            variant="text"
+          />
+        </span>
       } @else {
-        <jhi-button
-          [class]="headerButtonClass"
-          (click)="redirectToProfessorLandingPage()"
-          label="{{ 'header.professor' | translate }}"
-          severity="primary"
-          variant="text"
-        />
+        <span class="hidden sm:inline-flex">
+          <jhi-button
+            [class]="headerButtonClass"
+            (click)="redirectToProfessorLandingPage()"
+            label="header.professor"
+            severity="primary"
+            variant="text"
+          />
+        </span>
+        <span class="inline-flex sm:hidden">
+          <jhi-button
+            [class]="headerButtonClass"
+            (click)="redirectToProfessorLandingPage()"
+            label="header.professorShort"
+            severity="primary"
+            variant="text"
+          />
+        </span>
       }
 
       <div class="h-4 mx-0.5 w-px bg-primary-default self-center"></div>
@@ -67,22 +90,22 @@
       <jhi-button
         [class]="headerButtonClass"
         (click)="login()"
-        label="{{ 'header.login' | translate }}"
+        label="header.login"
         severity="primary"
         variant="text"
-        styleClass="font-bold"
+        classStyling="font-bold"
       />
     } @else {
       <button
         class="flex items-center gap-2 px-2 rounded-md cursor-pointer bg-transparent transition-colors duration-200 hover:bg-primary-hover-outlined"
         type="button"
         (click)="toggleProfileMenu($event)"
-        [attr.aria-label]="'header.profileMenu' | translate"
+        [attr.aria-label]="profileMenuAriaLabel()"
         [attr.aria-expanded]="isProfileMenuOpen()"
         aria-haspopup="menu"
       >
         <jhi-user-avatar [fullName]="user()?.name" [avatarUrl]="user()?.avatar" />
-        <span class="font-medium">{{ user()?.name }}</span>
+        <span class="hidden sm:inline font-medium">{{ user()?.name }}</span>
         <fa-icon
           class="text-xs text-text-default transition-transform duration-300"
           [class.rotate-180]="isProfileMenuOpen()"

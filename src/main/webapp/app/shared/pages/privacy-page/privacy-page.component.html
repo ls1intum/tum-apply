@@ -1,31 +1,31 @@
 <div class="page-container">
-  <div class="privacy-page">
-    <h1 class="headline" jhiTranslate="privacy.headline"></h1>
-    <span class="text" jhiTranslate="privacy.text"></span>
+  <div class="max-w-[75rem] mr-auto">
+    <h1 class="text-[2rem] font-bold" jhiTranslate="privacy.headline"></h1>
+    <span class="block text-base text-justify mt-8" jhiTranslate="privacy.text"></span>
 
-    <h2 class="subheadline" jhiTranslate="privacy.logging.headline"></h2>
-    <span class="text" jhiTranslate="privacy.logging.text"></span>
+    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="privacy.logging.headline"></h2>
+    <span class="block text-base text-justify" jhiTranslate="privacy.logging.text"></span>
 
-    <h2 class="subheadline" jhiTranslate="privacy.personalData.headline"></h2>
-    <span class="text" jhiTranslate="privacy.personalData.text"></span>
+    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="privacy.personalData.headline"></h2>
+    <span class="block text-base text-justify" jhiTranslate="privacy.personalData.text"></span>
 
-    <h2 class="subheadline" jhiTranslate="privacy.dataProcessing.headline"></h2>
-    <span class="text" jhiTranslate="privacy.dataProcessing.text"></span>
+    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="privacy.dataProcessing.headline"></h2>
+    <span class="block text-base text-justify" jhiTranslate="privacy.dataProcessing.text"></span>
 
-    <h2 class="subheadline" jhiTranslate="privacy.complaint.headline"></h2>
-    <span class="text" jhiTranslate="privacy.complaint.text"></span>
+    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="privacy.complaint.headline"></h2>
+    <span class="block text-base text-justify" jhiTranslate="privacy.complaint.text"></span>
 
-    <h2 class="subheadline" jhiTranslate="privacy.dataPortability.headline"></h2>
-    <span class="text" jhiTranslate="privacy.dataPortability.text"></span>
+    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="privacy.dataPortability.headline"></h2>
+    <span class="block text-base text-justify" jhiTranslate="privacy.dataPortability.text"></span>
 
-    <h2 class="subheadline" jhiTranslate="privacy.dataRight.headline"></h2>
-    <p class="text" jhiTranslate="privacy.dataRight.text"></p>
+    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="privacy.dataRight.headline"></h2>
+    <p class="block text-base text-justify" jhiTranslate="privacy.dataRight.text"></p>
 
-    <h2 class="subheadline" jhiTranslate="privacy.sslTls.headline"></h2>
-    <span class="text" jhiTranslate="privacy.sslTls.text"></span>
+    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="privacy.sslTls.headline"></h2>
+    <span class="block text-base text-justify" jhiTranslate="privacy.sslTls.text"></span>
 
-    <h2 class="subheadline" jhiTranslate="privacy.emailSec.headline"></h2>
-    <span class="text" jhiTranslate="privacy.emailSec.text"></span>
+    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="privacy.emailSec.headline"></h2>
+    <span class="block text-base text-justify" jhiTranslate="privacy.emailSec.text"></span>
 
     <div class="pt-6">
       <jhi-button
@@ -37,6 +37,7 @@
         [shouldTranslate]="true"
         [disabled]="exportButtonDisabled()"
         [tooltip]="tooltip()"
+        [translationParams]="tooltipParams()"
       />
     </div>
   </div>

@@ -1,0 +1,46 @@
+{
+  "systemSettings": {
+    "title": "System Settings",
+    "ai": {
+      "title": "AI Features",
+      "toggle": {
+        "label": "Enable AI Features",
+        "description": "When disabled, all AI-powered features are turned off system-wide."
+      },
+      "circuitBreaker": {
+        "label": "Circuit Breaker",
+        "description": "Automatically disables AI after consecutive failures. Resets after a cooldown period of {cooldown} min.",
+        "open": "Open since {time} o'clock (AI disabled)",
+        "closed": "Closed (AI operational)",
+        "reset": "Reset Circuit Breaker"
+      },
+      "statusWarning": "AI features are currently unavailable for all users.",
+      "toast": {
+        "loadError": {
+          "summary": "Load Failed",
+          "detail": "Could not load AI feature status."
+        },
+        "enabled": {
+          "summary": "AI Enabled",
+          "detail": "AI features have been enabled system-wide."
+        },
+        "disabled": {
+          "summary": "AI Disabled",
+          "detail": "AI features have been disabled system-wide."
+        },
+        "toggleError": {
+          "summary": "Toggle Failed",
+          "detail": "Could not update the AI feature toggle."
+        },
+        "circuitBreakerReset": {
+          "summary": "Circuit Breaker Reset",
+          "detail": "The circuit breaker has been reset. AI requests are allowed again."
+        },
+        "resetError": {
+          "summary": "Reset Failed",
+          "detail": "Could not reset the circuit breaker."
+        }
+      }
+    }
+  }
+}

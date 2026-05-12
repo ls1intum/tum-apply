@@ -9,12 +9,12 @@ import { ToastService } from 'app/service/toast-service';
 import { CommonModule } from '@angular/common';
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
-import { DocumentInformationHolderDTODocumentTypeEnum } from 'app/generated/model/document-information-holder-dto';
 import { AccountService } from 'app/core/auth/account.service';
 import { debounceTime, distinctUntilChanged, firstValueFrom, map } from 'rxjs';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService } from 'primeng/dynamicdialog';
+import { SavingState } from 'app/shared/constants/saving-states';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import {
   GradingScaleLimitsResult,
@@ -27,10 +27,11 @@ import { GradingScaleEditDialogComponent } from 'app/application/application-cre
 import { DegreeDocumentSectionComponent } from 'app/shared/components/molecules/degree-document-section/degree-document-section.component';
 import { ExtractedApplicationDataDTO } from 'app/generated/model/extracted-application-data-dto';
 import { setIfEmpty } from 'app/shared/components/molecules/ai-extraction-box/ai-extraction-box.component';
-import { ProfileDocumentService } from 'app/shared/settings/profile-document.service';
+import { AutoSaveController } from 'app/shared/util/auto-save-controller';
 
-import { ButtonComponent } from '../../components/atoms/button/button.component';
 import { UploadButtonComponent } from '../../components/atoms/upload-button/upload-button.component';
+import { SavingBadgeComponent } from '../../components/atoms/saving-badge/saving-badge.component';
+import { StickyFooterShellComponent } from '../../components/molecules/sticky-footer-shell/sticky-footer-shell.component';
 import TranslateDirective from '../../language/translate.directive';
 
 interface NormalizedSettingsDocumentsFormValue {
@@ -55,11 +56,12 @@ interface NormalizedSettingsDocumentsFormValue {
     DividerModule,
     ReactiveFormsModule,
     TranslateModule,
-    ButtonComponent,
     TooltipModule,
     FontAwesomeModule,
     UploadButtonComponent,
     TranslateDirective,
+    SavingBadgeComponent,
+    StickyFooterShellComponent,
   ],
   templateUrl: './settings-documents.component.html',
 })
@@ -85,9 +87,8 @@ export class SettingsDocumentsComponent {
   referenceDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
 
   // Placeholder ID to render the same upload UI structure as application page 2.
-  applicationIdForDocuments = signal<string>('00000000-0000-0000-0000-000000000000');
+  readonly uploadHostId = '00000000-0000-0000-0000-000000000000';
 
-  saving = signal(false);
   hasLoaded = signal(false);
   hasInitialLimitsSet = signal(false);
   bachelorGradeLimits = signal<GradingScaleLimitsResult>(null);
@@ -95,43 +96,17 @@ export class SettingsDocumentsComponent {
   lastBachelorGrade = signal<string>(this.form.controls.bachelorGrade.value ?? '');
   lastMasterGrade = signal<string>(this.form.controls.masterGrade.value ?? '');
   initialFormValue = signal(this.form.getRawValue());
-  initialBachelorDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  initialMasterDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-  initialReferenceDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
-
-  queuedBachelorFiles = signal<File[]>([]);
-  queuedMasterFiles = signal<File[]>([]);
-  queuedReferenceFiles = signal<File[]>([]);
-
   hasFormChanges = computed(() => this.hasLoaded() && !deepEqual(this.normalizedFormValue(), this.initialFormValue()));
-  hasDocumentChanges = computed(() => {
-    if (!this.hasLoaded()) return false;
-    return (
-      !deepEqual(
-        this.profileDocumentService.normalizedDocuments(this.bachelorDocuments()),
-        this.profileDocumentService.normalizedDocuments(this.initialBachelorDocuments()),
-      ) ||
-      !deepEqual(
-        this.profileDocumentService.normalizedDocuments(this.masterDocuments()),
-        this.profileDocumentService.normalizedDocuments(this.initialMasterDocuments()),
-      ) ||
-      !deepEqual(
-        this.profileDocumentService.normalizedDocuments(this.referenceDocuments()),
-        this.profileDocumentService.normalizedDocuments(this.initialReferenceDocuments()),
-      )
-    );
-  });
-  hasChanges = computed(() => this.hasFormChanges() || this.hasDocumentChanges());
+  savingState = computed<SavingState>(() => this.autoSave.state());
+  hasChanges = computed(() => this.hasFormChanges());
 
-  helperTextBachelorGrade = computed(() => {
-    this.currentLang();
-    return getGradeHelperText(this.translateService, this.bachelorGradeLimits());
-  });
+  helperTextBachelorGrade = computed(() => getGradeHelperText(this.bachelorGradeLimits()));
+  helperTextBachelorGradeKey = computed(() => this.helperTextBachelorGrade()?.key ?? '');
+  helperTextBachelorGradeParams = computed(() => this.helperTextBachelorGrade()?.params ?? {});
 
-  helperTextMasterGrade = computed(() => {
-    this.currentLang();
-    return getGradeHelperText(this.translateService, this.masterGradeLimits());
-  });
+  helperTextMasterGrade = computed(() => getGradeHelperText(this.masterGradeLimits()));
+  helperTextMasterGradeKey = computed(() => this.helperTextMasterGrade()?.key ?? '');
+  helperTextMasterGradeParams = computed(() => this.helperTextMasterGrade()?.params ?? {});
 
   warningTextBachelorGrade = computed(() => {
     this.currentLang();
@@ -145,8 +120,8 @@ export class SettingsDocumentsComponent {
     return getGradeWarningText(this.translateService, grade);
   });
 
+  private readonly autoSave = new AutoSaveController({ save: () => this.performAutoSave() });
   private applicantApi = inject(ApplicantResourceApi);
-  private profileDocumentService = inject(ProfileDocumentService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private translateService = inject(TranslateService);
@@ -174,6 +149,12 @@ export class SettingsDocumentsComponent {
     if (grade == null) return;
     if (grade === this.lastMasterGrade()) return;
     this.updateMasterGradeLimits(grade);
+  });
+
+  private autoSaveEffect = effect(() => {
+    if (!this.hasLoaded()) return;
+    if (!this.hasChanges()) return;
+    this.autoSave.notifyChanged();
   });
 
   constructor() {
@@ -224,17 +205,16 @@ export class SettingsDocumentsComponent {
     });
   }
 
-  async saveAll(): Promise<void> {
-    if (!this.hasChanges() || this.saving()) {
-      return;
+  async performAutoSave(): Promise<boolean> {
+    if (!this.hasChanges()) {
+      return true;
     }
 
-    this.saving.set(true);
     try {
       const loadedUser = this.accountService.loadedUser();
       if (loadedUser?.id == null || loadedUser.id === '') {
         this.toastService.showErrorKey('settings.documents.saveFailed');
-        return;
+        return false;
       }
 
       const applicantDTO: ApplicantDTO = {
@@ -267,27 +247,12 @@ export class SettingsDocumentsComponent {
       };
 
       await firstValueFrom(this.applicantApi.updateApplicantDocumentSettings(applicantDTO));
-      await this.saveDeferredDocumentChanges();
-      await this.loadProfile();
-
-      this.toastService.showSuccessKey('settings.documents.saved');
+      this.initialFormValue.set(this.normalizedFormValue());
+      return true;
     } catch {
       this.toastService.showErrorKey('settings.documents.saveFailed');
-    } finally {
-      this.saving.set(false);
+      return false;
     }
-  }
-
-  onBachelorQueuedFilesChange(files: File[]): void {
-    this.queuedBachelorFiles.set(files);
-  }
-
-  onMasterQueuedFilesChange(files: File[]): void {
-    this.queuedMasterFiles.set(files);
-  }
-
-  onReferenceQueuedFilesChange(files: File[]): void {
-    this.queuedReferenceFiles.set(files);
   }
 
   onAiDataExtracted(extractedData: ExtractedApplicationDataDTO): void {
@@ -357,7 +322,7 @@ export class SettingsDocumentsComponent {
       }
 
       this.hasInitialLimitsSet.set(true);
-      this.storeInitialStateSnapshot();
+      this.initialFormValue.set(this.normalizedFormValue());
       this.hasLoaded.set(true);
     } catch {
       this.toastService.showErrorKey('settings.documents.loadFailed');
@@ -403,48 +368,9 @@ export class SettingsDocumentsComponent {
     };
   }
 
-  // Persists the current form/document state as the new clean baseline after a successful load or save.
-  private storeInitialStateSnapshot(): void {
-    this.initialFormValue.set(this.normalizedFormValue());
-    this.initialBachelorDocuments.set(this.profileDocumentService.normalizedDocuments(this.bachelorDocuments()));
-    this.initialMasterDocuments.set(this.profileDocumentService.normalizedDocuments(this.masterDocuments()));
-    this.initialReferenceDocuments.set(this.profileDocumentService.normalizedDocuments(this.referenceDocuments()));
-
-    this.queuedBachelorFiles.set([]);
-    this.queuedMasterFiles.set([]);
-    this.queuedReferenceFiles.set([]);
-  }
-
   private applyProfileDocumentIds(documentIds: ApplicationDocumentIdsDTO): void {
-    this.bachelorDocuments.set(documentIds.bachelorDocumentDictionaryIds ?? []);
-    this.masterDocuments.set(documentIds.masterDocumentDictionaryIds ?? []);
-    this.referenceDocuments.set(documentIds.referenceDocumentDictionaryIds ?? []);
-  }
-
-  private async saveQueuedDocuments(): Promise<void> {
-    await this.profileDocumentService.uploadQueuedByType(
-      DocumentInformationHolderDTODocumentTypeEnum.BachelorTranscript,
-      this.queuedBachelorFiles(),
-      this.bachelorDocuments,
-    );
-
-    await this.profileDocumentService.uploadQueuedByType(
-      DocumentInformationHolderDTODocumentTypeEnum.MasterTranscript,
-      this.queuedMasterFiles(),
-      this.masterDocuments,
-    );
-
-    await this.profileDocumentService.uploadQueuedByType(
-      DocumentInformationHolderDTODocumentTypeEnum.Reference,
-      this.queuedReferenceFiles(),
-      this.referenceDocuments,
-    );
-  }
-
-  private async saveDeferredDocumentChanges(): Promise<void> {
-    await this.profileDocumentService.commitDocumentTypeChanges(this.initialBachelorDocuments(), this.bachelorDocuments());
-    await this.profileDocumentService.commitDocumentTypeChanges(this.initialMasterDocuments(), this.masterDocuments());
-    await this.profileDocumentService.commitDocumentTypeChanges(this.initialReferenceDocuments(), this.referenceDocuments());
-    await this.saveQueuedDocuments();
+    this.bachelorDocuments.set(documentIds.bachelorDocumentIds ?? []);
+    this.masterDocuments.set(documentIds.masterDocumentIds ?? []);
+    this.referenceDocuments.set(documentIds.referenceDocumentIds ?? []);
   }
 }

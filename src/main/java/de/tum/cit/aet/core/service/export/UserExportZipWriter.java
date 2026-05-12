@@ -1,14 +1,15 @@
 package de.tum.cit.aet.core.service.export;
 
-import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.documents.domain.Document;
+import de.tum.cit.aet.core.documents.repository.DocumentRepository;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantDataExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantInternalCommentExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantRatingExportDTO;
+import de.tum.cit.aet.core.dto.exportdata.ApplicantReferenceRequestExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.StaffDataDTO;
 import de.tum.cit.aet.core.dto.exportdata.UserDataExportDTO;
 import de.tum.cit.aet.core.exception.UserDataExportException;
-import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.core.service.ZipExportService;
 import de.tum.cit.aet.core.util.FileUtil;
@@ -116,6 +117,7 @@ public class UserExportZipWriter {
         - data/applicant_applications.csv
         - data/applicant_interviewees.csv
         - data/applicant_subject_area_subscriptions.csv
+        - data/applicant_reference_requests.csv
 
         Staff-Daten:
         - data/staff_supervised_jobs.csv
@@ -158,6 +160,7 @@ public class UserExportZipWriter {
         - data/applicant_applications.csv
         - data/applicant_interviewees.csv
         - data/applicant_subject_area_subscriptions.csv
+        - data/applicant_reference_requests.csv
 
         Staff data:
         - data/staff_supervised_jobs.csv
@@ -228,6 +231,34 @@ public class UserExportZipWriter {
         writeApplicantApplicationsCsv(zipOut, applicantData);
         writeApplicantIntervieweesCsv(zipOut, applicantData);
         writeApplicantSubjectAreaSubscriptionsCsv(zipOut, applicantData);
+        writeApplicantReferenceRequestsCsv(zipOut, applicantData);
+    }
+
+    private void writeApplicantReferenceRequestsCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
+        List<ApplicantReferenceRequestExportDTO> entries = applicantData.referenceRequests();
+        List<List<String>> rows =
+            entries == null
+                ? List.of()
+                : entries
+                      .stream()
+                      .map(entry ->
+                          List.of(
+                              toCsvValue(entry.jobTitle()),
+                              toCsvValue(entry.title()),
+                              toCsvValue(entry.firstName()),
+                              toCsvValue(entry.lastName()),
+                              toCsvValue(entry.email()),
+                              toCsvValue(entry.status())
+                          )
+                      )
+                      .toList();
+
+        addCsvFileToZip(
+            zipOut,
+            "data/applicant_reference_requests.csv",
+            List.of("job_title", "name_title", "first_name", "last_name", "email", "status"),
+            rows
+        );
     }
 
     private void writeApplicantProfileCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {

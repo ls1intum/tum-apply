@@ -1,11 +1,12 @@
-import { Component, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
+import { Component, ViewEncapsulation, computed, effect, input, output, signal } from '@angular/core';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { parseLocalDateString } from 'app/shared/util/date-time.util';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
 let nextInputId = 0;
 
@@ -31,10 +32,10 @@ const DATEPICKER_ACTION_CLASSES = [
 
 const DATEPICKER_CALENDAR_CLASSES = [
   '[&_.p-ripple.p-datepicker-select-month]:text-primary-default',
-  '[&_.p-ripple.p-datepicker-select-month:hover]:bg-[var(--p-primary-hover-color-outlined)]',
+  '[&_.p-ripple.p-datepicker-select-month:hover]:bg-primary-hover-outlined',
   '[&_.p-ripple.p-datepicker-select-year]:text-primary-default',
-  '[&_.p-ripple.p-datepicker-select-year:hover]:bg-[var(--p-primary-hover-color-outlined)]',
-  '[&_.p-datepicker-today>.p-datepicker-day:not(.p-datepicker-day-selected)]:bg-[var(--p-primary-hover-color-outlined)]',
+  '[&_.p-ripple.p-datepicker-select-year:hover]:bg-primary-hover-outlined',
+  '[&_.p-datepicker-today>.p-datepicker-day:not(.p-datepicker-day-selected)]:bg-primary-hover-outlined',
   '[&_.p-datepicker-today>.p-datepicker-day:not(.p-datepicker-day-selected)]:text-text-primary',
   '[&_.p-datepicker-day:not(.p-disabled):not(.p-datepicker-day-selected):hover]:bg-primary-default',
   '[&_.p-datepicker-day:not(.p-disabled):not(.p-datepicker-day-selected):hover]:text-text-on-primary',
@@ -47,7 +48,6 @@ const DATEPICKER_CALENDAR_CLASSES = [
 const DATEPICKER_HIGHLIGHTED_REFERENCE_DAY_CLASSES = [
   '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!bg-transparent',
   '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!text-[inherit]',
-  '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!shadow-[inset_0_0_0_2px_var(--p-primary-color)]',
   '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:font-semibold',
   '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected):hover]:!bg-transparent',
   '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected):hover]:!text-[inherit]',
@@ -56,7 +56,7 @@ const DATEPICKER_HIGHLIGHTED_REFERENCE_DAY_CLASSES = [
 @Component({
   selector: 'jhi-datepicker',
   standalone: true,
-  imports: [DatePickerModule, FormsModule, FontAwesomeModule, TranslateModule, TranslateDirective, TooltipModule],
+  imports: [DatePickerModule, FormsModule, FontAwesomeModule, TranslateDirective, TranslateModule, TooltipModule],
   templateUrl: './datepicker.component.html',
   encapsulation: ViewEncapsulation.None,
 })
@@ -80,7 +80,7 @@ export class DatePickerComponent {
   placeholder = input<string | undefined>(undefined);
   icon = input<string | undefined>(undefined);
   tooltipText = input<string | undefined>(undefined);
-  shouldTranslate = input<boolean>(false);
+  shouldTranslate = input<boolean>(true);
   errorEnabled = input<boolean>(false);
 
   /**
@@ -169,8 +169,12 @@ export class DatePickerComponent {
     return currentLang === 'en' ? 'dd/mm/yy' : 'dd.mm.yy';
   });
 
+  displayPlaceholder = computed(() => this.translator.translate(this.placeholder(), this.shouldTranslate()));
+  displayTooltipText = computed(() => this.translator.translate(this.tooltipText(), this.shouldTranslate()));
+
   private scrollListener?: (event: Event) => void;
-  private translateService = inject(TranslateService);
+  private translator = injectTranslator();
+  private translateService = this.translator.translateService;
 
   /**
    * Effect to sync modelDate and handle language changes
@@ -251,5 +255,10 @@ export class DatePickerComponent {
       this.modelDate.set(undefined);
       this.selectedDateChange.emit(undefined);
     }
+  }
+
+  isHighlightedDate(date: { day: number; month: number; year: number }): boolean {
+    const highlightedDate = this.highlightedDateParts();
+    return highlightedDate?.day === date.day && highlightedDate?.month === date.month && highlightedDate?.year === date.year;
   }
 }

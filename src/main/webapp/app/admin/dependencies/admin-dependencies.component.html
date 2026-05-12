@@ -30,7 +30,7 @@
 
   @if (isLoading()) {
     <div class="flex justify-center py-16">
-      <jhi-progress-spinner styleClass="w-12 h-12" strokeWidth="4" />
+      <jhi-progress-spinner classStyling="w-12 h-12" strokeWidth="4" />
     </div>
   } @else if (dependenciesOverview(); as overview) {
     <!-- Info -->
@@ -80,10 +80,10 @@
           }}
         </div>
         <div class="flex justify-center gap-1.5 flex-wrap mt-2">
-          <jhi-tag [text]="(overview.criticalCount ?? 0) + ' ' + ('dependencies.severity.critical' | translate)" color="danger" />
-          <jhi-tag [text]="(overview.highCount ?? 0) + ' ' + ('dependencies.severity.high' | translate)" color="warn" />
-          <jhi-tag [text]="(overview.mediumCount ?? 0) + ' ' + ('dependencies.severity.medium' | translate)" color="warn" />
-          <jhi-tag [text]="(overview.lowCount ?? 0) + ' ' + ('dependencies.severity.low' | translate)" color="secondary" />
+          <jhi-tag text="dependencies.severity.criticalCount" [translationParams]="{ count: overview.criticalCount ?? 0 }" color="danger" />
+          <jhi-tag text="dependencies.severity.highCount" [translationParams]="{ count: overview.highCount ?? 0 }" color="warn" />
+          <jhi-tag text="dependencies.severity.mediumCount" [translationParams]="{ count: overview.mediumCount ?? 0 }" color="warn" />
+          <jhi-tag text="dependencies.severity.lowCount" [translationParams]="{ count: overview.lowCount ?? 0 }" color="secondary" />
         </div>
       </div>
     </div>
@@ -119,18 +119,15 @@
 
   <!-- Custom column templates (outside conditional so viewChild can resolve them) -->
   <ng-template #versionTemplate let-dep>
-    <jhi-tag [text]="dep.version ?? ''" color="info" />
+    <jhi-tag [text]="dep.version ?? ''" color="info" [shouldTranslate]="false" />
   </ng-template>
 
   <ng-template #securityTemplate let-dep>
     @if (dep.vulnerabilities?.length) {
       <div class="flex flex-col items-start gap-1">
         <jhi-tag
-          [text]="
-            dep.vulnerabilities.length +
-            ' ' +
-            (dep.vulnerabilities.length === 1 ? ('dependencies.vulnerability' | translate) : ('dependencies.vulnerabilities' | translate))
-          "
+          text="dependencies.vulnerabilityCount"
+          [translationParams]="{ count: dep.vulnerabilities.length }"
           [color]="dep.severityTagColor"
           [icon]="faExclamationTriangle"
         />
@@ -142,12 +139,13 @@
               rel="noopener noreferrer"
               class="no-underline hover:opacity-70 transition-opacity"
             >
-              <jhi-tag [text]="vuln.id ?? ''" color="info" />
+              <jhi-tag [text]="vuln.id ?? ''" color="info" [shouldTranslate]="false" />
             </a>
           }
           @if (dep.vulnerabilities.length > 3) {
             <jhi-button
-              [label]="isVulnerabilityExpanded(dep) ? ('dependencies.showLess' | translate) : '+' + (dep.vulnerabilities.length - 3)"
+              [label]="isVulnerabilityExpanded(dep) ? 'dependencies.showLess' : 'dependencies.showMore'"
+              [translationParams]="{ count: dep.vulnerabilities.length - 3 }"
               variant="text"
               severity="primary"
               size="xs"
@@ -157,15 +155,15 @@
         </div>
       </div>
     } @else {
-      <jhi-tag [text]="'dependencies.secure' | translate" color="success" [icon]="faShieldAlt" />
+      <jhi-tag text="dependencies.secure" color="success" [icon]="faShieldAlt" />
     }
   </ng-template>
 
   <ng-template #sourceTemplate let-dep>
     @if (dep.source === 'server') {
-      <jhi-tag [text]="'dependencies.sourceServer' | translate" color="primary" />
+      <jhi-tag text="dependencies.sourceServer" color="primary" />
     } @else {
-      <jhi-tag [text]="'dependencies.sourceClient' | translate" color="info" />
+      <jhi-tag text="dependencies.sourceClient" color="info" />
     }
   </ng-template>
 </div>

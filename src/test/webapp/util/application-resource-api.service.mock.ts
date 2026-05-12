@@ -15,7 +15,7 @@ export type ApplicationResourceApiMock = {
   getApplicationForDetailPage: ReturnType<typeof vi.fn>;
   updateApplication: ReturnType<typeof vi.fn>;
   withdrawApplication: ReturnType<typeof vi.fn>;
-  getDocumentDictionaryIds: ReturnType<typeof vi.fn>;
+  getDocumentIds: ReturnType<typeof vi.fn>;
   deleteApplication: ReturnType<typeof vi.fn>;
   getApplicationPages: ReturnType<typeof vi.fn>;
   renameDocument: ReturnType<typeof vi.fn>;
@@ -41,14 +41,17 @@ export const createMockApplicationDTO = (applicationState: ApplicationForApplica
   },
 });
 
-const createMockApplicationOverview = (overrides?: Partial<ApplicationOverviewDTO>): ApplicationOverviewDTO => ({
-  applicationId: '123',
-  jobTitle: 'Software Engineer',
-  researchGroup: 'Research Group A',
-  applicationState: ApplicationOverviewDTOApplicationStateEnum.Sent,
-  createdAt: '2025-01-01T12:00:00Z',
-  ...overrides,
-});
+const createMockApplicationOverview = (overrides?: Partial<ApplicationOverviewDTO>): ApplicationOverviewDTO =>
+  Object.assign(
+    {
+      applicationId: '123',
+      jobTitle: 'Software Engineer',
+      researchGroup: 'Research Group A',
+      applicationState: ApplicationOverviewDTOApplicationStateEnum.Sent,
+      createdAt: '2025-01-01T12:00:00Z',
+    },
+    overrides ?? {},
+  );
 
 export const createMockApplicationOverviewPages = () => [
   createMockApplicationOverview({ applicationId: '1' }),
@@ -63,7 +66,7 @@ export function createApplicationResourceApiMock(): ApplicationResourceApiMock {
     getApplicationForDetailPage: vi.fn().mockReturnValue(of({})),
     updateApplication: vi.fn().mockReturnValue(of({})),
     withdrawApplication: vi.fn().mockReturnValue(of({})),
-    getDocumentDictionaryIds: vi.fn().mockReturnValue(of({})),
+    getDocumentIds: vi.fn().mockReturnValue(of({})),
     deleteApplication: vi.fn().mockReturnValue(of(void 0)),
     getApplicationPages: vi.fn().mockReturnValue(of({ content: mockApplicationOverviewPages, totalElements: 2 })),
     uploadDocuments: vi.fn().mockReturnValue(of([{ id: '1', name: 'Doc1', size: 1234 }])),

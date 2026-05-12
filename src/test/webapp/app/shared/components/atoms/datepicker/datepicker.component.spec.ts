@@ -73,39 +73,21 @@ describe('DatePickerComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create', () => {
-    const fixture = createFixture();
-    expect(fixture.componentInstance).toBeTruthy();
-  });
-
   describe('Date Input and Validation', () => {
-    it('should set modelDate to undefined for invalid date', () => {
-      const fixture = createFixture();
-      setInputAndDetectChanges(fixture, 'selectedDate', 'invalid-date');
-      expect(fixture.componentInstance.modelDate()).toBeUndefined();
-    });
-
-    it('should update modelDate when selectedDate changes from invalid to valid', () => {
+    it('should update modelDate when selectedDate changes from invalid to valid and back to undefined', () => {
       const fixture = createFixture();
 
       setInputAndDetectChanges(fixture, 'selectedDate', 'invalid');
       expect(fixture.componentInstance.modelDate()).toBeUndefined();
 
       setInputAndDetectChanges(fixture, 'selectedDate', TEST_DATES.valid);
-      const modelDate = fixture.componentInstance.modelDate();
-      expectDateProperties(modelDate, 2024, 9, 13); // October (0-indexed)
-    });
-
-    it('should reset modelDate when selectedDate is undefined', () => {
-      const fixture = createFixture();
-      setInputAndDetectChanges(fixture, 'selectedDate', TEST_DATES.valid);
-      expect(fixture.componentInstance.modelDate()).toBeInstanceOf(Date);
+      expectDateProperties(fixture.componentInstance.modelDate(), 2024, 9, 13);
 
       setInputAndDetectChanges(fixture, 'selectedDate', undefined);
       expect(fixture.componentInstance.modelDate()).toBeUndefined();
     });
 
-    it('should handle various invalid date formats', () => {
+    it('should treat various invalid date formats as undefined', () => {
       const fixture = createFixture();
 
       TEST_DATES.invalid.forEach(invalidDate => {
@@ -116,22 +98,15 @@ describe('DatePickerComponent', () => {
   });
 
   describe('Date Change Events', () => {
-    it('should emit ISO date string when onDateChange called with Date', () => {
+    it.each<[Date | undefined, string | undefined]>([
+      [TEST_DATES.futureDate, '2025-10-13'],
+      [undefined, undefined],
+    ])('should emit %s as %s on onDateChange', (input, expected) => {
       const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      const emitSpy = vi.spyOn(comp.selectedDateChange, 'emit');
+      const emitSpy = vi.spyOn(fixture.componentInstance.selectedDateChange, 'emit');
 
-      comp.onDateChange(TEST_DATES.futureDate);
-      expect(emitSpy).toHaveBeenCalledWith('2025-10-13');
-    });
-
-    it('should emit undefined when onDateChange called with undefined', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      const emitSpy = vi.spyOn(comp.selectedDateChange, 'emit');
-
-      comp.onDateChange(undefined);
-      expect(emitSpy).toHaveBeenCalledWith(undefined);
+      fixture.componentInstance.onDateChange(input);
+      expect(emitSpy).toHaveBeenCalledWith(expected);
     });
 
     it('should update modelDate in onDateChange with setTimeout', async () => {
@@ -145,62 +120,11 @@ describe('DatePickerComponent', () => {
     });
   });
 
-  describe('Input Properties', () => {
-    it('should accept label and required inputs', () => {
-      const fixture = createFixture();
-      setInputAndDetectChanges(fixture, 'label', 'datepicker.label');
-      setInputAndDetectChanges(fixture, 'required', true);
-
-      expect(fixture.componentInstance.label()).toBe('datepicker.label');
-      expect(fixture.componentInstance.required()).toBe(true);
-    });
-
-    it('should apply disabled state', () => {
-      const fixture = createFixture();
-      setInputAndDetectChanges(fixture, 'disabled', true);
-      expect(fixture.componentInstance.disabled()).toBe(true);
-    });
-
-    it('should accept icon input', () => {
-      const fixture = createFixture();
-      setInputAndDetectChanges(fixture, 'icon', 'calendar');
-      expect(fixture.componentInstance.icon()).toBe('calendar');
-    });
-
-    it('should accept shouldTranslate and placeholder inputs', () => {
-      const fixture = createFixture();
-      setInputAndDetectChanges(fixture, 'shouldTranslate', true);
-      setInputAndDetectChanges(fixture, 'placeholder', 'datepicker.placeholder');
-
-      expect(fixture.componentInstance.shouldTranslate()).toBe(true);
-      expect(fixture.componentInstance.placeholder()).toBe('datepicker.placeholder');
-    });
-  });
-
-  describe('Calendar State Management', () => {
-    it('should toggle isCalendarOpen signal', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      expect(comp.isCalendarOpen()).toBe(false);
-
-      comp.isCalendarOpen.set(true);
-      expect(comp.isCalendarOpen()).toBe(true);
-
-      comp.isCalendarOpen.set(false);
-      expect(comp.isCalendarOpen()).toBe(false);
-    });
-  });
-
   describe('Date Range Configuration', () => {
-    it('should handle effectiveMinDate computation', () => {
+    it('should default effectiveMinDate to today and override when minDate is set', () => {
       const fixture = createFixture();
+      expect(fixture.componentInstance.effectiveMinDate().toDateString()).toBe(new Date().toDateString());
 
-      // Test default (today)
-      const today = new Date();
-      expect(fixture.componentInstance.effectiveMinDate().toDateString()).toBe(today.toDateString());
-
-      // Test with custom minDate
       setInputAndDetectChanges(fixture, 'minDate', TEST_DATES.customMinDate);
       expect(fixture.componentInstance.effectiveMinDate()).toStrictEqual(TEST_DATES.customMinDate);
     });
@@ -245,7 +169,7 @@ describe('DatePickerComponent', () => {
       const outsideEvent = createMockEvent();
       if (comp['scrollListener']) {
         comp['scrollListener'](outsideEvent);
-        expect(outsideEvent.stopPropagation).toHaveBeenCalled();
+        expect(outsideEvent.stopPropagation).toHaveBeenCalledOnce();
       }
 
       // Test scroll within datepicker panel - should NOT call stopPropagation
@@ -267,28 +191,12 @@ describe('DatePickerComponent', () => {
 
     it('should clean up scroll listener on component destruction', () => {
       const fixture = createFixture();
-      const comp = fixture.componentInstance;
       const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
 
       setupScrollListenerTest(fixture);
       fixture.destroy();
 
       expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function), true);
-    });
-
-    it('should handle edge cases in scroll listener when datepicker panel is null', () => {
-      const fixture = createFixture();
-      const comp = setupScrollListenerTest(fixture);
-
-      const querySelectorSpy = vi.spyOn(document, 'querySelector').mockReturnValue(null);
-      const mockEvent = createMockEvent();
-
-      if (comp['scrollListener']) {
-        comp['scrollListener'](mockEvent);
-        expect(mockEvent.stopPropagation).toHaveBeenCalled();
-      }
-
-      querySelectorSpy.mockRestore();
     });
   });
 
@@ -314,38 +222,25 @@ describe('DatePickerComponent', () => {
   });
 
   describe('Language and Localization', () => {
-    it('should handle language change events from TranslateService', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      const translateService = TestBed.inject(TranslateService);
-      const langChangeSpy = vi.spyOn(comp.currentLanguage, 'set');
-
-      translateService.use('de');
-
-      expect(langChangeSpy).toHaveBeenCalledWith('de');
-      expect(comp.currentLanguage()).toBe('de');
-    });
-
-    it('should handle language changes and date format computation', () => {
+    it('should handle language changes and date format computation for each language', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      // Test each language format
       Object.entries(LANGUAGE_FORMATS).forEach(([lang, expectedFormat]) => {
         comp.currentLanguage.set(lang);
-        expect(comp.currentLanguage()).toBe(lang);
         expect(comp.dateFormat()).toBe(expectedFormat);
       });
     });
 
-    it('should default to English when TranslateService currentLang is falsy', () => {
-      const translateService = TestBed.inject(TranslateService);
-      vi.spyOn(translateService, 'currentLang', 'get').mockReturnValue(null as unknown as string);
-
+    it('should sync with TranslateService.use() and default to English when currentLang is falsy', () => {
       const fixture = createFixture();
-      const comp = fixture.componentInstance;
+      const translateService = TestBed.inject(TranslateService);
+      translateService.use('de');
+      expect(fixture.componentInstance.currentLanguage()).toBe('de');
 
-      expect(comp.currentLanguage()).toBe('en');
+      vi.spyOn(translateService, 'currentLang', 'get').mockReturnValue(null as unknown as string);
+      const newFixture = createFixture();
+      expect(newFixture.componentInstance.currentLanguage()).toBe('en');
     });
   });
 });

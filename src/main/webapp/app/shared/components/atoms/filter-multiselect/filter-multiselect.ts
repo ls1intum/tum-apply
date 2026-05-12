@@ -1,11 +1,11 @@
-import { Component, ElementRef, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
+import { Component, ElementRef, ViewEncapsulation, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ChipModule } from 'primeng/chip';
+import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
 // Interface for filter options which can be passed to the filter component
 export interface Filter {
@@ -21,9 +21,15 @@ export interface FilterChange {
   selectedValues: string[];
 }
 
+interface RenderedOption {
+  value: string;
+  label: string;
+  selected: boolean;
+}
+
 @Component({
   selector: 'jhi-filter-multiselect',
-  imports: [FormsModule, TranslateModule, DividerModule, CommonModule, FontAwesomeModule, CheckboxModule, ChipModule],
+  imports: [FormsModule, DividerModule, CommonModule, FontAwesomeModule, CheckboxModule, ChipModule],
   templateUrl: './filter-multiselect.html',
   styleUrl: './filter-multiselect.scss',
   encapsulation: ViewEncapsulation.None,
@@ -37,9 +43,7 @@ export class FilterMultiselect {
   filterSearchPlaceholder = input.required<string>();
   filterOptions = input<string[]>([]);
   shouldTranslateOptions = input<boolean>(false);
-  showSelectedChipsInTrigger = input<boolean>(true);
   selectedValuesInput = input<string[] | undefined>(undefined);
-  inline = input<boolean>(false);
   focusedIndexOptionList = signal<number>(-1);
 
   selectedValues = signal<string[]>([]);
@@ -51,6 +55,12 @@ export class FilterMultiselect {
 
   // gives the selected values back to the parent component
   filterChange = output<{ filterId: string; selectedValues: string[] }>();
+
+  displayFilterLabel = computed(() => this.translator.translate(this.filterLabel()) ?? '');
+  displaySearchPlaceholder = computed(() => this.translator.translate(this.filterSearchPlaceholder()) ?? '');
+  displaySelectedHeader = computed(() => this.translator.translate('entity.filters.selected') ?? '');
+  displayClearAllLabel = computed(() => this.translator.translate('entity.filters.clearAll') ?? '');
+  displayNoResultsLabel = computed(() => this.translator.translate('entity.filters.noResults') ?? '');
 
   filteredOptions = computed(() => {
     const search = this.searchTerm().toLowerCase().trim();
@@ -70,14 +80,16 @@ export class FilterMultiselect {
     });
   });
 
-  sortedOptions = computed(() => {
+  sortedOptions = computed<RenderedOption[]>(() => {
+    this.translator.langChange();
     const selected = this.selectedValues();
     const filtered = this.filteredOptions();
+    const translateLabels = this.shouldTranslateOptions();
 
-    const opts = filtered.map(job => ({
-      label: job,
-      value: job,
-      selected: selected.includes(job),
+    const opts = filtered.map(option => ({
+      value: option,
+      label: translateLabels ? this.translateService.instant(option) : option,
+      selected: selected.includes(option),
     }));
 
     return opts.sort((a, b) => {
@@ -91,7 +103,7 @@ export class FilterMultiselect {
   selectedOptions = computed(() => this.sortedOptions().filter(opt => opt.selected));
 
   unselectedOptions = computed(() => this.sortedOptions().filter(opt => !opt.selected));
-  showChipsCounterOnly = computed(() => this.showSelectedChipsInTrigger() && this.selectedOptions().length > this.maxVisibleChips);
+  showChipsCounterOnly = computed(() => this.selectedOptions().length > this.maxVisibleChips);
 
   hasSelectedItems = computed(() => this.selectedOptions().length > 0);
   hasUnselectedItems = computed(() => this.unselectedOptions().length > 0);
@@ -100,7 +112,9 @@ export class FilterMultiselect {
   totalCount = computed(() => this.filterOptions().length);
 
   private readonly elementRef = inject(ElementRef);
-  private readonly translateService = inject(TranslateService);
+  private readonly dropdownRef = viewChild<ElementRef<HTMLElement>>('dropdown');
+  private readonly translator = injectTranslator();
+  private readonly translateService = this.translator.translateService;
 
   // Sync selected values between inputs and mobile filter bar
   private readonly syncSelectedValuesEffect = effect(() => {
@@ -118,7 +132,7 @@ export class FilterMultiselect {
     if (this.isOpen()) {
       this.searchTerm.set('');
       this.calculateDropdownAlignment();
-      this.focusedIndexOptionList.set(0);
+      this.focusedIndexOptionList.set(-1);
     }
   }
 
@@ -235,7 +249,7 @@ export class FilterMultiselect {
 
   private calculateDropdownAlignment(): void {
     setTimeout(() => {
-      const dropdown = this.elementRef.nativeElement.querySelector('.filter-dropdown');
+      const dropdown = this.dropdownRef()?.nativeElement;
       if (dropdown && window.innerWidth <= 768) {
         const rect = dropdown.getBoundingClientRect();
         const viewportWidth = window.innerWidth;

@@ -30,32 +30,22 @@ describe('ReviewDialogComponent', () => {
   });
 
   describe('computed canAccept', () => {
-    it('should be false if notifyApplicant is true and editorModel length <= 7', () => {
-      component.notifyApplicant.set(true);
-      component.editorModel.set('<p></p>');
-      expect(component.canAccept()).toBe(false);
-    });
-
-    it('should be true if notifyApplicant is true and editorModel length > 7', () => {
-      component.notifyApplicant.set(true);
-      component.editorModel.set('<p>Hello</p>');
-      expect(component.canAccept()).toBe(true);
-    });
-
-    it('should be true if notifyApplicant is false regardless of editorModel length', () => {
-      component.notifyApplicant.set(false);
-      component.editorModel.set('');
-      expect(component.canAccept()).toBe(true);
+    it.each<[boolean, string, boolean]>([
+      [true, '<p></p>', false],
+      [true, '<p>Hello</p>', true],
+      [false, '', true],
+    ])('should compute canAccept for notifyApplicant=%s editorModel=%s', (notifyApplicant, editorModel, expected) => {
+      component.notifyApplicant.set(notifyApplicant);
+      component.editorModel.set(editorModel);
+      expect(component.canAccept()).toBe(expected);
     });
   });
 
   describe('computed canReject', () => {
-    it('should be false if no reason is selected', () => {
+    it('should reflect whether a reject reason is selected', () => {
       component.selectedRejectReason.set(undefined);
       expect(component.canReject()).toBe(false);
-    });
 
-    it('should be true if a reason is selected', () => {
       component.selectedRejectReason.set({ name: 'test', value: RejectDTOReasonEnum.JobFilled });
       expect(component.canReject()).toBe(true);
     });
@@ -67,12 +57,12 @@ describe('ReviewDialogComponent', () => {
       expect(component.translationMetaData()).toBeUndefined();
     });
 
-    it('should return expected metadata when application is provided', () => {
+    it.each<[ApplicationEvaluationDetailDTO['applicationDetailDTO']['applicant'], string]>([
+      [{ user: { name: 'Alice' } } as ApplicationEvaluationDetailDTO['applicationDetailDTO']['applicant'], 'Alice'],
+      [undefined, ''],
+    ])('should derive APPLICANT_FIRST_NAME from applicant=%o', (applicant, expectedFirstName) => {
       const application: ApplicationEvaluationDetailDTO = {
-        applicationDetailDTO: {
-          applicant: { user: { name: 'Alice' } },
-          jobTitle: 'Research Job',
-        },
+        applicationDetailDTO: { applicant, jobTitle: 'Research Job' },
         professor: {
           email: 'prof@uni.de',
           firstName: 'John',
@@ -84,28 +74,8 @@ describe('ReviewDialogComponent', () => {
       fixture.componentRef.setInput('application', application);
 
       const meta = component.translationMetaData();
-      expect(meta?.APPLICANT_FIRST_NAME).toBe('Alice');
+      expect(meta?.APPLICANT_FIRST_NAME).toBe(expectedFirstName);
       expect(meta?.PROFESSOR_EMAIL).toBe('prof@uni.de');
-    });
-
-    it('should use empty string for APPLICANT_FIRST_NAME if applicant or user is missing', () => {
-      const application: ApplicationEvaluationDetailDTO = {
-        applicationDetailDTO: {
-          applicant: undefined,
-          jobTitle: 'Research Job',
-        },
-        professor: {
-          email: 'prof@uni.de',
-          firstName: 'John',
-          lastName: 'Doe',
-          researchGroupName: 'GroupX',
-          researchGroupWebsite: 'www.groupx.com',
-        },
-      } as ApplicationEvaluationDetailDTO;
-      fixture.componentRef.setInput('application', application);
-
-      const meta = component.translationMetaData();
-      expect(meta?.APPLICANT_FIRST_NAME).toBe('');
       expect(meta?.JOB_NAME).toBe('Research Job');
     });
   });

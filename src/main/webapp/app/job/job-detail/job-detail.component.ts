@@ -19,7 +19,7 @@ import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
-import { JobFormDTO } from 'app/generated/model/job-form-dto';
+import { JobFormDTO, JobFormDTOTvlGradeEnum } from 'app/generated/model/job-form-dto';
 import { JobDetailDTO } from 'app/generated/model/job-detail-dto';
 import { PdfExportResourceApi } from 'app/generated/api/pdf-export-resource-api';
 import { JobPreviewRequest } from 'app/generated/model/job-preview-request';
@@ -34,6 +34,7 @@ import { JobDetailDTOStateEnum } from 'app/generated/model/job-detail-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import * as DropDownOptions from '../dropdown-options';
+
 type ApplicationStateEnum = ApplicationForApplicantDTOApplicationStateEnum;
 export interface JobDetails {
   supervisingProfessor: string;
@@ -44,10 +45,13 @@ export interface JobDetails {
   location: JobFormDTOLocationEnum;
   workload: string;
   contractDuration: string;
+  contractExtendable: boolean;
   fundingType: JobFormDTOFundingTypeEnum | undefined;
+  tvlGrade: JobFormDTOTvlGradeEnum | undefined;
   jobDescriptionEN: string;
   jobDescriptionDE: string;
   startDate: string;
+  startDateByArrangement: boolean;
   endDate: string;
   createdAt: string;
   lastModifiedAt: string;
@@ -67,6 +71,8 @@ export interface JobDetails {
   applicationState?: ApplicationStateEnum;
 
   suitableForDisabled?: boolean;
+
+  referenceLettersRequired: number;
 }
 
 @Component({
@@ -85,7 +91,6 @@ export interface JobDetails {
     InfoBoxComponent,
   ],
   templateUrl: './job-detail.component.html',
-  styleUrl: './job-detail.component.scss',
 })
 export class JobDetailComponent {
   readonly dropDownOptions = DropDownOptions;
@@ -203,8 +208,8 @@ export class JobDetailComponent {
     [JobDetailDTOStateEnum.ApplicantFound, 'jobState.applicantFound'],
   ]);
 
-  readonly stateSeverityMap = new Map<string, 'success' | 'info' | 'contrast' | 'secondary'>([
-    [JobDetailDTOStateEnum.Draft, 'info'],
+  readonly stateSeverityMap = new Map<string, 'success' | 'info' | 'contrast' | 'secondary' | 'neutral'>([
+    [JobDetailDTOStateEnum.Draft, 'neutral'],
     [JobDetailDTOStateEnum.Published, 'secondary'],
     [JobDetailDTOStateEnum.Closed, 'contrast'],
     [JobDetailDTOStateEnum.ApplicantFound, 'success'],
@@ -229,10 +234,10 @@ export class JobDetailComponent {
 
   readonly jobStateText = computed<string>(() => {
     const jobState = this.currentJobState();
-    return jobState ? (this.stateTextMap.get(jobState) ?? 'jobState.unknown') : 'Unknown';
+    return jobState ? (this.stateTextMap.get(jobState) ?? 'jobState.unknown') : 'jobState.unknown';
   });
 
-  readonly jobStateColor = computed<'success' | 'info' | 'contrast' | 'secondary'>(() => {
+  readonly jobStateColor = computed<'success' | 'info' | 'contrast' | 'secondary' | 'neutral'>(() => {
     const jobState = this.currentJobState();
     return jobState ? (this.stateSeverityMap.get(jobState) ?? 'info') : 'info';
   });
@@ -517,10 +522,13 @@ export class JobDetailComponent {
       location: data.location as JobFormDTOLocationEnum,
       workload: data.workload?.toString() ?? '',
       contractDuration: data.contractDuration?.toString() ?? '',
+      contractExtendable: data.contractExtendable ?? false,
       fundingType: data.fundingType as JobFormDTOFundingTypeEnum | undefined,
+      tvlGrade: data.tvlGrade as JobFormDTOTvlGradeEnum | undefined,
       jobDescriptionEN: data.jobDescriptionEN ?? '',
       jobDescriptionDE: data.jobDescriptionDE ?? '',
       startDate,
+      startDateByArrangement: data.startDateByArrangement ?? false,
       endDate,
       createdAt,
       lastModifiedAt,
@@ -533,13 +541,17 @@ export class JobDetailComponent {
       researchGroupPostalCode,
       researchGroupCity,
 
+      referenceLettersRequired: isForm
+        ? ((data as JobFormDTO).referenceLettersRequired ?? 0)
+        : (jobDetailDTO.referenceLettersRequired ?? 0),
+
       jobState: isForm ? JobDetailDTOStateEnum.Draft : jobDetailDTO.state,
       belongsToResearchGroup: !isForm && jobDetailDTO.researchGroup.researchGroupId === user?.researchGroup?.researchGroupId,
 
       applicationId: jobDetailDTO.applicationId ?? undefined,
       applicationState: jobDetailDTO.applicationState ?? undefined,
 
-      suitableForDisabled: isForm ? (data as JobFormDTO).suitableForDisabled : jobDetailDTO.suitableForDisabled,
+      suitableForDisabled: data.suitableForDisabled,
     };
   }
 

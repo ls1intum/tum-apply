@@ -38,22 +38,15 @@
               />
             </div>
 
-            <div
-              [class]="'transition-all duration-200 ease-in-out ' + animationClasses()"
-              [attr.aria-hidden]="!subjectAreaNotificationsEnabled()"
-            >
-              <div class="flex flex-col gap-3">
-                <div [class.pointer-events-none]="subjectAreaSubscriptions.saving()">
-                  <jhi-subject-area-subscription-selector
-                    [saving]="subjectAreaSubscriptions.saving()"
-                    [filterOptions]="subjectAreaSubscriptions.filterOptions"
-                    [selectedValues]="subjectAreaSubscriptions.selectedFilterValues()"
-                    [selectedOptions]="subjectAreaSubscriptions.selectedOptions()"
-                    (filterChange)="subjectAreaSubscriptions.onFilterChange($event)"
-                    (removeSubjectArea)="subjectAreaSubscriptions.remove($event)"
-                  />
-                </div>
-              </div>
+            <div class="flex flex-col mt-4 gap-3">
+              <jhi-subject-area-subscription-selector
+                [saving]="subjectAreaSubscriptions.saving()"
+                [filterOptions]="subjectAreaSubscriptions.filterOptions"
+                [selectedValues]="subjectAreaSubscriptions.selectedFilterValues()"
+                [selectedOptions]="subjectAreaSubscriptions.selectedOptions()"
+                (filterChange)="subjectAreaSubscriptions.onFilterChange($event)"
+                (removeSubjectArea)="subjectAreaSubscriptions.remove($event)"
+              />
             </div>
           </div>
         </section>

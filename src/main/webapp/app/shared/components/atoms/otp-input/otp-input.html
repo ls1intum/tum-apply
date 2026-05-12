@@ -1,6 +1,6 @@
-<div class="otp-wrapper">
-  <div class="instructions">
-    <span class="otp-instruction" jhiTranslate="auth.common.otp.instructions"></span>
+<div class="flex flex-col gap-4 items-center">
+  <div class="flex flex-col gap-2 text-center">
+    <span class="text-center whitespace-pre-line" jhiTranslate="auth.common.otp.instructions"></span>
     <span [translateValues]="{ minutes: ttlMinutes }" jhiTranslate="auth.common.otp.minutes"></span>
   </div>
   <p-inputotp
@@ -11,14 +11,14 @@
     [length]="length"
     [size]="$any(otpSize())"
     inputmode="latin"
-    styleClass="otp-input"
+    class="otp-input"
   />
-  <div class="error-container">
+  <div class="text-negative-default">
     @if (showError()) {
       <span jhiTranslate="auth.common.otp.error"></span>
     }
   </div>
-  <div class="buttons">
+  <div class="flex justify-between w-full gap-8">
     <jhi-button (click)="onResend()" [disabled]="disableResend()" [fullWidth]="true" [label]="resendLabel" variant="text" />
     <jhi-button
       (click)="onSubmit()"

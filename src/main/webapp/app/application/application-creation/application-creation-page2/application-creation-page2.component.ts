@@ -54,7 +54,6 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   selector: 'jhi-application-creation-page2',
   standalone: true,
   templateUrl: './application-creation-page2.component.html',
-  styleUrl: './application-creation-page2.component.scss',
   imports: [DegreeDocumentSectionComponent, ReactiveFormsModule, TranslateDirective],
 })
 export default class ApplicationCreationPage2Component {
@@ -101,15 +100,13 @@ export default class ApplicationCreationPage2Component {
   lastBachelorGrade = signal<string>('');
   lastMasterGrade = signal<string>('');
 
-  helperTextBachelorGrade = computed(() => {
-    this.currentLang();
-    return getGradeHelperText(this.translateService, this.bachelorGradeLimits());
-  });
+  helperTextBachelorGrade = computed(() => getGradeHelperText(this.bachelorGradeLimits()));
+  helperTextBachelorGradeKey = computed(() => this.helperTextBachelorGrade()?.key ?? '');
+  helperTextBachelorGradeParams = computed(() => this.helperTextBachelorGrade()?.params ?? {});
 
-  helperTextMasterGrade = computed(() => {
-    this.currentLang();
-    return getGradeHelperText(this.translateService, this.masterGradeLimits());
-  });
+  helperTextMasterGrade = computed(() => getGradeHelperText(this.masterGradeLimits()));
+  helperTextMasterGradeKey = computed(() => this.helperTextMasterGrade()?.key ?? '');
+  helperTextMasterGradeParams = computed(() => this.helperTextMasterGrade()?.params ?? {});
 
   warningTextBachelorGrade = computed(() => {
     this.currentLang();
@@ -152,6 +149,27 @@ export default class ApplicationCreationPage2Component {
       masterGradeLowerLimit: data.masterGradeLowerLimit,
       masterGrade: data.masterGrade,
     });
+
+    // Back-fill must run before hasInitialLimitsSet flips on, otherwise
+    // bachelorGradeEffect's "grade unchanged" guard short-circuits forever.
+    const gradePatch: Partial<ApplicationCreationPage2Data> = {};
+    if (data.bachelorGrade && !data.bachelorGradeUpperLimit && !data.bachelorGradeLowerLimit) {
+      const detected = getDetectedGradeLimitsPatch(data.bachelorGrade);
+      if (detected.upperLimit !== '' && detected.lowerLimit !== '') {
+        gradePatch.bachelorGradeUpperLimit = detected.upperLimit;
+        gradePatch.bachelorGradeLowerLimit = detected.lowerLimit;
+      }
+    }
+    if (data.masterGrade && !data.masterGradeUpperLimit && !data.masterGradeLowerLimit) {
+      const detected = getDetectedGradeLimitsPatch(data.masterGrade);
+      if (detected.upperLimit !== '' && detected.lowerLimit !== '') {
+        gradePatch.masterGradeUpperLimit = detected.upperLimit;
+        gradePatch.masterGradeLowerLimit = detected.lowerLimit;
+      }
+    }
+    if (Object.keys(gradePatch).length > 0) {
+      this.page2Form.patchValue(gradePatch);
+    }
 
     this.hasInitialized.set(true);
 

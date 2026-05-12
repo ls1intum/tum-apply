@@ -1,4 +1,5 @@
-import { Component, computed, inject, input, output, viewChild } from '@angular/core';
+import { Component, DestroyRef, computed, inject, input, output, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -17,7 +18,7 @@ export interface JhiMenuItem {
   command?: () => void;
   severity?: MenuItemSeverity;
   disabled?: boolean;
-  styleClass?: string;
+  classStyling?: string;
 }
 
 @Component({
@@ -78,15 +79,21 @@ export class MenuComponent {
   };
 
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
-  constructor() {
-    // Clean up menu overlays on navigation start
-    // This fixes PrimeNG 21 issue where popups don't close on navigation
-    this.router.events.pipe(filter(event => event instanceof NavigationStart)).subscribe(() => {
+  // Clean up menu overlays on navigation start.
+  // Workaround for PrimeNG 21 popup-on-navigation behavior; remove once upstream is fixed.
+  // Subscribe (rather than toSignal+effect) so cleanup runs synchronously inside the
+  // navigation event tick — required for tests that assert DOM state immediately after.
+  private readonly clearOnNavigationSub = this.router.events
+    .pipe(
+      filter(event => event instanceof NavigationStart),
+      takeUntilDestroyed(this.destroyRef),
+    )
+    .subscribe(() => {
       this.clearMenuPopups();
       this.visibleChange.emit(false);
     });
-  }
 
   toggle(event: Event): void {
     this.menu().toggle(event);
@@ -132,8 +139,8 @@ export class MenuComponent {
   private buildStyleClass(item: JhiMenuItem): string {
     const parts: string[] = [];
 
-    if (item.styleClass !== undefined && item.styleClass !== '') {
-      parts.push(item.styleClass);
+    if (item.classStyling !== undefined && item.classStyling !== '') {
+      parts.push(item.classStyling);
     }
 
     if (item.severity !== undefined) {

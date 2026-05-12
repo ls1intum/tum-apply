@@ -19,13 +19,8 @@ import { AccountService } from '../../../core/auth/account.service';
   selector: 'jhi-research-group-templates',
   imports: [DynamicTableComponent, ButtonComponent, TranslateDirective, TranslateModule, ConfirmDialog],
   templateUrl: './research-group-templates.html',
-  styleUrl: './research-group-templates.scss',
 })
 export class ResearchGroupTemplates {
-  protected pageNumber = signal<number>(0);
-  protected pageSize = signal<number>(10);
-  protected total = signal<number>(0);
-
   protected readonly emailTemplateApi = inject(EmailTemplateResourceApi);
   protected readonly toastService = inject(ToastService);
   protected readonly translate = inject(TranslateService);
@@ -47,7 +42,7 @@ export class ResearchGroupTemplates {
     return [
       { field: 'displayName', header: `${this.translationKey}.tableColumns.templateName`, width: '28rem' },
       { field: 'createdBy', header: `${this.translationKey}.tableColumns.createdBy`, width: '15rem' },
-      { field: 'actions', header: '', width: '5rem', template: actionsTemplate },
+      { field: 'actions', header: '', width: '7rem', template: actionsTemplate },
     ];
   });
 
@@ -56,39 +51,37 @@ export class ResearchGroupTemplates {
   protected readonly tableData = computed(() => {
     this.currentLang();
     return this.responseData().map(template => {
-      let displayName = template.templateName;
-      let createdBy = (template.firstName ?? '') + ' ' + (template.lastName ?? '');
-
-      if (template.isDefault === true) {
-        createdBy = this.translate.instant(`${this.translationKey}.systemDefault`);
-        if (template.templateName != null) {
-          displayName = this.translate.instant(`${this.translationKey}.default.${template.emailType}-${template.templateName}`);
-        } else {
-          displayName = this.translate.instant(`${this.translationKey}.default.${template.emailType}`);
-        }
-      }
+      const displayName = this.translate.instant(`${this.translationKey}.messageType.${template.emailType}`);
+      const createdBy = template.isCustom
+        ? `${template.firstName ?? ''} ${template.lastName ?? ''}`.trim()
+        : this.translate.instant(`${this.translationKey}.systemDefault`);
 
       return {
-        ...template,
-        createdBy,
+        emailTemplateId: template.emailTemplateId,
+        emailType: template.emailType,
+        isCustom: template.isCustom,
+        english: template.english,
+        german: template.german,
+        firstName: template.firstName,
+        lastName: template.lastName,
+        lastModifiedAt: template.lastModifiedAt,
         displayName,
+        createdBy,
       };
     });
   });
 
+  protected readonly availableEmailTypesForCreate = computed(() =>
+    this.responseData()
+      .filter(t => !t.isCustom)
+      .map(t => t.emailType),
+  );
+
+  protected readonly pageNumber = signal<number>(0);
+  protected readonly pageSize = signal<number>(10);
+  protected readonly total = signal<number>(0);
+
   private readonly responseData = signal<EmailTemplateOverviewDTO[]>([]);
-
-  constructor() {
-    void this.loadPage();
-  }
-
-  onTableEmit(event: TableLazyLoadEvent): void {
-    const first = event.first ?? 0;
-    const rows = event.rows ?? 10;
-    this.pageNumber.set(first / rows);
-
-    void this.loadPage();
-  }
 
   async delete(templateId: string): Promise<void> {
     try {
@@ -101,6 +94,14 @@ export class ResearchGroupTemplates {
     }
   }
 
+  onTableEmit(event: TableLazyLoadEvent): void {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? this.pageSize();
+    this.pageNumber.set(first / rows);
+    this.pageSize.set(rows);
+    void this.loadPage();
+  }
+
   protected navigateToCreate(): void {
     void this.router.navigate(['/research-group/template/new']);
   }
@@ -109,12 +110,15 @@ export class ResearchGroupTemplates {
     void this.router.navigate(['/research-group/template', templateId, 'edit']);
   }
 
+  protected navigateToView(emailType: string): void {
+    void this.router.navigate(['/research-group/template/new'], { queryParams: { emailType } });
+  }
+
   private async loadPage(): Promise<void> {
     try {
-      const res = await firstValueFrom(this.emailTemplateApi.getTemplates(this.pageSize(), this.pageNumber()));
-
-      this.responseData.set(res.content ?? []);
-      this.total.set(res.totalElements ?? 0);
+      const page = await firstValueFrom(this.emailTemplateApi.getTemplates(this.pageNumber(), this.pageSize()));
+      this.responseData.set(page.content ?? []);
+      this.total.set(page.totalElements ?? 0);
     } catch {
       this.toastService.showError({ detail: 'Failed to load templates' });
     }

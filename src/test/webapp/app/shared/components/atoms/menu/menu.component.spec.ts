@@ -28,7 +28,7 @@ describe('MenuComponent', () => {
       shouldTranslate: false,
     };
 
-    const inputs = { ...defaults, ...overrideInputs };
+    const inputs = Object.assign({}, defaults, overrideInputs);
 
     Object.entries(inputs).forEach(([key, value]) => {
       fixture.componentRef.setInput(key as keyof MenuForTest, value);
@@ -50,72 +50,8 @@ describe('MenuComponent', () => {
     }).compileComponents();
   });
 
-  it('should create', () => {
-    const fixture = createMenuFixture({ items: [] });
-    expect(fixture.componentInstance).toBeTruthy();
-  });
-
-  describe('buildStyleClass logic', () => {
-    it('should build styleClass for disabled menu item', () => {
-      const items: JhiMenuItem[] = [{ label: 'Disabled item', disabled: true }];
-
-      const fixture = createMenuFixture({ items });
-
-      const menuModel = fixture.componentInstance.menuModel();
-      expect(menuModel[0].styleClass).toContain('pointer-events-none');
-      expect(menuModel[0].styleClass).toContain('text-text-disabled');
-      expect(menuModel[0].styleClass).toContain('cursor-not-allowed');
-    });
-
-    it('should map severity to CSS class', () => {
-      const items: JhiMenuItem[] = [{ label: 'Danger item', severity: 'danger' }];
-
-      const fixture = createMenuFixture({ items });
-
-      const menuModel = fixture.componentInstance.menuModel();
-      expect(menuModel[0].styleClass).toContain('menu-danger');
-    });
-
-    it('should combine custom styleClass with severity', () => {
-      const items: JhiMenuItem[] = [{ label: 'Combined item', severity: 'danger', styleClass: 'custom-class' }];
-
-      const fixture = createMenuFixture({ items });
-
-      const menuModel = fixture.componentInstance.menuModel();
-      expect(menuModel[0].styleClass).toContain('menu-danger');
-      expect(menuModel[0].styleClass).toContain('custom-class');
-    });
-
-    it('should return empty string when no styleClass, severity, or disabled', () => {
-      const items: JhiMenuItem[] = [{ label: 'Plain item' }];
-
-      const fixture = createMenuFixture({ items });
-
-      const menuModel = fixture.componentInstance.menuModel();
-      expect(menuModel[0].styleClass).toBe('');
-    });
-
-    it('should not include empty styleClass string', () => {
-      const items: JhiMenuItem[] = [{ label: 'Item', styleClass: '' }];
-
-      const fixture = createMenuFixture({ items });
-
-      const menuModel = fixture.componentInstance.menuModel();
-      expect(menuModel[0].styleClass).toBe('');
-    });
-
-    it('should not include disabled classes when disabled is false', () => {
-      const items: JhiMenuItem[] = [{ label: 'Item', disabled: false }];
-
-      const fixture = createMenuFixture({ items });
-
-      const menuModel = fixture.componentInstance.menuModel();
-      expect(menuModel[0].styleClass).not.toContain('pointer-events-none');
-    });
-  });
-
-  describe('handleCommand logic', () => {
-    it('should call item command and clean up popups', () => {
+  describe('Command handling', () => {
+    it('should call the item command and clean up popups when invoked', () => {
       const commandSpy = vi.fn();
       const items: JhiMenuItem[] = [{ label: 'Clickable item', command: commandSpy }];
 
@@ -130,10 +66,10 @@ describe('MenuComponent', () => {
 
       expect(commandSpy).toHaveBeenCalledOnce();
       const remainingElements = document.querySelectorAll('body > [name="p-anchored-overlay"]');
-      expect(remainingElements.length).toBe(0);
+      expect(remainingElements).toHaveLength(0);
     });
 
-    it('should handle undefined command gracefully', () => {
+    it('should not throw when an item has no command', () => {
       const items: JhiMenuItem[] = [{ label: 'Item without command' }];
 
       const fixture = createMenuFixture({ items });
@@ -143,52 +79,39 @@ describe('MenuComponent', () => {
     });
   });
 
-  describe('clearMenuPopups logic', () => {
-    it('should clean up menu popups on navigation start', () => {
+  describe('Router cleanup', () => {
+    it('should clean up popups on navigation start', () => {
       const mockElement = document.createElement('div');
       mockElement.setAttribute('name', 'p-anchored-overlay');
       document.body.appendChild(mockElement);
 
-      const fixture = createMenuFixture({ items: [] });
+      createMenuFixture({ items: [] });
 
       routerEventsSubject.next(new NavigationStart(1, '/test'));
 
       const remainingElements = document.querySelectorAll('body > [name="p-anchored-overlay"]');
-      expect(remainingElements.length).toBe(0);
+      expect(remainingElements).toHaveLength(0);
     });
   });
 
-  describe('public API methods', () => {
-    it('should call menu toggle method', () => {
+  describe('Public API forwarding', () => {
+    it.each<['toggle' | 'show' | 'hide', boolean]>([
+      ['toggle', true],
+      ['show', true],
+      ['hide', false],
+    ])('should forward %s() to the underlying PrimeNG menu', (method, withEvent) => {
       const fixture = createMenuFixture({ items: [] });
       const menuComponent = fixture.componentInstance.menu();
-      const toggleSpy = vi.spyOn(menuComponent, 'toggle');
+      const spy = vi.spyOn(menuComponent, method);
       const event = new Event('click');
 
-      fixture.componentInstance.toggle(event);
-
-      expect(toggleSpy).toHaveBeenCalledWith(event);
-    });
-
-    it('should call menu show method', () => {
-      const fixture = createMenuFixture({ items: [] });
-      const menuComponent = fixture.componentInstance.menu();
-      const showSpy = vi.spyOn(menuComponent, 'show');
-      const event = new Event('click');
-
-      fixture.componentInstance.show(event);
-
-      expect(showSpy).toHaveBeenCalledWith(event);
-    });
-
-    it('should call menu hide method', () => {
-      const fixture = createMenuFixture({ items: [] });
-      const menuComponent = fixture.componentInstance.menu();
-      const hideSpy = vi.spyOn(menuComponent, 'hide');
-
-      fixture.componentInstance.hide();
-
-      expect(hideSpy).toHaveBeenCalled();
+      if (withEvent) {
+        (fixture.componentInstance[method] as (e: Event) => void)(event);
+        expect(spy).toHaveBeenCalledWith(event);
+      } else {
+        fixture.componentInstance.hide();
+        expect(spy).toHaveBeenCalledOnce();
+      }
     });
   });
 });

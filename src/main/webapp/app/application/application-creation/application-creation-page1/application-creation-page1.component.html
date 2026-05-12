@@ -1,40 +1,40 @@
 <form [formGroup]="page1Form()">
   <p jhiTranslate="entity.applicationPage1.description"></p>
-  @if (applicationIdForDocuments(); as applicationId) {
-    <p-divider layout="horizontal">
+  <p-divider layout="horizontal">
+    <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
+  </p-divider>
+  <div class="w-full mb-6">
+    <span class="custom-label">
       <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
-    </p-divider>
-    <div class="w-full mb-6">
-      <label>
-        <span jhiTranslate="entity.applicationPage1.label.curriculumVitae"></span>
-        <span class="required"> *</span>
-        <fa-icon
-          class="icon"
-          [icon]="['fas', 'circle-info']"
-          [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
-          tooltipPosition="top"
-        />
-      </label>
-      <div class="flex flex-col gap-3">
-        <jhi-upload-button
-          documentType="CV"
-          [applicationId]="applicationId"
-          [documentIds]="computedDocumentIdsCvSet()"
-          (documentIdsChange)="cvDocsSetValidity($event)"
-          [allowMultiple]="false"
-          [compact]="true"
-        />
-        <jhi-ai-extraction-box
-          [applicationId]="applicationId"
-          [documentIds]="currentCvDocs() ?? []"
-          [isCv]="true"
-          [saveData]="true"
-          [helperTextKey]="'entity.aiExtraction.helperCv'"
-          (extracted)="onAiDataExtracted($event)"
-        />
-      </div>
+      <span class="required"> *</span>
+      <fa-icon
+        class="icon"
+        [icon]="['fas', 'circle-info']"
+        [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+        tooltipPosition="top"
+      />
+    </span>
+    <div class="flex flex-col gap-3">
+      <jhi-upload-button
+        documentType="CV"
+        [applicationId]="applicationIdForDocuments()"
+        [documentIds]="computedDocumentIdsCvSet()"
+        (documentIdsChange)="cvDocsSetValidity($event)"
+        [allowMultiple]="false"
+        [compact]="true"
+        [requestAuth]="requestAuth()"
+      />
+      <jhi-ai-extraction-box
+        [applicationId]="applicationIdForDocuments()"
+        [documentIds]="currentCvDocs() ?? []"
+        [isCv]="true"
+        [saveData]="true"
+        [helperTextKey]="'entity.aiExtraction.helperCv'"
+        (extracted)="onAiDataExtracted($event)"
+        [requestAuth]="requestAuth()"
+      />
     </div>
-  }
+  </div>
 
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.contactInformation"></span></p-divider>
   <div class="flex flex-col">
@@ -91,9 +91,9 @@
       <div class="flex-1">
         <jhi-select
           width="100%"
-          [label]="'entity.applicationPage1.label.gender' | translate"
+          label="entity.applicationPage1.label.gender"
           [items]="selectGenderLocal"
-          [placeholder]="'entity.applicationPage1.placeholder.selectGender' | translate"
+          placeholder="entity.applicationPage1.placeholder.selectGender"
           id="gender"
           [(selected)]="data().gender"
           (selectedChange)="updateSelect('gender', $event)"
@@ -105,9 +105,9 @@
       <div class="flex-1">
         <jhi-select
           width="100%"
-          [label]="'entity.applicationPage1.label.nationality' | translate"
+          label="entity.applicationPage1.label.nationality"
           [items]="selectNationalityComputed()"
-          [placeholder]="'entity.applicationPage1.placeholder.selectNationality' | translate"
+          placeholder="entity.applicationPage1.placeholder.selectNationality"
           id="nationality"
           [(selected)]="data().nationality"
           (selectedChange)="updateSelect('nationality', $event)"
@@ -188,8 +188,8 @@
     <div class="flex flex-col lg:flex-row lg:gap-8">
       <div class="flex-1">
         <jhi-select
-          [label]="'entity.applicationPage1.label.country' | translate"
-          [placeholder]="'entity.applicationPage1.placeholder.selectCountry' | translate"
+          label="entity.applicationPage1.label.country"
+          placeholder="entity.applicationPage1.placeholder.selectCountry"
           id="country"
           [required]="true"
           [(selected)]="data().country"

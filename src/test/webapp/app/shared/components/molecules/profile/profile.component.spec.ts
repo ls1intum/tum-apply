@@ -36,15 +36,6 @@ describe('ProfileComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create component with invalid form initially', () => {
-    const component = fixture.componentInstance;
-
-    expect(component).toBeTruthy();
-    expect(component.form.contains('firstName')).toBe(true);
-    expect(component.form.contains('lastName')).toBe(true);
-    expect(component.form.valid).toBe(false);
-  });
-
   it('should call submitHandler with first and last name when form is valid and not loading', () => {
     const component = fixture.componentInstance;
     const submitSpy = vi.fn();
@@ -56,8 +47,7 @@ describe('ProfileComponent', () => {
 
     component.onSubmit();
 
-    expect(submitSpy).toHaveBeenCalledTimes(1);
-    expect(submitSpy).toHaveBeenCalledWith('Ada', 'Lovelace');
+    expect(submitSpy).toHaveBeenCalledExactlyOnceWith('Ada', 'Lovelace');
   });
 
   it('should not call submitHandler when form is invalid', () => {

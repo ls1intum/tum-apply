@@ -12,7 +12,7 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -33,21 +33,13 @@ import { UserAvatarComponent } from '../../atoms/user-avatar/user-avatar.compone
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [
-    CommonModule,
-    ButtonComponent,
-    FontAwesomeModule,
-    TranslateModule,
-    DynamicDialogModule,
-    TranslateDirective,
-    MenuComponent,
-    UserAvatarComponent,
-  ],
+  imports: [CommonModule, ButtonComponent, FontAwesomeModule, DynamicDialogModule, TranslateDirective, MenuComponent, UserAvatarComponent],
   templateUrl: './header.component.html',
   encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent {
   translateService = inject(TranslateService);
+  langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
     initialValue: this.translateService.getCurrentLang() ? this.translateService.getCurrentLang().toUpperCase() : 'EN',
   });
@@ -71,6 +63,10 @@ export class HeaderComponent {
       return 'header.systemMode';
     }
     return this.isDarkMode() ? 'header.darkMode' : 'header.lightMode';
+  });
+  profileMenuAriaLabel = computed(() => {
+    this.langChange();
+    return this.translateService.instant('header.profileMenu');
   });
   themeOptions: SelectOption[] = [
     { name: 'Light', value: 'light' },
@@ -110,7 +106,7 @@ export class HeaderComponent {
   });
 
   readonly headerButtonClass =
-    'inline-flex [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-md';
+    'inline-flex [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-0 sm:[&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-md';
 
   profileMenu = viewChild<MenuComponent>('profileMenu');
   isProfileMenuOpen = signal(false);

@@ -1,7 +1,9 @@
 import { AbstractControl } from '@angular/forms';
 import type { TranslateService } from '@ngx-translate/core';
 
-export type GradeType = 'letter' | 'numeric' | 'percentage' | 'invalid';
+export type GradeType = 'letter' | 'numeric' | 'numericFraction' | 'percentage' | 'invalid';
+
+const NUMERIC_FRACTION_PATTERN = /^([0-9]{1,10}(?:[.,][0-9]{1,5})?)\/([0-9]{1,10}(?:[.,][0-9]{1,5})?)$/;
 
 export interface GradingScaleLimitsData {
   upperLimit: string;
@@ -29,6 +31,11 @@ export function getGradeType(value: string): GradeType {
   // Check for percentage (digits with optional comma/dot followed by %)
   if (/^(?:[0-9]{1,10}|[0-9]{1,10}[.,][0-9]{1,5})%$/.test(trimmed)) {
     return 'percentage';
+  }
+
+  // Check for fraction grade like "105/110" (Italian convention) before plain numeric.
+  if (NUMERIC_FRACTION_PATTERN.test(trimmed)) {
+    return 'numericFraction';
   }
 
   // Check for numeric grade (digits with optional comma/dot)
@@ -181,6 +188,38 @@ export function detectNumericGrade(grade: string): GradingScaleLimitsResult {
 }
 
 /**
+ * Detects if a grade is a fraction grade like "105/110" and returns its limits.
+ *
+ * The denominator becomes the upper limit. The lower limit is taken from the
+ * matching row in NUMERIC_GRADING_SCALES so the inferred passing grade matches
+ * the surrounding numeric scale (110 -> 66, 100 -> 50, 20 -> 10, ...). When no
+ * row matches, the lower limit falls back to half the denominator, rounded.
+ */
+export function detectFractionGrade(grade: string): GradingScaleLimitsResult {
+  const match = grade.match(NUMERIC_FRACTION_PATTERN);
+  if (!match) {
+    return null;
+  }
+
+  const upperRaw = match[2];
+  const upperValue = parseFloat(upperRaw.replace(',', '.'));
+  if (isNaN(upperValue) || upperValue <= 0) {
+    return null;
+  }
+
+  // Match the canonical row only: maxValue equals Y AND upperLimit equals Y
+  // (skips e.g. the German row at maxValue=4 whose upperLimit='1.0', and the
+  // 40–50 fallback row whose upperLimit='100' but maxValue=50).
+  const scaleRow = NUMERIC_GRADING_SCALES.find(scale => scale.maxValue === upperValue && parseFloat(scale.upperLimit) === upperValue);
+  if (scaleRow) {
+    return { upperLimit: scaleRow.upperLimit, lowerLimit: scaleRow.lowerLimit };
+  }
+
+  const lowerValue = Math.max(1, Math.round(upperValue / 2));
+  return { upperLimit: upperRaw, lowerLimit: lowerValue.toString() };
+}
+
+/**
  * Detects the grading scale based on a grade input
  */
 export function detectGradingScale(grade: string): GradingScaleLimitsResult {
@@ -199,6 +238,12 @@ export function detectGradingScale(grade: string): GradingScaleLimitsResult {
   const letterResult = detectLetterGrade(trimmedGrade);
   if (letterResult) {
     return letterResult;
+  }
+
+  // Check for fraction grades (e.g. "105/110") before plain numeric.
+  const fractionResult = detectFractionGrade(trimmedGrade);
+  if (fractionResult) {
+    return fractionResult;
   }
 
   // Check for numeric/percentage grades
@@ -274,23 +319,27 @@ export function getDetectedGradeLimitsPatch(grade: string): Pick<GradingScaleLim
   };
 }
 
+export interface GradeHelperText {
+  key: string;
+  params: { upperLimit: string; lowerLimit: string };
+}
+
 /**
- * Builds the localized helper text that displays the currently active grading scale.
+ * Builds the helper-text translation key plus interpolation params for the active grading scale.
  *
- * Returns an empty string when no grading scale could be resolved for the current input.
+ * Returns undefined when no grading scale could be resolved for the current input. The caller is
+ * expected to pass the key and params to a component that performs the translation, so the
+ * returned text is never re-translated as if it were a translation key itself.
  */
-export function getGradeHelperText(translateService: Pick<TranslateService, 'instant'>, limits: GradingScaleLimitsResult): string {
+export function getGradeHelperText(limits: GradingScaleLimitsResult): GradeHelperText | undefined {
   if (!limits) {
-    return '';
+    return undefined;
   }
 
-  const scale = translateService.instant('entity.applicationPage2.helperText.scale') as string;
-  const gradingScale = translateService.instant('entity.applicationPage2.helperText.gradingScale', {
-    upperLimit: limits.upperLimit,
-    lowerLimit: limits.lowerLimit,
-  }) as string;
-
-  return `${scale}${gradingScale}`;
+  return {
+    key: 'entity.applicationPage2.helperText.gradingScale',
+    params: { upperLimit: limits.upperLimit, lowerLimit: limits.lowerLimit },
+  };
 }
 
 /**
@@ -316,6 +365,11 @@ export function shouldShowGradeWarning(grade: string): boolean {
   }
 
   const trimmed = grade.trim();
+
+  // Fraction format like "105/110" is a valid first-class type — no warning.
+  if (NUMERIC_FRACTION_PATTERN.test(trimmed)) {
+    return false;
+  }
 
   // Check for numeric grades longer than 4 characters (>= 10000)
   if (/^[0-9][0-9.,]*$/.test(trimmed) && trimmed.replace(/[.,]/g, '').length > 4) {
