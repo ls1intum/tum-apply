@@ -61,6 +61,8 @@ const DATEPICKER_HIGHLIGHTED_REFERENCE_DAY_CLASSES = [
   encapsulation: ViewEncapsulation.None,
 })
 export class DatePickerComponent {
+  readonly generatedInputId = `jhi-datepicker-${nextInputId++}`;
+
   readonly datepickerClass = DATEPICKER_LAYOUT_CLASSES.concat(
     DATEPICKER_ACTION_CLASSES,
     DATEPICKER_CALENDAR_CLASSES,
@@ -125,7 +127,7 @@ export class DatePickerComponent {
    */
   modelDate = signal<Date | undefined>(undefined);
 
-  resolvedInputId = computed(() => this.inputId() ?? `jhi-datepicker-${nextInputId++}`);
+  resolvedInputId = computed(() => this.inputId() ?? this.generatedInputId);
 
   readonly highlightedDateParts = computed(() => {
     const highlightedDate = this.highlightedDate();
@@ -259,6 +261,10 @@ export class DatePickerComponent {
 
   isHighlightedDate(date: { day: number; month: number; year: number }): boolean {
     const highlightedDate = this.highlightedDateParts();
-    return highlightedDate?.day === date.day && highlightedDate?.month === date.month && highlightedDate?.year === date.year;
+    if (!highlightedDate) {
+      return false;
+    }
+
+    return highlightedDate.day === date.day && highlightedDate.month === date.month && highlightedDate.year === date.year;
   }
 }

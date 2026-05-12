@@ -576,9 +576,6 @@ export class JobCreationFormComponent {
   /** Flag to prevent auto-save from triggering during initial form population */
   private autoSaveInitialized = false;
 
-  /** Prevents draft-side async saves from starting while publish is in progress. */
-  private publishInProgress = false;
-
   private isAutoScrolling = false;
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -719,9 +716,7 @@ export class JobCreationFormComponent {
 
     if (!jobData) return;
 
-    this.publishInProgress = true;
     this.autoSave.dispose();
-    this.cancelTranslation();
     if (this.autoSaveInFlight) {
       await this.autoSaveInFlight;
     }
@@ -734,8 +729,6 @@ export class JobCreationFormComponent {
       void this.router.navigate(['/my-positions']);
     } catch {
       this.toastService.showErrorKey('toast.publishFailed');
-    } finally {
-      this.publishInProgress = false;
     }
   }
 
@@ -1607,7 +1600,7 @@ export class JobCreationFormComponent {
       // 4) Fire translation (fire-and-forget). Analysis runs once at the end
       //    of translation after both languages are available — avoids duplicate
       //    analysis calls that cause score flash issues.
-      if (this.aiToggleSignal() && this.aiSystemEnabled() && !this.publishInProgress) {
+      if (this.aiToggleSignal() && this.aiSystemEnabled()) {
         void this.translateAndStoreOtherLanguage(currentLang, description);
       }
       return true;

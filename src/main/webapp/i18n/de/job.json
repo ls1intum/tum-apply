@@ -118,7 +118,7 @@
       },
       "applicationDeadline": {
         "label": "Bewerbungsfrist",
-        "placeholder": "Wähle eine Bewerbungsfrist...",
+        "placeholder": "Wähle ein Fristdatum...",
         "toolTipText": "Nach diesem Datum sind Bewerbungen nicht mehr möglich."
       },
       "workload": {

@@ -24,28 +24,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { toLocalDateString } from 'app/shared/util/date-time.util';
 
-const CALENDAR_HEADER_CLASSES: readonly string[] = ['[&_.p-datepicker-title]:text-text-primary', '[&_.p-datepicker-header]:bg-transparent'];
-
-const CALENDAR_DAY_CLASSES: readonly string[] = [
-  '[&_.p-datepicker-today>.p-datepicker-day]:bg-[var(--p-primary-hover-color-outlined)]',
-  '[&_.p-datepicker-today>.p-datepicker-day]:text-text-primary',
-  '[&_.p-datepicker-day:not(.p-disabled):not(.p-highlight):hover]:bg-primary-default',
-  '[&_.p-datepicker-day:not(.p-disabled):not(.p-highlight):hover]:text-text-on-primary',
-];
-
-const CALENDAR_MONTH_YEAR_CLASSES: readonly string[] = [
-  '[&_.p-datepicker-month:not(.p-disabled):hover]:bg-primary-default',
-  '[&_.p-datepicker-month:not(.p-disabled):hover]:text-text-on-primary',
-  '[&_.p-datepicker-year:not(.p-disabled):hover]:bg-primary-default',
-  '[&_.p-datepicker-year:not(.p-disabled):hover]:text-text-on-primary',
-];
-
-const CALENDAR_SELECTION_CLASSES: readonly string[] = [
-  '[&_.p-highlight]:bg-primary-default',
-  '[&_.p-highlight]:text-text-on-primary',
-  '[&_.p-highlight]:border-primary-default',
-];
-
 @Component({
   selector: 'jhi-slot-creation-form',
   standalone: true,
@@ -70,12 +48,6 @@ const CALENDAR_SELECTION_CLASSES: readonly string[] = [
   templateUrl: './slot-creation-form.component.html',
 })
 export class SlotCreationFormComponent {
-  readonly calendarWrapperClass = CALENDAR_HEADER_CLASSES.concat(
-    CALENDAR_DAY_CLASSES,
-    CALENDAR_MONTH_YEAR_CLASSES,
-    CALENDAR_SELECTION_CLASSES,
-  ).join(' ');
-
   readonly dateCards = viewChildren(DateSlotCardComponent);
 
   // Inputs
