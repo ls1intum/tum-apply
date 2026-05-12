@@ -33,10 +33,8 @@ export interface DocumentHolder {
 export class DocumentSection {
   idsDTO = input<ApplicationDocumentIdsDTO | undefined>(undefined);
   applicationId = input.required<string | undefined>();
-  /**
-   * External reference letters uploaded by referees, to be merged into the listed documents.
-   * Each entry shows up labelled "Reference Letter — &lt;referee name&gt;".
-   */
+
+  /** External reference letters uploaded by referees, to be merged into the listed documents. */
   referenceLetters = input<ReferenceRequestDTO[]>([]);
 
   documents = signal<DocumentHolder[]>([]);
