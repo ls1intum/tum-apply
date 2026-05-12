@@ -15,6 +15,7 @@ import { PasskeyRegistrationPromptComponent } from 'app/shared/components/molecu
 
 describe('PasskeyRegistrationPromptComponent', () => {
   const promptPreferenceId = 'ui_pref_hide_passkey_prompt';
+  const promptDismissedDateId = 'ui_pref_passkey_prompt_dismissed_date';
 
   let fixture: ComponentFixture<PasskeyRegistrationPromptComponent>;
   let component: PasskeyRegistrationPromptComponent;
@@ -36,6 +37,7 @@ describe('PasskeyRegistrationPromptComponent', () => {
     keycloakAuthenticationServiceMock = createKeycloakAuthenticationServiceMock();
 
     localStorage.removeItem(promptPreferenceId);
+    localStorage.removeItem(promptDismissedDateId);
 
     await TestBed.configureTestingModule({
       imports: [PasskeyRegistrationPromptComponent],
@@ -51,6 +53,7 @@ describe('PasskeyRegistrationPromptComponent', () => {
 
   afterEach(() => {
     localStorage.removeItem(promptPreferenceId);
+    localStorage.removeItem(promptDismissedDateId);
     vi.restoreAllMocks();
   });
 
@@ -98,6 +101,15 @@ describe('PasskeyRegistrationPromptComponent', () => {
 
     expect(authFacadeMock.registerPasskey).toHaveBeenCalledOnce();
     expect(component.busy()).toBe(false);
+    expect(component.visible()).toBe(false);
+  });
+
+  it('should not evaluate prompt when dismissed on the same day', async () => {
+    localStorage.setItem(promptDismissedDateId, new Date().toISOString().slice(0, 10));
+
+    await createComponent();
+
+    expect(keycloakAuthenticationServiceMock.listPasskeys).not.toHaveBeenCalled();
     expect(component.visible()).toBe(false);
   });
 });

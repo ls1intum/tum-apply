@@ -22,6 +22,7 @@ import { TranslateDirective } from 'app/shared/language';
 })
 export class PasskeyRegistrationPromptComponent {
   private static readonly PROMPT_PREFERENCE_ID = 'ui_pref_hide_passkey_prompt';
+  private static readonly PROMPT_DISMISSED_DATE_ID = 'ui_pref_passkey_prompt_dismissed_date';
 
   readonly accountService = inject(AccountService);
   readonly authFacade = inject(AuthFacadeService);
@@ -62,6 +63,7 @@ export class PasskeyRegistrationPromptComponent {
   });
 
   close(): void {
+    this.persistDismissedForToday();
     this.persistPreference();
     this.visible.set(false);
   }
@@ -83,7 +85,8 @@ export class PasskeyRegistrationPromptComponent {
       this.loggedIn() &&
       this.keycloakAuthenticationService.canManagePasskeys() &&
       !this.shownThisSession() &&
-      !this.onboardingOrchestratorService.suppressesFollowupPrompts() &&
+      (!this.keycloakAuthenticationService.isTumRealmSession() || !this.onboardingOrchestratorService.suppressesFollowupPrompts()) &&
+      localStorage.getItem(PasskeyRegistrationPromptComponent.PROMPT_DISMISSED_DATE_ID) !== this.getTodayDateStamp() &&
       localStorage.getItem(PasskeyRegistrationPromptComponent.PROMPT_PREFERENCE_ID) !== 'true'
     );
   }
@@ -111,5 +114,13 @@ export class PasskeyRegistrationPromptComponent {
       return;
     }
     localStorage.setItem(PasskeyRegistrationPromptComponent.PROMPT_PREFERENCE_ID, 'true');
+  }
+
+  private persistDismissedForToday(): void {
+    localStorage.setItem(PasskeyRegistrationPromptComponent.PROMPT_DISMISSED_DATE_ID, this.getTodayDateStamp());
+  }
+
+  private getTodayDateStamp(): string {
+    return new Date().toISOString().slice(0, 10);
   }
 }
