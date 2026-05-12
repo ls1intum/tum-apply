@@ -38,13 +38,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -177,7 +175,6 @@ public class JobService {
      */
     public JobDTO getJobById(UUID jobId) {
         Job job = assertCanManageJob(jobId);
-        Job jobWithBiasedIssues = jobRepository.findByIdWithBiased(jobId).orElse(job);
         return new JobDTO(
             job.getJobId(),
             job.getTitle(),
@@ -201,7 +198,7 @@ public class JobService {
             job.getContractExtendable(),
             job.getGenderBiasScore(),
             job.getComplianceIssues(),
-            jobWithBiasedIssues.getBiasedIssues()
+            jobRepository.findBiasedIssuesByJobId(jobId)
         );
     }
 
@@ -433,9 +430,8 @@ public class JobService {
     }
 
     private JobFormDTO getJobFormWithAnalysis(UUID jobId) {
-        Job jobWithCompliance = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        Job jobWithBiased = jobRepository.findByIdWithBiased(jobId).orElse(jobWithCompliance);
-        return JobFormDTO.getFromEntity(jobWithCompliance, jobWithCompliance.getComplianceIssues(), jobWithBiased.getBiasedIssues());
+        Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        return JobFormDTO.getFromEntity(job, job.getComplianceIssues(), jobRepository.findBiasedIssuesByJobId(jobId));
     }
 
     private void notifySubjectAreaSubscribers(Job job) {
@@ -507,7 +503,6 @@ public class JobService {
      * @param biasedIssues        gender bias issues detected for the given language
      * @param lang                the analyzed language ("de" or "en")
      */
-    @Transactional
     public void updateAiAnalysis(
         UUID jobId,
         int score,
@@ -515,23 +510,14 @@ public class JobService {
         List<BiasedIssue> biasedIssues,
         String lang
     ) {
-        applyJobChangeForAnalysis(jobId, job -> {
-            replaceIssuesForLanguage(job, complianceAnalysis, biasedIssues, lang);
-            job.setGenderBiasScore(score);
-        });
-    }
-
-    /**
-     * Loads the job, applies the given change, and persists in a single repository write.
-     */
-    private void applyJobChangeForAnalysis(UUID jobId, Consumer<Job> changes) {
         if (jobId == null) {
             return;
         }
         Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        jobRepository.findByIdWithBiased(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        job.setBiasedIssues(new ArrayList<>(jobRepository.findBiasedIssuesByJobId(jobId)));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        changes.accept(job);
+        replaceIssuesForLanguage(job, complianceAnalysis, biasedIssues, lang);
+        job.setGenderBiasScore(score);
         jobRepository.save(job);
     }
 
