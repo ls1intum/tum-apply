@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { provideRouter, Router } from '@angular/router';
 
-import { JobCardListComponent } from 'app/job/job-overview/job-card-list/job-card-list.component';
+import { JobCardListComponent, JOBS_PER_PAGE_STORAGE_KEY } from 'app/job/job-overview/job-card-list/job-card-list.component';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
@@ -30,6 +30,7 @@ describe('JobCardListComponent', () => {
   let mockToastService = createToastServiceMock();
 
   beforeEach(async () => {
+    localStorage.clear();
     jobApi = {
       getAllFilters: vi.fn().mockReturnValue(
         of({
@@ -183,6 +184,20 @@ describe('JobCardListComponent', () => {
     expect(component.page()).toBe(2);
     expect(component.pageSize()).toBe(8);
     expect(spy).toHaveBeenCalledOnce();
+  });
+
+  it('should update pageSize when dynamic-table reports a hydrated value', async () => {
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+
+    component.onPageSizeHydrated(30);
+    fixture.detectChanges();
+
+    expect(component.pageSize()).toBe(30);
+    expect(spy).toHaveBeenCalledOnce();
+  });
+
+  it('should expose the jobs-per-page storage key', () => {
+    expect(component.jobsPerPageStorageKey).toBe(JOBS_PER_PAGE_STORAGE_KEY);
   });
 
   it('should set empty jobs and totalRecords when API returns no content', async () => {
