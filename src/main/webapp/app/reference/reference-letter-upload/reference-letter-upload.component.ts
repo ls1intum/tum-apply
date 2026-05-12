@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
@@ -22,18 +20,23 @@ import { ReferenceRequestDTOStatusEnum } from 'app/generated/model/reference-req
 @Component({
   selector: 'jhi-reference-letter-upload',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, TranslateModule, TranslateDirective, ButtonComponent, UploadButtonComponent],
+  imports: [FontAwesomeModule, TranslateDirective, ButtonComponent, UploadButtonComponent],
   templateUrl: './reference-letter-upload.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReferenceLetterUploadComponent {
+  protected readonly documentType = DocumentInformationHolderDTODocumentTypeEnum.ReferenceLetter;
   protected readonly loading = signal<boolean>(true);
   protected readonly uploading = signal<boolean>(false);
-  protected readonly context = signal<ReferenceLetterContextDTO | undefined>(undefined);
   protected readonly errorKey = signal<string | undefined>(undefined);
   protected readonly justUploaded = signal<boolean>(false);
+
+  protected readonly context = signal<ReferenceLetterContextDTO | undefined>(undefined);
+  protected uploadedDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
   protected readonly queuedFile = signal<File | undefined>(undefined);
   protected readonly hasQueuedFile = computed(() => !!this.queuedFile());
+
+  protected readonly expired = computed(() => this.context()?.status === ReferenceRequestDTOStatusEnum.Expired);
 
   protected readonly applicantFullName = computed(() => {
     const ctx = this.context();
@@ -46,22 +49,6 @@ export class ReferenceLetterUploadComponent {
   protected readonly alreadySubmitted = computed(
     () => this.context()?.status === ReferenceRequestDTOStatusEnum.Submitted || this.justUploaded(),
   );
-
-  protected readonly expired = computed(() => this.context()?.status === ReferenceRequestDTOStatusEnum.Expired);
-
-  /**
-   * The document type passed to {@code jhi-upload-button}. {@code REFERENCE_LETTER} keeps the
-   * uploader-side label consistent with what the backend stores.
-   */
-  protected readonly documentType = DocumentInformationHolderDTODocumentTypeEnum.ReferenceLetter;
-
-  /**
-   * Backing list for the upload button's row. In deferred mode the button uses this to render a
-   * placeholder for the picked file with a remove icon — perfect for letting the referee back out
-   * before pressing Upload. Type and absence of {@code readonly} mirror what
-   * {@code jhi-upload-button} expects from its two-way {@code documentIds} model.
-   */
-  protected uploadedDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
 
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(ReferenceLetterUploadResourceApi);
@@ -94,7 +81,7 @@ export class ReferenceLetterUploadComponent {
     try {
       await firstValueFrom(this.api.upload(this.token, file));
       this.justUploaded.set(true);
-      this.toastService.showSuccessKey(`reference.toast.uploadSuccess`);
+      this.toastService.showSuccessKey(`reference.uploadSuccess`);
     } catch {
       this.toastService.showErrorKey(`reference.uploadFailed`);
     } finally {
