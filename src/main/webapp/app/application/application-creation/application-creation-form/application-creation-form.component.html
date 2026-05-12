@@ -1,5 +1,5 @@
 <jhi-confirm-dialog
-  class="confirm-dialog"
+  class="hidden"
   header="entity.applicationSteps.confirmDialog.header"
   message="entity.applicationSteps.confirmDialog.message"
   label="button.send"
@@ -55,12 +55,27 @@
   </div>
 </ng-template>
 
+<ng-template #referencesPanel>
+  <div class="flex h-full w-full max-w-4xl mx-auto px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
+    @if (applicationId()) {
+      <jhi-application-creation-references
+        class="w-full"
+        [applicationId]="applicationId()"
+        [requiredCount]="referenceLettersRequired()"
+        (valid)="onReferencesValidityChanged($event)"
+        (referencesChanged)="onReferencesChanged($event)"
+      />
+    }
+  </div>
+</ng-template>
+
 <ng-template #summaryPanel>
   <jhi-message severity="warn" classStyling="mb-3" message="entity.applicationPage4.message" [shouldTranslate]="true" />
   <!-- Summary panel -->
   <jhi-application-detail-for-applicant
     [previewDetailData]="previewData()"
     [previewDocumentData]="documentIds()"
+    [previewReferences]="references()"
     [isSummaryPage]="true"
     class="w-full"
   />

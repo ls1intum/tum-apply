@@ -18,7 +18,6 @@ type ExportStatus = DataExportStatusDTOStatusEnum | undefined;
   standalone: true,
   imports: [TranslateDirective, ButtonComponent],
   templateUrl: './privacy-page.component.html',
-  styleUrl: './privacy-page.component.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class PrivacyPageComponent {

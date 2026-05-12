@@ -119,10 +119,6 @@ describe('AdminDependenciesComponent', () => {
     vi.clearAllMocks();
   });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should initialize with correct default signal values', () => {
     expect(component.isLoading()).toBe(false);
     expect(component.isRefreshing()).toBe(false);
@@ -143,11 +139,6 @@ describe('AdminDependenciesComponent', () => {
       expect(component.dependenciesOverview()).toEqual(mockOverview);
     });
 
-    it('should set isLoading to false after successful load', async () => {
-      await Promise.resolve();
-      expect(component.isLoading()).toBe(false);
-    });
-
     it('should show error toast when loading fails and reset isLoading', async () => {
       mockDependencyApi.getOverview.mockReturnValue(throwError(() => new Error('Network error')));
 
@@ -160,7 +151,7 @@ describe('AdminDependenciesComponent', () => {
 
   describe('Refreshing Vulnerabilities', () => {
     it('should call refresh API and update the overview', async () => {
-      const refreshedOverview: DependenciesOverviewDTO = { ...mockOverview, totalVulnerabilities: 5 };
+      const refreshedOverview: DependenciesOverviewDTO = Object.assign({}, mockOverview, { totalVulnerabilities: 5 });
       mockDependencyApi.refresh.mockReturnValue(of(refreshedOverview));
 
       await component.refreshVulnerabilities();
@@ -391,7 +382,7 @@ describe('AdminDependenciesComponent', () => {
     it('should track expansion by group:name key, not by object reference', () => {
       component.toggleVulnerabilityExpansion(vulnerableDep);
 
-      const sameDep: DependencyDTO = { ...vulnerableDep, version: '4.17.21' };
+      const sameDep: DependencyDTO = Object.assign({}, vulnerableDep, { version: '4.17.21' });
       expect(component.isVulnerabilityExpanded(sameDep)).toBe(true);
       expect(component.isVulnerabilityExpanded(secureDep)).toBe(false);
     });

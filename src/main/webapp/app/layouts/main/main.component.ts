@@ -8,6 +8,7 @@ import { LocalStorageService } from 'app/service/localStorage.service';
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
 import { OnboardingOrchestratorService } from 'app/service/onboarding-orchestrator.service';
+import { BREAKPOINT_QUERIES } from 'app/shared/constants/breakpoints';
 
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
@@ -41,7 +42,17 @@ export default class MainComponent {
       dayjs.locale(langChangeEvent.lang);
       this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
     });
-    afterNextRender(() => this.onboardingOrchestratorService.hookToAuth(this.loggedIn));
+    afterNextRender(() => {
+      this.onboardingOrchestratorService.hookToAuth(this.loggedIn);
+      // Collapse the sidebar by default on small viewports so it doesn't cover the page on phones
+      if (
+        typeof window !== 'undefined' &&
+        window.matchMedia(BREAKPOINT_QUERIES.belowTailwindSm).matches &&
+        !this.localStorageService.sidebarCollapsed()
+      ) {
+        this.localStorageService.sidebarCollapsed.set(true);
+      }
+    });
   }
 
   onActivate(): void {

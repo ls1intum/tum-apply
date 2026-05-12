@@ -1,11 +1,15 @@
-<div class="carousel">
-  <!-- ◄ navigation -->
+<div
+  class="w-full flex items-center gap-[clamp(0.5rem,1.5vw,1.5rem)] max-md:gap-3 max-[600px]:gap-[0.3rem] max-[480px]:gap-1 max-[360px]:gap-[0.2rem]"
+>
+  <!-- navigation left -->
   <jhi-button class="nav nav-left" aria-label="Previous" icon="chevron-left" variant="text" (click)="loadPrev()" [disabled]="isStart()" />
 
   <!-- cards (1 or 3) -->
-  <div class="cards">
+  <div
+    class="flex flex-1 overflow-hidden justify-center items-stretch gap-[4%] max-md:gap-2 max-[600px]:gap-1 max-[480px]:gap-[0.2rem] max-[360px]:gap-[0.15rem]"
+  >
     @if (totalRecords() === 0) {
-      <p jhiTranslate="evaluation.noApplicationsFound">No Applications found.</p>
+      <p class="whitespace-nowrap text-center min-w-[40%]" jhiTranslate="evaluation.noApplicationsFound">No Applications found.</p>
     } @else {
       @for (app of visibleApplications(); track i; let i = $index) {
         <div class="flex">
@@ -19,6 +23,6 @@
     }
   </div>
 
-  <!-- ► navigation -->
+  <!-- navigation right -->
   <jhi-button class="nav nav-right" aria-label="Next" icon="chevron-right" variant="text" (click)="loadNext()" [disabled]="isEnd()" />
 </div>

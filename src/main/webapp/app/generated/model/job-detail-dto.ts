@@ -14,6 +14,7 @@ export interface JobDetailDTO {
     readonly applicationId?: string;
     readonly applicationState?: JobDetailDTOApplicationStateEnum;
     readonly contractDuration?: number;
+    readonly contractExtendable?: boolean;
     readonly createdAt: string;
     readonly endDate?: string;
     readonly fundingType?: JobDetailDTOFundingTypeEnum;
@@ -23,9 +24,11 @@ export interface JobDetailDTO {
     readonly jobId: string;
     readonly lastModifiedAt: string;
     readonly location?: JobDetailDTOLocationEnum;
+    readonly referenceLettersRequired?: number;
     readonly researchArea?: string;
     readonly researchGroup: ResearchGroupSummaryDTO;
     readonly startDate?: string;
+    readonly startDateByArrangement?: boolean;
     readonly state?: JobDetailDTOStateEnum;
     readonly subjectArea: JobDetailDTOSubjectAreaEnum;
     readonly suitableForDisabled?: boolean;

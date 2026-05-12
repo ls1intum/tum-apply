@@ -128,6 +128,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   openAnalysisDialog = output<GenderBiasAnalysisResponse>();
   quillEditorComponent = viewChild(QuillEditorComponent);
   highlightHovered = output<{ text: string; x: number; y: number } | undefined>();
+  pendingHighlights = signal<{ text: string; category: ComplianceIssueCategoryEnum }[]>([]);
 
   readonly genderBiasService = inject(GenderBiasAnalysisService);
   readonly translateService = inject(TranslateService);
@@ -177,18 +178,18 @@ export class EditorComponent extends BaseInputDirective<string> {
   charCounterColor = computed(() => {
     const limit = this.characterLimit();
     if (limit === undefined) {
-      return 'char-counter-normal';
+      return '';
     }
 
     const count = this.characterCount();
     const over = count - limit;
 
     if (over > 0 && over < STANDARD_CHARACTER_BUFFER) {
-      return 'char-counter-warning';
+      return 'text-warning';
     } else if (over >= STANDARD_CHARACTER_BUFFER) {
-      return 'char-counter-danger';
+      return 'text-negative';
     }
-    return 'char-counter-normal'; // default character count color
+    return ''; // default character count color
   });
 
   editorValue = computed(() => {
@@ -269,6 +270,18 @@ export class EditorComponent extends BaseInputDirective<string> {
     this.genderBiasService.triggerAnalysis(id, html, lang);
   });
 
+  /**
+   * Re-runs highlight application whenever:
+   * - the QuillEditor view child becomes available
+   * - forceUpdate pushes new content (via editorReady)
+   * - new highlights are requested via highlightTexts()
+   */
+  private reapplyHighlightsEffect = effect(() => {
+    this.quillEditorComponent();
+    this.pendingHighlights();
+    requestAnimationFrame(() => this.applyPendingHighlights());
+  });
+
   textChanged(event: ContentChange): void {
     const { source, oldDelta, editor } = event;
 
@@ -331,13 +344,17 @@ export class EditorComponent extends BaseInputDirective<string> {
    *
    * @param newValue The HTML content to display in editor
    * @param onComplete Optional callback fired after Quill finishes updating the DOM.
-   *                   Used to apply compliance highlights after a language switch.
+   *
    */
   public forceUpdate(newValue: string, onComplete?: () => void): void {
     this.htmlValue.set(newValue);
 
     const editor = this.quillEditorComponent()?.quillEditor;
-    if (!editor) return;
+    if (!editor) {
+      // Quill instance isn't created yet, retry on next frame
+      requestAnimationFrame(() => this.forceUpdate(newValue, onComplete));
+      return;
+    }
 
     // Preserve cursor/selection if editor currently focused
     const hadFocus = editor.hasFocus();
@@ -361,12 +378,27 @@ export class EditorComponent extends BaseInputDirective<string> {
   }
 
   /**
-   * Highlights specific text passages in the editor.
+   * Stores highlights to be applied to the editor.
+   *
    * @param highlights Array of {text, category} to highlight
    */
   public highlightTexts(highlights: { text: string; category: ComplianceIssueCategoryEnum }[]): void {
+    this.pendingHighlights.set(highlights);
+  }
+
+  /**
+   * Applies the currently pending highlights to the Quill editor.
+   */
+  public applyPendingHighlights(): void {
     const editor = this.quillEditorComponent()?.quillEditor;
-    if (!editor) return;
+    // Retry next frame if editor not ready and highlights pending
+    if (!editor) {
+      if (this.pendingHighlights().length > 0) {
+        requestAnimationFrame(() => this.applyPendingHighlights());
+      }
+      return;
+    }
+    const highlights = this.pendingHighlights();
 
     // Clear all existing highlights first
     editor.formatText(0, editor.getLength(), 'background', false);

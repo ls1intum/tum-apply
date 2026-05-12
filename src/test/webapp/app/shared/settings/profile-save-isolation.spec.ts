@@ -130,8 +130,8 @@ describe('Profile save isolation', () => {
       bachelorGrade: '1.0',
     });
 
-    await personalComponent.onSave();
-    await documentsComponent.saveAll();
+    await personalComponent.performAutoSave();
+    await documentsComponent.performAutoSave();
 
     expect(applicantApiMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -145,61 +145,6 @@ describe('Profile save isolation', () => {
       expect.objectContaining({
         user: expect.objectContaining({
           firstName: 'Grace',
-        }),
-      }),
-    );
-  });
-
-  it('application information save uses the latest document settings saved in another tab', async () => {
-    const profileAfterDocumentsSave = cloneValue(baseProfile);
-    profileAfterDocumentsSave.bachelorGrade = '1.0';
-    const profileAfterBothSaves = cloneValue(profileAfterDocumentsSave);
-    profileAfterBothSaves.user!.firstName = 'Grace';
-
-    applicantApiMock.getApplicantProfile.mockReset();
-    applicantApiMock.getApplicantProfile
-      .mockReturnValueOnce(of(baseProfile))
-      .mockReturnValueOnce(of(baseProfile))
-      .mockReturnValueOnce(of(baseProfile))
-      .mockReturnValueOnce(of(baseProfile))
-      .mockReturnValueOnce(of(profileAfterDocumentsSave))
-      .mockReturnValueOnce(of(profileAfterDocumentsSave));
-    applicantApiMock.getApplicantProfileDocumentIds.mockReset();
-    applicantApiMock.getApplicantProfileDocumentIds.mockReturnValue(of(baseDocumentIds));
-    applicantApiMock.updateApplicantDocumentSettings.mockReset();
-    applicantApiMock.updateApplicantPersonalInformation.mockReset();
-    applicantApiMock.updateApplicantDocumentSettings
-      .mockReturnValueOnce(of(profileAfterDocumentsSave))
-      .mockReturnValueOnce(of(profileAfterDocumentsSave));
-    applicantApiMock.updateApplicantPersonalInformation.mockReturnValueOnce(of(profileAfterBothSaves));
-
-    const documentsComponent = await createDocumentsComponent();
-
-    const personalComponent = TestBed.runInInjectionContext(() => new ApplicationInformationSettingsComponent());
-    await personalComponent.loadApplicationInformation();
-
-    documentsComponent.form.patchValue({
-      bachelorGrade: '1.0',
-    });
-    const updatedPersonalData = cloneValue(personalComponent.data());
-    updatedPersonalData.firstName = 'Grace';
-    personalComponent.data.set(updatedPersonalData);
-
-    await documentsComponent.saveAll();
-    await personalComponent.onSave();
-
-    expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith(
-      expect.objectContaining({
-        user: expect.objectContaining({
-          firstName: 'Grace',
-        }),
-      }),
-    );
-    expect(applicantApiMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
-      expect.objectContaining({
-        bachelorGrade: '1.0',
-        user: expect.objectContaining({
-          userId: accountServiceMock.userId,
         }),
       }),
     );
@@ -245,32 +190,19 @@ describe('Profile save isolation', () => {
     expect(personalComponent.data().firstName).toBe('Grace');
   });
 
-  it('uploads queued applicant documents when settings documents are saved', async () => {
+  it('does not batch profile document uploads into document metadata autosave', async () => {
     const documentsComponent = await createDocumentsComponent();
-    const newBachelorTranscript = new File(['bachelor transcript'], 'new-bachelor.pdf', { type: 'application/pdf' });
     const bachelorDocuments = documentsComponent.bachelorDocuments() ?? [];
 
-    documentsComponent.bachelorDocuments.set(
-      bachelorDocuments.concat([{ id: 'temp-upload-1', name: 'new-bachelor.pdf', size: newBachelorTranscript.size }]),
-    );
-    documentsComponent.onBachelorQueuedFilesChange([newBachelorTranscript]);
+    documentsComponent.bachelorDocuments.set(bachelorDocuments.concat([{ id: 'temp-upload-1', name: 'new-bachelor.pdf', size: 321 }]));
 
-    httpClientMock.post.mockReset();
-    httpClientMock.post.mockReturnValue(
-      of([
-        { id: 'bachelor-doc-1', name: 'bachelor.pdf', size: 100 },
-        { id: 'uploaded-doc-1', name: 'new-bachelor.pdf', size: newBachelorTranscript.size },
-      ]),
-    );
+    await documentsComponent.performAutoSave();
 
-    await documentsComponent.saveAll();
-
-    expect(httpClientMock.post).toHaveBeenCalledWith('/api/applicants/profile/documents/BACHELOR_TRANSCRIPT', expect.any(FormData));
-    const [, requestBody] = httpClientMock.post.mock.calls[0];
-    expect((requestBody as FormData).get('files')).toBe(newBachelorTranscript);
+    expect(httpClientMock.post).not.toHaveBeenCalled();
+    expect(applicantApiMock.updateApplicantDocumentSettings).not.toHaveBeenCalled();
   });
 
-  it('renames persisted applicant documents when settings documents are saved', async () => {
+  it('does not batch profile document renames into document metadata autosave', async () => {
     const documentsComponent = await createDocumentsComponent();
     const bachelorDocuments = documentsComponent.bachelorDocuments();
     expect(bachelorDocuments).toBeDefined();
@@ -280,8 +212,9 @@ describe('Profile save isolation', () => {
 
     (bachelorDocuments[0] as Mutable<(typeof bachelorDocuments)[0]>).name = 'bachelor-renamed.pdf';
 
-    await documentsComponent.saveAll();
+    await documentsComponent.performAutoSave();
 
-    expect(applicantApiMock.renameApplicantProfileDocument).toHaveBeenCalledWith('bachelor-doc-1', 'bachelor-renamed.pdf');
+    expect(applicantApiMock.renameApplicantProfileDocument).not.toHaveBeenCalled();
+    expect(applicantApiMock.updateApplicantDocumentSettings).not.toHaveBeenCalled();
   });
 });

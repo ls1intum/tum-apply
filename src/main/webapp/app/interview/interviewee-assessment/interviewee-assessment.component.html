@@ -57,9 +57,9 @@
               [showGenderDecoderButton]="false"
             />
 
-            <!-- Save button -->
+            <!-- Auto-save indicator -->
             <div class="flex justify-end">
-              <jhi-button label="entity.action.save" [shouldTranslate]="true" icon="save" [disabled]="saving()" (click)="saveNotes()" />
+              <jhi-saving-badge [state]="autoSave.state()" />
             </div>
           </div>
         </div>

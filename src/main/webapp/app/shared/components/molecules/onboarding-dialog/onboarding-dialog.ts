@@ -22,7 +22,6 @@ import { EmployeeRequestAccessFormComponent } from './employee-request-access-fo
   standalone: true,
   imports: [ButtonModule, ButtonComponent, TranslateDirective, MessageModule],
   templateUrl: './onboarding-dialog.html',
-  styleUrls: ['./onboarding-dialog.scss'],
 })
 export class OnboardingDialog {
   private readonly ref = inject(DynamicDialogRef, { optional: true });

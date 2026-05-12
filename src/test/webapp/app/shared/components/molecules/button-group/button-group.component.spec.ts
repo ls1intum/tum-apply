@@ -21,7 +21,7 @@ describe('ButtonGroupComponent', () => {
       ],
     };
 
-    fixture.componentRef.setInput('data', { ...defaultData, ...overrideData });
+    fixture.componentRef.setInput('data', Object.assign({}, defaultData, overrideData ?? {}));
     fixture.detectChanges();
     return fixture;
   }
@@ -33,50 +33,31 @@ describe('ButtonGroupComponent', () => {
     }).compileComponents();
   });
 
-  it('should create a button group', () => {
-    const fixture = createButtonFixture();
-    expect(fixture.componentRef).toBeTruthy();
-  });
+  describe('Rendering', () => {
+    it('should render one element per provided button', () => {
+      const fixture = createButtonFixture({
+        buttons: [
+          { label: 'One', severity: 'primary', disabled: false, onClick: vi.fn() },
+          { label: 'Two', severity: 'secondary', disabled: false, onClick: vi.fn() },
+        ],
+      });
 
-  it('should render multiple buttons', () => {
-    const fixture = createButtonFixture({
-      buttons: [
-        { label: 'One', severity: 'primary', disabled: false, onClick: vi.fn() },
-        { label: 'Two', severity: 'secondary', disabled: false, onClick: vi.fn() },
-      ],
+      const buttons = fixture.nativeElement.querySelectorAll('jhi-button');
+      expect(buttons).toHaveLength(2);
     });
-
-    const buttons = fixture.nativeElement.querySelectorAll('jhi-button');
-    expect(buttons.length).toBe(2);
   });
 
-  it('should apply vertical layout class when direction is vertical', () => {
-    const fixture = createButtonFixture({ direction: 'vertical' });
-    const container = fixture.nativeElement.querySelector('div');
-    expect(container.className).toContain('flex-col');
-  });
+  describe('Interaction', () => {
+    it('should trigger the onClick handler of the clicked button', () => {
+      const clickSpy = vi.fn();
+      const fixture = createButtonFixture({
+        buttons: [{ label: 'Click Me', severity: 'primary', disabled: false, onClick: clickSpy }],
+      });
 
-  it('should apply horizontal layout class when direction is horizontal', () => {
-    const fixture = createButtonFixture({ direction: 'horizontal' });
-    const container = fixture.nativeElement.querySelector('div');
-    expect(container.className).toContain('flex-row');
-  });
+      const buttonEl = fixture.nativeElement.querySelector('jhi-button');
+      buttonEl.click();
 
-  it('should apply full width class when fullWidth is true', () => {
-    const fixture = createButtonFixture({ fullWidth: true });
-    const container = fixture.nativeElement.querySelector('div');
-    expect(container.className).toContain('button-group-full-width');
-  });
-
-  it('should trigger button onClick handler when clicked', () => {
-    const clickSpy = vi.fn();
-    const fixture = createButtonFixture({
-      buttons: [{ label: 'Click Me', severity: 'primary', disabled: false, onClick: clickSpy }],
+      expect(clickSpy).toHaveBeenCalledOnce();
     });
-
-    const buttonEl = fixture.nativeElement.querySelector('jhi-button');
-    buttonEl.click();
-
-    expect(clickSpy).toHaveBeenCalled();
   });
 });

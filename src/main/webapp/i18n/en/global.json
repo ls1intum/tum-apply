@@ -46,7 +46,7 @@
       "about-us": "TUMApply - About Us",
       "interview": {
         "overview": "TUMApply - Interview Overview",
-        "detail": "Interview - {jobTitle}",
+        "detail": "TUMApply - Interview",
         "assessment": "TUMApply - Interview Assessment"
       },
       "dataExport": {
@@ -320,7 +320,7 @@
     "application_detail": {
       "headline": "Application for ",
       "applicant": {
-        "header": "Application for '{jobTitle}'",
+        "header": "Application for {jobTitle}",
         "title_prefix": "Application for"
       },
       "position_overview": "Position Overview",
@@ -331,12 +331,14 @@
       "personal_statements": "Personal Statements",
       "personal_information": "Personal Information",
       "personal_documents": "Personal Documents",
+      "reference_letters": "Recommendation Letters Requests",
       "not_found": "Application not found"
     },
     "applicationSteps": {
       "personalInformation": "Personal Information",
       "education": "Education",
       "applicationDetails": "Application Details",
+      "references": "Recommendation Letters",
       "summary": "Summary",
       "confirmDialog": {
         "header": "Submit Application",
@@ -411,8 +413,7 @@
         "masterGrade": "Final Master Grade"
       },
       "helperText": {
-        "scale": "Scale: ",
-        "gradingScale": "{upperLimit} (best) to {lowerLimit} (pass)",
+        "gradingScale": "Scale: {upperLimit} (best) to {lowerLimit} (pass)",
         "changeScale": "Change Scale"
       },
       "warnText": "Unusual format, please check your entry",
@@ -457,6 +458,37 @@
       },
       "placeholder": {
         "selectStartDate": "Select a Start Date..."
+      }
+    },
+    "applicationReferences": {
+      "description": "Please list your referees below. Upon submission, they will be emailed a secure link to upload their recommendation letter.",
+      "requiredCount": "Required: {count} · Added: ",
+      "empty": "No referees added yet.",
+      "section": {
+        "required": "Required Referees"
+      },
+      "label": {
+        "title": "Title",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email"
+      },
+      "button": {
+        "add": "Add"
+      },
+      "toast": {
+        "loadFailed": {
+          "summary": "Could not load referees",
+          "detail": "Failed to load the list of referees. Please reload the page."
+        },
+        "addFailed": {
+          "summary": "Could not add referee",
+          "detail": "The referee could not be added. Please check the entered data and try again."
+        },
+        "removeFailed": {
+          "summary": "Could not remove referee",
+          "detail": "The referee could not be removed. Please try again."
+        }
       }
     },
     "applicationPage4": {

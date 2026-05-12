@@ -60,7 +60,7 @@
         />
         <!-- Empty State -->
         @if (groupedUpcomingInterviews().length === 0) {
-          <jhi-info-box message="interview.overview.upcoming.empty" [shouldTranslate]="true" severity="secondary" icon="calendar" />
+          <jhi-info-box message="interview.overview.upcoming.empty" [shouldTranslate]="true" severity="info" icon="calendar" />
         } @else {
           <!-- Calendar Grid Section -->
           <div [class]="datesPerPage() === 1 ? 'flex flex-col gap-4' : 'flex items-start gap-4'">

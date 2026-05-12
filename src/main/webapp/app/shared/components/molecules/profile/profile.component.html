@@ -1,5 +1,5 @@
-<div class="profile-card">
-  <form (ngSubmit)="onSubmit()" [formGroup]="form" class="form">
+<div class="flex flex-1 flex-col items-center justify-center self-stretch">
+  <form (ngSubmit)="onSubmit()" [formGroup]="form" class="flex w-full flex-col">
     <jhi-string-input
       [control]="form.controls.firstName"
       [required]="true"

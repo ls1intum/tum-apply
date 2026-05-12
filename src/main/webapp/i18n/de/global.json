@@ -46,7 +46,7 @@
       "about-us": "TUMApply - Über uns",
       "interview": {
         "overview": "TUMApply - Interviewübersicht",
-        "detail": "Interview - {jobTitle}",
+        "detail": "TUMApply - Interview",
         "assessment": "TUMApply - Interview Bewertung"
       },
       "dataExport": {
@@ -320,7 +320,7 @@
     "application_detail": {
       "headline": "Bewerbung für ",
       "applicant": {
-        "header": "Bewerbung für '{jobTitle}'",
+        "header": "Bewerbung für {jobTitle}",
         "title_prefix": "Bewerbung für"
       },
       "position_overview": "Stellenübersicht",
@@ -331,12 +331,14 @@
       "personal_statements": "Persönliche Angaben",
       "personal_information": "Persönliche Informationen",
       "personal_documents": "Persönliche Dokumente",
+      "reference_letters": "Empfehlungsschreiben Anfragen",
       "not_found": "Bewerbung nicht gefunden"
     },
     "applicationSteps": {
       "personalInformation": "Persönliche Informationen",
       "education": "Ausbildung",
       "applicationDetails": "Bewerbungsdetails",
+      "references": "Empfehlungsschreiben",
       "summary": "Zusammenfassung",
       "confirmDialog": {
         "header": "Bewerbung absenden",
@@ -411,8 +413,7 @@
         "masterGrade": "Master-Abschlussnote"
       },
       "helperText": {
-        "scale": "Skala: ",
-        "gradingScale": "{upperLimit} (beste) bis {lowerLimit} (bestanden)",
+        "gradingScale": "Skala: {upperLimit} (beste) bis {lowerLimit} (bestanden)",
         "changeScale": "Skala ändern"
       },
       "warnText": "Ungewöhnliches Format, bitte überprüfe die Eingabe",
@@ -457,6 +458,37 @@
       },
       "placeholder": {
         "selectStartDate": "Startdatum auswählen..."
+      }
+    },
+    "applicationReferences": {
+      "description": "Bitte gib unten deine Referenzpersonen an. Nach dem Absenden erhalten diese einen sicheren Link per E-Mail, um ihr Empfehlungsschreiben hochzuladen.",
+      "requiredCount": "Benötigt: {count} · Hinzugefügt: ",
+      "empty": "Noch keine Referenzpersonen hinzugefügt.",
+      "section": {
+        "required": "Benötigte Referenzpersonen"
+      },
+      "label": {
+        "title": "Titel",
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "email": "E-Mail"
+      },
+      "button": {
+        "add": "Hinzufügen"
+      },
+      "toast": {
+        "loadFailed": {
+          "summary": "Referenzperson konnten nicht geladen werden",
+          "detail": "Die Liste der Referenzpersonen konnte nicht geladen werden. Bitte lade die Seite neu."
+        },
+        "addFailed": {
+          "summary": "Referenzperson konnte nicht hinzugefügt werden",
+          "detail": "Bitte prüfe die eingegebenen Daten und versuche es erneut."
+        },
+        "removeFailed": {
+          "summary": "Referenzperson konnte nicht entfernt werden",
+          "detail": "Der Referenzperson konnte nicht entfernt werden. Bitte versuche es erneut."
+        }
       }
     },
     "applicationPage4": {

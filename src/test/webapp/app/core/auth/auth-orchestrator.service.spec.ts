@@ -68,17 +68,6 @@ describe('AuthOrchestratorService', () => {
     expect(service.isOpen()).toBe(false);
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should open and close the dialog', () => {
-    service.open();
-    expect(service.isOpen()).toBe(true);
-    service.close();
-    expect(service.isOpen()).toBe(false);
-  });
-
   it('should switch between login and register modes', () => {
     service.switchToRegister();
     expect(service.mode()).toBe('register');

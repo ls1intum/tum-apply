@@ -35,7 +35,6 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -454,6 +453,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         pathByEntity.put("de.tum.cit.aet.usermanagement.domain.Applicant", "data/applicant_profile.csv");
         pathByEntity.put("de.tum.cit.aet.application.domain.Application", "data/applicant_applications.csv");
         pathByEntity.put("de.tum.cit.aet.interview.domain.Interviewee", "data/applicant_interviewees.csv");
+        pathByEntity.put("de.tum.cit.aet.reference.domain.ReferenceRequest", "data/applicant_reference_requests.csv");
 
         pathByEntity.put("de.tum.cit.aet.job.domain.Job", "data/staff_supervised_jobs.csv");
         pathByEntity.put("de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole", "data/staff_research_group_roles.csv");
@@ -530,7 +530,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         return entries;
     }
 
-    private Path processExportAndGetZipPath(User user) throws Exception {
+    private Path processExportAndGetZipPath(User user) {
         User managedUser = userRepository.findById(user.getUserId()).orElseThrow();
 
         DataExportRequest request = new DataExportRequest();

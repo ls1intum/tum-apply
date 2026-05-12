@@ -1,20 +1,20 @@
-<div class="login-header">
+<div class="flex items-center justify-center self-stretch p-4 text-[2rem] font-bold rounded-t-xl bg-primary text-text-on-primary">
   <h1 jhiTranslate="auth.common.title"></h1>
 </div>
-<div class="login-content">
-  <div class="login-panel">
+<div class="flex flex-col items-center self-stretch gap-1 px-8 py-6">
+  <div class="flex flex-col items-center justify-center self-stretch gap-4 max-w-100 w-full">
     @if (this.authOrchestrator.loginStep() !== 'otp') {
       <jhi-credentials-group
         [secondButtonHandler]="secondButtonHandler"
         [showPassword]="showPassword()"
         [showSecondButton]="!showPassword()"
         [submitHandler]="submitHandler"
-        class="login-credentials"
+        class="w-full"
         secondButtonLabel="auth.login.buttons.continueWithPassword"
       />
       @if (this.showPassword()) {
         <jhi-button
-          class="login-header-button back-button"
+          class="login-header-button absolute top-3 left-3 scale-[0.8]"
           severity="info"
           icon="chevron-left"
           [shouldTranslate]="true"
@@ -24,9 +24,9 @@
         />
       }
     } @else {
-      <jhi-otp-input />
+      <jhi-otp-input class="w-full" />
       <jhi-button
-        class="login-header-button back-button"
+        class="login-header-button absolute top-3 left-3 scale-[0.8]"
         severity="info"
         icon="chevron-left"
         [shouldTranslate]="true"
@@ -36,10 +36,11 @@
       />
     }
   </div>
-  <p class="login-footer">
+  <p class="pt-4 text-center text-sm font-normal">
     <span jhiTranslate="auth.login.texts.accountMissing.prefix"></span>
     <a
       tabindex="0"
+      class="text-primary font-bold cursor-pointer hover:text-primary-hover"
       (click)="authOrchestrator.switchToRegister()"
       (keydown.enter)="authOrchestrator.switchToRegister()"
       jhiTranslate="auth.login.texts.accountMissing.link"

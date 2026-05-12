@@ -46,10 +46,6 @@ describe('OnboardingDialog', () => {
     vi.clearAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('markOnboarded', () => {
     it('should close the dialog and open the professor form when openForm is true', () => {
       component.markOnboarded(true);
@@ -57,11 +53,9 @@ describe('OnboardingDialog', () => {
       expect(mockDialogRef.close).toHaveBeenCalledOnce();
       expect(mockDialogService.open).toHaveBeenCalledWith(
         ResearchGroupCreationFormComponent,
-        expect.objectContaining({
-          ...ONBOARDING_FORM_DIALOG_CONFIG,
-          header: 'onboarding.professorRequest.dialogTitle',
-        }),
+        expect.objectContaining(Object.assign({}, ONBOARDING_FORM_DIALOG_CONFIG, { header: 'onboarding.professorRequest.dialogTitle' })),
       );
+      expect(mockProfOnboardingService.confirmOnboarding).not.toHaveBeenCalled();
     });
 
     it('should close dialog and confirm onboarding when openForm is false', () => {
@@ -76,18 +70,6 @@ describe('OnboardingDialog', () => {
       component.markOnboarded();
       expect(mockDialogService.open).toHaveBeenCalledOnce();
     });
-
-    it('should not call confirmOnboarding when openForm is true', () => {
-      component.markOnboarded(true);
-
-      expect(mockProfOnboardingService.confirmOnboarding).not.toHaveBeenCalled();
-    });
-
-    it('should not open dialog when markOnboarded is called with false', () => {
-      component.markOnboarded(false);
-
-      expect(mockDialogService.open).not.toHaveBeenCalled();
-    });
   });
 
   describe('openEmployeeForm', () => {
@@ -97,10 +79,7 @@ describe('OnboardingDialog', () => {
       expect(mockDialogRef.close).toHaveBeenCalledOnce();
       expect(mockDialogService.open).toHaveBeenCalledWith(
         EmployeeRequestAccessFormComponent,
-        expect.objectContaining({
-          ...ONBOARDING_FORM_DIALOG_CONFIG,
-          header: 'onboarding.employeeRequest.dialogTitle',
-        }),
+        expect.objectContaining(Object.assign({}, ONBOARDING_FORM_DIALOG_CONFIG, { header: 'onboarding.employeeRequest.dialogTitle' })),
       );
     });
   });

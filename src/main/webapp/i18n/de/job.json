@@ -113,7 +113,8 @@
       "startDate": {
         "label": "Startdatum der Stelle",
         "placeholder": "Wähle ein Startdatum...",
-        "toolTipText": "Voraussichtliches Startdatum dieser Stelle."
+        "toolTipText": "Voraussichtliches Startdatum dieser Stelle.",
+        "uponArrangement": "Nach Vereinbarung"
       },
       "applicationDeadline": {
         "label": "Bewerbungsfrist",
@@ -129,6 +130,26 @@
         "label": "Vertragslaufzeit",
         "placeholder": "z.B. 3 Jahre",
         "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 6 Jahre eingeben."
+      },
+      "positionOptions": {
+        "title": "Optionen zur Stelle",
+        "uponArrangement": {
+          "label": "Flexibles Startdatum",
+          "overviewLabel": "Flexibles Startdatum möglich",
+          "subtitle": "Startdatum kann individuell vereinbart werden",
+          "tooltip": "Aktiviere diese Option, wenn das Startdatum individuell mit der Kandidatin oder dem Kandidaten vereinbart wird."
+        },
+        "extendable": {
+          "label": "Vertrag verlängern",
+          "overviewLabel": "Vertragsverlängerung möglich",
+          "subtitle": "Verlängerung der Vertragslaufzeit möglich",
+          "tooltip": "Aktiviere diese Option, wenn der Vertrag über die angegebene Laufzeit hinaus verlängert werden kann."
+        },
+        "suitableForDisabled": {
+          "label": "Geeignet für Menschen mit Behinderung",
+          "subtitle": "Hinweis zur Barrierefreiheit in der Anzeige",
+          "tooltip": "Nur deaktivieren, wenn es objektive berufsbezogene Gründe gibt, die eine Eignung für Menschen mit Behinderung ausschließen."
+        }
       },
       "fundingType": {
         "label": "Finanzierungsart",
@@ -256,12 +277,6 @@
       "deleteImageDialog": {
         "header": "Bild löschen",
         "message": "Möchtest du dieses Bild wirklich löschen? Die Aktion kann nicht rückgängig gemacht werden. Falls Stellen dieses Bild nutzen, erscheinen sie danach ohne Bild."
-      }
-    },
-    "additionalInformationSection": {
-      "suitableForDisabled": {
-        "label": "Diese Stelle ist für schwerbehinderte Menschen geeignet",
-        "tooltip": "Nur abwählen, wenn objektive stellenbezogene Gründe gegen die Eignung für schwerbehinderte Menschen sprechen"
       }
     },
     "confirmDialog": {
@@ -423,6 +438,7 @@
       "contractDuration": "Vertragslaufzeit",
       "fundingType": "Finanzierungsart",
       "tvlGrade": "TV-L Gruppe",
+      "referenceLetters": "Benötigte Referenzen",
       "startDate": "Startdatum",
       "applicationEndDate": "Bewerbungsfrist"
     },

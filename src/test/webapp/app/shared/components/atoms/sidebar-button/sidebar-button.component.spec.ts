@@ -36,25 +36,13 @@ describe('SidebarButtonComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
   describe('navigation', () => {
-    it('should call router.navigate on click', () => {
-      const navigateSpy = vi.spyOn(router, 'navigate');
-      const buttonDiv = fixture.debugElement.query(de => de.nativeElement?.matches?.('.sidebar-button'));
-
-      buttonDiv.triggerEventHandler('click', null);
-
-      expect(navigateSpy).toHaveBeenCalledWith(['/']);
-    });
-
-    it('should log an error if navigation fails', async () => {
+    it('should call router.navigate on click and log an error if navigation fails', async () => {
       const error = new Error('Test Navigation Error');
       const navigateSpy = vi.spyOn(router, 'navigate').mockRejectedValue(error);
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      const buttonDiv = fixture.debugElement.query(de => de.nativeElement?.matches?.('.sidebar-button'));
+      const buttonDiv = fixture.debugElement.query(de => de.nativeElement?.getAttribute?.('role') === 'button');
       buttonDiv.triggerEventHandler('click', null);
 
       await fixture.whenStable();
