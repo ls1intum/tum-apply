@@ -43,12 +43,12 @@ public class GenderBiasAnalysisService {
 
         // Add non inclusive words
         for (String word : result.nonInclusiveWords()) {
-            issues.add(new BiasedIssue(result.coding(), result.language(), word, GenderCategory.NON_INCLUSIVE));
+            issues.add(new BiasedIssue(result.language(), word, GenderCategory.NON_INCLUSIVE));
         }
 
         // Add inclusive words
         for (String word : result.inclusiveWords()) {
-            issues.add(new BiasedIssue(result.coding(), result.language(), word, GenderCategory.INCLUSIVE));
+            issues.add(new BiasedIssue(result.language(), word, GenderCategory.INCLUSIVE));
         }
 
         return issues;

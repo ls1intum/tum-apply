@@ -101,7 +101,7 @@ public class ComplianceScoreService {
      * 3) The final score is derived from the square root of (`inclusiveWeight` * factor) and scaled to a 0-100 range.
      * The square root is applied to soften the penalty curve and avoid overly harsh scores.
      *
-     * @param analysis - The result of the gender bias analysis (including identified words and overall coding).
+     * @param analysis - The result of the gender bias analysis.
      * @param originalText - The original text for score-calculation
      * @returns An integer between 0 and 100 representing the inclusivity score.
      */
@@ -113,8 +113,6 @@ public class ComplianceScoreService {
         if (analysis == null || analysis.isEmpty()) {
             return 100;
         }
-
-        String coding = analysis.get(0).getCoding();
 
         long inclusiveCount = analysis
             .stream()
@@ -132,16 +130,9 @@ public class ComplianceScoreService {
         double totalCount = (double) inclusiveCount + (double) nonInclusiveCount;
         double inclusiveWeight = inclusiveCount / totalCount;
 
-        double factor = getCodingFactor(coding);
+        double factor = nonInclusiveCount > inclusiveCount ? FACTOR_NON_INCLUSIVE : FACTOR_NEUTRAL;
         double score = Math.sqrt(inclusiveWeight * factor) * 100.0;
 
         return (int) Math.max(0, Math.min(100, Math.round(score)));
-    }
-
-    private double getCodingFactor(String coding) {
-        return switch (coding) {
-            case "neutral", "inclusive-coded" -> FACTOR_NEUTRAL;
-            default -> FACTOR_NON_INCLUSIVE;
-        };
     }
 }

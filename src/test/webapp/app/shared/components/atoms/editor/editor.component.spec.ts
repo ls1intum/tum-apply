@@ -200,7 +200,7 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       fixture.componentRef.setInput('showGenderDecoderButton', true);
-      setBiasedAnalysis(fixture, [{ coding: 'non-inclusive-coded' }]);
+      setBiasedAnalysis(fixture, [{ type: 'NON_INCLUSIVE' }]);
 
       expect(comp.shouldShowButton()).toBe(true);
     });
@@ -216,60 +216,50 @@ describe('EditorComponent', () => {
     });
   });
 
-  describe('codingDisplay computed', () => {
+  describe('formulationDisplay computed', () => {
     it('should return null when biasedAnalysis is undefined', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
       setBiasedAnalysis(fixture, undefined);
 
-      expect(comp.codingDisplay()).toBeNull();
+      expect(comp.codingDisplay()).toBeUndefined();
     });
 
-    it('should return null when biasedAnalysis.coding is undefined', () => {
+    it('should return neutral text when biasedAnalysis is empty', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      setBiasedAnalysis(fixture, [{}]);
+      setBiasedAnalysis(fixture, []);
 
-      expect(comp.codingDisplay()).toBeNull();
+      expect(comp.codingDisplay()).toBe('genderDecoder.formulationTexts.neutral');
     });
 
-    it('should return translated text for non-inclusive-coded', () => {
+    it('should return translated text when non-inclusive issues outnumber inclusive issues', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      setBiasedAnalysis(fixture, [{ coding: 'non-inclusive-coded' }]);
+      setBiasedAnalysis(fixture, [{ type: 'NON_INCLUSIVE' }, { type: 'NON_INCLUSIVE' }, { type: 'INCLUSIVE' }]);
 
       const result = comp.codingDisplay();
       expect(result).toBe('genderDecoder.formulationTexts.nonInclusive');
     });
 
-    it('should return translated text for inclusive-coded', () => {
+    it('should return translated text when inclusive issues outnumber non-inclusive issues', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      setBiasedAnalysis(fixture, [{ coding: 'inclusive-coded' }]);
+      setBiasedAnalysis(fixture, [{ type: 'INCLUSIVE' }, { type: 'INCLUSIVE' }, { type: 'NON_INCLUSIVE' }]);
 
       const result = comp.codingDisplay();
       expect(result).toBe('genderDecoder.formulationTexts.inclusive');
     });
 
-    it('should return translated text for neutral', () => {
+    it('should return translated text for balanced issues', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      setBiasedAnalysis(fixture, [{ coding: 'neutral' }]);
-
-      const result = comp.codingDisplay();
-      expect(result).toBe('genderDecoder.formulationTexts.neutral');
-    });
-
-    it('should return translated text for empty', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      setBiasedAnalysis(fixture, [{ coding: 'empty' }]);
+      setBiasedAnalysis(fixture, [{ type: 'INCLUSIVE' }, { type: 'NON_INCLUSIVE' }]);
 
       const result = comp.codingDisplay();
       expect(result).toBe('genderDecoder.formulationTexts.neutral');
@@ -279,7 +269,7 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      setBiasedAnalysis(fixture, [{ coding: 'non-inclusive-coded' }]);
+      setBiasedAnalysis(fixture, [{ type: 'NON_INCLUSIVE' }]);
 
       const result1 = comp.codingDisplay();
       expect(result1).toBe('genderDecoder.formulationTexts.nonInclusive');
@@ -299,7 +289,7 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       fixture.componentRef.setInput('showGenderDecoderButton', false);
-      setBiasedAnalysis(fixture, [{ coding: 'neutral' }]);
+      setBiasedAnalysis(fixture, [{ type: 'INCLUSIVE' }]);
 
       expect(comp.shouldShowButton()).toBe(false);
     });
@@ -319,21 +309,25 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       fixture.componentRef.setInput('showGenderDecoderButton', true);
-      setBiasedAnalysis(fixture, [{ coding: 'neutral' }]);
+      setBiasedAnalysis(fixture, [{ type: 'INCLUSIVE' }]);
 
-      expect(comp.shouldShowButton()).toBe(expected);
+      expect(comp.shouldShowButton()).toBe(true);
     });
   });
 
   describe('analysis modal handlers', () => {
-    it('should toggle showAnalysisModal when biasedAnalysis exists, ignore click when undefined, and reset on close', () => {
+    it('should toggle showAnalysisModal when biasedAnalysis exists and reset on close', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      setBiasedAnalysis(fixture, [{ coding: 'non-inclusive-coded' }]);
+      setBiasedAnalysis(fixture, [{ type: 'NON_INCLUSIVE' }]);
 
       comp.onGenderDecoderClick();
       expect(comp.showAnalysisModal()).toBe(true);
+
+      comp.closeAnalysisModal();
+      expect(comp.showAnalysisModal()).toBe(false);
+    });
 
     it('should not set showAnalysisModal when biasedAnalysis is undefined', () => {
       const fixture = createFixture();
@@ -343,48 +337,6 @@ describe('EditorComponent', () => {
       comp.showAnalysisModal.set(false);
       comp.onGenderDecoderClick();
       expect(comp.showAnalysisModal()).toBe(false);
-    });
-  });
-
-  describe('getCodingTranslationKey', () => {
-    it('should return correct key for "non-inclusive-coded"', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const result = comp['getCodingTranslationKey']('non-inclusive-coded');
-      expect(result).toBe('genderDecoder.formulationTexts.nonInclusive');
-    });
-
-    it('should return correct key for "inclusive-coded"', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const result = comp['getCodingTranslationKey']('inclusive-coded');
-      expect(result).toBe('genderDecoder.formulationTexts.inclusive');
-    });
-
-    it('should return correct key for "neutral"', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const result = comp['getCodingTranslationKey']('neutral');
-      expect(result).toBe('genderDecoder.formulationTexts.neutral');
-    });
-
-    it('should return correct key for "empty"', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const result = comp['getCodingTranslationKey']('empty');
-      expect(result).toBe('genderDecoder.formulationTexts.neutral');
-    });
-
-    it('should return default key for unknown coding', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      const result = comp['getCodingTranslationKey']('unknown-type');
-      expect(result).toBe('genderDecoder.formulationTexts.neutral');
     });
   });
 

@@ -33,6 +33,7 @@ import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -540,20 +541,20 @@ public class JobService {
      * Updates the job in place and caller saves it.
      */
     private void replaceIssuesForLanguage(Job job, List<ComplianceIssue> complianceAnalysis, List<BiasedIssue> biasedIssues, String lang) {
-        List<ComplianceIssue> issuesToSave = job
+        Set<ComplianceIssue> issuesToSave = job
             .getComplianceIssues()
             .stream()
             .filter(issue -> !Objects.equals(issue.getLanguage(), lang))
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toCollection(HashSet::new));
         issuesToSave.addAll(complianceAnalysis);
-        job.setComplianceIssues(issuesToSave);
+        job.setComplianceIssues(new ArrayList<>(issuesToSave));
 
-        List<BiasedIssue> biasedIssuesToSave = job
+        Set<BiasedIssue> biasedIssuesToSave = job
             .getBiasedIssues()
             .stream()
             .filter(issue -> !Objects.equals(issue.getLanguage(), lang))
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toCollection(HashSet::new));
         biasedIssuesToSave.addAll(biasedIssues);
-        job.setBiasedIssues(biasedIssuesToSave);
+        job.setBiasedIssues(new ArrayList<>(biasedIssuesToSave));
     }
 }

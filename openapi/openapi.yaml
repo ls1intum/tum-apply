@@ -2880,11 +2880,10 @@ components:
     BiasedIssue:
       type: object
       properties:
-        coding: {type: string}
         language: {type: string}
         type:
           type: string
-          enum: [NON_INCLUSIVE, INCLUSIVE]
+          enum: [NON_INCLUSIVE, INCLUSIVE, NEUTRAL]
         word: {type: string}
     BookSlotRequestDTO:
       type: object

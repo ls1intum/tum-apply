@@ -86,10 +86,10 @@ class ComplianceScoreServiceTest {
 
         @Test
         void shouldCalculateCombinedGenderScoreWhenBothAnalysesArePresent() {
-            List<BiasedIssue> original = List.of(issue("inclusive-coded", "en", "team", GenderCategory.INCLUSIVE));
+            List<BiasedIssue> original = List.of(issue("en", "team", GenderCategory.INCLUSIVE));
             List<BiasedIssue> translated = List.of(
-                issue("neutral", "de", "leader", GenderCategory.NON_INCLUSIVE),
-                issue("neutral", "de", "supportive", GenderCategory.INCLUSIVE)
+                issue("de", "leader", GenderCategory.NON_INCLUSIVE),
+                issue("de", "supportive", GenderCategory.INCLUSIVE)
             );
 
             int score = complianceScoreService.calculateGenderScore(original, translated, "text");
@@ -100,8 +100,8 @@ class ComplianceScoreServiceTest {
         @Test
         void shouldCalculateSingleLanguageGenderScoreWhenTranslatedAnalysisIsMissing() {
             List<BiasedIssue> original = List.of(
-                issue("neutral", "en", "leader", GenderCategory.NON_INCLUSIVE),
-                issue("neutral", "en", "supportive", GenderCategory.INCLUSIVE)
+                issue("en", "leader", GenderCategory.NON_INCLUSIVE),
+                issue("en", "supportive", GenderCategory.INCLUSIVE)
             );
 
             int score = complianceScoreService.calculateGenderScore(original, null, "text");
@@ -109,8 +109,8 @@ class ComplianceScoreServiceTest {
             assertThat(score).isEqualTo(71);
         }
 
-        private BiasedIssue issue(String coding, String language, String word, GenderCategory type) {
-            return new BiasedIssue(coding, language, word, type);
+        private BiasedIssue issue(String language, String word, GenderCategory type) {
+            return new BiasedIssue(language, word, type);
         }
     }
 }

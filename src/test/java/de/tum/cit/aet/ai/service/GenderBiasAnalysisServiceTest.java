@@ -37,10 +37,10 @@ class GenderBiasAnalysisServiceTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("analyzeTextCases")
-    void shouldAnalyzeGenderBias(String label, String text, String language, String expectedCoding, List<ExpectedBiasedIssue> expected) {
+    void shouldAnalyzeGenderBias(String label, String text, String language, List<ExpectedBiasedIssue> expected) {
         List<BiasedIssue> result = service.analyzeText(text, language);
 
-        assertAnalysis(result, language, expectedCoding, expected);
+        assertAnalysis(result, language, expected);
     }
 
     @Test
@@ -50,7 +50,6 @@ class GenderBiasAnalysisServiceTest {
         assertAnalysis(
             result,
             "en",
-            "non-inclusive-coded",
             List.of(
                 new ExpectedBiasedIssue("leader", GenderCategory.NON_INCLUSIVE),
                 new ExpectedBiasedIssue("competitive", GenderCategory.NON_INCLUSIVE)
@@ -82,7 +81,7 @@ class GenderBiasAnalysisServiceTest {
             .hasSize(4000)
             .allSatisfy(issue -> {
                 assertThat(issue.getLanguage()).isEqualTo("en");
-                assertThat(issue.getCoding()).isEqualTo("non-inclusive-coded");
+                assertThat(issue.getType()).isEqualTo(GenderCategory.NON_INCLUSIVE);
             });
     }
 
@@ -93,7 +92,6 @@ class GenderBiasAnalysisServiceTest {
         assertAnalysis(
             result,
             "en",
-            "non-inclusive-coded",
             List.of(
                 new ExpectedBiasedIssue("competitive", GenderCategory.NON_INCLUSIVE),
                 new ExpectedBiasedIssue("analytical", GenderCategory.NON_INCLUSIVE)
@@ -109,7 +107,6 @@ class GenderBiasAnalysisServiceTest {
             .hasSize(4)
             .allSatisfy(issue -> {
                 assertThat(issue.getLanguage()).isEqualTo("en");
-                assertThat(issue.getCoding()).isEqualTo("non-inclusive-coded");
                 assertThat(issue.getWord()).isEqualTo("competitive");
                 assertThat(issue.getType()).isEqualTo(GenderCategory.NON_INCLUSIVE);
             });
@@ -121,7 +118,6 @@ class GenderBiasAnalysisServiceTest {
                 "non-inclusive English",
                 NON_INCLUSIVE_ENGLISH_TEXT,
                 "en",
-                "non-inclusive-coded",
                 List.of(
                     new ExpectedBiasedIssue("leader", GenderCategory.NON_INCLUSIVE),
                     new ExpectedBiasedIssue("competitive", GenderCategory.NON_INCLUSIVE)
@@ -131,7 +127,6 @@ class GenderBiasAnalysisServiceTest {
                 "inclusive English",
                 INCLUSIVE_ENGLISH_TEXT,
                 "en",
-                "inclusive-coded",
                 List.of(
                     new ExpectedBiasedIssue("supportive", GenderCategory.INCLUSIVE),
                     new ExpectedBiasedIssue("collaborative", GenderCategory.INCLUSIVE),
@@ -142,7 +137,6 @@ class GenderBiasAnalysisServiceTest {
                 "neutral English",
                 NEUTRAL_ENGLISH_TEXT,
                 "en",
-                "neutral",
                 List.of(
                     new ExpectedBiasedIssue("leader", GenderCategory.NON_INCLUSIVE),
                     new ExpectedBiasedIssue("decisive", GenderCategory.NON_INCLUSIVE),
@@ -150,12 +144,11 @@ class GenderBiasAnalysisServiceTest {
                     new ExpectedBiasedIssue("collaborative", GenderCategory.INCLUSIVE)
                 )
             ),
-            Arguments.of("empty English", EMPTY_ENGLISH_TEXT, "en", "empty", List.of()),
+            Arguments.of("empty English", EMPTY_ENGLISH_TEXT, "en", List.of()),
             Arguments.of(
                 "non-inclusive German",
                 NON_INCLUSIVE_GERMAN_TEXT,
                 "de",
-                "non-inclusive-coded",
                 List.of(
                     new ExpectedBiasedIssue("durchsetzungsfähige", GenderCategory.NON_INCLUSIVE),
                     new ExpectedBiasedIssue("analytischen", GenderCategory.NON_INCLUSIVE)
@@ -165,7 +158,6 @@ class GenderBiasAnalysisServiceTest {
                 "inclusive German",
                 INCLUSIVE_GERMAN_TEXT,
                 "de",
-                "inclusive-coded",
                 List.of(
                     new ExpectedBiasedIssue("kooperativ", GenderCategory.INCLUSIVE),
                     new ExpectedBiasedIssue("einfühlsam", GenderCategory.INCLUSIVE),
@@ -176,7 +168,6 @@ class GenderBiasAnalysisServiceTest {
                 "neutral German",
                 NEUTRAL_GERMAN_TEXT,
                 "de",
-                "neutral",
                 List.of(
                     new ExpectedBiasedIssue("durchsetzungsfähig", GenderCategory.NON_INCLUSIVE),
                     new ExpectedBiasedIssue("ehrgeizig", GenderCategory.NON_INCLUSIVE),
@@ -184,12 +175,11 @@ class GenderBiasAnalysisServiceTest {
                     new ExpectedBiasedIssue("verständnisvoll", GenderCategory.INCLUSIVE)
                 )
             ),
-            Arguments.of("empty German", EMPTY_GERMAN_TEXT, "de", "empty", List.of()),
+            Arguments.of("empty German", EMPTY_GERMAN_TEXT, "de", List.of()),
             Arguments.of(
                 "special characters English",
                 SPECIAL_CHARACTER_TEXT,
                 "en",
-                "non-inclusive-coded",
                 List.of(
                     new ExpectedBiasedIssue("competitive", GenderCategory.NON_INCLUSIVE),
                     new ExpectedBiasedIssue("analytical", GenderCategory.NON_INCLUSIVE)
@@ -199,7 +189,6 @@ class GenderBiasAnalysisServiceTest {
                 "hyphenated English",
                 HYPHENED_TEXT,
                 "en",
-                "inclusive-coded",
                 List.of(
                     new ExpectedBiasedIssue("supportive", GenderCategory.INCLUSIVE),
                     new ExpectedBiasedIssue("co-operativ", GenderCategory.INCLUSIVE),
@@ -209,12 +198,7 @@ class GenderBiasAnalysisServiceTest {
         );
     }
 
-    private void assertAnalysis(
-        List<BiasedIssue> result,
-        String expectedLanguage,
-        String expectedCoding,
-        List<ExpectedBiasedIssue> expected
-    ) {
+    private void assertAnalysis(List<BiasedIssue> result, String expectedLanguage, List<ExpectedBiasedIssue> expected) {
         if (expected.isEmpty()) {
             assertThat(result).isEmpty();
             return;
@@ -223,7 +207,6 @@ class GenderBiasAnalysisServiceTest {
         assertThat(result)
             .allSatisfy(issue -> {
                 assertThat(issue.getLanguage()).isEqualTo(expectedLanguage);
-                assertThat(issue.getCoding()).isEqualTo(expectedCoding);
             })
             .extracting(BiasedIssue::getWord, BiasedIssue::getType)
             .containsExactlyElementsOf(

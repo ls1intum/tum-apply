@@ -20,11 +20,11 @@ public class GenderBiasAnalyzer {
      * @param text     the text to analyze
      * @param language the language code (e.g., "en" or "de")
      * @return an {@link AnalysisResult} containing counts of non-inclusive and
-     *         inclusive words and coding type
+     *         inclusive words
      */
     public AnalysisResult analyze(String text, String language) {
         if (text == null || text.trim().isEmpty()) {
-            return new AnalysisResult(Collections.emptyList(), Collections.emptyList(), 0, 0, "empty", language);
+            return new AnalysisResult(Collections.emptyList(), Collections.emptyList(), 0, 0, language);
         }
 
         // Get word lists for language (fallback to English)
@@ -41,12 +41,10 @@ public class GenderBiasAnalyzer {
         List<String> nonInclusiveWords = findCodedWords(dehyphenWordList, nonInclusive);
         List<String> inclusiveWords = findCodedWords(dehyphenWordList, inclusive);
 
-        // Assess coding
         int nonInclusiveCount = nonInclusiveWords.size();
         int inclusiveCount = inclusiveWords.size();
-        String coding = assessCoding(nonInclusiveCount, inclusiveCount);
 
-        return new AnalysisResult(nonInclusiveWords, inclusiveWords, nonInclusiveCount, inclusiveCount, coding, language);
+        return new AnalysisResult(nonInclusiveWords, inclusiveWords, nonInclusiveCount, inclusiveCount, language);
     }
 
     /**
@@ -97,25 +95,6 @@ public class GenderBiasAnalyzer {
     }
 
     /**
-     * Assess overall coding of the text
-     */
-    private String assessCoding(int nonInclusiveCount, int inclusiveCount) {
-        int codingScore = inclusiveCount - nonInclusiveCount;
-
-        if (codingScore == 0) {
-            if (inclusiveCount > 0) {
-                return "neutral";
-            } else {
-                return "empty";
-            }
-        } else if (codingScore > 0) {
-            return "inclusive-coded";
-        } else {
-            return "non-inclusive-coded";
-        }
-    }
-
-    /**
      * Analysis result container
      */
     public record AnalysisResult(
@@ -123,7 +102,6 @@ public class GenderBiasAnalyzer {
         List<String> inclusiveWords,
         int nonInclusiveCount,
         int inclusiveCount,
-        String coding,
         String language
     ) {}
 }

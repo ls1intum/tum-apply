@@ -6,6 +6,8 @@ import { BiasedIssue } from 'app/generated/model/biased-issue';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
+import { BiasedIssueTypeEnum } from 'app/generated/model/biased-issue';
+import { computeCodingStatus } from 'app/shared/gender-bias-analysis/gender-bias-analysis.utils';
 
 @Component({
   selector: 'jhi-gender-bias-analysis-dialog',
@@ -21,39 +23,32 @@ export class GenderBiasAnalysisDialogComponent {
   visibleChange = output<boolean>();
   closeDialog = output();
 
-  readonly codingTranslationKey = computed(() => {
-    const coding = this.result()[0]?.coding;
-    if (!coding) return 'genderDecoder.formulationTexts.neutral';
+  readonly codingStatus = computed<BiasedIssueTypeEnum | undefined>(() => {
+    return computeCodingStatus(this.result());
+  });
 
-    switch (coding) {
-      case 'non-inclusive-coded':
+  readonly codingTranslationKey = computed(() => {
+    switch (this.codingStatus()) {
+      case 'NON_INCLUSIVE':
         return 'genderDecoder.formulationTexts.nonInclusive';
-      case 'inclusive-coded':
+      case 'INCLUSIVE':
         return 'genderDecoder.formulationTexts.inclusive';
-      case 'neutral':
-      case 'empty':
-        return 'genderDecoder.formulationTexts.neutral';
+      case 'NEUTRAL':
       default:
         return 'genderDecoder.formulationTexts.neutral';
     }
   });
 
   readonly explanationTranslationKey = computed(() => {
-    // coding of first record
-    const coding = this.result()[0]?.coding;
-    if (!coding) return 'genderDecoder.explanations.neutral';
-
-    switch (coding) {
-      case 'non-inclusive-coded':
-        return 'genderDecoder.explanations.non-inclusive-coded';
-      case 'inclusive-coded':
-        return 'genderDecoder.explanations.inclusive-coded';
-      case 'neutral':
+    switch (this.codingStatus()) {
+      case 'NON_INCLUSIVE':
+        return 'genderDecoder.explanations.nonInclusive';
+      case 'INCLUSIVE':
+        return 'genderDecoder.explanations.inclusive';
+      case 'NEUTRAL':
         return 'genderDecoder.explanations.neutral';
-      case 'empty':
-        return 'genderDecoder.explanations.empty';
       default:
-        return 'genderDecoder.explanations.neutral';
+        return 'genderDecoder.explanations.empty';
     }
   });
 
@@ -78,10 +73,6 @@ export class GenderBiasAnalysisDialogComponent {
       this.visibleChange.emit(false);
       this.closeDialog.emit();
     }
-  }
-
-  getBiasTypeClass(type: string): string {
-    return type === 'non-inclusive' ? 'non-inclusive-badge' : 'inclusive-badge';
   }
 
   private getWordCounts(words: BiasedIssue[]): Map<string, number> {

@@ -187,9 +187,9 @@ describe('JobCreationFormComponent', () => {
 
     it('should expose gender decoder issues only for the selected description language', () => {
       const issues: BiasedIssue[] = [
-        { language: 'en', word: 'leader', coding: 'non-inclusive-coded', type: 'NON_INCLUSIVE' },
-        { language: 'de', word: 'durchsetzungsfähig', coding: 'non-inclusive-coded', type: 'NON_INCLUSIVE' },
-        { word: 'legacy', coding: 'neutral', type: 'INCLUSIVE' },
+        { language: 'en', word: 'leader', type: 'NON_INCLUSIVE' },
+        { language: 'de', word: 'durchsetzungsfähig', type: 'NON_INCLUSIVE' },
+        { word: 'legacy', type: 'INCLUSIVE' },
       ];
       component.biasedIssues.set(issues);
 
@@ -219,14 +219,15 @@ describe('JobCreationFormComponent', () => {
       // Track the initial call count to check for new calls
       const initialCallCount = vi.mocked(mockRouter.navigate).mock.calls.length;
 
-    const fixture2 = TestBed.createComponent(JobCreationFormComponent);
-    fixture2.detectChanges();
-    await fixture2.whenStable();
-    await new Promise(resolve => setTimeout(resolve, 0));
+      const fixture2 = TestBed.createComponent(JobCreationFormComponent);
+      fixture2.detectChanges();
+      await fixture2.whenStable();
+      await new Promise(resolve => setTimeout(resolve, 0));
 
-    const calls = vi.mocked(mockRouter.navigate).mock.calls.slice(initialCallCount);
-    expect(calls).toContainEqual([['/my-positions']]);
-    fixture2.destroy();
+      const calls = vi.mocked(mockRouter.navigate).mock.calls.slice(initialCallCount);
+      expect(calls).toContainEqual([['/my-positions']]);
+      fixture2.destroy();
+    });
   });
 
   it('should call Location.back on onBack', () => {

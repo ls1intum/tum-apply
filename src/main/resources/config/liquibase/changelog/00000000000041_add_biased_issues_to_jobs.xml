@@ -14,7 +14,6 @@
       <column name="job_id" type="CHAR(36)">
         <constraints nullable="false" foreignKeyName="fk_biased_issues_job" references="jobs(job_id)" deleteCascade="true"/>
       </column>
-      <column name="coding" type="text"/>
       <column name="language" type="varchar(10)"/>
       <column name="word" type="varchar(255)"/>
       <column name="type" type="varchar(50)"/>

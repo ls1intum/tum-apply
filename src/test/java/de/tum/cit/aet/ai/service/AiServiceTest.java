@@ -61,9 +61,7 @@ class AiServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("htmlCases")
     void shouldStripHtmlBeforeGenderBiasAnalysis(String label, String html, String language, String expectedPlainText) {
-        List<BiasedIssue> genderAnalysis = List.of(
-            new BiasedIssue("non-inclusive-coded", language, "leader", GenderCategory.NON_INCLUSIVE)
-        );
+        List<BiasedIssue> genderAnalysis = List.of(new BiasedIssue(language, "leader", GenderCategory.NON_INCLUSIVE));
         given(genderBiasAnalysisService.analyzeText(expectedPlainText, language)).willReturn(genderAnalysis);
         given(complianceScoreService.calculateGenderScore(genderAnalysis, null, expectedPlainText)).willReturn(100);
         given(complianceScoreService.calculateLegalScore(List.of())).willReturn(100);
@@ -106,11 +104,14 @@ class AiServiceTest {
             null,
             null,
             null,
+            null,
             "en".equals(language) ? description : null,
             "de".equals(language) ? description : null,
             JobState.DRAFT,
             null,
             true,
+            null,
+            null,
             null,
             null,
             null

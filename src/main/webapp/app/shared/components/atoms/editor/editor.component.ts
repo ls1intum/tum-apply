@@ -16,6 +16,8 @@ import { ChangeDetectorRef } from '@angular/core';
 import { viewChild } from '@angular/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ComplianceIssueCategoryEnum, ComplianceIssueCategoryEnumValues } from 'app/generated/model/compliance-issue';
+import { BiasedIssueTypeEnum } from 'app/generated/model/biased-issue';
+import { computeCodingStatus } from 'app/shared/gender-bias-analysis/gender-bias-analysis.utils';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -138,7 +140,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   });
 
   readonly shouldShowButton = computed(() => {
-    return this.showGenderDecoderButton() && this.biasedAnalysis() !== undefined;
+    return this.showGenderDecoderButton() && this.displayResult() !== undefined;
   });
 
   // Check if error message should be displayed
@@ -189,13 +191,16 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
   });
 
+  readonly displayResult = computed<BiasedIssueTypeEnum | undefined>(() => {
+    return computeCodingStatus(this.biasedAnalysis(), { emptyAsNeutral: true });
+  });
+
   readonly codingDisplay = computed(() => {
     this.langChange();
-    const result = this.biasedAnalysis();
-    const coding = result?.[0]?.coding;
-    if (coding === undefined) return null;
+    const status = this.displayResult();
+    if (status === undefined) return undefined;
 
-    const key = this.getCodingTranslationKey(coding);
+    const key = this.getCodingTranslationKey(status);
     return this.translateService.instant(key);
   });
 
@@ -301,7 +306,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   }
 
   onGenderDecoderClick(): void {
-    const result = this.biasedAnalysis();
+    const result = this.displayResult();
     if (result) {
       this.showAnalysisModal.set(true);
     }
@@ -427,16 +432,13 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
   }
 
-  private getCodingTranslationKey(coding: string): string {
+  private getCodingTranslationKey(coding: BiasedIssueTypeEnum): string {
     switch (coding) {
-      case 'non-inclusive-coded':
+      case 'NON_INCLUSIVE':
         return 'genderDecoder.formulationTexts.nonInclusive';
-      case 'inclusive-coded':
+      case 'INCLUSIVE':
         return 'genderDecoder.formulationTexts.inclusive';
-      case 'neutral':
-        return 'genderDecoder.formulationTexts.neutral';
-      case 'empty':
-        return 'genderDecoder.formulationTexts.neutral';
+      case 'NEUTRAL':
       default:
         return 'genderDecoder.formulationTexts.neutral';
     }

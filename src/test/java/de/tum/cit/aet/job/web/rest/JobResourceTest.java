@@ -405,7 +405,7 @@ class JobResourceTest extends AbstractResourceTest {
                     )
                 )
             );
-            job.setBiasedIssues(List.of(new BiasedIssue("non-inclusive-coded", "en", "leader", GenderCategory.NON_INCLUSIVE)));
+            job.setBiasedIssues(List.of(new BiasedIssue("en", "leader", GenderCategory.NON_INCLUSIVE)));
             jobRepository.saveAndFlush(job);
 
             JobFormDTO updatedPayload = new JobFormDTO(
@@ -421,11 +421,14 @@ class JobResourceTest extends AbstractResourceTest {
                 6,
                 FundingType.PARTIALLY_FUNDED,
                 TvlGrade.E15,
+                null,
                 "Updated Description",
                 "Neue Beschreibung",
                 JobState.DRAFT,
                 null,
                 true,
+                null,
+                null,
                 null,
                 null,
                 null
@@ -445,7 +448,6 @@ class JobResourceTest extends AbstractResourceTest {
             assertThat(returnedJob.biasedIssues())
                 .singleElement()
                 .satisfies(issue -> {
-                    assertThat(issue.getCoding()).isEqualTo("non-inclusive-coded");
                     assertThat(issue.getLanguage()).isEqualTo("en");
                     assertThat(issue.getWord()).isEqualTo("leader");
                     assertThat(issue.getType()).isEqualTo(GenderCategory.NON_INCLUSIVE);
