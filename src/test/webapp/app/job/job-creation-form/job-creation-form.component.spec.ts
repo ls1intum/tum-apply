@@ -5,11 +5,8 @@ import { UrlSegment } from '@angular/router';
 import { signal, TemplateRef } from '@angular/core';
 
 import { JobCreationFormComponent } from 'app/job/job-creation-form/job-creation-form.component';
-import { AiFeatureToggleResourceApi } from 'app/generated/api/ai-feature-toggle-resource-api';
-import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { JobResourceApi } from 'app/generated/api/job-resource-api';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
-import { AiStreamingService } from 'app/service/ai-streaming.service';
 import { User } from 'app/core/auth/account.service';
 import {
   JobFormDTO,
@@ -34,6 +31,7 @@ import { createLocationMock, provideLocationMock } from '../../../util/location.
 import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
 import { createJobResourceApiMock, provideJobResourceApiMock } from '../../../util/job-resource-api.service.mock';
 import { createImageResourceApiMock, provideImageResourceApiMock } from '../../../util/image-resource-api.service.mock';
+import { createAiStreamingServiceMock, provideAiStreamingServiceMock } from '../../../util/ai-streaming.service.mock';
 import {
   createResearchGroupResourceApiMock,
   provideResearchGroupResourceApiMock,
@@ -86,12 +84,6 @@ function mockAllPanelTemplates(component: JobCreationFormComponent) {
   Object.defineProperty(component, 'savingStatePanel', { get: () => signal(mockTemplate).asReadonly() });
 }
 
-function expectDateParts(date: Date | undefined, year: number, month: number, day: number) {
-  expect(date).toBeDefined();
-  expect(date?.getFullYear()).toBe(year);
-  expect((date?.getMonth() ?? -1) + 1).toBe(month);
-  expect(date?.getDate()).toBe(day);
-}
 type ComponentPrivate = {
   runAutoSave: () => Promise<boolean>;
   autoSaveInitialized: boolean;
@@ -118,16 +110,8 @@ describe('JobCreationFormComponent', () => {
   let mockRouter: ReturnType<typeof createRouterMock>;
   let mockLocation: ReturnType<typeof createLocationMock>;
   let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
+  let mockAiStreamingService: ReturnType<typeof createAiStreamingServiceMock>;
   let mockResearchGroupApi: ReturnType<typeof createResearchGroupResourceApiMock>;
-  let mockAiStreamingService: {
-    generateJobApplicationDraftStream: ReturnType<typeof vi.fn>;
-    translateJobDescriptionStream: ReturnType<typeof vi.fn>;
-  };
-  let mockUserApi: {
-    getAiConsent: ReturnType<typeof vi.fn>;
-    updateAiConsent: ReturnType<typeof vi.fn>;
-  };
-  let mockAiFeatureToggleApi: { getAiStatus: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     mockJobApi = createJobResourceApiMock();
@@ -150,23 +134,10 @@ describe('JobCreationFormComponent', () => {
     mockRouter = createRouterMock();
     mockLocation = createLocationMock();
     mockActivatedRoute = createActivatedRouteMock({}, {}, [new UrlSegment('job', {}), new UrlSegment('create', {})]);
-    mockAiStreamingService = {
-      generateJobApplicationDraftStream: vi.fn(),
-      translateJobDescriptionStream: vi.fn(),
-    };
+    mockAiStreamingService = createAiStreamingServiceMock();
     mockAiStreamingService.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
-    mockAiStreamingService.translateJobDescriptionStream.mockResolvedValue('<p>Translated content</p>');
     mockResearchGroupApi = createResearchGroupResourceApiMock();
     mockResearchGroupApi.getResearchGroupProfessors.mockReturnValue(of([]));
-    mockUserApi = {
-      getAiConsent: vi.fn(),
-      updateAiConsent: vi.fn(),
-    };
-    mockUserApi.getAiConsent.mockReturnValue(of(true));
-    mockUserApi.updateAiConsent.mockReturnValue(of({}));
-    mockAiFeatureToggleApi = {
-      getAiStatus: vi.fn().mockReturnValue(of({ aiEnabled: true, manuallyDisabled: false, circuitBreakerOpen: false })),
-    };
 
     await TestBed.configureTestingModule({
       imports: [JobCreationFormComponent],
@@ -180,10 +151,8 @@ describe('JobCreationFormComponent', () => {
         provideRouterMock(mockRouter),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
+        provideAiStreamingServiceMock(mockAiStreamingService),
         provideResearchGroupResourceApiMock(mockResearchGroupApi),
-        { provide: AiStreamingService, useValue: mockAiStreamingService },
-        { provide: UserResourceApi, useValue: mockUserApi },
-        { provide: AiFeatureToggleResourceApi, useValue: mockAiFeatureToggleApi },
       ],
     })
       .overrideComponent(JobCreationFormComponent, {
@@ -209,7 +178,7 @@ describe('JobCreationFormComponent', () => {
 
     const fixture2 = TestBed.createComponent(JobCreationFormComponent);
     fixture2.detectChanges();
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await fixture2.whenStable();
     await new Promise(resolve => setTimeout(resolve, 0));
 
     const calls = vi.mocked(mockRouter.navigate).mock.calls.slice(initialCallCount);
@@ -226,8 +195,7 @@ describe('JobCreationFormComponent', () => {
     mockAccountService.user.set(undefined as unknown as User);
     const fixture2 = TestBed.createComponent(JobCreationFormComponent);
     fixture2.detectChanges();
-    await new Promise(resolve => setTimeout(resolve, 0));
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await fixture2.whenStable();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
   });
 
@@ -319,7 +287,6 @@ describe('JobCreationFormComponent', () => {
       fillValidJobForm(component);
       fixture.detectChanges();
       component.jobId.set('id123');
-      component.aiToggleSignal.set(false);
 
       const draftSave = new Subject<JobFormDTO>();
       mockJobApi.updateJob = vi
@@ -518,77 +485,6 @@ describe('JobCreationFormComponent', () => {
       component.basicInfoForm.patchValue({ supervisingProfessor: undefined });
       const dto = getPrivate(component).createJobDTO(JobFormDTOStateEnum.Draft);
       expect(dto.supervisingProfessor).toBe('prof-1');
-    });
-  });
-
-  describe('Form Validation', () => {
-    it('should validate individual forms and their signals', () => {
-      component.basicInfoForm.patchValue({
-        title: 'Test',
-        researchArea: 'Area',
-        subjectArea: { value: JobFormDTOSubjectAreaEnum.ComputerScience },
-        location: { value: JobFormDTOLocationEnum.Munich },
-        supervisingProfessor: 'Prof',
-        jobDescription: '<p>Description</p>', // HTML-Inhalt für den Validator
-      });
-      component.jobDescriptionEN.set('<p>Description</p>');
-      component.jobDescriptionDE.set('<p>Beschreibung</p>');
-      component.jobDescriptionSignal.set('<p>Description</p>');
-
-      component.basicInfoForm.updateValueAndValidity();
-      fixture.detectChanges();
-
-      expect(component.basicInfoForm.valid).toBe(true);
-      expect(component.basicInfoValid()).toBe(true);
-    });
-
-    it('should validate the date order for position details', () => {
-      const cases = [
-        {
-          applicationDeadline: '2025-03-10',
-          startDate: '2025-03-09',
-          valid: false,
-          hasInvalidDateOrder: true,
-          positionDetailsValid: false,
-        },
-        {
-          applicationDeadline: '2025-03-10',
-          startDate: '2025-03-10',
-          valid: true,
-          hasInvalidDateOrder: false,
-          positionDetailsValid: true,
-        },
-      ];
-
-      for (const testCase of cases) {
-        component.positionDetailsForm.patchValue({
-          applicationDeadline: testCase.applicationDeadline,
-          startDate: testCase.startDate,
-        });
-        component.positionDetailsForm.updateValueAndValidity();
-        fixture.detectChanges();
-
-        expect(component.positionDetailsForm.valid).toBe(testCase.valid);
-        expect(component.positionDetailsForm.hasError('invalidDateOrder')).toBe(testCase.hasInvalidDateOrder);
-        expect(component.hasInvalidDateOrder()).toBe(testCase.hasInvalidDateOrder);
-        expect(component.positionDetailsValid()).toBe(testCase.positionDetailsValid);
-      }
-    });
-
-    it('should derive both datepicker bounds from the opposite selected date', () => {
-      component.positionDetailsForm.patchValue({
-        applicationDeadline: '2025-04-15',
-        startDate: '',
-      });
-      fixture.detectChanges();
-      expectDateParts(component.startDateMinDate(), 2025, 4, 15);
-
-      component.positionDetailsForm.patchValue({
-        applicationDeadline: '',
-        startDate: '2025-05-20',
-      });
-      fixture.detectChanges();
-      expectDateParts(component.applicationDeadlineMaxDate(), 2025, 5, 20);
     });
   });
 

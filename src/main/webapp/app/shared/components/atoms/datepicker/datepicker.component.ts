@@ -10,9 +10,9 @@ import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
 let nextInputId = 0;
 
-const DATEPICKER_LAYOUT_CLASSES = ['flex-1'];
+const DATEPICKER_LAYOUT_CLASSES: readonly string[] = ['flex-1'];
 
-const DATEPICKER_ACTION_CLASSES = [
+const DATEPICKER_ACTION_CLASSES: readonly string[] = [
   '[&_.p-datepicker-dropdown]:border-none',
   '[&_.p-datepicker-dropdown]:bg-primary-default',
   '[&_.p-datepicker-dropdown]:text-text-on-primary',
@@ -30,7 +30,7 @@ const DATEPICKER_ACTION_CLASSES = [
   '[&_.p-datepicker-clear-button:hover]:text-text-on-primary',
 ];
 
-const DATEPICKER_CALENDAR_CLASSES = [
+const DATEPICKER_CALENDAR_CLASSES: readonly string[] = [
   '[&_.p-ripple.p-datepicker-select-month]:text-primary-default',
   '[&_.p-ripple.p-datepicker-select-month:hover]:bg-primary-hover-outlined',
   '[&_.p-ripple.p-datepicker-select-year]:text-primary-default',
@@ -45,7 +45,7 @@ const DATEPICKER_CALENDAR_CLASSES = [
   '[&_.p-datepicker-year:not(.p-disabled):not(.p-datepicker-year-selected):hover]:text-text-on-primary',
 ];
 
-const DATEPICKER_HIGHLIGHTED_REFERENCE_DAY_CLASSES = [
+const DATEPICKER_HIGHLIGHTED_REFERENCE_DAY_CLASSES: readonly string[] = [
   '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!bg-transparent',
   '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:!text-[inherit]',
   '[&_.p-datepicker-day:has(.datepicker-reference-day):not(.p-datepicker-day-selected)]:font-semibold',
