@@ -39,7 +39,7 @@ public class ReferenceLetterUploadResource {
     @Public
     @GetMapping("/{token}")
     public ResponseEntity<ReferenceLetterContextDTO> getContext(@PathVariable String token) {
-        log.info("GET /api/reference-letters/{} - resolving token context", maskToken(token));
+        log.info("GET /api/reference-letters/{} - Resolving token context", maskToken(token));
         return ResponseEntity.ok(referenceRequestService.getContextByToken(token));
     }
 
@@ -54,13 +54,12 @@ public class ReferenceLetterUploadResource {
     @Public
     @PostMapping(value = "/{token}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReferenceRequestDTO> upload(@PathVariable String token, @RequestParam("file") MultipartFile file) {
-        log.info("POST /api/reference-letters/{} - uploading letter ({} bytes)", maskToken(token), file.getSize());
+        log.info("POST /api/reference-letters/{} - Uploading letter {}", maskToken(token), file.getOriginalFilename());
         return ResponseEntity.ok(referenceRequestService.uploadLetter(token, file));
     }
 
     /**
-     * Returns a short prefix of the token so logs remain useful for debugging without leaking
-     * the full credential.
+     * Returns a short prefix of the token so logs remain useful for debugging without leaking the full credential.
      *
      * @param token the raw token to mask
      * @return a short prefix safe to log
