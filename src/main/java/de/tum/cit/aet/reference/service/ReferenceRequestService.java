@@ -36,7 +36,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -63,19 +62,16 @@ public class ReferenceRequestService {
 
     /**
      * Lists all referee contacts attached to the given application, ordered by creation time.
+     * Checks that the current user owns the application or is an admin or a research group member of the job.
      *
      * @param applicationId the owning application
      * @return all reference requests, mapped to DTOs (no token data)
      */
-    public List<ReferenceRequestDTO> listForApplication(UUID applicationId) {
+    public List<ReferenceRequestDTO> getReferences(UUID applicationId) {
         Application application = applicationRepository
             .findByIdWithApplicantAndJob(applicationId)
             .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
-        // Read access is wider than write access: the applicant who owns the application,
-        // any admin, or staff with access to the job's research group can see the list.
-        if (currentUserService.isAdmin() || currentUserService.isCurrentUser(application.getApplicant().getUserId())) {
-            // applicant or admin path — allowed
-        } else {
+        if (!currentUserService.isAdmin() && !currentUserService.isCurrentUser(application.getApplicant().getUserId())) {
             currentUserService.assertAccessTo(application.getJob().getResearchGroup());
         }
         return referenceRequestRepository
@@ -155,10 +151,9 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Resolves a referee invitation token to its prefill context (referee name, applicant name,
-     * job title, research group, deadline, status). Returns the context regardless of status so
-     * the upload page can render a "thank you" view for already-submitted requests; the upload
-     * endpoint enforces the actual write-time guard.
+     * Returns the context data the referee needs to see on the upload page, based on the token in their
+     * invitation email. The token is resolved to a reference request, and the associated application and job
+     * are loaded to extract the applicant and job details for display.
      *
      * @param rawToken the plaintext token from the invitation email
      * @return the context the referee sees on the upload page
@@ -189,7 +184,6 @@ public class ReferenceRequestService {
      * @throws EntityNotFoundException      when the token is unknown
      * @throws OperationNotAllowedException when the request is already submitted or the deadline has passed
      */
-    @Transactional
     public ReferenceRequestDTO uploadLetter(String rawToken, MultipartFile file) {
         ReferenceRequest entry = findByRawToken(rawToken);
         assertUploadAllowed(entry);

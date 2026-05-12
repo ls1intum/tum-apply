@@ -36,7 +36,7 @@ public class ReferenceRequestResource {
     @GetMapping
     public ResponseEntity<List<ReferenceRequestDTO>> getReferences(@PathVariable UUID applicationId) {
         log.info("GET /api/applications/{}/references - Fetching references", applicationId);
-        return ResponseEntity.ok(referenceRequestService.listForApplication(applicationId));
+        return ResponseEntity.ok(referenceRequestService.getReferences(applicationId));
     }
 
     /**
