@@ -15,11 +15,12 @@ public record ReferenceRequestDTO(
     String firstName,
     String lastName,
     String email,
-    ReferenceRequestStatus status
+    ReferenceRequestStatus status,
+    UUID documentId
 ) {
     /**
      * @param entity the persisted reference request
-     * @return a DTO mirroring the entity
+     * @return a DTO mirroring the entity, including the linked document id when a letter was uploaded
      */
     public static ReferenceRequestDTO fromEntity(ReferenceRequest entity) {
         return new ReferenceRequestDTO(
@@ -28,7 +29,8 @@ public record ReferenceRequestDTO(
             entity.getFirstName(),
             entity.getLastName(),
             entity.getEmail(),
-            entity.getStatus()
+            entity.getStatus(),
+            entity.getDocumentId()
         );
     }
 }
