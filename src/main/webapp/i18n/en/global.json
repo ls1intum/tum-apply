@@ -46,7 +46,7 @@
       "about-us": "TUMApply - About Us",
       "interview": {
         "overview": "TUMApply - Interview Overview",
-        "detail": "Interview - {jobTitle}",
+        "detail": "TUMApply - Interview",
         "assessment": "TUMApply - Interview Assessment"
       },
       "dataExport": {
@@ -269,6 +269,7 @@
         "BACHELOR_TRANSCRIPT": "Bachelor Transcript",
         "MASTER_TRANSCRIPT": "Master Transcript",
         "REFERENCES": "References",
+        "REFERENCE_LETTER": "Reference Letter",
         "CV": "CV",
         "CUSTOM": "Custom"
       },
@@ -331,12 +332,19 @@
       "personal_statements": "Personal Statements",
       "personal_information": "Personal Information",
       "personal_documents": "Personal Documents",
+      "reference_letters": "Recommendation Letters Requests",
+      "reference_status": {
+        "requested": "(requested)",
+        "submitted": "(submitted)",
+        "expired": "(expired)"
+      },
       "not_found": "Application not found"
     },
     "applicationSteps": {
       "personalInformation": "Personal Information",
       "education": "Education",
       "applicationDetails": "Application Details",
+      "references": "Recommendation Letters",
       "summary": "Summary",
       "confirmDialog": {
         "header": "Submit Application",
@@ -458,6 +466,37 @@
         "selectStartDate": "Select a Start Date..."
       }
     },
+    "applicationReferences": {
+      "description": "Please list your referees below. Upon submission, they will be emailed a secure link to upload their recommendation letter.",
+      "requiredCount": "Required: {count} · Added: ",
+      "empty": "No referees added yet.",
+      "section": {
+        "required": "Required Referees"
+      },
+      "label": {
+        "title": "Title",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email"
+      },
+      "button": {
+        "add": "Add"
+      },
+      "toast": {
+        "loadFailed": {
+          "summary": "Could not load referees",
+          "detail": "Failed to load the list of referees. Please reload the page."
+        },
+        "addFailed": {
+          "summary": "Could not add referee",
+          "detail": "The referee could not be added. Please check the entered data and try again."
+        },
+        "removeFailed": {
+          "summary": "Could not remove referee",
+          "detail": "The referee could not be removed. Please try again."
+        }
+      }
+    },
     "applicationPage4": {
       "title": "Overview",
       "message": "Please review your entries before submitting the application.",
@@ -477,6 +516,7 @@
       "state": {
         "draft": "Draft",
         "submitted": "Submitted",
+        "pending": "Pending",
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",
@@ -654,6 +694,45 @@
     "file": {
       "could.not.extract": "Could not extract file",
       "not.image": "File was expected to be an image but was found to be \"{fileType}\""
+    }
+  },
+  "reference": {
+    "title": "Upload your recommendation letter",
+    "loading": "Loading...",
+    "requestedFor": {
+      "title": "Requested for",
+      "applicant": "Applicant",
+      "jobTitle": "Position",
+      "researchGroup": "Research group"
+    },
+    "upload": {
+      "confirm": "Confirm"
+    },
+    "summary": {
+      "title": "Summary",
+      "applicant": "Applicant",
+      "jobTitle": "Position",
+      "researchGroup": "Research group"
+    },
+    "success": {
+      "title": "Recommendation letter received",
+      "message": "Thank you. Your letter has been submitted successfully."
+    },
+    "expired": {
+      "title": "Deadline reached",
+      "message": "The deadline for this recommendation letter has passed."
+    },
+    "error": {
+      "title": "Link not valid",
+      "invalidLink": "This recommendation letter link is invalid or no longer accessible."
+    },
+    "uploadSuccess": {
+      "summary": "Letter uploaded",
+      "detail": "Your recommendation letter has been received."
+    },
+    "uploadFailed": {
+      "summary": "Upload failed",
+      "detail": "We could not save your letter. Please try again."
     }
   },
   "imageUpload": {

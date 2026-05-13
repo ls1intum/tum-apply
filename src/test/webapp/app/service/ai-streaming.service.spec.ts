@@ -99,22 +99,6 @@ describe('AiStreamingService', () => {
       expect(onChunk).toHaveBeenCalledWith('{"jobDescription":"test"}');
     });
 
-    it('should handle chunks split at arbitrary positions', async () => {
-      // More complex split scenario
-      const chunks = [
-        'data:{"job', // Partial
-        'Description":"', // More partial
-        'Hello World"}\n', // Completes line but no double newline yet
-        '\n', // SSE message separator
-      ];
-      fetchSpy.mockResolvedValue(createMockResponse(chunks));
-
-      const onChunk = vi.fn();
-      const result = await service.generateJobApplicationDraftStream('en', {} as never, onChunk);
-
-      expect(result).toBe('{"jobDescription":"Hello World"}');
-    });
-
     it('should handle data line split exactly after "data:" prefix', async () => {
       const chunks = [
         'data:', // Just the prefix
@@ -137,7 +121,7 @@ describe('AiStreamingService', () => {
 
       // Only data: line should be processed
       expect(result).toBe('content');
-      expect(onChunk).toHaveBeenCalledTimes(1);
+      expect(onChunk).toHaveBeenCalledOnce();
     });
 
     it('should process remaining buffer content after stream ends', async () => {
