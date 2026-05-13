@@ -420,7 +420,7 @@ public class KeycloakAuthenticationService {
             callKeycloak(realm, OidcEndpoint.LOGOUT, form, "Failed to logout user").toBodilessEntity().block(Duration.ofSeconds(5));
             return true;
         } catch (UnauthorizedException ex) {
-            log.debug("Logout with client {} on realm {} failed: {}", clientId, realm, ex.getMessage());
+            log.warn("Logout with client {} on realm {} failed: {}", clientId, realm, ex.getMessage());
             return false;
         }
     }
@@ -465,7 +465,7 @@ public class KeycloakAuthenticationService {
         try {
             return refreshTokensWithClient(targetRealm, clientId, clientSecret, refreshToken);
         } catch (UnauthorizedException ex) {
-            log.debug("Refresh with client {} on realm {} failed: {}", clientId, targetRealm, ex.getMessage());
+            log.warn("Refresh with client {} on realm {} failed: {}", clientId, targetRealm, ex.getMessage());
             failures.add("client=" + clientId + ", realm=" + targetRealm + ": " + ex.getMessage());
             return null;
         }

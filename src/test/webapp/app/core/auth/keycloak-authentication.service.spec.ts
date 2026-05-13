@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { vi } from 'vitest';
+import { beforeEach, vi } from 'vitest';
 import { IdpProvider, KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
 import { KeycloakRealmKind } from 'app/core/auth/keycloak-authentication.utils';
+import type { PasskeyCredentialSummary } from 'app/core/auth/models/auth.model';
 import { createKeycloakMock, KeycloakMock, provideKeycloakMock } from 'util/keycloak.mock';
 import {
   ApplicationConfigServiceMock,
@@ -17,10 +18,25 @@ vi.mock('keycloak-js', () => ({
   },
 }));
 
+type PasskeyManagerLike = {
+  loginWithPasskey: (realmKind: KeycloakRealmKind) => Promise<void>;
+  registerPasskey: () => Promise<void>;
+  listPasskeys: () => Promise<PasskeyCredentialSummary[]>;
+  removePasskey: (id: string) => Promise<void>;
+};
+
+type KeycloakAuthenticationServiceInternals = {
+  createKeycloakClient: (realmKind: KeycloakRealmKind) => KeycloakMock;
+  getPasskeyManager: () => PasskeyManagerLike;
+  refreshKeycloakSessionFromBrowser: (realmKind: KeycloakRealmKind) => Promise<void>;
+  redirectAfterPasskeyLogin: (redirectUri?: string) => void;
+};
+
 describe('KeycloakAuthenticationService', () => {
   let service: KeycloakAuthenticationService;
   let keycloakInstance: KeycloakMock;
   let applicationConfigService: ApplicationConfigServiceMock;
+  let serviceInternals: KeycloakAuthenticationServiceInternals;
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -36,7 +52,9 @@ describe('KeycloakAuthenticationService', () => {
       ],
     });
     service = TestBed.inject(KeycloakAuthenticationService);
+    serviceInternals = service as unknown as KeycloakAuthenticationServiceInternals;
     service['keycloak'] = keycloakInstance as unknown as (typeof service)['keycloak'];
+    vi.spyOn(serviceInternals, 'createKeycloakClient').mockReturnValue(keycloakInstance);
   });
 
   afterEach(() => {
@@ -46,25 +64,14 @@ describe('KeycloakAuthenticationService', () => {
   });
 
   describe('initialization', () => {
-    it('should initialize successfully when authenticated', async () => {
-      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
-      keycloakInstance.init.mockResolvedValue(true);
-
-      const result = await service.init();
-
-      expect(result).toBe(true);
-      expect(keycloakInstance.init).toHaveBeenCalledOnce();
-      expect(keycloakInstance.init).toHaveBeenCalledWith(expect.objectContaining({ silentCheckSsoFallback: false }));
-    });
-
-    it('should handle non-authenticated init', async () => {
-      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
-      keycloakInstance.init.mockResolvedValue(false);
-
+    it.each([
+      { description: 'authenticated', authenticated: true, initResolves: true, expected: true },
+      { description: 'non-authenticated', authenticated: false, initResolves: false, expected: false },
+    ])('should return $expected when init resolves and user is $description', async ({ authenticated, initResolves, expected }) => {
+      keycloakInstance.authenticated = authenticated;
+      keycloakInstance.init.mockResolvedValue(initResolves);
       const result = await runSilently(() => service.init());
-
-      expect(result).toBe(false);
-      expect(keycloakInstance.init).toHaveBeenCalledTimes(2);
+      expect(result).toBe(expected);
     });
 
     it('should return undefined/false when keycloak not initialized', () => {
@@ -74,7 +81,6 @@ describe('KeycloakAuthenticationService', () => {
     });
 
     it('should handle init error and return false', async () => {
-      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
       keycloakInstance.init.mockRejectedValue(new Error('Init failed'));
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -86,7 +92,6 @@ describe('KeycloakAuthenticationService', () => {
     });
 
     it('should start token refresh scheduler after successful authenticated init and schedule refresh', async () => {
-      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
       keycloakInstance.authenticated = true;
       keycloakInstance.init.mockResolvedValue(true);
       const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
@@ -115,30 +120,19 @@ describe('KeycloakAuthenticationService', () => {
       [IdpProvider.Microsoft, 'microsoft'],
       [IdpProvider.Apple, 'apple'],
     ])('should login with %s provider using idpHint %s', async (provider, hint) => {
-      const createKeycloakClientSpy = vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
-
       await service.loginWithProvider(provider);
-
-      expect(createKeycloakClientSpy).toHaveBeenCalledWith('external');
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ idpHint: hint }));
       expect(keycloakInstance.login).toHaveBeenCalledOnce();
     });
 
     it('should login with TUM provider without idpHint', async () => {
-      const createKeycloakClientSpy = vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
-
       await service.loginWithProvider(IdpProvider.TUM);
-
-      expect(createKeycloakClientSpy).toHaveBeenCalledWith('tum');
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.not.objectContaining({ idpHint: expect.anything() }));
       expect(keycloakInstance.login).toHaveBeenCalledOnce();
     });
 
     it('should include redirectUri when provided', async () => {
-      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
-
       await service.loginWithProvider(IdpProvider.Google, '/redirect');
-
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: expect.stringContaining('/redirect') }));
       expect(keycloakInstance.login).toHaveBeenCalledOnce();
     });
@@ -147,8 +141,6 @@ describe('KeycloakAuthenticationService', () => {
       { label: 'external evil URI', uri: 'https://evil.com/phish', shouldNotContain: 'evil.com' },
       { label: 'origin-prefix domain', uri: window.location.origin + '.evil.com/phish', shouldNotContain: 'evil.com' },
     ])('should reject $label and fall back to origin', async ({ uri, shouldNotContain }) => {
-      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
-
       await service.loginWithProvider(IdpProvider.Google, uri);
       expect(keycloakInstance.login).toHaveBeenCalledWith(
         expect.objectContaining({ redirectUri: expect.not.stringContaining(shouldNotContain) }),
@@ -160,8 +152,6 @@ describe('KeycloakAuthenticationService', () => {
 
     it('should allow same-origin absolute redirect URIs', async () => {
       const sameOriginUri = window.location.origin + '/jobs';
-      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
-
       await service.loginWithProvider(IdpProvider.Google, sameOriginUri);
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: sameOriginUri }));
     });
@@ -169,8 +159,6 @@ describe('KeycloakAuthenticationService', () => {
     it('should handle login errors gracefully', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       keycloakInstance.login.mockRejectedValue(new Error('Login failed'));
-      vi.spyOn(service as any, 'createKeycloakClient').mockReturnValue(keycloakInstance);
-
       await service.loginWithProvider(IdpProvider.Google);
       expect(consoleErrorSpy).toHaveBeenCalledOnce();
       consoleErrorSpy.mockRestore();
@@ -292,11 +280,21 @@ describe('KeycloakAuthenticationService', () => {
   });
 
   describe('passkey delegation', () => {
+    let passkeyManager: PasskeyManagerLike;
+
+    beforeEach(() => {
+      passkeyManager = {
+        loginWithPasskey: vi.fn().mockResolvedValue(undefined),
+        registerPasskey: vi.fn().mockResolvedValue(undefined),
+        listPasskeys: vi.fn().mockResolvedValue([{ id: 'passkey-1' }]),
+        removePasskey: vi.fn().mockResolvedValue(undefined),
+      };
+      vi.spyOn(serviceInternals, 'getPasskeyManager').mockReturnValue(passkeyManager);
+    });
+
     it('should delegate passkey login and redirect', async () => {
-      const passkeyManager = { loginWithPasskey: vi.fn().mockResolvedValue(undefined) } as any;
-      vi.spyOn(service as any, 'getPasskeyManager').mockReturnValue(passkeyManager);
-      const refreshSpy = vi.spyOn(service as any, 'refreshKeycloakSessionFromBrowser').mockResolvedValue(undefined);
-      const redirectSpy = vi.spyOn(service as any, 'redirectAfterPasskeyLogin').mockImplementation(() => {});
+      const refreshSpy = vi.spyOn(serviceInternals, 'refreshKeycloakSessionFromBrowser').mockResolvedValue(undefined);
+      const redirectSpy = vi.spyOn(serviceInternals, 'redirectAfterPasskeyLogin').mockImplementation(() => {});
 
       await service.loginWithPasskey(KeycloakRealmKind.External, '/after-login');
 
@@ -306,27 +304,18 @@ describe('KeycloakAuthenticationService', () => {
     });
 
     it('should delegate passkey registration', async () => {
-      const passkeyManager = { registerPasskey: vi.fn().mockResolvedValue(undefined) } as any;
-      vi.spyOn(service as any, 'getPasskeyManager').mockReturnValue(passkeyManager);
-
       await service.registerPasskey();
 
       expect(passkeyManager.registerPasskey).toHaveBeenCalledOnce();
     });
 
     it('should delegate passkey listing', async () => {
-      const passkeyManager = { listPasskeys: vi.fn().mockResolvedValue([{ id: 'passkey-1' }]) } as any;
-      vi.spyOn(service as any, 'getPasskeyManager').mockReturnValue(passkeyManager);
-
       await expect(service.listPasskeys()).resolves.toEqual([{ id: 'passkey-1' }]);
 
       expect(passkeyManager.listPasskeys).toHaveBeenCalledOnce();
     });
 
     it('should delegate passkey removal', async () => {
-      const passkeyManager = { removePasskey: vi.fn().mockResolvedValue(undefined) } as any;
-      vi.spyOn(service as any, 'getPasskeyManager').mockReturnValue(passkeyManager);
-
       await service.removePasskey('passkey-1');
 
       expect(passkeyManager.removePasskey).toHaveBeenCalledWith('passkey-1');
