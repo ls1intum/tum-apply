@@ -40,6 +40,8 @@ api/public-config-resource-api.ts
 api/public-config-resource-resources.ts
 api/rating-resource-api.ts
 api/rating-resource-resources.ts
+api/reference-letter-upload-resource-api.ts
+api/reference-letter-upload-resource-resources.ts
 api/reference-request-resource-api.ts
 api/reference-request-resource-resources.ts
 api/research-group-resource-api.ts
@@ -135,6 +137,7 @@ model/professor-dto.ts
 model/public-config-dto.ts
 model/rating-dto.ts
 model/rating-overview-dto.ts
+model/reference-letter-context-dto.ts
 model/reference-request-dto.ts
 model/reject-dto.ts
 model/research-group-admin-dto.ts
