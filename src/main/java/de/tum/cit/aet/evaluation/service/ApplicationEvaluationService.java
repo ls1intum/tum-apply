@@ -30,7 +30,7 @@ import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
-import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
+import de.tum.cit.aet.reference.service.ReferenceRequestService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -64,7 +64,7 @@ public class ApplicationEvaluationService {
     private final CurrentUserService currentUserService;
     private final ZipExportService zipExportService;
     private final RatingRepository ratingRepository;
-    private final ReferenceRequestRepository referenceRequestRepository;
+    private final ReferenceRequestService referenceRequestService;
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
         ApplicationState.SENT,
@@ -448,10 +448,7 @@ public class ApplicationEvaluationService {
             return;
         }
         List<UUID> applicationIds = applications.stream().map(Application::getApplicationId).toList();
-        Map<UUID, Set<ReferenceRequest>> byApplication = referenceRequestRepository
-            .findByApplicationIds(applicationIds)
-            .stream()
-            .collect(Collectors.groupingBy(r -> r.getApplication().getApplicationId(), Collectors.toCollection(HashSet::new)));
+        Map<UUID, Set<ReferenceRequest>> byApplication = referenceRequestService.getReferencesForApplicationIds(applicationIds);
         for (Application application : applications) {
             application.setReferenceRequests(byApplication.getOrDefault(application.getApplicationId(), new HashSet<>()));
         }

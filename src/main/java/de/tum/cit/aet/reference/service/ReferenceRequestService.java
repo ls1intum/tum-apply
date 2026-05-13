@@ -30,9 +30,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -108,8 +107,8 @@ public class ReferenceRequestService {
      * Removes a referee contact from the application. Only allowed while the application is
      * still editable.
      *
-     * @param applicationId  the owning application
-     * @param referenceId    the entry to remove
+     * @param applicationId the owning application
+     * @param referenceId   the entry to remove
      */
     public void removeFromApplication(UUID applicationId, UUID referenceId) {
         Application application = assertOwnsApplication(applicationId);
@@ -226,6 +225,20 @@ public class ReferenceRequestService {
             ReferenceRequestStatus.SUBMITTED
         );
         return submitted < required;
+    }
+
+    /**
+     * Utility method to fetch all reference requests for a list of application IDs, grouped by application ID.
+     *
+     * @param applicationIds the list of application IDs to fetch reference requests for
+     * @return a map with application IDs as keys and a set of reference requests associated with that application as values
+     */
+
+    public Map<UUID, Set<ReferenceRequest>> getReferencesForApplicationIds(List<UUID> applicationIds) {
+        return referenceRequestRepository
+            .findByApplicationIds(applicationIds)
+            .stream()
+            .collect(Collectors.groupingBy(r -> r.getApplication().getApplicationId(), Collectors.toCollection(HashSet::new)));
     }
 
     /**
