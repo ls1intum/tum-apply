@@ -89,7 +89,7 @@
   </div>
 
   <div [formGroup]="additionalInfoForm">
-    <div class="flex align-items-center gap-2">
+    <div class="flex items-center gap-2">
       <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" inputId="privacyCheckbox" />
       <label for="privacyCheckbox"
         ><span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span
@@ -110,7 +110,7 @@
   </div>
 
   <div [formGroup]="additionalInfoForm">
-    <div class="flex align-items-center gap-2">
+    <div class="flex items-center gap-2">
       <p-checkbox formControlName="doctoralRequirementsAccepted" [binary]="true" size="small" inputId="doctoralRequirementsCheckbox" />
       <label for="doctoralRequirementsCheckbox">
         <span class="required mr-1">*</span><span jhiTranslate="entity.applicationPage4.doctoralRequirements.confirmationText"></span>
