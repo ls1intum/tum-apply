@@ -57,4 +57,7 @@ public class ReferenceRequest extends AbstractAuditingEntity {
 
     @Column(name = "reminder_count", nullable = false)
     private int reminderCount = 0;
+
+    @Column(name = "document_id")
+    private UUID documentId;
 }

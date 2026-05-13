@@ -1,0 +1,114 @@
+<div class="flex flex-col items-center px-4 py-12">
+  <div class="w-full max-w-xl">
+    @if (loading()) {
+      <div class="text-center text-text-secondary" jhiTranslate="reference.loading">Loading...</div>
+    } @else if (errorKey(); as key) {
+      <!-- Invalid / expired token error -->
+      <div class="border border-border-default rounded-lg p-8 text-center bg-background-surface">
+        <div class="text-negative-default mb-4 inline-flex items-center justify-center">
+          <fa-icon icon="circle-exclamation" class="text-5xl" />
+        </div>
+        <h2 class="text-xl font-bold mb-2 text-text-primary" jhiTranslate="reference.error.title">Link not valid</h2>
+        <p class="text-text-secondary" [jhiTranslate]="key"></p>
+      </div>
+    } @else if (alreadySubmitted()) {
+      <!-- Success / already-submitted view -->
+      <div class="flex flex-col items-center text-center">
+        <div class="text-positive-default mb-6 inline-flex items-center justify-center">
+          <fa-icon icon="check" class="text-5xl" />
+        </div>
+        <h2 class="text-2xl font-bold mb-2 text-text-primary" jhiTranslate="reference.success.title">Recommendation letter received!</h2>
+        <p class="text-text-secondary mb-8" jhiTranslate="reference.success.message">
+          Thank you. Your letter has been submitted successfully.
+        </p>
+        <div class="border border-border-default rounded-lg p-6 w-full bg-background-surface text-left">
+          <div class="text-sm text-text-secondary uppercase font-semibold mb-3" jhiTranslate="reference.summary.title">Summary</div>
+          <div class="flex flex-col gap-2 text-sm">
+            <div>
+              <span class="text-text-secondary" jhiTranslate="reference.summary.applicant">Applicant</span>:
+              <span class="font-medium text-text-primary">{{ applicantFullName() }}</span>
+            </div>
+            <div>
+              <span class="text-text-secondary" jhiTranslate="reference.summary.jobTitle">Position</span>:
+              <span class="font-medium text-text-primary">{{ context()?.jobTitle }}</span>
+            </div>
+            @if (context()?.researchGroupName) {
+              <div>
+                <span class="text-text-secondary" jhiTranslate="reference.summary.researchGroup">Research group</span>:
+                <span class="font-medium text-text-primary">{{ context()?.researchGroupName }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    } @else if (expired()) {
+      <div class="border border-border-default rounded-lg p-8 text-center bg-background-surface">
+        <div class="text-warning-default mb-4 inline-flex items-center justify-center">
+          <fa-icon icon="circle-exclamation" class="text-5xl" />
+        </div>
+        <h2 class="text-xl font-bold mb-2 text-text-primary" jhiTranslate="reference.expired.title">Deadline reached</h2>
+        <p class="text-text-secondary" jhiTranslate="reference.expired.message">The deadline for this recommendation letter has passed.</p>
+      </div>
+    } @else {
+      <!-- Upload view -->
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold text-text-primary" jhiTranslate="reference.title">Upload your recommendation letter</h1>
+      </div>
+
+      <!-- Context card -->
+      <div class="border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
+        <div class="text-sm text-text-secondary uppercase font-semibold mb-3" jhiTranslate="reference.requestedFor.title">
+          Requested for
+        </div>
+        <div class="flex flex-col gap-3 text-sm">
+          <div>
+            <div class="text-text-secondary mb-1" jhiTranslate="reference.requestedFor.applicant">Applicant</div>
+            <div class="flex items-center gap-2">
+              <fa-icon icon="circle-user" class="text-primary w-4" />
+              <span class="font-medium text-text-primary">{{ applicantFullName() }}</span>
+            </div>
+          </div>
+          <div>
+            <div class="text-text-secondary mb-1" jhiTranslate="reference.requestedFor.jobTitle">Position</div>
+            <div class="flex items-center gap-2">
+              <fa-icon icon="briefcase" class="text-primary w-4" />
+              <span class="font-medium text-text-primary">{{ context()?.jobTitle }}</span>
+            </div>
+          </div>
+          @if (context()?.researchGroupName) {
+            <div>
+              <div class="text-text-secondary mb-1" jhiTranslate="reference.requestedFor.researchGroup">Research group</div>
+              <div class="flex items-center gap-2">
+                <fa-icon icon="research-group" class="text-primary w-4" />
+                <span class="font-medium text-text-primary">{{ context()?.researchGroupName }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Upload control -->
+      <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 bg-background-surface">
+        <jhi-upload-button
+          [documentType]="documentType"
+          [allowMultiple]="false"
+          [deferUpload]="true"
+          [(documentIds)]="uploadedDocuments"
+          (queuedFilesChange)="onQueuedFilesChanged($event)"
+        />
+
+        <div class="flex justify-center">
+          <jhi-button
+            severity="primary"
+            icon="check"
+            label="reference.upload.confirm"
+            [shouldTranslate]="true"
+            [disabled]="!hasQueuedFile() || uploading()"
+            [loading]="uploading()"
+            (click)="confirmUpload()"
+          />
+        </div>
+      </div>
+    }
+  </div>
+</div>

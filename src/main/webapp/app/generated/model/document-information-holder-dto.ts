@@ -16,15 +16,16 @@ export interface DocumentInformationHolderDTO {
     readonly size: number;
 }
 
-export type DocumentInformationHolderDTODocumentTypeEnum = 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM';
+export type DocumentInformationHolderDTODocumentTypeEnum = 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'REFERENCE_LETTER' | 'CV' | 'CUSTOM';
 
 export const DocumentInformationHolderDTODocumentTypeEnum = {
     BachelorTranscript: 'BACHELOR_TRANSCRIPT' as const,
     MasterTranscript: 'MASTER_TRANSCRIPT' as const,
     Reference: 'REFERENCE' as const,
+    ReferenceLetter: 'REFERENCE_LETTER' as const,
     Cv: 'CV' as const,
     Custom: 'CUSTOM' as const,
 } as const;
 
-export const DocumentInformationHolderDTODocumentTypeEnumValues = ['BACHELOR_TRANSCRIPT', 'MASTER_TRANSCRIPT', 'REFERENCE', 'CV', 'CUSTOM'] as const;
+export const DocumentInformationHolderDTODocumentTypeEnumValues = ['BACHELOR_TRANSCRIPT', 'MASTER_TRANSCRIPT', 'REFERENCE', 'REFERENCE_LETTER', 'CV', 'CUSTOM'] as const;
 
