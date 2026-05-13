@@ -131,6 +131,11 @@
         "placeholder": "z.B. 3 Jahre",
         "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 6 Jahre eingeben."
       },
+      "referenceLettersRequired": {
+        "label": "Erforderliche Empfehlungsschreiben",
+        "placeholder": "z.B. 2",
+        "toolTipText": "Anzahl der externen Empfehlungsschreiben, die Bewerbende für diese Stelle einholen müssen. 0 deaktiviert die Anforderung. Die Schreiben werden von den Referenzgebenden selbst über einen Token-Link hochgeladen, der bei der Einreichung verschickt wird."
+      },
       "positionOptions": {
         "title": "Optionen zur Stelle",
         "uponArrangement": {

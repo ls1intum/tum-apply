@@ -2,6 +2,7 @@ package de.tum.cit.aet.reference.repository;
 
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -75,4 +76,35 @@ public interface ReferenceRequestRepository extends JpaRepository<ReferenceReque
      */
     @Query("SELECT r FROM ReferenceRequest r WHERE r.application.applicationId IN :applicationIds")
     List<ReferenceRequest> findByApplicationIds(@Param("applicationIds") List<UUID> applicationIds);
+
+    /**
+     * Finds candidates for a reminder email. Eagerly fetches the application graph the reminder
+     * sender needs (applicant + job + research group) so it can build the email without an
+     * additional service-level transaction.
+     *
+     * @param now           the current UTC timestamp; entries that have already expired are skipped
+     * @param upperBound    the latest deadline still inside the reminder window (typically now + 7 days)
+     * @param maxReminders  cap on entries that already had this many reminders (keeps reminderCount &lt; cap)
+     * @return REQUESTED entries with a future deadline within the window and reminderCount below {@code maxReminders}
+     */
+    @Query(
+        """
+        SELECT r FROM ReferenceRequest r
+        JOIN FETCH r.application a
+        JOIN FETCH a.applicant ap
+        JOIN FETCH ap.user
+        JOIN FETCH a.job j
+        JOIN FETCH j.researchGroup
+        WHERE r.status = 'REQUESTED'
+          AND r.tokenExpiresAt IS NOT NULL
+          AND r.tokenExpiresAt > :now
+          AND r.tokenExpiresAt <= :upperBound
+          AND r.reminderCount < :maxReminders
+        """
+    )
+    List<ReferenceRequest> findReminderCandidates(
+        @Param("now") LocalDateTime now,
+        @Param("upperBound") LocalDateTime upperBound,
+        @Param("maxReminders") int maxReminders
+    );
 }

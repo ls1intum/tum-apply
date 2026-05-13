@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,9 @@ public class ReferenceRequestService {
     private static final int DEFAULT_VALIDITY_MONTHS = 2;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final DateTimeFormatter DEADLINE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm 'UTC'");
+    static final int MAX_REMINDERS = 2;
+    static final long FIRST_REMINDER_HOURS = 24L * 7;
+    static final long FINAL_REMINDER_HOURS = 24L;
 
     private final ReferenceRequestRepository referenceRequestRepository;
     private final ApplicationRepository applicationRepository;
@@ -168,7 +172,7 @@ public class ReferenceRequestService {
             job.getTitle(),
             job.getResearchGroup() != null ? job.getResearchGroup().getName() : null,
             entry.getTokenExpiresAt(),
-            entry.getStatus()
+            ReferenceRequestDTO.effectiveStatus(entry)
         );
     }
 
@@ -239,6 +243,107 @@ public class ReferenceRequestService {
             .findByApplicationIds(applicationIds)
             .stream()
             .collect(Collectors.groupingBy(r -> r.getApplication().getApplicationId(), Collectors.toCollection(HashSet::new)));
+    }
+
+    /**
+     * Rotates the token and sends a reminder email for each REQUESTED entry whose deadline is
+     * within the configured reminder windows. Intended to be called from a scheduled job — the
+     * caller is responsible for picking a sensible cadence (e.g. once per day).
+     *
+     * Reminders are sent in two bands, gated by the existing {@code reminderCount} column so the
+     * scheduler is idempotent across reruns and tolerant of the daily window being missed by a few
+     * hours:
+     * <ul>
+     *     <li>first reminder when the deadline is within {@value #FIRST_REMINDER_HOURS}h and {@code reminderCount &lt; 1}</li>
+     *     <li>final reminder when the deadline is within {@value #FINAL_REMINDER_HOURS}h and {@code reminderCount &lt; 2}</li>
+     * </ul>
+     *
+     * Each reminder rotates the token (the previous hash is overwritten), so the new email's link
+     * is the one that works — earlier emails stop accepting uploads.
+     *
+     * @return the number of reminder emails dispatched in this run
+     */
+    public int sendReminders() {
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime upperBound = now.plusHours(FIRST_REMINDER_HOURS);
+        List<ReferenceRequest> candidates = referenceRequestRepository.findReminderCandidates(now, upperBound, MAX_REMINDERS);
+
+        int sent = 0;
+        for (ReferenceRequest entry : candidates) {
+            if (!shouldSendReminder(entry, now)) {
+                continue;
+            }
+            String rawToken = generateToken();
+            entry.setTokenHash(hashToken(rawToken));
+            entry.setReminderCount(entry.getReminderCount() + 1);
+            entry.setLastReminderAt(now);
+            referenceRequestRepository.save(entry);
+            sendReminder(entry.getApplication(), entry, rawToken);
+            sent++;
+        }
+        return sent;
+    }
+
+    /**
+     * Decides whether the given entry currently qualifies for a reminder. Encapsulates the band logic
+     * so the scheduler stays straight-line.
+     *
+     * @param entry the candidate reference request (already filtered by repository query)
+     * @param now   the run's reference timestamp
+     * @return true when this entry should receive a reminder right now
+     */
+    private boolean shouldSendReminder(ReferenceRequest entry, LocalDateTime now) {
+        LocalDateTime deadline = entry.getTokenExpiresAt();
+        long hoursUntilDeadline = ChronoUnit.HOURS.between(now, deadline);
+        // final reminder band: 24h
+        if (entry.getReminderCount() < MAX_REMINDERS && hoursUntilDeadline <= FINAL_REMINDER_HOURS) {
+            return true;
+        }
+        // first reminder band: 7d
+        return entry.getReminderCount() < 1 && hoursUntilDeadline <= FIRST_REMINDER_HOURS;
+    }
+
+    /**
+     * Builds the reminder email and hands it to the async sender. Mirrors {@link #sendInvitation}
+     * but uses {@link EmailType#REFERENCE_LETTER_REMINDER} so a different template is rendered.
+     *
+     * @param application the application the referee is attached to
+     * @param entry       the reference request entry (must already have an updated token hash)
+     * @param rawToken    the freshly rotated plaintext token to include in the email link
+     */
+    private void sendReminder(Application application, ReferenceRequest entry, String rawToken) {
+        Job job = application.getJob();
+        User refereeStub = new User();
+        refereeStub.setEmail(entry.getEmail());
+        refereeStub.setFirstName(entry.getFirstName());
+        refereeStub.setLastName(entry.getLastName());
+
+        String referenceLink = clientUrl + "/reference/" + rawToken;
+        String deadline =
+            entry.getTokenExpiresAt() != null ? entry.getTokenExpiresAt().atZone(ZoneOffset.UTC).format(DEADLINE_FORMATTER) : "";
+
+        ReferenceLetterInvitationContextDTO ctx = new ReferenceLetterInvitationContextDTO(
+            entry.getTitle(),
+            entry.getFirstName(),
+            entry.getLastName(),
+            application.getApplicantFirstName(),
+            application.getApplicantLastName(),
+            job.getTitle(),
+            job.getResearchGroup().getName(),
+            referenceLink,
+            deadline
+        );
+
+        Email email = Email.builder()
+            .to(refereeStub)
+            .language(Language.ENGLISH)
+            .emailType(EmailType.REFERENCE_LETTER_REMINDER)
+            .content(ctx)
+            .researchGroup(job.getResearchGroup())
+            .sendAlways(true)
+            .build();
+
+        emailSender.sendAsync(email);
     }
 
     /**

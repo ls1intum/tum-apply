@@ -1,0 +1,12 @@
+<p>Dear <#if REFEREE_NAME_TITLE??>${REFEREE_NAME_TITLE} </#if>${REFEREE_FIRST_NAME!} ${REFEREE_LAST_NAME!},</p>
+
+<p>This is a friendly reminder that <strong>${APPLICANT_FIRST_NAME!} ${APPLICANT_LAST_NAME!}</strong> is waiting on
+  your recommendation letter for the position <strong>${JOB_TITLE!}</strong> at ${RESEARCH_GROUP_NAME!}.</p>
+
+<p>The upload link will expire on <strong>${REFERENCE_DEADLINE!}</strong> — please upload the letter before then.</p>
+
+<@ui.ctaButton href=(REFERENCE_LINK!'') label="Upload Recommendation" />
+
+<p>If you have already submitted the letter, please ignore this message.</p>
+
+<p>Best regards,<br />Your TUMApply Team</p>

@@ -1204,6 +1204,7 @@ export class JobCreationFormComponent {
       contractDuration: [undefined],
       contractExtendable: [false],
       suitableForDisabled: [true],
+      referenceLettersRequired: [0],
     });
   }
 
@@ -1267,6 +1268,7 @@ export class JobCreationFormComponent {
       tvlGrade: positionDetailsValue.tvlGrade?.value as JobFormDTOTvlGradeEnum,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
+      referenceLettersRequired: positionDetailsValue.referenceLettersRequired ?? 0,
       state,
     } as JobFormDTO;
   }
@@ -1416,6 +1418,7 @@ export class JobCreationFormComponent {
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
       tvlGrade: this.findDropdownOption(DropdownOptions.tvlGrades, job?.tvlGrade),
       suitableForDisabled: job?.suitableForDisabled ?? true,
+      referenceLettersRequired: job?.referenceLettersRequired ?? 0,
     });
 
     if (job?.imageId !== undefined && job.imageUrl !== undefined) {

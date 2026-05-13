@@ -101,6 +101,10 @@ function getPersonalStatementsLabel(translate: TranslateService): Record<string,
     motivation: translate.instant('entity.applicationDetail.motivation'),
     skills: translate.instant('entity.applicationDetail.skills'),
     researchExperience: translate.instant('entity.applicationDetail.researchExperience'),
+    references: translate.instant('entity.application_detail.reference_letters'),
+    referenceStatusRequested: translate.instant('entity.application_detail.reference_status.requested'),
+    referenceStatusSubmitted: translate.instant('entity.application_detail.reference_status.submitted'),
+    referenceStatusExpired: translate.instant('entity.application_detail.reference_status.expired'),
   };
 }
 

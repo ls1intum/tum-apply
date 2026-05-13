@@ -131,6 +131,11 @@
         "placeholder": "e.g. 3 years",
         "toolTipText": "Indicate the duration of the contract for the doctoral position in years (e.g. 1.5). You can enter up to 6 years."
       },
+      "referenceLettersRequired": {
+        "label": "Required Recommendation Letters",
+        "placeholder": "e.g. 2",
+        "toolTipText": "Number of external recommendation letters applicants must collect for this position. Set to 0 to disable. Letters are uploaded by the referees themselves through a tokenized link sent on submission."
+      },
       "positionOptions": {
         "title": "Position Options",
         "uponArrangement": {

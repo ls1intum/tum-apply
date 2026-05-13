@@ -194,6 +194,7 @@ public class JobService {
             job.getSuitableForDisabled(),
             job.getStartDateByArrangement(),
             job.getContractExtendable(),
+            job.getReferenceLettersRequired(),
             job.getGenderBiasScore(),
             job.getComplianceIssues()
         );

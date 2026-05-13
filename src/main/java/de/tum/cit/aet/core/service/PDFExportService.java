@@ -13,6 +13,8 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
+import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
+import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -117,6 +119,14 @@ public class PDFExportService {
         builder.startInfoSection(labels.get("motivation")).addSectionContent(getValue(app.motivation()));
         builder.startInfoSection(labels.get("skills")).addSectionContent(getValue(app.specialSkills()));
         builder.startInfoSection(labels.get("researchExperience")).addSectionContent(getValue(app.projects()));
+
+        // Recommendation Letters Section (one row per requested referee with their current status)
+        if (app.references() != null && !app.references().isEmpty()) {
+            builder.startInfoSection(labels.get("references"));
+            for (ReferenceRequestDTO reference : app.references()) {
+                builder.addSectionData(formatRefereeName(reference), formatReferenceStatus(reference.status(), labels));
+            }
+        }
 
         // Personal Information Group
         builder.startSectionGroup(labels.get("personalInformation"));
@@ -706,5 +716,34 @@ public class PDFExportService {
         Locale countryLocale = Locale.of("", countryCode);
         Locale displayLanguage = Locale.of(lang);
         return countryLocale.getDisplayCountry(displayLanguage);
+    }
+
+    private String formatRefereeName(ReferenceRequestDTO reference) {
+        StringBuilder name = new StringBuilder();
+        if (hasValue(reference.title())) {
+            name.append(reference.title()).append(' ');
+        }
+        if (hasValue(reference.firstName())) {
+            name.append(reference.firstName()).append(' ');
+        }
+        if (hasValue(reference.lastName())) {
+            name.append(reference.lastName());
+        }
+        String formatted = name.toString().trim();
+        if (hasValue(reference.email())) {
+            return formatted.isEmpty() ? reference.email() : formatted + " (" + reference.email() + ")";
+        }
+        return formatted.isEmpty() ? "-" : formatted;
+    }
+
+    private String formatReferenceStatus(ReferenceRequestStatus status, Map<String, String> labels) {
+        if (status == null) {
+            return "";
+        }
+        return switch (status) {
+            case REQUESTED -> labels.getOrDefault("referenceStatusRequested", "Requested");
+            case SUBMITTED -> labels.getOrDefault("referenceStatusSubmitted", "Submitted");
+            case EXPIRED -> labels.getOrDefault("referenceStatusExpired", "Expired");
+        };
     }
 }
