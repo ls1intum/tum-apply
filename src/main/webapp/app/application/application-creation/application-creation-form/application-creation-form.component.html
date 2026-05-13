@@ -89,17 +89,11 @@
   </div>
 
   <div [formGroup]="additionalInfoForm">
-    <div class="flex items-start gap-2">
-      <p-checkbox
-        class="shrink-0 mt-0.5"
-        formControlName="privacyAccepted"
-        [binary]="true"
-        size="small"
-        inputId="privacyCheckbox"
-      />
-      <label class="min-w-0 leading-snug" for="privacyCheckbox">
-        <span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span>
-      </label>
+    <div class="flex align-items-center gap-2">
+      <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" inputId="privacyCheckbox" />
+      <label for="privacyCheckbox"
+        ><span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span
+      ></label>
     </div>
 
     @if (!privacyAcceptedSignal() && submitAttempted()) {
@@ -116,15 +110,9 @@
   </div>
 
   <div [formGroup]="additionalInfoForm">
-    <div class="flex items-start gap-2">
-      <p-checkbox
-        class="shrink-0 mt-0.5"
-        formControlName="doctoralRequirementsAccepted"
-        [binary]="true"
-        size="small"
-        inputId="doctoralRequirementsCheckbox"
-      />
-      <label class="min-w-0 leading-snug" for="doctoralRequirementsCheckbox">
+    <div class="flex align-items-center gap-2">
+      <p-checkbox formControlName="doctoralRequirementsAccepted" [binary]="true" size="small" inputId="doctoralRequirementsCheckbox" />
+      <label for="doctoralRequirementsCheckbox">
         <span class="required mr-1">*</span><span jhiTranslate="entity.applicationPage4.doctoralRequirements.confirmationText"></span>
       </label>
     </div>
