@@ -262,18 +262,6 @@ export class EditorComponent extends BaseInputDirective<string> {
     requestAnimationFrame(() => this.applyPendingHighlights());
   });
 
-  /**
-   * Re-runs highlight application whenever:
-   * - the QuillEditor view child becomes available
-   * - forceUpdate pushes new content (via editorReady)
-   * - new highlights are requested via highlightTexts()
-   */
-  private reapplyHighlightsEffect = effect(() => {
-    this.quillEditorComponent();
-    this.pendingHighlights();
-    requestAnimationFrame(() => this.applyPendingHighlights());
-  });
-
   textChanged(event: ContentChange): void {
     const { source, oldDelta, editor } = event;
 

@@ -4,8 +4,12 @@ export function computeCodingStatus(
   result: BiasedIssue[] | undefined,
   options: { emptyAsNeutral?: boolean } = {},
 ): BiasedIssueTypeEnum | undefined {
-  if (!result || result.length === 0) {
-    return options.emptyAsNeutral ? 'NEUTRAL' : undefined;
+  if (result === undefined) {
+    return undefined;
+  }
+
+  if (result.length === 0) {
+    return options.emptyAsNeutral === true ? 'NEUTRAL' : undefined;
   }
 
   const inclusiveCount = result.filter(issue => issue.type === 'INCLUSIVE').length;

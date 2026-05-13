@@ -77,7 +77,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
           { word: 'decisive', type: 'NON_INCLUSIVE' },
           { word: 'supportive', type: 'INCLUSIVE' },
         ],
-        'nonInclusive',
+        'NON_INCLUSIVE',
         'genderDecoder.formulationTexts.nonInclusive',
         'genderDecoder.explanations.nonInclusive',
       ],
@@ -88,7 +88,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
           { word: 'caring', type: 'INCLUSIVE' },
           { word: 'leader', type: 'NON_INCLUSIVE' },
         ],
-        'inclusive',
+        'INCLUSIVE',
         'genderDecoder.formulationTexts.inclusive',
         'genderDecoder.explanations.inclusive',
       ],
@@ -98,11 +98,11 @@ describe('GenderBiasAnalysisDialogComponent', () => {
           { word: 'leader', type: 'NON_INCLUSIVE' },
           { word: 'supportive', type: 'INCLUSIVE' },
         ],
-        'neutral',
+        'NEUTRAL',
         'genderDecoder.formulationTexts.neutral',
         'genderDecoder.explanations.neutral',
       ],
-      ['empty', [], 'empty', 'genderDecoder.formulationTexts.neutral', 'genderDecoder.explanations.empty'],
+      ['empty', [], undefined, 'genderDecoder.formulationTexts.neutral', 'genderDecoder.explanations.empty'],
     ])('should derive %s formulation from issue types', (_label, result, status, formulationKey, explanationKey) => {
       const { component } = createComponentWithInputs(true, result as BiasedIssue[]);
 
