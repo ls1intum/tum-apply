@@ -3,7 +3,7 @@ package de.tum.cit.aet.ai.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-import de.tum.cit.aet.ai.constants.GenderCategory;
+import de.tum.cit.aet.core.constants.GenderCategory;
 import de.tum.cit.aet.ai.domain.BiasedIssue;
 import java.util.List;
 import java.util.stream.Stream;

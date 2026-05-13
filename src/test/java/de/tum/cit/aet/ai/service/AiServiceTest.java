@@ -5,7 +5,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import de.tum.cit.aet.ai.constants.GenderCategory;
+import de.tum.cit.aet.core.constants.GenderCategory;
 import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.application.service.ApplicationService;

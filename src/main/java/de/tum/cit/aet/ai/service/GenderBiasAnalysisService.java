@@ -1,6 +1,6 @@
 package de.tum.cit.aet.ai.service;
 
-import de.tum.cit.aet.ai.constants.GenderCategory;
+import de.tum.cit.aet.core.constants.GenderCategory;
 import de.tum.cit.aet.ai.domain.BiasedIssue;
 import java.util.ArrayList;
 import java.util.List;

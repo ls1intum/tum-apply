@@ -1,6 +1,5 @@
-package de.tum.cit.aet.ai.domain;
+package de.tum.cit.aet.core.constants;
 
-import de.tum.cit.aet.ai.constants.GenderCategory;
 import java.util.*;
 
 public final class GenderBiasWordLists {

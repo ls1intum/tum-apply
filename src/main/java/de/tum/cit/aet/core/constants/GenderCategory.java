@@ -1,4 +1,4 @@
-package de.tum.cit.aet.ai.constants;
+package de.tum.cit.aet.core.constants;
 
 public enum GenderCategory {
     NON_INCLUSIVE,

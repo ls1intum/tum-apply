@@ -1,6 +1,6 @@
 package de.tum.cit.aet.ai.domain;
 
-import de.tum.cit.aet.ai.constants.GenderCategory;
+import de.tum.cit.aet.core.constants.GenderCategory;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

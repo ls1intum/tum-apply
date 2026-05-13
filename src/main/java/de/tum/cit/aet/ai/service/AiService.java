@@ -1,9 +1,9 @@
 package de.tum.cit.aet.ai.service;
 
-import de.tum.cit.aet.ai.constants.GenderCategory;
+import de.tum.cit.aet.core.constants.GenderCategory;
 import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
-import de.tum.cit.aet.ai.domain.GenderBiasWordLists;
+import de.tum.cit.aet.core.constants.GenderBiasWordLists;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
