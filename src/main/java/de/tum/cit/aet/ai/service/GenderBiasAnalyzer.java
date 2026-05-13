@@ -1,7 +1,7 @@
 package de.tum.cit.aet.ai.service;
 
-import de.tum.cit.aet.core.constants.GenderCategory;
 import de.tum.cit.aet.core.constants.GenderBiasWordLists;
+import de.tum.cit.aet.core.constants.GenderCategory;
 import de.tum.cit.aet.core.util.StringUtil;
 import java.util.*;
 import java.util.stream.Collectors;

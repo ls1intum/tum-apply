@@ -5,10 +5,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import de.tum.cit.aet.core.constants.GenderCategory;
 import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.core.constants.GenderCategory;
 import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.job.constants.Campus;
