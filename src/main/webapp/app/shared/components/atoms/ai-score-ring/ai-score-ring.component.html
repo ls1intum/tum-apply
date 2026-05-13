@@ -1,4 +1,4 @@
-<div class="grid h-[7.75rem] w-[7.75rem] place-items-center">
+<div class="grid h-24 w-24 place-items-center">
   <svg
     viewBox="0 0 38 38"
     class="col-start-1 row-start-1 h-full w-full origin-center -scale-x-100 rotate-180 overflow-visible fill-none"
@@ -25,8 +25,8 @@
   <!-- Animated score percentage -->
   <div class="col-start-1 row-start-1 inline-flex items-baseline leading-none">
     @if (hasScore()) {
-      <span class="text-3xl font-bold text-text-primary">{{ animatedScore() }}</span>
-      <span class="text-base font-bold text-text-tertiary">%</span>
+      <span class="text-2xl font-bold text-text-primary">{{ animatedScore() }}</span>
+      <span class="text-[0.69rem] font-bold text-text-tertiary">%</span>
     } @else if (isLoading()) {
       <span class="text-lg font-bold text-text-tertiary animate-pulse">...</span>
     } @else {
