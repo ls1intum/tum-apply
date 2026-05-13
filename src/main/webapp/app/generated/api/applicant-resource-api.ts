@@ -137,7 +137,7 @@ export class ApplicantResourceApi {
      * @param documentType 
      * @param files List of documents to upload
      */
-    uploadApplicantProfileDocuments(documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Blob): Observable<Array<DocumentInformationHolderDTO>> {
+    uploadApplicantProfileDocuments(documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'REFERENCE_LETTER' | 'CV' | 'CUSTOM', files?: Blob): Observable<Array<DocumentInformationHolderDTO>> {
         const documentTypePath = encodeURIComponent(String(documentType));
         const url = `${this.basePath}/api/applicants/profile/documents/${documentTypePath}`;
         const formData = new FormData();

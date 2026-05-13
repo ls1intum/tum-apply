@@ -74,6 +74,37 @@ export default class ApplicationDetailForApplicantComponent {
     return this.actualDocumentDataExists() ? this.actualDocumentData() : undefined;
   });
 
+  /**
+   * Effective list of reference requests visible on this page: the preview list when the parent
+   * provides one (summary page during creation), otherwise the list inlined into the detail DTO.
+   * Used to render the referee summary card and any uploaded letter previews.
+   */
+  references = computed<ReferenceRequestDTO[]>(() => {
+    const preview = this.previewReferences();
+    if (preview.length > 0) {
+      return preview;
+    }
+    return this.application()?.references ?? [];
+  });
+
+  /**
+   * Reference requests with an uploaded letter, mapped to a viewer-friendly shape.
+   * Drives the per-letter preview cards on the detail page.
+   */
+  submittedReferenceLetters = computed(() =>
+    this.references()
+      .filter(reference => !!reference.documentId)
+      .map(reference => ({
+        documentId: reference.documentId,
+        refereeName: [reference.firstName, reference.lastName].filter(part => !!part).join(' '),
+        viewerInput: {
+          id: reference.documentId as string,
+          name: `${reference.firstName ?? ''} ${reference.lastName ?? ''}`.trim(),
+          size: 0,
+        },
+      })),
+  );
+
   readonly primaryActionButton = computed<ActionButton | null>(() => {
     const app = this.application();
     if (!app) return null;
