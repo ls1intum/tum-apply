@@ -122,9 +122,10 @@ public class PDFExportService {
         builder.startInfoSection(labels.get("skills")).addSectionContent(getValue(app.specialSkills()));
         builder.startInfoSection(labels.get("researchExperience")).addSectionContent(getValue(app.projects()));
 
-        // Recommendation Letters Section (one row per requested referee with their current status)
+        // Recommendation Letters Group (one row per requested referee with their current status)
         if (app.references() != null && !app.references().isEmpty()) {
-            builder.startInfoSection(labels.get("references"));
+            builder.startSectionGroup(labels.get("references"));
+            builder.startInfoSection(labels.get(""));
             for (ReferenceRequestDTO reference : app.references()) {
                 builder.addSectionData(
                     formatRefereeName(reference),
