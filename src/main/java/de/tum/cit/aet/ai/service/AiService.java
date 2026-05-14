@@ -4,6 +4,7 @@ import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
+import de.tum.cit.aet.ai.util.ComplianceScoreCalculator;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.GenderBiasWordLists;
 import de.tum.cit.aet.core.constants.GenderCategory;
@@ -75,8 +76,6 @@ public class AiService {
 
     private final GenderBiasAnalysisService genderBiasAnalysisService;
 
-    private final ComplianceScoreService complianceScoreService;
-
     private final AiFeatureToggleService aiFeatureToggleService;
 
     public AiService(
@@ -86,7 +85,6 @@ public class AiService {
         DocumentService documentService,
         CurrentUserService currentUserService,
         GenderBiasAnalysisService genderBiasAnalysisService,
-        ComplianceScoreService complianceScoreService,
         AiFeatureToggleService aiFeatureToggleService
     ) {
         this.chatClient = chatClientBuilder.build();
@@ -95,7 +93,6 @@ public class AiService {
         this.documentService = documentService;
         this.currentUserService = currentUserService;
         this.genderBiasAnalysisService = genderBiasAnalysisService;
-        this.complianceScoreService = complianceScoreService;
         this.aiFeatureToggleService = aiFeatureToggleService;
     }
 
@@ -387,9 +384,9 @@ public class AiService {
             complianceIssues = List.of();
         }
 
-        int genderScore = complianceScoreService.calculateGenderScore(analysis, translatedAnalysis, text);
+        int genderScore = ComplianceScoreCalculator.calculateGenderScore(analysis, translatedAnalysis, text);
 
-        int legalScore = complianceScoreService.calculateLegalScore(complianceIssues);
+        int legalScore = ComplianceScoreCalculator.calculateLegalScore(complianceIssues);
         // geometric means
         int combinedScore = (int) Math.round(Math.sqrt((double) genderScore * legalScore));
 

@@ -35,11 +35,6 @@ describe('GenderBiasAnalysisDialogComponent', () => {
     return { fixture, component: fixture.componentInstance };
   }
 
-  it('should create', () => {
-    const { component } = createComponentWithInputs(true);
-    expect(component).toBeTruthy();
-  });
-
   describe('onVisibleChange', () => {
     it('should emit visibleChange and closeDialog when visibility is set to false', () => {
       const { component } = createComponentWithInputs(true);

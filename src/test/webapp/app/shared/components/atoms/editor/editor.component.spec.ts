@@ -184,86 +184,32 @@ describe('EditorComponent', () => {
     });
   });
 
-  describe('Gender Decoder Integration', () => {
-    it('should not show gender decoder button when showGenderDecoderButton is false', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      fixture.componentRef.setInput('showGenderDecoderButton', false);
-      fixture.detectChanges();
-
-      expect(comp.shouldShowButton()).toBe(false);
-    });
-
-    it('should show gender decoder button when showGenderDecoderButton is true and biasedAnalysis exists', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      fixture.componentRef.setInput('showGenderDecoderButton', true);
-      setBiasedAnalysis(fixture, [{ type: 'NON_INCLUSIVE' }]);
-
-      expect(comp.shouldShowButton()).toBe(true);
-    });
-
-    it('should not show button when showGenderDecoderButton is true but biasedAnalysis is undefined', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      fixture.componentRef.setInput('showGenderDecoderButton', true);
-      setBiasedAnalysis(fixture, undefined);
-
-      expect(comp.shouldShowButton()).toBe(false);
-    });
-  });
-
   describe('formulationDisplay computed', () => {
-    it('should return null when biasedAnalysis is undefined', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
+    it.each([
+      ['undefined analysis', undefined, undefined],
+      ['empty analysis', [], 'genderDecoder.formulationTexts.neutral'],
+      [
+        'more non-inclusive than inclusive issues',
+        [{ type: 'NON_INCLUSIVE' }, { type: 'NON_INCLUSIVE' }, { type: 'INCLUSIVE' }],
+        'genderDecoder.formulationTexts.nonInclusive',
+      ],
+      [
+        'more inclusive than non-inclusive issues',
+        [{ type: 'INCLUSIVE' }, { type: 'INCLUSIVE' }, { type: 'NON_INCLUSIVE' }],
+        'genderDecoder.formulationTexts.inclusive',
+      ],
+      ['balanced issues', [{ type: 'INCLUSIVE' }, { type: 'NON_INCLUSIVE' }], 'genderDecoder.formulationTexts.neutral'],
+    ] as [string, BiasedIssue[] | undefined, string | undefined][])(
+      'should return expected text for %s',
+      (_label, biasedAnalysis, expected) => {
+        const fixture = createFixture();
+        const comp = fixture.componentInstance;
 
-      setBiasedAnalysis(fixture, undefined);
+        setBiasedAnalysis(fixture, biasedAnalysis);
 
-      expect(comp.codingDisplay()).toBeUndefined();
-    });
-
-    it('should return neutral text when biasedAnalysis is empty', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      setBiasedAnalysis(fixture, []);
-
-      expect(comp.codingDisplay()).toBe('genderDecoder.formulationTexts.neutral');
-    });
-
-    it('should return translated text when non-inclusive issues outnumber inclusive issues', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      setBiasedAnalysis(fixture, [{ type: 'NON_INCLUSIVE' }, { type: 'NON_INCLUSIVE' }, { type: 'INCLUSIVE' }]);
-
-      const result = comp.codingDisplay();
-      expect(result).toBe('genderDecoder.formulationTexts.nonInclusive');
-    });
-
-    it('should return translated text when inclusive issues outnumber non-inclusive issues', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      setBiasedAnalysis(fixture, [{ type: 'INCLUSIVE' }, { type: 'INCLUSIVE' }, { type: 'NON_INCLUSIVE' }]);
-
-      const result = comp.codingDisplay();
-      expect(result).toBe('genderDecoder.formulationTexts.inclusive');
-    });
-
-    it('should return translated text for balanced issues', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      setBiasedAnalysis(fixture, [{ type: 'INCLUSIVE' }, { type: 'NON_INCLUSIVE' }]);
-
-      const result = comp.codingDisplay();
-      expect(result).toBe('genderDecoder.formulationTexts.neutral');
-    });
+        expect(comp.codingDisplay()).toBe(expected);
+      },
+    );
 
     it('should update when language changes', async () => {
       const fixture = createFixture();
@@ -284,35 +230,22 @@ describe('EditorComponent', () => {
   });
 
   describe('shouldShowButton computed', () => {
-    it('should return false when showGenderDecoderButton is false', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
+    it.each([
+      ['showGenderDecoderButton is false', false, [{ type: 'INCLUSIVE' }], false],
+      ['biasedAnalysis is undefined', true, undefined, false],
+      ['showGenderDecoderButton is true and biasedAnalysis exists', true, [{ type: 'INCLUSIVE' }], true],
+    ] as [string, boolean, BiasedIssue[] | undefined, boolean][])(
+      'should return expected value when %s',
+      (_label, showButton, biasedAnalysis, expected) => {
+        const fixture = createFixture();
+        const comp = fixture.componentInstance;
 
-      fixture.componentRef.setInput('showGenderDecoderButton', false);
-      setBiasedAnalysis(fixture, [{ type: 'INCLUSIVE' }]);
+        fixture.componentRef.setInput('showGenderDecoderButton', showButton);
+        setBiasedAnalysis(fixture, biasedAnalysis);
 
-      expect(comp.shouldShowButton()).toBe(false);
-    });
-
-    it('should return false when biasedAnalysis is undefined', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      fixture.componentRef.setInput('showGenderDecoderButton', true);
-      setBiasedAnalysis(fixture, undefined);
-
-      expect(comp.shouldShowButton()).toBe(false);
-    });
-
-    it('should return true when showGenderDecoderButton is true and biasedAnalysis exists', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-
-      fixture.componentRef.setInput('showGenderDecoderButton', true);
-      setBiasedAnalysis(fixture, [{ type: 'INCLUSIVE' }]);
-
-      expect(comp.shouldShowButton()).toBe(true);
-    });
+        expect(comp.shouldShowButton()).toBe(expected);
+      },
+    );
   });
 
   describe('analysis modal handlers', () => {

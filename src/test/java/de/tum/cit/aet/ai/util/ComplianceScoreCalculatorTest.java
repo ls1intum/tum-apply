@@ -1,4 +1,4 @@
-package de.tum.cit.aet.ai.service;
+package de.tum.cit.aet.ai.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,18 +8,10 @@ import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.core.constants.GenderCategory;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class ComplianceScoreServiceTest {
-
-    private ComplianceScoreService complianceScoreService;
-
-    @BeforeEach
-    void setUp() {
-        complianceScoreService = new ComplianceScoreService();
-    }
+class ComplianceScoreCalculatorTest {
 
     // ===== CALCULATE LEGAL SCORE =====
     @Nested
@@ -27,7 +19,7 @@ class ComplianceScoreServiceTest {
 
         @Test
         void shouldReturnHundredLegalScoreWhenComplianceIssuesAreEmpty() {
-            int score = complianceScoreService.calculateLegalScore(List.of());
+            int score = ComplianceScoreCalculator.calculateLegalScore(List.of());
 
             assertThat(score).isEqualTo(100);
         }
@@ -46,7 +38,7 @@ class ComplianceScoreServiceTest {
                 )
             );
 
-            int score = complianceScoreService.calculateLegalScore(issues);
+            int score = ComplianceScoreCalculator.calculateLegalScore(issues);
 
             assertThat(score).isZero();
         }
@@ -74,7 +66,7 @@ class ComplianceScoreServiceTest {
                 )
             );
 
-            int score = complianceScoreService.calculateLegalScore(issues);
+            int score = ComplianceScoreCalculator.calculateLegalScore(issues);
 
             assertThat(score).isEqualTo(72);
         }
@@ -92,7 +84,7 @@ class ComplianceScoreServiceTest {
                 issue("de", "supportive", GenderCategory.INCLUSIVE)
             );
 
-            int score = complianceScoreService.calculateGenderScore(original, translated, "text");
+            int score = ComplianceScoreCalculator.calculateGenderScore(original, translated, "text");
 
             assertThat(score).isEqualTo(86);
         }
@@ -104,7 +96,7 @@ class ComplianceScoreServiceTest {
                 issue("en", "supportive", GenderCategory.INCLUSIVE)
             );
 
-            int score = complianceScoreService.calculateGenderScore(original, null, "text");
+            int score = ComplianceScoreCalculator.calculateGenderScore(original, null, "text");
 
             assertThat(score).isEqualTo(71);
         }

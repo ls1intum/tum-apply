@@ -1,18 +1,18 @@
-package de.tum.cit.aet.ai.service;
+package de.tum.cit.aet.ai.util;
 
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
 import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.core.constants.GenderCategory;
 import java.util.List;
-import org.springframework.stereotype.Service;
 
-@Service
-public class ComplianceScoreService {
+public final class ComplianceScoreCalculator {
 
     private static final double FACTOR_NEUTRAL = 1.0;
     private static final double FACTOR_NON_INCLUSIVE = 0.5;
     private static final double PENALTY_FACTOR = 0.85;
+
+    private ComplianceScoreCalculator() {}
 
     /**
      * Calculates a legal compliance score based on a hierarchical risk model.
@@ -28,7 +28,7 @@ public class ComplianceScoreService {
      * @param compliance the structured analysis containing identified compliance issues
      * @return an integer score from 0 to 100 representing legal integrity
      */
-    protected int calculateLegalScore(List<ComplianceIssue> compliance) {
+    public static int calculateLegalScore(List<ComplianceIssue> compliance) {
         if (compliance == null || compliance.isEmpty()) {
             return 100;
         }
@@ -59,7 +59,11 @@ public class ComplianceScoreService {
      * @param originalText - The original text for score-calculation
      * @return the combined gender bias score (0-100)
      */
-    public int calculateCombinedScore(List<BiasedIssue> originalAnalysis, List<BiasedIssue> translatedAnalysis, String originalText) {
+    public static int calculateCombinedScore(
+        List<BiasedIssue> originalAnalysis,
+        List<BiasedIssue> translatedAnalysis,
+        String originalText
+    ) {
         int scoreDE = calculateScore(originalAnalysis, originalText);
         int scoreEN = calculateScore(translatedAnalysis, originalText);
         return (int) Math.round((scoreDE + scoreEN) / 2.0);
@@ -75,12 +79,12 @@ public class ComplianceScoreService {
      * @param originalText - The original text for score-calculation
      * @return A compiled integer score (0-100) based on the most comprehensive data available.
      */
-    protected int calculateGenderScore(List<BiasedIssue> originalAnalysis, List<BiasedIssue> translatedAnalysis, String originalText) {
-        //If both language versions are available, the combined version is set.
+    public static int calculateGenderScore(List<BiasedIssue> originalAnalysis, List<BiasedIssue> translatedAnalysis, String originalText) {
+        // If both language versions are available, the combined version is set.
         if (originalAnalysis != null && translatedAnalysis != null) {
             return calculateCombinedScore(originalAnalysis, translatedAnalysis, originalText);
         }
-        //If only one lang is present, it falls back to the single-language score calculation.
+        // If only one lang is present, it falls back to the single-language score calculation.
         if (originalAnalysis != null) {
             return calculateScore(originalAnalysis, originalText);
         }
@@ -103,9 +107,9 @@ public class ComplianceScoreService {
      *
      * @param analysis - The result of the gender bias analysis.
      * @param originalText - The original text for score-calculation
-     * @returns An integer between 0 and 100 representing the inclusivity score.
+     * @return An integer between 0 and 100 representing the inclusivity score.
      */
-    protected int calculateScore(List<BiasedIssue> analysis, String originalText) {
+    public static int calculateScore(List<BiasedIssue> analysis, String originalText) {
         if (originalText == null || originalText.trim().isEmpty()) {
             return 0;
         }
