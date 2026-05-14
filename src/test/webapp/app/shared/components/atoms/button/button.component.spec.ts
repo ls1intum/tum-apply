@@ -7,6 +7,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { By } from '@angular/platform-browser';
 
 type ButtonForTest = {
+  ariaLabel: string;
   label: string;
   icon: string;
   disabled: boolean;
@@ -83,5 +84,12 @@ describe('ButtonComponent', () => {
   it('should apply size-specific class when size is sm', () => {
     const fixture = createButtonFixture({ size: 'sm' });
     expect(fixture.componentInstance.buttonClass()).contain('w-10 h-10');
+  });
+
+  it('should use an explicit ariaLabel input for icon-only buttons', () => {
+    const fixture = createButtonFixture({ icon: 'eye', ariaLabel: 'button.view', shouldTranslate: true });
+
+    const buttonDebugElement = fixture.debugElement.query(By.css('p-button'));
+    expect(buttonDebugElement.componentInstance.ariaLabel).toBe('button.view');
   });
 });

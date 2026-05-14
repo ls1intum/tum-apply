@@ -17,7 +17,8 @@ import {
 import { FileSelectEvent } from 'primeng/fileupload';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { DocumentDialog } from 'app/shared/components/molecules/document-dialog/document-dialog';
-import type { DocumentHolder } from 'app/shared/components/organisms/document-section/document-section';
+import type { DocumentHolder } from 'app/shared/models/document-holder';
+import { createTemporaryDocumentId, isTemporaryDocumentId } from 'app/shared/util/document.util';
 
 import { ButtonComponent } from '../button/button.component';
 
@@ -329,7 +330,7 @@ export class UploadButtonComponent {
   }
 
   hasPreview(documentInfo: DocumentInformationHolderDTO): boolean {
-    if (documentInfo.id.startsWith('temp-')) {
+    if (isTemporaryDocumentId(documentInfo.id)) {
       return this.queuedFilesById().has(documentInfo.id);
     }
 
@@ -420,7 +421,7 @@ export class UploadButtonComponent {
     if (this.deferUpload()) {
       const updatedQueuedFiles = new Map(this.queuedFilesById());
       const tempDocumentEntries: DocumentInformationHolderDTO[] = files.map(file => {
-        const id = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const id = createTemporaryDocumentId();
         updatedQueuedFiles.set(id, file);
         return {
           id,

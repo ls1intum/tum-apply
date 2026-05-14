@@ -40,7 +40,7 @@
                     variant="text"
                     size="sm"
                     (click)="removeFileCallback($event, $index)"
-                    aria-label="Remove file"
+                    ariaLabel="Remove file"
                   />
                 </td>
               </tr>
@@ -67,7 +67,14 @@
                 <td>
                   <div class="flex items-center justify-end">
                     @if (hasPreview(info)) {
-                      <jhi-button icon="eye" variant="text" size="sm" tooltip="button.view" (click)="openPreview(info)" />
+                      <jhi-button
+                        icon="eye"
+                        variant="text"
+                        size="sm"
+                        tooltip="button.view"
+                        ariaLabel="button.view"
+                        (click)="openPreview(info)"
+                      />
                     }
                     <jhi-confirm-dialog
                       label="button.delete"
