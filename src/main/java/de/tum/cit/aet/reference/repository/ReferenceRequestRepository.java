@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface ReferenceRequestRepository extends JpaRepository<ReferenceRequest, UUID> {
@@ -107,4 +109,25 @@ public interface ReferenceRequestRepository extends JpaRepository<ReferenceReque
         @Param("upperBound") LocalDateTime upperBound,
         @Param("maxReminders") int maxReminders
     );
+
+    /**
+     * Flips every REQUESTED entry whose token has already expired to {@code EXPIRED}. Issued as a
+     * bulk UPDATE so the daily sweep stays a single round-trip even when many entries lapse on the
+     * same day.
+     *
+     * @param now the current UTC timestamp
+     * @return the number of rows that were transitioned
+     */
+    @Modifying
+    @Transactional
+    @Query(
+        """
+        UPDATE ReferenceRequest r
+        SET r.status = 'EXPIRED'
+        WHERE r.status = 'REQUESTED'
+          AND r.tokenExpiresAt IS NOT NULL
+          AND r.tokenExpiresAt < :now
+        """
+    )
+    int expireOverdueRequests(@Param("now") LocalDateTime now);
 }

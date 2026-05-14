@@ -6,9 +6,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * Wakes the {@link ReferenceRequestService} once a day to deliver reminder emails for referees whose
- * upload window is about to close. Kept as a thin scheduling shim so the reminder logic itself stays
- * in the service layer and remains directly callable from tests.
+ * Wakes the {@link ReferenceRequestService} once a day to update the token status and deliver reminder emails
+ * for referees whose upload window is about to close.
  */
 @Component
 @RequiredArgsConstructor
@@ -18,11 +17,16 @@ public class ReferenceLetterReminderJob {
     private final ReferenceRequestService referenceRequestService;
 
     /**
-     * Runs daily at 04:15 UTC by default. The cron expression is overridable so test environments
-     * can speed it up or disable it entirely.
+     * Performs two passes:
+     * 1) Flip every {@code REQUESTED} entry past its deadline to {@code EXPIRED}.
+     * 2) Send reminder emails for entries whose deadline is approaching.
      */
     @Scheduled(cron = "${aet.reference.reminder.cron:0 15 4 * * *}", zone = "UTC")
-    public void sendReminders() {
+    public void run() {
+        int expired = referenceRequestService.expireOverdueRequests();
+        if (expired > 0) {
+            log.info("Reference letter requests transitioned to EXPIRED: {}", expired);
+        }
         int sent = referenceRequestService.sendReminders();
         if (sent > 0) {
             log.info("Reference letter reminders sent: {}", sent);

@@ -149,7 +149,7 @@ public class ReferenceRequestService {
             entry.setTokenHash(hashToken(rawToken));
             entry.setTokenExpiresAt(computeTokenExpiry(application.getJob()));
             referenceRequestRepository.save(entry);
-            sendInvitation(application, entry, rawToken);
+            sendRefereeEmail(application, entry, rawToken, EmailType.REFERENCE_LETTER_INVITATION);
         }
     }
 
@@ -172,7 +172,7 @@ public class ReferenceRequestService {
             job.getTitle(),
             job.getResearchGroup() != null ? job.getResearchGroup().getName() : null,
             entry.getTokenExpiresAt(),
-            ReferenceRequestDTO.effectiveStatus(entry)
+            entry.getStatus()
         );
     }
 
@@ -246,17 +246,20 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Rotates the token and sends a reminder email for each REQUESTED entry whose deadline is
-     * within the configured reminder windows. Intended to be called from a scheduled job — the
-     * caller is responsible for picking a sensible cadence (e.g. once per day).
+     * Flips every {@code REQUESTED} entry whose token has already lapsed to {@code EXPIRED}.
      *
-     * Reminders are sent in two bands, gated by the existing {@code reminderCount} column so the
-     * scheduler is idempotent across reruns and tolerant of the daily window being missed by a few
-     * hours:
-     * <ul>
-     *     <li>first reminder when the deadline is within {@value #FIRST_REMINDER_HOURS}h and {@code reminderCount &lt; 1}</li>
-     *     <li>final reminder when the deadline is within {@value #FINAL_REMINDER_HOURS}h and {@code reminderCount &lt; 2}</li>
-     * </ul>
+     * @return the number of rows that were transitioned to EXPIRED
+     */
+    public int expireOverdueRequests() {
+        return referenceRequestRepository.expireOverdueRequests(LocalDateTime.now(ZoneOffset.UTC));
+    }
+
+    /**
+     * Rotates the token and sends a reminder email for each REQUESTED entry whose deadline is
+     * within the configured reminder windows.
+     *
+     * First reminder when the deadline is within {@value #FIRST_REMINDER_HOURS}h and {@code reminderCount &lt; 1}
+     * Final reminder when the deadline is within {@value #FINAL_REMINDER_HOURS}h and {@code reminderCount &lt; 2}
      *
      * Each reminder rotates the token (the previous hash is overwritten), so the new email's link
      * is the one that works — earlier emails stop accepting uploads.
@@ -278,7 +281,7 @@ public class ReferenceRequestService {
             entry.setReminderCount(entry.getReminderCount() + 1);
             entry.setLastReminderAt(now);
             referenceRequestRepository.save(entry);
-            sendReminder(entry.getApplication(), entry, rawToken);
+            sendRefereeEmail(entry.getApplication(), entry, rawToken, EmailType.REFERENCE_LETTER_REMINDER);
             sent++;
         }
         return sent;
@@ -304,49 +307,6 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Builds the reminder email and hands it to the async sender. Mirrors {@link #sendInvitation}
-     * but uses {@link EmailType#REFERENCE_LETTER_REMINDER} so a different template is rendered.
-     *
-     * @param application the application the referee is attached to
-     * @param entry       the reference request entry (must already have an updated token hash)
-     * @param rawToken    the freshly rotated plaintext token to include in the email link
-     */
-    private void sendReminder(Application application, ReferenceRequest entry, String rawToken) {
-        Job job = application.getJob();
-        User refereeStub = new User();
-        refereeStub.setEmail(entry.getEmail());
-        refereeStub.setFirstName(entry.getFirstName());
-        refereeStub.setLastName(entry.getLastName());
-
-        String referenceLink = clientUrl + "/reference/" + rawToken;
-        String deadline =
-            entry.getTokenExpiresAt() != null ? entry.getTokenExpiresAt().atZone(ZoneOffset.UTC).format(DEADLINE_FORMATTER) : "";
-
-        ReferenceLetterInvitationContextDTO ctx = new ReferenceLetterInvitationContextDTO(
-            entry.getTitle(),
-            entry.getFirstName(),
-            entry.getLastName(),
-            application.getApplicantFirstName(),
-            application.getApplicantLastName(),
-            job.getTitle(),
-            job.getResearchGroup().getName(),
-            referenceLink,
-            deadline
-        );
-
-        Email email = Email.builder()
-            .to(refereeStub)
-            .language(Language.ENGLISH)
-            .emailType(EmailType.REFERENCE_LETTER_REMINDER)
-            .content(ctx)
-            .researchGroup(job.getResearchGroup())
-            .sendAlways(true)
-            .build();
-
-        emailSender.sendAsync(email);
-    }
-
-    /**
      * Resolves a raw token to its persisted request. Caller is responsible for any lifecycle checks.
      *
      * @param rawToken the plaintext token from the invitation email
@@ -366,11 +326,14 @@ public class ReferenceRequestService {
      * @param entry the reference request being uploaded against
      */
     private void assertUploadAllowed(ReferenceRequest entry) {
-        if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
-            throw new OperationNotAllowedException("This reference letter upload link is no longer accepting files.");
+        if (entry.getStatus() == ReferenceRequestStatus.EXPIRED) {
+            throw new OperationNotAllowedException("This reference letter upload link has expired.");
         }
         if (entry.getTokenExpiresAt() != null && entry.getTokenExpiresAt().isBefore(LocalDateTime.now(ZoneOffset.UTC))) {
             throw new OperationNotAllowedException("This reference letter upload link has expired.");
+        }
+        if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
+            throw new OperationNotAllowedException("This reference letter upload link is no longer accepting files.");
         }
     }
 
@@ -423,14 +386,16 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Builds the invitation email and hands it to the async sender. The referee has no User
-     * account, so a transient {@link User} stub holds the email address required by the mail layer.
+     * Builds a referee-facing email (invitation or reminder) and hands it to the async sender. The
+     * referee has no User account, so a transient {@link User} stub holds the email address required
+     * by the mail layer.
      *
      * @param application the application the referee is attached to
      * @param entry       the reference request entry containing the referee's name and email
-     * @param rawToken    the plaintext token to include in the email
+     * @param rawToken    the plaintext token to include in the email link
+     * @param emailType   {@link EmailType#REFERENCE_LETTER_INVITATION} or {@link EmailType#REFERENCE_LETTER_REMINDER}
      */
-    private void sendInvitation(Application application, ReferenceRequest entry, String rawToken) {
+    private void sendRefereeEmail(Application application, ReferenceRequest entry, String rawToken, EmailType emailType) {
         Job job = application.getJob();
         User refereeStub = new User();
         refereeStub.setEmail(entry.getEmail());
@@ -456,7 +421,7 @@ public class ReferenceRequestService {
         Email email = Email.builder()
             .to(refereeStub)
             .language(Language.ENGLISH)
-            .emailType(EmailType.REFERENCE_LETTER_INVITATION)
+            .emailType(emailType)
             .content(ctx)
             .researchGroup(job.getResearchGroup())
             .sendAlways(true)
