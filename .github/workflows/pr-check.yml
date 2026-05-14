@@ -432,7 +432,8 @@ jobs:
         if: ${{ !vars.AET_CLIENT_URL }}
         run: |
           echo "Starting Angular dev server..."
-          pnpm run webapp:dev -- --host 0.0.0.0 > client.log 2>&1 &
+          node prebuild.mjs --develop
+          pnpm exec ng serve --host 0.0.0.0 > client.log 2>&1 &
           echo "CLIENT_PID=$!" >> $GITHUB_ENV
 
           echo "Waiting for Angular dev server to start..."
