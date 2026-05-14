@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -124,7 +126,10 @@ public class PDFExportService {
         if (app.references() != null && !app.references().isEmpty()) {
             builder.startInfoSection(labels.get("references"));
             for (ReferenceRequestDTO reference : app.references()) {
-                builder.addSectionData(formatRefereeName(reference), formatReferenceStatus(reference.status(), labels));
+                builder.addSectionData(
+                    formatRefereeName(reference),
+                    getValue(reference.email()) + " " + formatReferenceStatus(reference.status(), labels)
+                );
             }
         }
 
@@ -719,21 +724,10 @@ public class PDFExportService {
     }
 
     private String formatRefereeName(ReferenceRequestDTO reference) {
-        StringBuilder name = new StringBuilder();
-        if (hasValue(reference.title())) {
-            name.append(reference.title()).append(' ');
-        }
-        if (hasValue(reference.firstName())) {
-            name.append(reference.firstName()).append(' ');
-        }
-        if (hasValue(reference.lastName())) {
-            name.append(reference.lastName());
-        }
-        String formatted = name.toString().trim();
-        if (hasValue(reference.email())) {
-            return formatted.isEmpty() ? reference.email() : formatted + " (" + reference.email() + ")";
-        }
-        return formatted.isEmpty() ? "-" : formatted;
+        String fullName = Stream.of(reference.title(), reference.firstName(), reference.lastName())
+            .filter(this::hasValue)
+            .collect(Collectors.joining(" "));
+        return getValue(fullName);
     }
 
     private String formatReferenceStatus(ReferenceRequestStatus status, Map<String, String> labels) {
