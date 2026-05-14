@@ -21,7 +21,7 @@ public class ReferenceLetterReminderJob {
      * 1) Flip every {@code REQUESTED} entry past its deadline to {@code EXPIRED}.
      * 2) Send reminder emails for entries whose deadline is approaching.
      */
-    @Scheduled(cron = "${aet.reference.reminder.cron:0 15 4 * * *}", zone = "UTC")
+    @Scheduled(cron = "${aet.reference.reminder.cron:0 0 0 * * *}", zone = "UTC")
     public void run() {
         int expired = referenceRequestService.expireOverdueRequests();
         if (expired > 0) {
