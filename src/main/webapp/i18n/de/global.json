@@ -301,15 +301,15 @@
         },
         "upload_failed": {
           "summary": "Upload fehlgeschlagen",
-          "detail": "Ein Fehler ist während des Uploads aufgetreten. Bitte versuche es erneut."
+          "detail": "Das Dokument konnte nicht hochgeladen werden. Bitte überprüfe deine Verbindung und versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "delete_failed": {
           "summary": "Löschen fehlgeschlagen",
-          "detail": "Ein Fehler ist während des Löschens des Dokuments aufgetreten. Bitte versuche es erneut."
+          "detail": "Das Dokument konnte nicht gelöscht werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "rename_failed": {
           "summary": "Umbenennen fehlgeschlagen",
-          "detail": "Ein Fehler ist während des Umbenennens des Dokuments aufgetreten. Bitte versuche es erneut."
+          "detail": "Das Dokument konnte nicht umbenannt werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         }
       }
     },
@@ -365,7 +365,7 @@
       "loading": "Extrahiert...",
       "aiExtractionFailed": {
         "summary": "Extraktion fehlgeschlagen",
-        "detail": "Die Daten konnten nicht extrahiert werden. Bitte versuche es erneut."
+        "detail": "Wir konnten die Daten aus deiner Datei nicht extrahieren. Bitte überprüfe, ob die Datei eine klar lesbare PDF ist, und versuche es erneut, oder fülle die Felder manuell aus."
       }
     },
     "applicationPage1": {
@@ -564,11 +564,11 @@
         },
         "invalidJobId": {
           "summary": "Ungültige Job-ID",
-          "detail": "Bitte prüfe die eingegebene Job-ID und versuche es erneut."
+          "detail": "Wir konnten diese Stellenausschreibung nicht öffnen. Der Link ist möglicherweise fehlerhaft oder die Stelle wurde entfernt. Durchsuche die verfügbaren Stellen, oder öffne die Stelle erneut aus der ursprünglichen E-Mail."
         },
         "invalidApplicationId": {
           "summary": "Ungültige Bewerbungs-ID",
-          "detail": "Bitte prüfe die eingegebene Bewerbungs-ID und versuche es erneut."
+          "detail": "Wir konnten diese Bewerbung nicht öffnen. Der Link ist möglicherweise fehlerhaft oder die Bewerbung wurde entfernt. Öffne sie über deine Bewerbungsübersicht."
         },
         "errorApplicationId": {
           "summary": "Fehlerhafte Bewerbungs-ID",
@@ -592,11 +592,11 @@
         },
         "notEditable": {
           "summary": "Nicht bearbeitbar",
-          "detail": "Diese Bewerbung kann nicht bearbeitet werden, da sie bereits eingereicht wurde oder kein Entwurf mehr ist."
+          "detail": "Sie wurde bereits eingereicht oder ist kein Entwurf mehr. Du kannst sie in deiner Bewerbungsübersicht ansehen, aber nicht mehr ändern."
         },
         "authRequired": {
           "summary": "Anmeldung erforderlich",
-          "detail": "Bewerbung kann nicht eingereicht werden: Bitte melde dich an."
+          "detail": "Du musst angemeldet sein, bevor du eine Bewerbung einreichen kannst. Bitte melde dich an und versuche es erneut."
         },
         "saveFailed": {
           "summary": "Speichern fehlgeschlagen",
@@ -612,7 +612,7 @@
         },
         "missingJobIdUnauthenticated": {
           "summary": "Job-ID fehlt",
-          "detail": "Ohne Anmeldung muss eine Job-ID angegeben werden."
+          "detail": "Ohne Anmeldung musst du diese Seite über einen Job-Link öffnen. Bitte melde dich an oder durchsuche die verfügbaren Stellen."
         },
         "applicationDeleted": {
           "summary": "Bewerbung gelöscht",
@@ -631,28 +631,28 @@
           "detail": "Die Bewerbung konnte nicht zurückgezogen werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "jobIdNotAvailable": {
-          "summary": "Fehler",
-          "detail": "Job-ID ist für diese Bewerbung nicht verfügbar."
+          "summary": "Job-Referenz fehlt",
+          "detail": "Diese Bewerbung hat keine Job-Referenz. Bitte öffne sie über die Bewerbungsübersicht, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
         "invalidEmail": {
-          "summary": "Fehler",
-          "detail": "Bitte gib eine gültige E-Mail-Adresse an."
+          "summary": "E-Mail erforderlich",
+          "detail": "Bitte gib eine gültige E-Mail-Adresse ein, bevor du fortfährst."
         },
         "invalidFirstName": {
-          "summary": "Fehler",
-          "detail": "Bitte gib einen gültigen Vornamen an."
+          "summary": "Vorname erforderlich",
+          "detail": "Bitte gib einen gültigen Vornamen ein, bevor du fortfährst."
         },
         "invalidLastName": {
-          "summary": "Fehler",
-          "detail": "Bitte gib einen gültigen Nachnamen an."
+          "summary": "Nachname erforderlich",
+          "detail": "Bitte gib einen gültigen Nachnamen ein, bevor du fortfährst."
         },
         "migrationFailed": {
-          "summary": "Fehler",
-          "detail": "Der lokale Entwurf konnte nicht gespeichert werden. Versuche es erneut, lade die Seite neu oder überprüfe deine Verbindung."
+          "summary": "Entwurf konnte nicht gespeichert werden",
+          "detail": "Der lokale Entwurf konnte nicht gespeichert werden. Bitte versuche es erneut, lade die Seite neu oder überprüfe deine Verbindung."
         },
         "otpVerificationFailed": {
-          "summary": "Fehler",
-          "detail": "E-Mail-Verifizierung fehlgeschlagen. Bitte versuch es erneut."
+          "summary": "E-Mail-Verifizierung fehlgeschlagen",
+          "detail": "Wir konnten deinen Code nicht verifizieren. Er ist möglicherweise abgelaufen oder ungültig — bitte fordere einen neuen Code an und versuche es erneut."
         }
       },
       "applicationOverview": {
@@ -663,7 +663,7 @@
           },
           "error": {
             "summary": "Löschen fehlgeschlagen",
-            "detail": "Der Entwurf konnte nicht gelöscht werden. Bitte versuche es erneut."
+            "detail": "Der Entwurf konnte nicht gelöscht werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
           }
         },
         "withdraw": {
@@ -732,7 +732,7 @@
     },
     "uploadFailed": {
       "summary": "Upload fehlgeschlagen",
-      "detail": "Wir konnten Ihr Schreiben nicht speichern. Bitte versuchen Sie es erneut."
+      "detail": "Dein Empfehlungsschreiben konnte nicht gespeichert werden. Bitte versuche es in einem Moment erneut. Wenn das Problem weiterhin besteht, kontaktiere uns über die Support-E-Mail."
     }
   },
   "imageUpload": {
@@ -755,7 +755,7 @@
       },
       "uploadFailed": {
         "summary": "Upload fehlgeschlagen",
-        "detail": "Bild-Upload fehlgeschlagen. Bitte versuche es erneut"
+        "detail": "Das Bild konnte nicht hochgeladen werden. Bitte überprüfe deine Verbindung und versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   }
