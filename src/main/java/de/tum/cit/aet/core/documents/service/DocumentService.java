@@ -119,9 +119,32 @@ public class DocumentService {
      * @return the persisted {@link ApplicationDocument}
      */
     public ApplicationDocument uploadApplicationDocument(MultipartFile file, DocumentType type, String name, Application application) {
+        return uploadApplicationDocument(file, type, name, application, currentUserService.getUser());
+    }
+
+    /**
+     * Uploads a document attached directly to an application on behalf of an explicit uploader.
+     * Used for token-authenticated flows (e.g. external reference letter upload) where the
+     * caller is not a logged-in user but the row still needs an {@code uploaded_by} owner for
+     * auditing — typically the applicant whose request triggered the upload.
+     *
+     * @param file        the multipart file to be stored
+     * @param type        the type of the document
+     * @param name        the user-facing display name of the document
+     * @param application the application the document belongs to
+     * @param uploader    the user attributed as the uploader on the audit row
+     * @return the persisted {@link ApplicationDocument}
+     */
+    public ApplicationDocument uploadApplicationDocument(
+        MultipartFile file,
+        DocumentType type,
+        String name,
+        Application application,
+        User uploader
+    ) {
         StoredFile stored = storeFile(file);
         ApplicationDocument applicationDocument = new ApplicationDocument();
-        populateBase(applicationDocument, stored, type, name, currentUserService.getUser());
+        populateBase(applicationDocument, stored, type, name, uploader);
         applicationDocument.setApplication(application);
         return documentRepository.save(applicationDocument);
     }

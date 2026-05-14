@@ -271,6 +271,25 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     )
     Optional<Application> findByIdWithApplicantAndJob(@Param("id") UUID id);
 
+    /**
+     * Loads an application together with applicant, job and the attached reference requests.
+     * Used by the detail endpoints (applicant + professor evaluation) so the response can carry
+     * the reference list without a second round-trip — required when OSIV is off.
+     *
+     * @param id the application id
+     * @return the application with applicant, job and referenceRequests eagerly fetched
+     */
+    @Query(
+        """
+        SELECT DISTINCT a FROM Application a
+        LEFT JOIN FETCH a.applicant ap
+        LEFT JOIN FETCH a.job j
+        LEFT JOIN FETCH a.referenceRequests
+        WHERE a.applicationId = :id
+        """
+    )
+    Optional<Application> findByIdWithApplicantJobAndReferences(@Param("id") UUID id);
+
     @Query(
         """
             SELECT DISTINCT a.applicant.user.userId FROM Application a

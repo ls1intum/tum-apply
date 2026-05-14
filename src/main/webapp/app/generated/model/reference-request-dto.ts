@@ -10,6 +10,7 @@
 
 
 export interface ReferenceRequestDTO {
+    readonly documentId?: string;
     readonly email?: string;
     readonly firstName?: string;
     readonly lastName?: string;
