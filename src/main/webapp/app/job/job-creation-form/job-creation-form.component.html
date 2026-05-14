@@ -292,24 +292,6 @@
 
           <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
-              <jhi-number-input
-                label="jobCreationForm.basicInformationSection.referenceLettersRequired.label"
-                placeholder="jobCreationForm.basicInformationSection.referenceLettersRequired.placeholder"
-                [model]="positionDetailsForm.get('referenceLettersRequired')?.value"
-                [control]="positionDetailsForm.get('referenceLettersRequired') ?? undefined"
-                [min]="0"
-                [max]="5"
-                [minFractionDigits]="0"
-                [maxFractionDigits]="0"
-                icon="circle-info"
-                tooltipText="jobCreationForm.basicInformationSection.referenceLettersRequired.toolTipText"
-              />
-            </div>
-            <div class="flex-1"></div>
-          </div>
-
-          <div class="flex flex-col gap-6 lg:flex-row lg:gap-8">
-            <div class="flex-1">
               <jhi-select
                 [selected]="positionDetailsForm.get('fundingType')?.value"
                 (selectedChange)="positionDetailsForm.get('fundingType')?.setValue($event)"
@@ -320,6 +302,7 @@
                 [filter]="true"
                 [showClear]="true"
                 [dataKey]="'value'"
+                [errorEnabled]="true"
               />
             </div>
             <div class="flex-1">
@@ -346,8 +329,28 @@
                 [filter]="true"
                 [showClear]="true"
                 [dataKey]="'value'"
+                [errorEnabled]="true"
               />
             </div>
+          </div>
+
+          <div class="flex flex-col lg:flex-row lg:gap-8">
+            <div class="flex-1">
+              <jhi-number-input
+                label="jobCreationForm.basicInformationSection.referenceLettersRequired.label"
+                placeholder="jobCreationForm.basicInformationSection.referenceLettersRequired.placeholder"
+                [model]="positionDetailsForm.get('referenceLettersRequired')?.value"
+                [control]="positionDetailsForm.get('referenceLettersRequired') ?? undefined"
+                [min]="0"
+                [max]="5"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="0"
+                [errorEnabled]="true"
+                icon="circle-info"
+                tooltipText="jobCreationForm.basicInformationSection.referenceLettersRequired.toolTipText"
+              />
+            </div>
+            <div class="flex-1"></div>
           </div>
 
           <!-- Position Options card -->
