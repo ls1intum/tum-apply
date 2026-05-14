@@ -270,6 +270,7 @@
         "BACHELOR_TRANSCRIPT": "Bachelor Transcript",
         "MASTER_TRANSCRIPT": "Master Transcript",
         "REFERENCES": "References",
+        "REFERENCE_LETTER": "Reference Letter",
         "CV": "CV",
         "CUSTOM": "Custom"
       },
@@ -333,6 +334,11 @@
       "personal_information": "Personal Information",
       "personal_documents": "Personal Documents",
       "reference_letters": "Recommendation Letters Requests",
+      "reference_status": {
+        "requested": "(requested)",
+        "submitted": "(submitted)",
+        "expired": "(expired)"
+      },
       "not_found": "Application not found"
     },
     "applicationSteps": {
@@ -511,6 +517,7 @@
       "state": {
         "draft": "Draft",
         "submitted": "Submitted",
+        "pending": "Pending",
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",
@@ -688,6 +695,45 @@
     "file": {
       "could.not.extract": "Could not extract file",
       "not.image": "File was expected to be an image but was found to be \"{fileType}\""
+    }
+  },
+  "reference": {
+    "title": "Upload your recommendation letter",
+    "loading": "Loading...",
+    "requestedFor": {
+      "title": "Requested for",
+      "applicant": "Applicant",
+      "jobTitle": "Position",
+      "researchGroup": "Research group"
+    },
+    "upload": {
+      "confirm": "Confirm"
+    },
+    "summary": {
+      "title": "Summary",
+      "applicant": "Applicant",
+      "jobTitle": "Position",
+      "researchGroup": "Research group"
+    },
+    "success": {
+      "title": "Recommendation letter received",
+      "message": "Thank you. Your letter has been submitted successfully."
+    },
+    "expired": {
+      "title": "Deadline reached",
+      "message": "The deadline for this recommendation letter has passed."
+    },
+    "error": {
+      "title": "Link not valid",
+      "invalidLink": "This recommendation letter link is invalid or no longer accessible."
+    },
+    "uploadSuccess": {
+      "summary": "Letter uploaded",
+      "detail": "Your recommendation letter has been received."
+    },
+    "uploadFailed": {
+      "summary": "Upload failed",
+      "detail": "We could not save your letter. Please try again."
     }
   },
   "imageUpload": {

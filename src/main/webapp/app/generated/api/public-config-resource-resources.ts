@@ -14,6 +14,8 @@
  * @generated from OpenAPI specification
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
+import { PublicConfigDTO } from '../model/public-config-dto';
+
 const BASE_PATH = '';
 
 /**
@@ -21,8 +23,8 @@ const BASE_PATH = '';
  * 
  * Creates a reactive HTTP resource that automatically refetches when signals change.
  */
-export function configResource(): HttpResourceRef<{ [key: string]: any; } | undefined> {
-    return httpResource<{ [key: string]: any; }>(() => {
+export function configResource(): HttpResourceRef<PublicConfigDTO | undefined> {
+    return httpResource<PublicConfigDTO>(() => {
         return `${BASE_PATH}/api/public/config`;
     });
 }

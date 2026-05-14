@@ -2,7 +2,10 @@ import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { Provider } from '@angular/core';
 import { vi } from 'vitest';
 
-export type AuthFacadeServiceMock = Pick<AuthFacadeService, 'requestOtp' | 'verifyOtp' | 'loginWithEmail' | 'loginWithProvider' | 'logout'>;
+export type AuthFacadeServiceMock = Pick<
+  AuthFacadeService,
+  'requestOtp' | 'verifyOtp' | 'loginWithEmail' | 'loginWithProvider' | 'registerPasskey' | 'logout'
+>;
 
 export function createAuthFacadeServiceMock(): AuthFacadeServiceMock {
   return {
@@ -10,6 +13,7 @@ export function createAuthFacadeServiceMock(): AuthFacadeServiceMock {
     verifyOtp: vi.fn(),
     loginWithEmail: vi.fn(),
     loginWithProvider: vi.fn(),
+    registerPasskey: vi.fn(),
     logout: vi.fn(),
   };
 }
