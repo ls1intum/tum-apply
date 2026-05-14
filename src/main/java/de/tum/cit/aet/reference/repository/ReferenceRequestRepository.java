@@ -97,7 +97,7 @@ public interface ReferenceRequestRepository extends JpaRepository<ReferenceReque
         JOIN FETCH ap.user
         JOIN FETCH a.job j
         JOIN FETCH j.researchGroup
-        WHERE r.status = 'REQUESTED'
+        WHERE r.status = de.tum.cit.aet.reference.constants.ReferenceRequestStatus.REQUESTED
           AND r.tokenExpiresAt IS NOT NULL
           AND r.tokenExpiresAt > :now
           AND r.tokenExpiresAt <= :upperBound
