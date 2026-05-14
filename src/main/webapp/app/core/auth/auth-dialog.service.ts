@@ -54,7 +54,7 @@ export class AuthDialogService {
 
     // Open new dialog
     const ref = this.dialogService.open(AuthCardComponent, {
-      style: { border: 'none', overflow: 'auto', background: 'transparent', boxShadow: 'none', minWidth: '25rem' },
+      style: { border: 'none', overflow: 'auto', background: 'transparent', boxShadow: 'none', width: 'min(25rem, 95vw)' },
       contentStyle: { padding: '0' },
       modal: true,
       dismissableMask: true,

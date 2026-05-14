@@ -30,7 +30,7 @@
               (keydown.enter)="selectDoc(item.document.id)"
               (keydown.space)="selectDoc(item.document.id); $event.preventDefault()"
             >
-              <span class="block truncate" [jhiTranslate]="item.label"></span>
+              <span class="block truncate" [jhiTranslate]="item.label" [translateValues]="item.labelParams ?? {}"></span>
             </div>
           </li>
         }

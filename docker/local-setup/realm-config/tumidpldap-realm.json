@@ -1,7 +1,8 @@
 {
-  "realm": "tumapply",
+  "realm": "tumidpldap",
   "enabled": true,
-  "displayName": "TUMApply Realm",
+  "displayName": "TUMApply TUM Login Realm",
+  "webAuthnPolicyPasswordlessPasskeysEnabled": true,
   "users": [
     {
       "id": "00000000-0000-0000-0000-000000000101",
@@ -11,6 +12,12 @@
       "emailVerified": true,
       "firstName": "System",
       "lastName": "Admin",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -27,42 +34,16 @@
       "emailVerified": true,
       "firstName": "Anna",
       "lastName": "Professorin",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
           "value": "professor",
-          "temporary": false
-        }
-      ]
-    },
-    {
-      "id": "00000000-0000-0000-0000-000000000103",
-      "username": "applicant1",
-      "enabled": true,
-      "email": "applicant1@tumapply.local",
-      "emailVerified": true,
-      "firstName": "Max",
-      "lastName": "Applicant",
-      "credentials": [
-        {
-          "type": "password",
-          "value": "applicant",
-          "temporary": false
-        }
-      ]
-    },
-    {
-      "id": "00000000-0000-0000-0000-000000000104",
-      "username": "applicant2",
-      "enabled": true,
-      "email": "applicant2@tumapply.local",
-      "emailVerified": true,
-      "firstName": "Sara",
-      "lastName": "Extern",
-      "credentials": [
-        {
-          "type": "password",
-          "value": "applicant",
           "temporary": false
         }
       ]
@@ -75,26 +56,16 @@
       "emailVerified": true,
       "firstName": "Professor2",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
           "value": "professor",
-          "temporary": false
-        }
-      ]
-    },
-    {
-      "id": "00000000-0000-0000-0000-000000000106",
-      "username": "applicant3",
-      "enabled": true,
-      "email": "applicant3@tumapply.local",
-      "emailVerified": true,
-      "firstName": "Jean-Pierre-Étienne",
-      "lastName": "Van Der Straaten-Sánchez",
-      "credentials": [
-        {
-          "type": "password",
-          "value": "applicant",
           "temporary": false
         }
       ]
@@ -107,6 +78,12 @@
       "emailVerified": true,
       "firstName": "Emil",
       "lastName": "Employee",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -123,6 +100,12 @@
       "emailVerified": true,
       "firstName": "Eva",
       "lastName": "Employee",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -139,6 +122,12 @@
       "emailVerified": true,
       "firstName": "Professor3",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -155,6 +144,12 @@
       "emailVerified": true,
       "firstName": "Professor4",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -171,6 +166,12 @@
       "emailVerified": true,
       "firstName": "Professor5",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -187,6 +188,12 @@
       "emailVerified": true,
       "firstName": "Professor6",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -203,6 +210,12 @@
       "emailVerified": true,
       "firstName": "Professor7",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -219,6 +232,12 @@
       "emailVerified": true,
       "firstName": "Professor8",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -235,6 +254,12 @@
       "emailVerified": true,
       "firstName": "Professor9",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -251,6 +276,12 @@
       "emailVerified": true,
       "firstName": "Professor10",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -267,6 +298,12 @@
       "emailVerified": true,
       "firstName": "Professor11",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -283,6 +320,12 @@
       "emailVerified": true,
       "firstName": "Professor12",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -299,6 +342,12 @@
       "emailVerified": true,
       "firstName": "Professor13",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -315,6 +364,12 @@
       "emailVerified": true,
       "firstName": "Professor14",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -331,6 +386,12 @@
       "emailVerified": true,
       "firstName": "Professor15",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -347,6 +408,12 @@
       "emailVerified": true,
       "firstName": "Professor16",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -363,6 +430,12 @@
       "emailVerified": true,
       "firstName": "Professor17",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -379,6 +452,12 @@
       "emailVerified": true,
       "firstName": "Professor18",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -395,6 +474,12 @@
       "emailVerified": true,
       "firstName": "Professor19",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -411,6 +496,12 @@
       "emailVerified": true,
       "firstName": "Professor20",
       "lastName": "TUM",
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -420,12 +511,12 @@
       ]
     },
     {
-      "username": "service-account-tumapply-otp-admin",
+      "username": "service-account-tumapply-admin-api",
       "enabled": true,
       "emailVerified": true,
-      "serviceAccountClientId": "tumapply-otp-admin",
+      "serviceAccountClientId": "tumapply-admin-api",
       "clientRoles": {
-        "realm-management": ["view-users", "query-users", "manage-users", "impersonation"]
+        "realm-management": ["view-users", "query-users", "manage-users"]
       }
     }
   ],
@@ -460,7 +551,6 @@
       ]
     },
     {
-      "id": "107dba4e-53c9-4a2a-9a27-a75a4e8f9719",
       "clientId": "tumapply-server-client",
       "name": "TUMApply Server Service",
       "enabled": true,
@@ -475,7 +565,7 @@
         "refresh.token.lifespan": "1800"
       },
       "redirectUris": [],
-      "webOrigins": [],
+      "webOrigins": ["http://localhost:4200"],
       "secret": "tumapply-server-secret",
       "protocolMappers": [
         {
@@ -492,8 +582,8 @@
       ]
     },
     {
-      "clientId": "tumapply-otp-admin",
-      "name": "TUMApply OTP Admin",
+      "clientId": "tumapply-admin-api",
+      "name": "TUMApply Admin API",
       "enabled": true,
       "publicClient": false,
       "protocol": "openid-connect",
@@ -502,8 +592,8 @@
       "directAccessGrantsEnabled": false,
       "authorizationServicesEnabled": false,
       "redirectUris": [],
-      "webOrigins": [],
-      "secret": "tumapply-otp-secret",
+      "webOrigins": ["http://localhost:4200"],
+      "secret": "tumapply-admin-api-secret",
       "protocolMappers": [
         {
           "name": "service-account-audience",
@@ -511,7 +601,7 @@
           "protocolMapper": "oidc-audience-mapper",
           "consentRequired": false,
           "config": {
-            "included.client.audience": "tumapply-otp-admin",
+            "included.client.audience": "tumapply-admin-api",
             "id.token.claim": "false",
             "access.token.claim": "true"
           }
@@ -519,7 +609,7 @@
       ]
     },
     {
-      "id": "c1f2a7eb-dad0-4d65-96d5-6e5dfaffaf0d",
+      "id": "d1f2a7eb-dad0-4d65-96d5-6e5dfaffaf0d",
       "clientId": "realm-management",
       "name": "${client_realm-management}",
       "surrogateAuthRequired": false,
@@ -550,77 +640,8 @@
       "authorizationSettings": {
         "policyEnforcementMode": "ENFORCING",
         "allowRemoteResourceManagement": false,
-        "resources": [
-          {
-            "name": "Users",
-            "ownerManagedAccess": false,
-            "attributes": {},
-            "uris": [],
-            "scopes": [
-              {
-                "name": "impersonate"
-              },
-              {
-                "name": "user-impersonated"
-              }
-            ]
-          },
-          {
-            "name": "client.resource.107dba4e-53c9-4a2a-9a27-a75a4e8f9719",
-            "type": "Client",
-            "ownerManagedAccess": false,
-            "attributes": {},
-            "uris": [],
-            "scopes": [
-              {
-                "name": "token-exchange"
-              }
-            ]
-          }
-        ],
-        "policies": [
-          {
-            "name": "client-impersonators",
-            "type": "client",
-            "logic": "POSITIVE",
-            "decisionStrategy": "UNANIMOUS",
-            "config": {
-              "clients": "[\"tumapply-otp-admin\"]"
-            }
-          },
-          {
-            "name": "admin-impersonating.permission.users",
-            "type": "scope",
-            "logic": "POSITIVE",
-            "decisionStrategy": "UNANIMOUS",
-            "config": {
-              "resources": "[\"Users\"]",
-              "scopes": "[\"impersonate\",\"user-impersonated\"]",
-              "applyPolicies": "[\"client-impersonators\"]"
-            }
-          },
-          {
-            "name": "user-impersonated.permission.users",
-            "type": "scope",
-            "logic": "POSITIVE",
-            "decisionStrategy": "UNANIMOUS",
-            "config": {
-              "resources": "[\"Users\"]",
-              "scopes": "[\"user-impersonated\"]"
-            }
-          },
-          {
-            "name": "token-exchange.permission.client.107dba4e-53c9-4a2a-9a27-a75a4e8f9719",
-            "type": "scope",
-            "logic": "POSITIVE",
-            "decisionStrategy": "UNANIMOUS",
-            "config": {
-              "resources": "[\"client.resource.107dba4e-53c9-4a2a-9a27-a75a4e8f9719\"]",
-              "scopes": "[\"token-exchange\"]",
-              "applyPolicies": "[\"client-impersonators\"]"
-            }
-          }
-        ],
+        "resources": [],
+        "policies": [],
         "decisionStrategy": "UNANIMOUS"
       }
     }
