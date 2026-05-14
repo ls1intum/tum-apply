@@ -1,8 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { vi } from 'vitest';
+import { beforeEach, vi } from 'vitest';
 import { IdpProvider, KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
+import { KeycloakRealmKind } from 'app/core/auth/keycloak-authentication.utils';
+import type { PasskeyCredentialSummary } from 'app/core/auth/models/auth.model';
 import { createKeycloakMock, KeycloakMock, provideKeycloakMock } from 'util/keycloak.mock';
-import { createApplicationConfigServiceMock, provideApplicationConfigServiceMock } from 'util/application-config.service.mock';
+import {
+  ApplicationConfigServiceMock,
+  createApplicationConfigServiceMock,
+  provideApplicationConfigServiceMock,
+} from 'util/application-config.service.mock';
 import { MessageService } from 'primeng/api';
 import { provideTranslateMock } from 'util/translate.mock';
 
@@ -12,27 +18,48 @@ vi.mock('keycloak-js', () => ({
   },
 }));
 
+type PasskeyManagerLike = {
+  loginWithPasskey: (realmKind: KeycloakRealmKind) => Promise<void>;
+  registerPasskey: () => Promise<void>;
+  listPasskeys: () => Promise<PasskeyCredentialSummary[]>;
+  removePasskey: (id: string) => Promise<void>;
+};
+
+type KeycloakAuthenticationServiceInternals = {
+  createKeycloakClient: (realmKind: KeycloakRealmKind) => KeycloakMock;
+  getPasskeyManager: () => PasskeyManagerLike;
+  refreshKeycloakSessionFromBrowser: (realmKind: KeycloakRealmKind) => Promise<void>;
+  redirectAfterPasskeyLogin: (redirectUri?: string) => void;
+};
+
 describe('KeycloakAuthenticationService', () => {
   let service: KeycloakAuthenticationService;
   let keycloakInstance: KeycloakMock;
+  let applicationConfigService: ApplicationConfigServiceMock;
+  let serviceInternals: KeycloakAuthenticationServiceInternals;
 
   beforeEach(() => {
     vi.resetAllMocks();
     keycloakInstance = createKeycloakMock();
+    applicationConfigService = createApplicationConfigServiceMock();
     TestBed.configureTestingModule({
       providers: [
         KeycloakAuthenticationService,
-        provideApplicationConfigServiceMock(createApplicationConfigServiceMock()),
+        provideApplicationConfigServiceMock(applicationConfigService),
         provideKeycloakMock(keycloakInstance),
         { provide: MessageService, useValue: { add: vi.fn() } },
         provideTranslateMock(),
       ],
     });
     service = TestBed.inject(KeycloakAuthenticationService);
+    serviceInternals = service as unknown as KeycloakAuthenticationServiceInternals;
     service['keycloak'] = keycloakInstance as unknown as (typeof service)['keycloak'];
+    vi.spyOn(serviceInternals, 'createKeycloakClient').mockReturnValue(keycloakInstance);
   });
 
   afterEach(() => {
+    sessionStorage.clear();
+    vi.unstubAllGlobals();
     vi.clearAllMocks();
   });
 
@@ -60,11 +87,11 @@ describe('KeycloakAuthenticationService', () => {
       const result = await service.init();
 
       expect(result).toBe(false);
-      expect(consoleErrorSpy).toHaveBeenCalledOnce();
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
       consoleErrorSpy.mockRestore();
     });
 
-    it('should start token refresh scheduler after successful authenticated init', async () => {
+    it('should start token refresh scheduler after successful authenticated init and schedule refresh', async () => {
       keycloakInstance.authenticated = true;
       keycloakInstance.init.mockResolvedValue(true);
       const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
@@ -252,13 +279,58 @@ describe('KeycloakAuthenticationService', () => {
     });
   });
 
-  it('should return token and authentication status', () => {
-    keycloakInstance.token = 'test-token-123';
-    keycloakInstance.authenticated = true;
-    expect(service.getToken()).toBe('test-token-123');
-    expect(service.isLoggedIn()).toBe(true);
+  describe('passkey delegation', () => {
+    let passkeyManager: PasskeyManagerLike;
 
-    keycloakInstance.authenticated = false;
-    expect(service.isLoggedIn()).toBe(false);
+    beforeEach(() => {
+      passkeyManager = {
+        loginWithPasskey: vi.fn().mockResolvedValue(undefined),
+        registerPasskey: vi.fn().mockResolvedValue(undefined),
+        listPasskeys: vi.fn().mockResolvedValue([{ id: 'passkey-1' }]),
+        removePasskey: vi.fn().mockResolvedValue(undefined),
+      };
+      vi.spyOn(serviceInternals, 'getPasskeyManager').mockReturnValue(passkeyManager);
+    });
+
+    it('should delegate passkey login and redirect', async () => {
+      const refreshSpy = vi.spyOn(serviceInternals, 'refreshKeycloakSessionFromBrowser').mockResolvedValue(undefined);
+      const redirectSpy = vi.spyOn(serviceInternals, 'redirectAfterPasskeyLogin').mockImplementation(() => {});
+
+      await service.loginWithPasskey(KeycloakRealmKind.External, '/after-login');
+
+      expect(passkeyManager.loginWithPasskey).toHaveBeenCalledWith(KeycloakRealmKind.External);
+      expect(refreshSpy).toHaveBeenCalledWith(KeycloakRealmKind.External);
+      expect(redirectSpy).toHaveBeenCalledWith('/after-login');
+    });
+
+    it('should delegate passkey registration', async () => {
+      await service.registerPasskey();
+
+      expect(passkeyManager.registerPasskey).toHaveBeenCalledOnce();
+    });
+
+    it('should delegate passkey listing', async () => {
+      await expect(service.listPasskeys()).resolves.toEqual([{ id: 'passkey-1' }]);
+
+      expect(passkeyManager.listPasskeys).toHaveBeenCalledOnce();
+    });
+
+    it('should delegate passkey removal', async () => {
+      await service.removePasskey('passkey-1');
+
+      expect(passkeyManager.removePasskey).toHaveBeenCalledWith('passkey-1');
+    });
+  });
+
+  describe('token access', () => {
+    it('should return token and authentication status', () => {
+      keycloakInstance.token = 'test-token-123';
+      keycloakInstance.authenticated = true;
+      expect(service.getToken()).toBe('test-token-123');
+      expect(service.isLoggedIn()).toBe(true);
+
+      keycloakInstance.authenticated = false;
+      expect(service.isLoggedIn()).toBe(false);
+    });
   });
 });
