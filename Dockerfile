@@ -19,22 +19,22 @@ COPY build.gradle gradle.properties settings.gradle ./
 COPY gradle gradle/
 # copy openapi generator subproject (required by settings.gradle)
 COPY openapi-generator-angular21/build.gradle openapi-generator-angular21/build.gradle
-# copy npm related files and install node modules
+# copy pnpm related files and install node modules
 # (from https://stackoverflow.com/questions/63961934/how-to-use-docker-build-cache-when-version-bumping-a-react-app)
-COPY package.json package-lock.json ./
+COPY package.json pnpm-lock.yaml .npmrc ./
 
 # also copy this script which is required by postinstall lifecycle hook
 RUN \
   # Mount global cache for Gradle (project cache in /opt/tum-apply/.gradle doesn't seem to be populated)
   --mount=type=cache,target=/root/.gradle/caches \
-  # Mount cache for npm
-  --mount=type=cache,target=/opt/tum-apply/.npm \
-  # Create .npm directory if not yet available
-  mkdir -p /opt/tum-apply/.npm \
-  # Set .npm directory as npm cache
-  && ./gradlew -i --stacktrace --no-daemon -Pprod -Pwar npmSetCacheDockerfile \
-  # Pre-populate the npm and gradle caches if related files change (see COPY statements above)
-  && ./gradlew -i --stacktrace --no-daemon -Pprod -Pwar npm_ci
+  # Mount cache for pnpm
+  --mount=type=cache,target=/opt/tum-apply/.pnpm-store \
+  # Create .pnpm-store directory if not yet available
+  mkdir -p /opt/tum-apply/.pnpm-store \
+  # Point pnpm at the cache mount as its store
+  && ./gradlew -i --stacktrace --no-daemon -Pprod -Pwar pnpmSetCacheDockerfile \
+  # Pre-populate the pnpm and gradle caches if related files change (see COPY statements above)
+  && ./gradlew -i --stacktrace --no-daemon -Pprod -Pwar pnpmInstall
 
 # so far just using the .dockerignore to define what isn't necessary here
 COPY . .
@@ -42,8 +42,8 @@ COPY . .
 RUN \
   # Mount global cache for Gradle (project cache in /opt/tum-apply/.gradle doesn't seem to be populated)
   --mount=type=cache,target=/root/.gradle/caches \
-  # Mount cache for npm
-  --mount=type=cache,target=/opt/tum-apply/.npm \
+  # Mount cache for pnpm
+  --mount=type=cache,target=/opt/tum-apply/.pnpm-store \
   # Mount cache for the Angular CLI
   --mount=type=cache,target=/opt/tum-apply/.cache \
   # Build the .war file

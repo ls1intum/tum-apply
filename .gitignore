@@ -5,6 +5,8 @@
 node_tmp/
 node_modules/
 npm-debug.log.*
+pnpm-debug.log.*
+.pnpm-store/
 /.awcache/*
 /.cache-loader/*
 

@@ -175,39 +175,39 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Remove .npmrc for Memory Issue Workaround
-        run: rm .npmrc || true
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       # --- Style Checks ---
       - name: ✅ TypeScript Formatting
-        run: npm run prettier:check
+        run: pnpm run prettier:check
 
       - name: ✅ TypeScript Code Style (Lint)
-        run: npm run lint
+        run: pnpm run lint
         if: success() || failure()
 
       # --- Compilation ---
       - name: ✅ TypeScript Compilation
-        run: npm run compile:ts
+        run: pnpm run compile:ts
 
       - name: ✅ TypeScript Test Files Compilation
-        run: npm run compile:ts:tests
+        run: pnpm run compile:ts:tests
 
       # --- Tests ---
       - name: ✅ TypeScript Tests
-        run: npm run test:ci
+        run: pnpm run test:ci
 
       - name: ✅ TypeScript Tests (Selection)
-        run: npm run test-diff:ci
+        run: pnpm run test-diff:ci
         if: success() || failure()
 
       # --- Upload Results ---
@@ -229,7 +229,7 @@ jobs:
 
             **🔍 View coverage locally:**
             ```bash
-            npm run test:ci
+            pnpm run test:ci
             open build/test-results/vitest/coverage/index.html
             ```
 
@@ -265,14 +265,17 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install Node Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Start Keycloak
         run: |
@@ -305,7 +308,7 @@ jobs:
         run: docker compose -f docker/local-setup/services.yml down --remove-orphans --volumes || true
 
       - name: Format Generated Client Code
-        run: npx prettier --write ./src/main/webapp/app/generated
+        run: pnpm exec prettier --write ./src/main/webapp/app/generated
 
       - name: Check for Changes
         id: check_changes
@@ -386,11 +389,14 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       # --- Start Keycloak ---
       - name: Start Keycloak
@@ -416,13 +422,13 @@ jobs:
       # --- Install Client Dependencies for Local Angular Dev Server ---
       - name: Install Client Dependencies
         if: ${{ !vars.AET_CLIENT_URL }}
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Start Angular Dev Server
         if: ${{ !vars.AET_CLIENT_URL }}
         run: |
           echo "Starting Angular dev server..."
-          npm run webapp:dev -- --host 0.0.0.0 > client.log 2>&1 &
+          pnpm run webapp:dev -- --host 0.0.0.0 > client.log 2>&1 &
           echo "CLIENT_PID=$!" >> $GITHUB_ENV
 
           echo "Waiting for Angular dev server to start..."
@@ -501,7 +507,7 @@ jobs:
 
       # --- Run Lighthouse ---
       - name: Install Lighthouse CI
-        run: npm install -g @lhci/cli@0.11.x
+        run: pnpm add -g @lhci/cli@0.11.x
 
       - name: ✅ Run Lighthouse for ${{ matrix.role }}
         uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18
