@@ -92,7 +92,11 @@ public final class ComplianceScoreCalculator {
      * @param originalText - The original text for score-calculation
      * @return A compiled integer score (0-100) based on the most comprehensive data available.
      */
-    public static int calculateGenderScore(List<GenderCategory> originalAnalysis, List<GenderCategory> translatedAnalysis, String originalText) {
+    public static int calculateGenderScore(
+        List<GenderCategory> originalAnalysis,
+        List<GenderCategory> translatedAnalysis,
+        String originalText
+    ) {
         // If both language versions are available, the combined version is set.
         if (originalAnalysis != null && translatedAnalysis != null) {
             return calculateCombinedScore(originalAnalysis, translatedAnalysis, originalText);
@@ -131,14 +135,8 @@ public final class ComplianceScoreCalculator {
             return 100;
         }
 
-        long inclusiveCount = analysis
-            .stream()
-            .filter(GenderCategory.INCLUSIVE::equals)
-            .count();
-        long nonInclusiveCount = analysis
-            .stream()
-            .filter(GenderCategory.NON_INCLUSIVE::equals)
-            .count();
+        long inclusiveCount = analysis.stream().filter(GenderCategory.INCLUSIVE::equals).count();
+        long nonInclusiveCount = analysis.stream().filter(GenderCategory.NON_INCLUSIVE::equals).count();
 
         if (nonInclusiveCount == 0) {
             return 100;

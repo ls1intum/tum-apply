@@ -385,9 +385,8 @@ public class AiService {
             complianceIssues = List.of();
         }
 
-        int genderScore = ComplianceScoreCalculator.calculateGenderScore(
-            types(analysis), types(translatedAnalysis), text);
-        int legalScore  = ComplianceScoreCalculator.calculateLegalScore(categories(complianceIssues));
+        int genderScore = ComplianceScoreCalculator.calculateGenderScore(types(analysis), types(translatedAnalysis), text);
+        int legalScore = ComplianceScoreCalculator.calculateLegalScore(categories(complianceIssues));
         // geometric means
         int combinedScore = (int) Math.round(Math.sqrt((double) genderScore * legalScore));
 
