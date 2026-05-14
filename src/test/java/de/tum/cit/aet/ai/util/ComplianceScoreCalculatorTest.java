@@ -2,10 +2,7 @@ package de.tum.cit.aet.ai.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import de.tum.cit.aet.ai.constants.ComplianceAction;
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
-import de.tum.cit.aet.ai.domain.BiasedIssue;
-import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.core.constants.GenderCategory;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
@@ -26,47 +23,18 @@ class ComplianceScoreCalculatorTest {
 
         @Test
         void shouldReturnZeroLegalScoreWhenCriticalAggIssueExists() {
-            List<ComplianceIssue> issues = List.of(
-                new ComplianceIssue(
-                    "1",
-                    ComplianceCategory.CRITICAL_AGG,
-                    "I don't allow disabled applicants",
-                    "§ 1 AGG",
-                    "Discriminatory sentence",
-                    ComplianceAction.REPLACE,
-                    "en"
-                )
-            );
+            List<ComplianceCategory> categories = List.of(ComplianceCategory.CRITICAL_AGG);
 
-            int score = ComplianceScoreCalculator.calculateLegalScore(issues);
+            int score = ComplianceScoreCalculator.calculateLegalScore(categories);
 
             assertThat(score).isZero();
         }
 
         @Test
         void shouldApplyTransparencyPenaltyWhenOnlyTransparencyIssuesExist() {
-            List<ComplianceIssue> issues = List.of(
-                new ComplianceIssue(
-                    "1",
-                    ComplianceCategory.TRANSPARENCY,
-                    "Shared with partner A",
-                    "Art. 13 DSGVO",
-                    "Missing disclosure",
-                    ComplianceAction.ADD,
-                    "en"
-                ),
-                new ComplianceIssue(
-                    "2",
-                    ComplianceCategory.TRANSPARENCY,
-                    "Shared with partner B",
-                    "Art. 13 DSGVO",
-                    "Missing disclosure",
-                    ComplianceAction.ADD,
-                    "en"
-                )
-            );
+            List<ComplianceCategory> categories = List.of(ComplianceCategory.TRANSPARENCY, ComplianceCategory.TRANSPARENCY);
 
-            int score = ComplianceScoreCalculator.calculateLegalScore(issues);
+            int score = ComplianceScoreCalculator.calculateLegalScore(categories);
 
             assertThat(score).isEqualTo(72);
         }
@@ -78,11 +46,8 @@ class ComplianceScoreCalculatorTest {
 
         @Test
         void shouldCalculateCombinedGenderScoreWhenBothAnalysesArePresent() {
-            List<BiasedIssue> original = List.of(issue("en", "team", GenderCategory.INCLUSIVE));
-            List<BiasedIssue> translated = List.of(
-                issue("de", "leader", GenderCategory.NON_INCLUSIVE),
-                issue("de", "supportive", GenderCategory.INCLUSIVE)
-            );
+            List<GenderCategory> original = List.of(GenderCategory.INCLUSIVE);
+            List<GenderCategory> translated = List.of(GenderCategory.NON_INCLUSIVE, GenderCategory.INCLUSIVE);
 
             int score = ComplianceScoreCalculator.calculateGenderScore(original, translated, "text");
 
@@ -91,18 +56,11 @@ class ComplianceScoreCalculatorTest {
 
         @Test
         void shouldCalculateSingleLanguageGenderScoreWhenTranslatedAnalysisIsMissing() {
-            List<BiasedIssue> original = List.of(
-                issue("en", "leader", GenderCategory.NON_INCLUSIVE),
-                issue("en", "supportive", GenderCategory.INCLUSIVE)
-            );
+            List<GenderCategory> original = List.of(GenderCategory.NON_INCLUSIVE, GenderCategory.INCLUSIVE);
 
             int score = ComplianceScoreCalculator.calculateGenderScore(original, null, "text");
 
             assertThat(score).isEqualTo(71);
-        }
-
-        private BiasedIssue issue(String language, String word, GenderCategory type) {
-            return new BiasedIssue(language, word, type);
         }
     }
 }

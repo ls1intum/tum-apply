@@ -1,5 +1,6 @@
 package de.tum.cit.aet.ai.service;
 
+import de.tum.cit.aet.ai.constants.ComplianceCategory;
 import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
@@ -384,14 +385,22 @@ public class AiService {
             complianceIssues = List.of();
         }
 
-        int genderScore = ComplianceScoreCalculator.calculateGenderScore(analysis, translatedAnalysis, text);
-
-        int legalScore = ComplianceScoreCalculator.calculateLegalScore(complianceIssues);
+        int genderScore = ComplianceScoreCalculator.calculateGenderScore(
+            types(analysis), types(translatedAnalysis), text);
+        int legalScore  = ComplianceScoreCalculator.calculateLegalScore(categories(complianceIssues));
         // geometric means
         int combinedScore = (int) Math.round(Math.sqrt((double) genderScore * legalScore));
 
         jobService.updateAiAnalysis(jobId, combinedScore, complianceIssues, analysis, lang);
 
         return complianceIssues;
+    }
+
+    private static List<GenderCategory> types(List<BiasedIssue> issues) {
+        return issues == null ? null : issues.stream().map(BiasedIssue::getType).toList();
+    }
+
+    private static List<ComplianceCategory> categories(List<ComplianceIssue> issues) {
+        return issues == null ? null : issues.stream().map(ComplianceIssue::getCategory).toList();
     }
 }

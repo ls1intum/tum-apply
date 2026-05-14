@@ -1,8 +1,6 @@
 package de.tum.cit.aet.ai.util;
 
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
-import de.tum.cit.aet.ai.domain.BiasedIssue;
-import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.core.constants.GenderCategory;
 import java.util.List;
 
@@ -17,7 +15,7 @@ public final class ComplianceScoreCalculator {
     /**
      * Calculates a legal compliance score based on a hierarchical risk model.
      * * The calculation follows the Gatekeeper-Principle for severe risks and Exponential Decay
-     * for minor issues. If a CRITICAL_AGG violation is detected, the score is immediately 0
+     * for minor issues. If a CRITICAL or DSGVO violation is detected, the score is immediately 0
      * (Veto-Principle), as these represent non-negotiable legal liabilities.
      * * For transparency issues, the score is reduced multiplicatively using the formula
      * S(n) = 100 * 0.85^n. The decay factor of 0.85 is set to trigger a critical
@@ -25,29 +23,44 @@ public final class ComplianceScoreCalculator {
      * marginal quality of the job description. This approach mirrors risk assessment
      * standards like ISO 31000 and prevents negative scores common in linear models.
      *
-     * @param compliance the structured analysis containing identified compliance issues
+     * @param categories the categories of identified compliance issues
      * @return an integer score from 0 to 100 representing legal integrity
      */
-    public static int calculateLegalScore(List<ComplianceIssue> compliance) {
-        if (compliance == null || compliance.isEmpty()) {
+    public static int calculateLegalScore(List<ComplianceCategory> categories) {
+        if (categories == null || categories.isEmpty()) {
             return 100;
         }
 
-        long criticalCount = compliance
+        long criticalCount = categories
             .stream()
-            .filter(i -> ComplianceCategory.CRITICAL_AGG == i.getCategory())
+            .filter(c -> ComplianceCategory.CRITICAL_AGG == c)
+            .count();
+
+        long dsgvoCount = categories
+            .stream()
+            .filter(c -> ComplianceCategory.DSGVO_MINIMIZATION == c)
             .count();
 
         if (criticalCount > 0) {
             return 0;
         }
+        if (dsgvoCount > 0) {
+            return 0;
+        }
 
-        long transparencyCount = compliance
+        long transparencyCount = categories
             .stream()
-            .filter(i -> ComplianceCategory.TRANSPARENCY == i.getCategory())
+            .filter(c -> ComplianceCategory.TRANSPARENCY == c)
             .count();
 
-        double score = 100.0 * Math.pow(PENALTY_FACTOR, transparencyCount);
+        long publicSectorCount = categories
+            .stream()
+            .filter(c -> ComplianceCategory.PUBLIC_SECTOR == c)
+            .count();
+
+        double totalCount = (double) transparencyCount + (double) publicSectorCount;
+
+        double score = 100.0 * Math.pow(PENALTY_FACTOR, totalCount);
         return (int) Math.max(0, Math.round(score));
     }
 
@@ -60,8 +73,8 @@ public final class ComplianceScoreCalculator {
      * @return the combined gender bias score (0-100)
      */
     public static int calculateCombinedScore(
-        List<BiasedIssue> originalAnalysis,
-        List<BiasedIssue> translatedAnalysis,
+        List<GenderCategory> originalAnalysis,
+        List<GenderCategory> translatedAnalysis,
         String originalText
     ) {
         int scoreDE = calculateScore(originalAnalysis, originalText);
@@ -79,7 +92,7 @@ public final class ComplianceScoreCalculator {
      * @param originalText - The original text for score-calculation
      * @return A compiled integer score (0-100) based on the most comprehensive data available.
      */
-    public static int calculateGenderScore(List<BiasedIssue> originalAnalysis, List<BiasedIssue> translatedAnalysis, String originalText) {
+    public static int calculateGenderScore(List<GenderCategory> originalAnalysis, List<GenderCategory> translatedAnalysis, String originalText) {
         // If both language versions are available, the combined version is set.
         if (originalAnalysis != null && translatedAnalysis != null) {
             return calculateCombinedScore(originalAnalysis, translatedAnalysis, originalText);
@@ -109,7 +122,7 @@ public final class ComplianceScoreCalculator {
      * @param originalText - The original text for score-calculation
      * @return An integer between 0 and 100 representing the inclusivity score.
      */
-    public static int calculateScore(List<BiasedIssue> analysis, String originalText) {
+    public static int calculateScore(List<GenderCategory> analysis, String originalText) {
         if (originalText == null || originalText.trim().isEmpty()) {
             return 0;
         }
@@ -120,11 +133,11 @@ public final class ComplianceScoreCalculator {
 
         long inclusiveCount = analysis
             .stream()
-            .filter(issue -> GenderCategory.INCLUSIVE.equals(issue.getType()))
+            .filter(GenderCategory.INCLUSIVE::equals)
             .count();
         long nonInclusiveCount = analysis
             .stream()
-            .filter(issue -> GenderCategory.NON_INCLUSIVE.equals(issue.getType()))
+            .filter(GenderCategory.NON_INCLUSIVE::equals)
             .count();
 
         if (nonInclusiveCount == 0) {
