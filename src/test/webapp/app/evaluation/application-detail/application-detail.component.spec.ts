@@ -12,9 +12,8 @@ import { RejectDTOReasonEnum } from 'app/generated/model/reject-dto';
 import { provideTranslateMock } from 'util/translate.mock';
 import { availableStatusOptions } from 'app/evaluation/filterSortOptions';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { provideToastServiceMock, ToastServiceMock } from '../../../util/toast-service.mock';
+import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../util/toast-service.mock';
 import { provideRouterMock } from '../../../util/router.mock';
-import { ToastService } from 'app/service/toast-service';
 import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
 
 function makeDetailApp(id: string, state: string = ApplicationDetailDTOApplicationStateEnum.Sent): ApplicationEvaluationDetailDTO {
@@ -61,6 +60,7 @@ describe('ApplicationDetailComponent', () => {
     applicationApi = {
       getDocumentIds: vi.fn().mockReturnValue(of(makeDocumentIds())),
     };
+    toastService = createToastServiceMock();
 
     const mockActivatedRoute = createActivatedRouteMock({}, {});
     q$ = mockActivatedRoute.queryParamMapSubject;
@@ -74,13 +74,12 @@ describe('ApplicationDetailComponent', () => {
         provideActivatedRouteMock(mockActivatedRoute),
         provideFontAwesomeTesting(),
         provideTranslateMock(),
-        provideToastServiceMock(),
+        provideToastServiceMock(toastService),
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ApplicationDetailComponent);
     component = fixture.componentInstance;
-    toastService = TestBed.inject(ToastService) as ToastServiceMock;
     router = TestBed.inject(Router);
     fixture.detectChanges();
     await fixture.whenStable();
