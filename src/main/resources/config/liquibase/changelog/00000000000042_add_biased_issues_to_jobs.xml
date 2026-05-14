@@ -20,4 +20,11 @@
     </createTable>
   </changeSet>
 
+  <changeSet id="042b_add_unique_constraint_biased_issues" author="aniruddh">
+    <addUniqueConstraint
+      tableName="job_biased_issues"
+      columnNames="job_id, language, word, type"
+      constraintName="uk_biased_issues_job_lang_word_type"/>
+  </changeSet>
+
 </databaseChangeLog>

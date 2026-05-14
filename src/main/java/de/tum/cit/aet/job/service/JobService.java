@@ -514,7 +514,7 @@ public class JobService {
             return;
         }
         Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        job.setBiasedIssues(new ArrayList<>(jobRepository.findBiasedIssuesByJobId(jobId)));
+        job.setBiasedIssues(new HashSet<>(jobRepository.findBiasedIssuesByJobId(jobId)));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         replaceIssuesForLanguage(job, complianceAnalysis, biasedIssues, lang);
         job.setGenderBiasScore(score);
@@ -541,6 +541,6 @@ public class JobService {
             .filter(issue -> !Objects.equals(issue.getLanguage(), lang))
             .collect(Collectors.toCollection(HashSet::new));
         biasedIssuesToSave.addAll(biasedIssues);
-        job.setBiasedIssues(new ArrayList<>(biasedIssuesToSave));
+        job.setBiasedIssues(biasedIssuesToSave);
     }
 }

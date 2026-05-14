@@ -9,6 +9,7 @@ import de.tum.cit.aet.job.constants.*;
 import de.tum.cit.aet.job.domain.Job;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,7 +51,7 @@ public record JobFormDTO(
         if (job == null) {
             throw new EntityNotFoundException("Cannot convert non-existent Job entity to JobFormDTO");
         }
-        return getFromEntity(job, job.getComplianceIssues(), job.getBiasedIssues());
+        return getFromEntity(job, job.getComplianceIssues(), new ArrayList<>(job.getBiasedIssues()));
     }
 
     /**
