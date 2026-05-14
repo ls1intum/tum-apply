@@ -1796,8 +1796,8 @@ export class JobCreationFormComponent {
    * Defines 4 steps with their templates, navigation buttons, and validation states:
    *
    * 1. Basic Info - Back exits, Next requires basicInfoValid
-   * 2. Position Details - Optional fields, always navigable
-   * 3. Image Selection - Optional, always navigable
+   * 2. Position Details - Disabled until Step 1 is valid
+   * 3. Image Selection - Disabled until Steps 1 and 2 are valid
    * 4. Summary - Shows publish button instead of next
    *
    * @returns Array of StepData objects for the ProgressStepperComponent
@@ -1907,7 +1907,7 @@ export class JobCreationFormComponent {
             changePanel: true,
           },
         ],
-        disabled: !this.positionDetailsValid(),
+        disabled: !(this.basicInfoValid() && this.positionDetailsValid()),
         status: templates.status,
       });
     }
