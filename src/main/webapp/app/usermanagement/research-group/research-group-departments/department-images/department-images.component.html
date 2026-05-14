@@ -30,13 +30,7 @@
           <div class="relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1 group">
             <div class="relative rounded-lg overflow-hidden transition-colors aspect-video">
               <img [src]="image.url" alt="Department image" class="w-full h-full object-cover" />
-              <div
-                class="absolute top-2 right-2"
-                tabindex="0"
-                role="button"
-                (click)="$event.stopPropagation()"
-                (keydown.enter)="$event.stopPropagation()"
-              >
+              <div class="absolute top-2 right-2">
                 <jhi-confirm-dialog
                   #deleteDialogInUse
                   label="button.delete"
@@ -79,13 +73,7 @@
         <div class="relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1 group">
           <div class="relative rounded-lg overflow-hidden transition-colors aspect-video">
             <img [src]="image.url" alt="Department image" class="w-full h-full object-cover" />
-            <div
-              class="absolute top-2 right-2"
-              tabindex="0"
-              role="button"
-              (click)="$event.stopPropagation()"
-              (keydown.enter)="$event.stopPropagation()"
-            >
+            <div class="absolute top-2 right-2">
               <jhi-confirm-dialog
                 #deleteDialog
                 label="button.delete"

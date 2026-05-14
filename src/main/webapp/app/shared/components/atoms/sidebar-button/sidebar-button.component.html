@@ -1,12 +1,10 @@
-<div
+<button
+  type="button"
   (click)="navigate()"
-  (keydown.enter)="navigate()"
-  class="flex h-11 items-center gap-4 px-4 py-3 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
+  class="btn-bare flex h-11 items-center gap-4 px-4 py-3 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
   [class.bg-primary-hover-outlined]="isActive()"
   [class.justify-center]="icon() !== undefined && isCollapsed()"
   [class.w-11]="icon() !== undefined && isCollapsed()"
-  tabindex="0"
-  role="button"
 >
   @if (icon() !== undefined) {
     <fa-icon
@@ -22,4 +20,4 @@
       {{ displayLabel() }}
     </div>
   }
-</div>
+</button>

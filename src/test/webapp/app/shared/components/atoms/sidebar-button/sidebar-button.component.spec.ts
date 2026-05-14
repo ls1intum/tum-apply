@@ -42,8 +42,8 @@ describe('SidebarButtonComponent', () => {
       const navigateSpy = vi.spyOn(router, 'navigate').mockRejectedValue(error);
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      const buttonDiv = fixture.debugElement.query(de => de.nativeElement?.getAttribute?.('role') === 'button');
-      buttonDiv.triggerEventHandler('click', null);
+      const buttonEl = fixture.debugElement.query(de => de.nativeElement?.tagName === 'BUTTON');
+      buttonEl.triggerEventHandler('click', null);
 
       await fixture.whenStable();
 

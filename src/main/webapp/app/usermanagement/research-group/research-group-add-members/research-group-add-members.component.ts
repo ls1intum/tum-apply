@@ -15,6 +15,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
+import { ClickableDirective } from 'app/shared/directives/clickable.directive';
 import { formatFullName } from 'app/shared/util/name.util';
 
 const I18N_BASE = 'researchGroup.members';
@@ -32,6 +33,7 @@ type UserListItem = KeycloakUserDTO & { displayName: string };
     CheckboxComponent,
     InfoBoxComponent,
     UserAvatarComponent,
+    ClickableDirective,
   ],
   templateUrl: './research-group-add-members.component.html',
 })
