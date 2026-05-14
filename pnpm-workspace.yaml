@@ -1,3 +1,7 @@
+nodeLinker: hoisted
+preferFrozenLockfile: true
+autoInstallPeers: true
+strictPeerDependencies: false
 allowBuilds:
   '@parcel/watcher': true
   '@scarf/scarf': true
