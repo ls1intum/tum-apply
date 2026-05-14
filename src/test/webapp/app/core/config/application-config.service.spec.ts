@@ -23,7 +23,14 @@ describe('ApplicationConfigService', () => {
   describe('setAppConfig & getAppConfig', () => {
     it('should store a frozen clone and not the original reference', () => {
       const input = {
-        keycloak: { url: 'http://kc', realm: 'tumapply', clientId: 'client' },
+        keycloak: {
+          url: 'http://kc',
+          tumLoginRealm: 'tumidpldap',
+          externalLoginRealm: 'external-login',
+          clientId: 'client',
+          relyingPartyId: 'localhost',
+          externalRelyingPartyId: 'external.localhost',
+        },
         otp: { length: 3, ttlSeconds: 120, resendCooldownSeconds: 30 },
       };
 
@@ -40,8 +47,26 @@ describe('ApplicationConfigService', () => {
     });
 
     it('should override previous config on subsequent calls', () => {
-      service.setAppConfig({ keycloak: { url: 'first', realm: 'r', clientId: 'c' } });
-      service.setAppConfig({ keycloak: { url: 'second', realm: 'r', clientId: 'c' } });
+      service.setAppConfig({
+        keycloak: {
+          url: 'first',
+          tumLoginRealm: 'tum',
+          externalLoginRealm: 'ext',
+          clientId: 'c',
+          relyingPartyId: '',
+          externalRelyingPartyId: '',
+        },
+      });
+      service.setAppConfig({
+        keycloak: {
+          url: 'second',
+          tumLoginRealm: 'tum',
+          externalLoginRealm: 'ext',
+          clientId: 'c',
+          relyingPartyId: '',
+          externalRelyingPartyId: '',
+        },
+      });
       expect(service.getAppConfig().keycloak?.url).toBe('second');
     });
   });
@@ -50,24 +75,52 @@ describe('ApplicationConfigService', () => {
     it('should return same defaults when sub-objects are missing', () => {
       service.setAppConfig({});
 
-      expect(service.keycloak).toEqual({ url: '', realm: '', clientId: '' });
+      expect(service.keycloak).toEqual({
+        url: '',
+        tumLoginRealm: '',
+        externalLoginRealm: '',
+        clientId: '',
+        relyingPartyId: '',
+        externalRelyingPartyId: '',
+      });
       expect(service.otp).toEqual({ length: 4, ttlSeconds: 300, resendCooldownSeconds: 60 });
     });
 
     it('should return provided values when present', () => {
       service.setAppConfig({
-        keycloak: { url: 'http://kc', realm: 'tum', clientId: 'cli' },
+        keycloak: {
+          url: 'http://kc',
+          tumLoginRealm: 'tumidpldap',
+          externalLoginRealm: 'external-login',
+          clientId: 'cli',
+          relyingPartyId: 'apply.in.tum.de',
+          externalRelyingPartyId: 'apply.external.tum.de',
+        },
         otp: { length: 8, ttlSeconds: 600, resendCooldownSeconds: 120 },
       });
 
-      expect(service.keycloak).toEqual({ url: 'http://kc', realm: 'tum', clientId: 'cli' });
+      expect(service.keycloak).toEqual({
+        url: 'http://kc',
+        tumLoginRealm: 'tumidpldap',
+        externalLoginRealm: 'external-login',
+        clientId: 'cli',
+        relyingPartyId: 'apply.in.tum.de',
+        externalRelyingPartyId: 'apply.external.tum.de',
+      });
       expect(service.otp).toEqual({ length: 8, ttlSeconds: 600, resendCooldownSeconds: 120 });
     });
   });
 
   it('mutating getter results must not change stored config', () => {
     service.setAppConfig({
-      keycloak: { url: 'A', realm: 'R', clientId: 'C' },
+      keycloak: {
+        url: 'A',
+        tumLoginRealm: 'tum',
+        externalLoginRealm: 'ext',
+        clientId: 'C',
+        relyingPartyId: '',
+        externalRelyingPartyId: '',
+      },
       otp: { length: 7, ttlSeconds: 111, resendCooldownSeconds: 22 },
     });
 

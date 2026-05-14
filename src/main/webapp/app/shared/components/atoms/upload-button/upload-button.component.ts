@@ -344,6 +344,11 @@ export class UploadButtonComponent {
    * the callback rejects (user cancelled / validation failed upstream).
    */
   private async ensureAuthenticated(): Promise<boolean> {
+    // In deferred mode the file pick never reaches this component's upload paths — the parent
+    // owns the upload step and is responsible for whatever auth model that flow needs.
+    if (this.deferUpload()) {
+      return true;
+    }
     if (this.uploadTarget() === 'applicantProfile') {
       return true;
     }

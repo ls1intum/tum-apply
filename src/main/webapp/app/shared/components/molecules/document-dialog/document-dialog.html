@@ -31,7 +31,7 @@
               (keydown.space)="selectDoc(item.document.id); $event.preventDefault()"
             >
               @if (item.shouldTranslateLabel) {
-                <span class="block truncate" [jhiTranslate]="item.label"></span>
+                <span class="block truncate" [jhiTranslate]="item.label" [translateValues]="item.labelParams ?? {}"></span>
               } @else {
                 <span class="block truncate">{{ item.label }}</span>
               }

@@ -154,7 +154,7 @@ export class ApplicationResourceApi {
      * @param documentType 
      * @param files List of documents to upload
      */
-    uploadDocuments(applicationId: string, documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Blob): Observable<Array<DocumentInformationHolderDTO>> {
+    uploadDocuments(applicationId: string, documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'REFERENCE_LETTER' | 'CV' | 'CUSTOM', files?: Blob): Observable<Array<DocumentInformationHolderDTO>> {
         const applicationIdPath = encodeURIComponent(String(applicationId));
         const documentTypePath = encodeURIComponent(String(documentType));
         const url = `${this.basePath}/api/applications/${applicationIdPath}/documents/${documentTypePath}`;

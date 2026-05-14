@@ -1,25 +1,26 @@
-<div class="px-4 pt-4 pb-2">
-  <div class="flex flex-col mx-auto w-full max-w-72 gap-4 lg:mx-0">
-    <div class="flex flex-col ai-score-block gap-4">
-      <div class="flex justify-center ai-score-ring-wrapper" [class.opacity-50]="isScoreLoading() && displayedScore() !== undefined">
-        <jhi-ai-score-ring [score]="displayedScore()" [isLoading]="isScoreLoading()" />
-      </div>
+<div class="px-4 pt-2 pb-2">
+  <div class="flex flex-col mx-auto w-full max-w-72 gap-3 lg:mx-0">
+    <div class="flex flex-col ai-score-block gap-2">
+      <div class="flex mx-auto w-fit items-center justify-center gap-2">
+        <div class="flex shrink-0" [class.opacity-50]="isScoreLoading() && displayedScore() !== undefined">
+          <jhi-ai-score-ring [score]="displayedScore()" [isLoading]="isScoreLoading()" />
+        </div>
 
-      <div class="flex items-center justify-center gap-2 lg:justify-start">
-        <h3
-          class="m-0 text-base font-semibold text-text-secondary text-center lg:text-left"
-          jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiScoreTitle"
-        ></h3>
-        <jhi-info-icon
-          [clickable]="true"
-          size="sm"
-          ariaLabel="jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.title"
-          [shouldTranslate]="true"
-          (clicked)="openScoreDialog()"
-        />
+        <div class="flex items-center gap-2">
+          <h3
+            class="m-0 text-base font-semibold text-text-secondary"
+            jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiScoreTitle"
+          ></h3>
+          <jhi-info-icon
+            [clickable]="true"
+            ariaLabel="jobCreationForm.positionDetailsSection.jobDescription.aiScoreDialog.title"
+            [shouldTranslate]="true"
+            (clicked)="openScoreDialog()"
+          />
+        </div>
       </div>
       <!-- Inclusivity feedback text -->
-      <p class="mt-1.5 mb-0 text-sm leading-6 text-text-tertiary text-center lg:text-left" [jhiTranslate]="scoreFeedback()"></p>
+      <p class="mt-0 mb-0 text-sm leading-6 text-text-tertiary text-center lg:text-left" [jhiTranslate]="scoreFeedback()"></p>
     </div>
 
     <hr class="m-0 w-full border-0 border-t border-border-default opacity-70" />

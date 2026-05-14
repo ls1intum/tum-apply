@@ -15,6 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { PublicConfigDTO } from '../model/public-config-dto';
 
 @Injectable({ providedIn: 'root' })
 export class PublicConfigResourceApi {
@@ -25,9 +26,9 @@ export class PublicConfigResourceApi {
      * 
      * 
      */
-    config(): Observable<{ [key: string]: any; }> {
+    config(): Observable<PublicConfigDTO> {
         const url = `${this.basePath}/api/public/config`;
-        return this.http.get<{ [key: string]: any; }>(url);
+        return this.http.get<PublicConfigDTO>(url);
     }
 
 }
