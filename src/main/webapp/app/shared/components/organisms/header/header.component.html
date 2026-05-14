@@ -1,5 +1,5 @@
 <header
-  class="flex items-center justify-between gap-1 sm:gap-0 px-0 sm:px-6 sticky top-0 z-20 overflow-x-auto h-12 border-b transition-colors duration-300"
+  class="flex items-center justify-between gap-2 px-3 sm:px-6 sticky top-0 z-20 h-12 border-b transition-colors duration-300"
   [class.border-border-default]="showBorder()"
   [class.border-transparent]="!showBorder()"
   [class.shadow-sm]="showBorder()"
@@ -16,97 +16,22 @@
     }
   </a>
 
-  <div class="flex items-center gap-1 flex-shrink-0">
-    <div class="flex items-center gap-1 sm:mr-2">
-      @for (language of languages; track language; let isLast = $last) {
-        <button
-          type="button"
-          (click)="toggleLanguage(language)"
-          class="text-primary-default cursor-pointer hover:underline"
-          [class.font-bold]="currentLanguage() === language"
-        >
-          {{ language.toUpperCase() }}
-        </button>
-        @if (!isLast) {
-          <span class="text-primary-default">|</span>
-        }
-      }
-    </div>
-
-    <div class="relative -mx-1">
-      <jhi-button
-        class="[&_.p-button]:w-8 [&_.p-button]:h-8 [&_.p-button]:rounded-md"
-        (click)="toggleTheme()"
-        [icon]="themeIcon()"
-        [tooltip]="themeTooltip()"
-        variant="text"
-        severity="primary"
-      />
-    </div>
+  <!-- Desktop action cluster: shown from md (≥ 768px) upwards. -->
+  <div class="hidden md:flex items-center gap-1 flex-shrink-0">
+    <ng-container *ngTemplateOutlet="languageSwitcher; context: { vertical: false }" />
+    <ng-container *ngTemplateOutlet="themeToggle" />
 
     @if (user() === undefined) {
-      @if (isProfessorPage()) {
-        <span class="hidden sm:inline-flex">
-          <jhi-button
-            [class]="headerButtonClass"
-            (click)="redirectToApplicantLandingPage()"
-            label="header.applicant"
-            severity="primary"
-            variant="text"
-          />
-        </span>
-        <span class="inline-flex sm:hidden">
-          <jhi-button
-            [class]="headerButtonClass"
-            (click)="redirectToApplicantLandingPage()"
-            label="header.applicantShort"
-            severity="primary"
-            variant="text"
-          />
-        </span>
-      } @else {
-        <span class="hidden sm:inline-flex">
-          <jhi-button
-            [class]="headerButtonClass"
-            (click)="redirectToProfessorLandingPage()"
-            label="header.professor"
-            severity="primary"
-            variant="text"
-          />
-        </span>
-        <span class="inline-flex sm:hidden">
-          <jhi-button
-            [class]="headerButtonClass"
-            (click)="redirectToProfessorLandingPage()"
-            label="header.professorShort"
-            severity="primary"
-            variant="text"
-          />
-        </span>
-      }
-
+      <ng-container *ngTemplateOutlet="portalSwitch; context: { vertical: false }" />
       <div class="h-4 mx-0.5 w-px bg-primary-default self-center"></div>
-
-      <span class="hidden sm:inline-flex">
-        <jhi-button
-          [class]="headerButtonClass"
-          (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
-          [label]="isProfessorPage() ? 'auth.passkey.buttons.professorPasskey' : 'auth.passkey.buttons.passkey'"
-          icon="key"
-          severity="primary"
-          variant="text"
-        />
-      </span>
-      <span class="inline-flex sm:hidden">
-        <jhi-button
-          [class]="headerButtonClass"
-          (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
-          [label]="isProfessorPage() ? 'auth.passkey.buttons.professorPasskeyShort' : 'auth.passkey.buttons.passkeyShort'"
-          severity="primary"
-          variant="text"
-        />
-      </span>
-
+      <jhi-button
+        [class]="headerButtonClass"
+        (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
+        [label]="isProfessorPage() ? 'auth.passkey.buttons.professorPasskey' : 'auth.passkey.buttons.passkey'"
+        icon="key"
+        severity="primary"
+        variant="text"
+      />
       <jhi-button
         [class]="headerButtonClass"
         (click)="login()"
@@ -137,4 +62,131 @@
       </div>
     }
   </div>
+
+  <!-- Mobile burger trigger: shown below md. -->
+  <button
+    type="button"
+    class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-md text-text-primary hover:bg-primary-hover-outlined transition-colors"
+    (click)="mobileMenuOpen.set(true)"
+    [attr.aria-label]="mobileMenuLabel()"
+    aria-haspopup="dialog"
+    [attr.aria-expanded]="mobileMenuOpen()"
+  >
+    <fa-icon icon="bars" class="text-lg" />
+  </button>
 </header>
+
+<!-- Mobile navigation drawer: contains the same actions stacked vertically. -->
+<p-drawer
+  [visible]="mobileMenuOpen()"
+  (visibleChange)="mobileMenuOpen.set($event)"
+  position="right"
+  styleClass="!w-72 max-w-[85vw]"
+  [showCloseIcon]="true"
+  [dismissible]="true"
+  [modal]="true"
+>
+  <ng-template #header>
+    <span class="text-base font-semibold text-text-primary" jhiTranslate="header.menu"></span>
+  </ng-template>
+
+  <div class="flex flex-col gap-4 pt-2">
+    @if (user(); as currentUser) {
+      <div class="flex items-center gap-3 p-2 rounded-md bg-background-surface">
+        <jhi-user-avatar [fullName]="currentUser.name" [avatarUrl]="currentUser.avatar" />
+        <span class="font-medium text-text-primary truncate">{{ currentUser.name }}</span>
+      </div>
+    }
+
+    <div class="flex items-center justify-between">
+      <span class="text-sm text-text-secondary" jhiTranslate="header.language"></span>
+      <ng-container *ngTemplateOutlet="languageSwitcher; context: { vertical: true }" />
+    </div>
+
+    <div class="flex items-center justify-between">
+      <span class="text-sm text-text-secondary" jhiTranslate="header.theme"></span>
+      <ng-container *ngTemplateOutlet="themeToggle" />
+    </div>
+
+    @if (user() === undefined) {
+      <div class="border-t border-border-default pt-3 flex flex-col gap-2">
+        <ng-container *ngTemplateOutlet="portalSwitch; context: { vertical: true }" />
+        <jhi-button
+          (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
+          [label]="isProfessorPage() ? 'auth.passkey.buttons.professorPasskey' : 'auth.passkey.buttons.passkey'"
+          icon="key"
+          severity="primary"
+          variant="outlined"
+          [fullWidth]="true"
+        />
+        <jhi-button (click)="login()" label="header.login" severity="primary" [fullWidth]="true" classStyling="font-bold" />
+      </div>
+    } @else {
+      <div class="border-t border-border-default pt-3 flex flex-col gap-2">
+        <jhi-button
+          (click)="navigateToSettings()"
+          label="header.settings"
+          icon="gear"
+          severity="primary"
+          variant="outlined"
+          [fullWidth]="true"
+        />
+        <jhi-button (click)="logout()" label="header.logout" icon="right-from-bracket" severity="danger" [fullWidth]="true" />
+      </div>
+    }
+  </div>
+</p-drawer>
+
+<!-- Shared snippets reused in both the desktop header and the mobile drawer. -->
+<ng-template #languageSwitcher let-vertical="vertical">
+  <div [class]="vertical ? 'flex items-center gap-1' : 'flex items-center gap-1 sm:mr-2'">
+    @for (language of languages; track language; let isLast = $last) {
+      <button
+        type="button"
+        (click)="toggleLanguage(language)"
+        class="text-primary-default cursor-pointer hover:underline"
+        [class.font-bold]="currentLanguage() === language"
+      >
+        {{ language.toUpperCase() }}
+      </button>
+      @if (!isLast) {
+        <span class="text-primary-default">|</span>
+      }
+    }
+  </div>
+</ng-template>
+
+<ng-template #themeToggle>
+  <div class="relative -mx-1">
+    <jhi-button
+      class="[&_.p-button]:w-8 [&_.p-button]:h-8 [&_.p-button]:rounded-md"
+      (click)="toggleTheme()"
+      [icon]="themeIcon()"
+      [tooltip]="themeTooltip()"
+      variant="text"
+      severity="primary"
+    />
+  </div>
+</ng-template>
+
+<ng-template #portalSwitch let-vertical="vertical">
+  @if (isProfessorPage()) {
+    <jhi-button
+      [class]="vertical ? '' : headerButtonClass"
+      (click)="redirectToApplicantLandingPage()"
+      label="header.applicant"
+      severity="primary"
+      [variant]="vertical ? 'outlined' : 'text'"
+      [fullWidth]="vertical"
+    />
+  } @else {
+    <jhi-button
+      [class]="vertical ? '' : headerButtonClass"
+      (click)="redirectToProfessorLandingPage()"
+      label="header.professor"
+      severity="primary"
+      [variant]="vertical ? 'outlined' : 'text'"
+      [fullWidth]="vertical"
+    />
+  }
+</ng-template>

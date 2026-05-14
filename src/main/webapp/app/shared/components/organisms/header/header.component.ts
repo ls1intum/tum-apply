@@ -17,6 +17,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, map } from 'rxjs';
+import { DrawerModule } from 'primeng/drawer';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
@@ -34,7 +35,16 @@ import { UserAvatarComponent } from '../../atoms/user-avatar/user-avatar.compone
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, FontAwesomeModule, DynamicDialogModule, TranslateDirective, MenuComponent, UserAvatarComponent],
+  imports: [
+    CommonModule,
+    ButtonComponent,
+    FontAwesomeModule,
+    DrawerModule,
+    DynamicDialogModule,
+    TranslateDirective,
+    MenuComponent,
+    UserAvatarComponent,
+  ],
   templateUrl: './header.component.html',
   encapsulation: ViewEncapsulation.None,
 })
@@ -68,6 +78,10 @@ export class HeaderComponent {
   profileMenuAriaLabel = computed(() => {
     this.langChange();
     return this.translateService.instant('header.profileMenu');
+  });
+  mobileMenuLabel = computed(() => {
+    this.langChange();
+    return this.translateService.instant('header.menuToggle');
   });
   themeOptions: SelectOption[] = [
     { name: 'Light', value: 'light' },
@@ -111,6 +125,7 @@ export class HeaderComponent {
 
   profileMenu = viewChild<MenuComponent>('profileMenu');
   isProfileMenuOpen = signal(false);
+  mobileMenuOpen = signal(false);
 
   profileMenuItems = computed<JhiMenuItem[]>(() => {
     this.currentLanguage();
@@ -157,6 +172,8 @@ export class HeaderComponent {
       )
       .subscribe(() => {
         this.observer?.disconnect();
+        // Close the mobile drawer when the user navigates away.
+        this.mobileMenuOpen.set(false);
         // Give the banner component time to render
         setTimeout(() => {
           this.setupBannerObserver();

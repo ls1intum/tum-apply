@@ -340,4 +340,17 @@ describe('HeaderComponent', () => {
       expect(themeService.theme()).toBe(target);
     });
   });
+
+  describe('mobile drawer', () => {
+    it('should start with the mobile drawer closed', () => {
+      expect(component.mobileMenuOpen()).toBe(false);
+    });
+
+    it('should close the mobile drawer on NavigationEnd', () => {
+      component.mobileMenuOpen.set(true);
+      router.events.next(new NavigationEnd(1, '/jobs', '/jobs'));
+
+      expect(component.mobileMenuOpen()).toBe(false);
+    });
+  });
 });
