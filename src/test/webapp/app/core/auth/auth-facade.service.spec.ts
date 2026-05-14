@@ -201,6 +201,39 @@ describe('AuthFacadeService', () => {
       expect(account.user.set).toHaveBeenCalledTimes(2);
     });
 
+    it.each([
+      { role: 'PROFESSOR', expected: '/professor' },
+      { role: 'EMPLOYEE', expected: '/professor' },
+      { role: 'ADMIN', expected: '/professor' },
+      { role: 'APPLICANT', expected: '/' },
+    ])('should redirect $role to $expected on server logout', async ({ role, expected }) => {
+      const { facade, account, router } = setup();
+      (facade as unknown as AuthFacadeInternals).authMethod = 'server';
+      account.user.set({ id: 'id-x', name: 'User', email: 'user@test.com', authorities: [role] });
+      account.loaded.set(true);
+
+      await facade.logout();
+
+      expect(router.navigate).toHaveBeenCalledWith([expected]);
+    });
+
+    it.each([
+      { role: 'PROFESSOR', expectedSuffix: '/professor' },
+      { role: 'EMPLOYEE', expectedSuffix: '/professor' },
+      { role: 'ADMIN', expectedSuffix: '/professor' },
+      { role: 'APPLICANT', expectedSuffix: '/' },
+    ])('should hand $expectedSuffix to keycloak for $role logout', async ({ role, expectedSuffix }) => {
+      const { facade, keycloak, account } = setup();
+      (facade as unknown as AuthFacadeInternals).authMethod = 'keycloak';
+      account.user.set({ id: 'id-x', name: 'User', email: 'user@test.com', authorities: [role] });
+      account.loaded.set(true);
+
+      await facade.logout();
+
+      expect(keycloak.logout).toHaveBeenCalledOnce();
+      expect(keycloak.logout).toHaveBeenCalledWith(window.location.origin + expectedSuffix);
+    });
+
     it('does nothing when authMethod is none and sessionExpired is false', async () => {
       const { facade, server, keycloak, docCache, router } = setup();
 
