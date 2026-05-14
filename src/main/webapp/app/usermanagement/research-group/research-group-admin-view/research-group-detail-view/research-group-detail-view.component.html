@@ -9,8 +9,8 @@
     <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" [disabled]="!form.valid || isSaving()" (click)="onSave()" />
   </div>
 
-  <div class="body">
-    <div class="card-body">
+  <div>
+    <div>
       @if (!isLoading()) {
         <form [formGroup]="form">
           <div class="form-group">
