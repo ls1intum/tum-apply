@@ -13,6 +13,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -119,5 +120,5 @@ public class Job extends AbstractAuditingEntity {
 
     @ElementCollection
     @CollectionTable(name = "job_biased_issues", joinColumns = @JoinColumn(name = "job_id"))
-    private List<BiasedIssue> biasedIssues = new ArrayList<>();
+    private Set<BiasedIssue> biasedIssues = new HashSet<>();
 }

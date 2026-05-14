@@ -37,6 +37,7 @@ import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -405,7 +406,7 @@ class JobResourceTest extends AbstractResourceTest {
                     )
                 )
             );
-            job.setBiasedIssues(List.of(new BiasedIssue("en", "leader", GenderCategory.NON_INCLUSIVE)));
+            job.setBiasedIssues(Set.of(new BiasedIssue("en", "leader", GenderCategory.NON_INCLUSIVE)));
             jobRepository.saveAndFlush(job);
 
             JobFormDTO updatedPayload = new JobFormDTO(
