@@ -49,6 +49,7 @@ import ApplicationCreationPage1Component, {
   getPage1FromApplication,
 } from '../application-creation-page1/application-creation-page1.component';
 import ApplicationCreationReferencesComponent from '../application-creation-references/application-creation-references.component';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 
 const applyflow = 'entity.toast.applyFlow';
 
@@ -70,6 +71,7 @@ const applyflow = 'entity.toast.applyFlow';
     TranslateDirective,
     MessageComponent,
     SavingBadgeComponent,
+    CheckboxComponent,
   ],
   templateUrl: './application-creation-form.component.html',
   providers: [DialogService],
