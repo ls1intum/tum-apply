@@ -4,10 +4,12 @@ import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { ServerAuthenticationService } from 'app/core/auth/server-authentication.service';
 import { IdpProvider, KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
+import { KeycloakRealmKind } from 'app/core/auth/keycloak-authentication.utils';
 import { DocumentCacheService } from 'app/service/document-cache.service';
 import { createKeycloakMock, provideKeycloakMock } from 'util/keycloak.mock';
 import { vi } from 'vitest';
 import { provideMessageServiceMock } from 'util/message-service.mock';
+import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { provideTranslateMock } from 'util/translate.mock';
 import {
   AuthOrchestratorServiceMock,
@@ -22,7 +24,12 @@ function setup() {
   const server = { refreshTokens: vi.fn(), login: vi.fn(), sendOtp: vi.fn(), verifyOtp: vi.fn(), logout: vi.fn() };
   const keycloak = Object.assign(createKeycloakMock(), {
     init: vi.fn(),
+    isLoggedIn: vi.fn(function (this: { authenticated: boolean }) {
+      return this.authenticated;
+    }),
     loginWithProvider: vi.fn(),
+    loginWithPasskey: vi.fn(),
+    registerPasskey: vi.fn(),
     logout: vi.fn(),
   });
   const account: AccountServiceMock = createAccountServiceMock();
@@ -30,6 +37,7 @@ function setup() {
   const orchestrator: AuthOrchestratorServiceMock = createAuthOrchestratorServiceMock();
   const docCache = { clear: vi.fn() };
   const router: RouterMock = createRouterMock();
+  const toast = createToastServiceMock();
 
   TestBed.configureTestingModule({
     providers: [
@@ -41,20 +49,22 @@ function setup() {
       provideAuthOrchestratorServiceMock(orchestrator),
       provideRouterMock(router),
       provideMessageServiceMock(),
+      provideToastServiceMock(toast),
       provideTranslateMock(),
     ],
   });
   const facade = TestBed.inject(AuthFacadeService);
-  return { facade, server, keycloak, account, orchestrator, docCache, router };
+  return { facade, server, keycloak, account, orchestrator, docCache, router, toast };
 }
 
 describe('AuthFacadeService', () => {
   afterEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
   });
 
   describe('initAuth', () => {
-    it('server success', async () => {
+    it('should succeed via server auth', async () => {
       const { facade, server, account } = setup();
       server.refreshTokens.mockResolvedValue(true);
       account.loadUser.mockResolvedValue(undefined);
@@ -64,7 +74,7 @@ describe('AuthFacadeService', () => {
       expect(account.loadUser).toHaveBeenCalledOnce();
     });
 
-    it('keycloak fallback success', async () => {
+    it('should succeed via keycloak fallback', async () => {
       const { facade, server, keycloak, account } = setup();
       server.refreshTokens.mockResolvedValue(false);
       keycloak.init.mockResolvedValue(true);
@@ -74,7 +84,33 @@ describe('AuthFacadeService', () => {
       expect(keycloak.init).toHaveBeenCalledOnce();
     });
 
-    it('none returns false', async () => {
+    it('should retry loading the user once after keycloak bootstrap when the first load is empty', async () => {
+      const { facade, server, keycloak, account } = setup();
+      server.refreshTokens.mockResolvedValue(false);
+      keycloak.init.mockResolvedValue(true);
+      keycloak.authenticated = true;
+      account.user.set(undefined);
+      account.loadUser.mockImplementation(async () => {
+        if (account.loadUser.mock.calls.length === 1) {
+          account.user.set(undefined);
+          return;
+        }
+        account.user.set({
+          id: 'u1',
+          name: 'First Login User',
+          email: 'first@login.test',
+          authorities: ['ROLE_USER'],
+        });
+      });
+
+      const result = await facade.initAuth();
+
+      expect(result).toBe(true);
+      expect(account.loadUser).toHaveBeenCalledTimes(2);
+      expect(account.user()?.email).toBe('first@login.test');
+    });
+
+    it('should return false when neither auth method succeeds', async () => {
       const { facade, server, keycloak } = setup();
       server.refreshTokens.mockResolvedValue(false);
       keycloak.init.mockResolvedValue(false);
@@ -109,7 +145,7 @@ describe('AuthFacadeService', () => {
   });
 
   describe('loginWithEmail', () => {
-    it('success triggers nextStep and authSuccess', async () => {
+    it('should trigger nextStep and authSuccess on success', async () => {
       const { facade, server, account, orchestrator } = setup();
       server.login.mockResolvedValue(undefined);
       account.loadUser.mockResolvedValue(undefined);
@@ -119,7 +155,7 @@ describe('AuthFacadeService', () => {
       expect(orchestrator.nextStep).toHaveBeenCalledOnce();
     });
 
-    it('error surfaces orchestrator error', async () => {
+    it('should surface orchestrator error when login fails', async () => {
       const { facade, server, orchestrator } = setup();
       const setErrorSpy = vi.spyOn(orchestrator, 'setError');
       server.login.mockRejectedValue(new Error('bad'));
@@ -129,7 +165,7 @@ describe('AuthFacadeService', () => {
   });
 
   describe('requestOtp', () => {
-    it('success advances step', async () => {
+    it('should advance step on success', async () => {
       const { facade, server, orchestrator } = setup();
       server.sendOtp.mockResolvedValue(undefined);
       orchestrator.email.set('user@example.com');
@@ -142,7 +178,7 @@ describe('AuthFacadeService', () => {
   });
 
   describe('verifyOtp', () => {
-    it('login path success', async () => {
+    it('should complete login path successfully', async () => {
       const { facade, server, account, orchestrator } = setup();
       server.verifyOtp.mockResolvedValue({ profileRequired: false });
       account.loadUser.mockResolvedValue(undefined);
@@ -152,7 +188,7 @@ describe('AuthFacadeService', () => {
       expect(orchestrator.authSuccess).toHaveBeenCalledTimes(2);
     });
 
-    it('registration path with profile required advances step', async () => {
+    it('should advance step for registration path when profile is required', async () => {
       const { facade, server, orchestrator, account } = setup();
       server.verifyOtp.mockResolvedValue({ profileRequired: true });
       account.loadUser.mockResolvedValue(undefined);
@@ -165,7 +201,7 @@ describe('AuthFacadeService', () => {
   });
 
   describe('loginWithProvider', () => {
-    it('delegates to keycloak', async () => {
+    it('should delegate provider login to keycloak', async () => {
       const { facade, keycloak } = setup();
       keycloak.loginWithProvider.mockResolvedValue(undefined);
       await facade.loginWithProvider('google' as IdpProvider, '/home');
@@ -174,8 +210,51 @@ describe('AuthFacadeService', () => {
     });
   });
 
+  describe('loginWithPasskey', () => {
+    it('should store an explicit redirect URI and delegate to keycloak', async () => {
+      const { facade, keycloak, orchestrator, account } = setup();
+      keycloak.loginWithPasskey.mockResolvedValue(undefined);
+      account.loadUser.mockResolvedValue(undefined);
+      const authSuccessSpy = vi.spyOn(orchestrator, 'authSuccess');
+
+      await facade.loginWithPasskey(KeycloakRealmKind.External, '/jobs/123');
+
+      expect(orchestrator.redirectUri()).toBe('/jobs/123');
+      expect(keycloak.loginWithPasskey).toHaveBeenCalledWith(KeycloakRealmKind.External, '/jobs/123');
+      expect(keycloak.loginWithPasskey).toHaveBeenCalledOnce();
+      expect(account.loadUser).toHaveBeenCalledOnce();
+      expect(authSuccessSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should reuse the existing redirect URI when none is provided', async () => {
+      const { facade, keycloak, orchestrator, account } = setup();
+      keycloak.loginWithPasskey.mockResolvedValue(undefined);
+      account.loadUser.mockResolvedValue(undefined);
+      const authSuccessSpy = vi.spyOn(orchestrator, 'authSuccess');
+      orchestrator.redirectUri.set('/dashboard');
+
+      await facade.loginWithPasskey(KeycloakRealmKind.External);
+
+      expect(keycloak.loginWithPasskey).toHaveBeenCalledWith(KeycloakRealmKind.External, '/dashboard');
+      expect(account.loadUser).toHaveBeenCalledOnce();
+      expect(authSuccessSpy).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('registerPasskey', () => {
+    it('should delegate passkey registration to keycloak and show a success toast', async () => {
+      const { facade, keycloak, toast } = setup();
+      keycloak.registerPasskey.mockResolvedValue(undefined);
+
+      await facade.registerPasskey();
+
+      expect(keycloak.registerPasskey).toHaveBeenCalledOnce();
+      expect(toast.showSuccessKey).toHaveBeenCalledWith('auth.common.toast.passkeyRegistered');
+    });
+  });
+
   describe('logout', () => {
-    it('server path', async () => {
+    it('should logout via server path', async () => {
       const { facade, server, account, router, docCache } = setup();
       (facade as unknown as AuthFacadeInternals).authMethod = 'server';
       account.user.set({ id: 'id-2', name: 'User', email: 'user@test.com', authorities: ['PROFESSOR'] });
@@ -190,7 +269,7 @@ describe('AuthFacadeService', () => {
       expect(account.user.set).toHaveBeenCalledTimes(2);
     });
 
-    it('keycloak path', async () => {
+    it('should logout via keycloak path', async () => {
       const { facade, keycloak, account, docCache } = setup();
       (facade as unknown as AuthFacadeInternals).authMethod = 'keycloak';
       account.user.set({ id: 'id-2', name: 'User', email: 'user@test.com', authorities: ['ROLE_USER'] });
@@ -234,7 +313,7 @@ describe('AuthFacadeService', () => {
       expect(keycloak.logout).toHaveBeenCalledWith(window.location.origin + expectedSuffix);
     });
 
-    it('does nothing when authMethod is none and sessionExpired is false', async () => {
+    it('should do nothing when authMethod is none and sessionExpired is false', async () => {
       const { facade, server, keycloak, docCache, router } = setup();
 
       await facade.logout(false);
@@ -245,7 +324,7 @@ describe('AuthFacadeService', () => {
       expect(router.navigate).not.toHaveBeenCalled();
     });
 
-    it('does nothing when authMethod is none and sessionExpired is true', async () => {
+    it('should handle sessionExpired logout when authMethod is none', async () => {
       const { facade, account, router, docCache } = setup();
       account.user.set({
         id: 'id-3',
@@ -261,7 +340,7 @@ describe('AuthFacadeService', () => {
   });
 
   describe('runAuthAction', () => {
-    it('throws when busy', async () => {
+    it('should throw when busy', async () => {
       const { facade, orchestrator } = setup();
       orchestrator.isBusy.set(true);
       await expect(facade.loginWithEmail('a', 'b')).rejects.toThrow('AuthOrchestrator is busy');

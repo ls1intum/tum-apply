@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { ServerAuthenticationService } from './server-authentication.service';
 import { IdpProvider, KeycloakAuthenticationService } from './keycloak-authentication.service';
+import { KeycloakRealmKind } from './keycloak-authentication.utils';
 import { AccountService } from './account.service';
 import { AuthOrchestratorService } from './auth-orchestrator.service';
 
@@ -97,6 +98,9 @@ export class AuthFacadeService {
       }
       if (keycloakInitialized) {
         await this.accountService.loadUser();
+        if (this.accountService.user() === undefined && this.keycloakAuthenticationService.isLoggedIn()) {
+          await this.accountService.loadUser();
+        }
         if (this.hasActiveAuthMethod()) {
           return true;
         }
@@ -202,6 +206,50 @@ export class AuthFacadeService {
     );
   }
 
+  // --------------- Passkey ---------------
+  /**
+   * Logs in via WebAuthn passkey on Keycloak.
+   * Note: This passkey flow needs a custom Keycloak SPI endpoint and won't work with a standard Keycloak setup out-of-the-box.
+   * @param realmKind target keycloak realm for passkey authentication
+   * @param redirectUri optional post-login redirect URI to be set before initiating the flow
+   */
+  async loginWithPasskey(realmKind: KeycloakRealmKind, redirectUri?: string): Promise<void> {
+    if (redirectUri !== undefined && redirectUri.trim() !== '') {
+      this.authOrchestrator.redirectUri.set(redirectUri);
+    }
+    return this.runAuthAction(
+      async () => {
+        await this.keycloakAuthenticationService.loginWithPasskey(realmKind, this.authOrchestrator.redirectUri() ?? undefined);
+        this.authMethod = 'keycloak';
+        await this.accountService.loadUser();
+        this.authOrchestrator.authSuccess();
+      },
+      {
+        summary: this.translate.instant(`${this.translationKey}.passkeyLoginFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.passkeyLoginFailed.detail`),
+      },
+      false,
+    );
+  }
+
+  /**
+   * Registers a new passkey for the currently logged-in user.
+   * Note: This also requires a custom Keycloak SPI endpoint and won't work with a standard Keycloak setup out-of-the-box.
+   * After successful registration, a success toast is shown. Any errors during the process will be captured and rethrown.
+   */
+  async registerPasskey(): Promise<void> {
+    return this.runAuthAction(
+      async () => {
+        await this.keycloakAuthenticationService.registerPasskey();
+        this.toastService.showSuccessKey(`${this.translationKey}.passkeyRegistered`);
+      },
+      {
+        summary: this.translate.instant(`${this.translationKey}.passkeyRegisterFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.passkeyRegisterFailed.detail`),
+      },
+    );
+  }
+
   // --------------- IdPs ---------------
   /**
    * Logs in via a Keycloak identity provider.
@@ -271,7 +319,7 @@ export class AuthFacadeService {
     if (pending === 'true') {
       localStorage.removeItem(this.REGISTRATION_KEY);
       const user = this.accountService.user();
-      if (user == null) return;
+      if (user === undefined) return;
 
       const email = user.email;
       if (email.trim() === '') return;
