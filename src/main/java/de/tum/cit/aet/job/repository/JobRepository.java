@@ -326,8 +326,8 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * Returns all biased issues for a job without loading the full Job entity.
      *
      * @param jobId the job id
-     * @return the list of biased issues, empty if none exist
+     * @return the set of biased issues, empty if none exist
      */
     @Query("SELECT bi FROM Job j JOIN j.biasedIssues bi WHERE j.jobId = :jobId")
-    List<BiasedIssue> findBiasedIssuesByJobId(@Param("jobId") UUID jobId);
+    Set<BiasedIssue> findBiasedIssuesByJobId(@Param("jobId") UUID jobId);
 }

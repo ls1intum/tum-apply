@@ -11,6 +11,7 @@ import de.tum.cit.aet.job.constants.TvlGrade;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -37,5 +38,5 @@ public record JobDTO(
     Boolean contractExtendable,
     Integer genderBiasScore,
     List<ComplianceIssue> complianceIssues,
-    List<BiasedIssue> biasedIssues
+    Set<BiasedIssue> biasedIssues
 ) {}

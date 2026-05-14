@@ -3328,6 +3328,7 @@ components:
         biasedIssues:
           type: array
           items: {$ref: '#/components/schemas/BiasedIssue'}
+          uniqueItems: true
         complianceIssues:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
@@ -3457,6 +3458,7 @@ components:
         biasedIssues:
           type: array
           items: {$ref: '#/components/schemas/BiasedIssue'}
+          uniqueItems: true
         complianceIssues:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
