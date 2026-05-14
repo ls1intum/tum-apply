@@ -251,7 +251,7 @@ public class ReferenceRequestService {
      * @return the number of rows that were transitioned to EXPIRED
      */
     public int expireOverdueRequests() {
-        return referenceRequestRepository.expireOverdueRequests(LocalDateTime.now(ZoneOffset.UTC));
+        return referenceRequestRepository.expireOverdueRequests(LocalDateTime.now());
     }
 
     /**

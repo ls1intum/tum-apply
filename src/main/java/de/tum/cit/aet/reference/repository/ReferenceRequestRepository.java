@@ -117,13 +117,13 @@ public interface ReferenceRequestRepository extends JpaRepository<ReferenceReque
      * @param now the current UTC timestamp
      * @return the number of rows that were transitioned
      */
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Transactional
     @Query(
         """
         UPDATE ReferenceRequest r
-        SET r.status = 'EXPIRED'
-        WHERE r.status = 'REQUESTED'
+        SET r.status = de.tum.cit.aet.reference.constants.ReferenceRequestStatus.EXPIRED
+        WHERE r.status = de.tum.cit.aet.reference.constants.ReferenceRequestStatus.REQUESTED
           AND r.tokenExpiresAt IS NOT NULL
           AND r.tokenExpiresAt < :now
         """
