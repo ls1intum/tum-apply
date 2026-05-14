@@ -113,7 +113,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     if (!this.disableResend()) {
       this.authOrchestratorService.clearError();
       this.setValue('');
-      void this.authFacade.requestOtp(this.isRegistration());
+      void this.authFacade.requestOtp(this.isRegistration(), true);
     }
   }
 
