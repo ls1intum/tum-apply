@@ -511,14 +511,8 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       # --- Run Lighthouse ---
-      - name: Install Lighthouse CI
-        run: |
-          export PNPM_HOME="$HOME/.local/share/pnpm"
-          mkdir -p "$PNPM_HOME"
-          echo "PNPM_HOME=$PNPM_HOME" >> "$GITHUB_ENV"
-          echo "$PNPM_HOME" >> "$GITHUB_PATH"
-          PATH="$PNPM_HOME:$PATH" pnpm add -g @lhci/cli@0.11.x
-
+      # The treosh/lighthouse-ci-action ships its own bundled @lhci/cli, so no
+      # separate install step is needed.
       - name: ✅ Run Lighthouse for ${{ matrix.role }}
         uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18
         with:
