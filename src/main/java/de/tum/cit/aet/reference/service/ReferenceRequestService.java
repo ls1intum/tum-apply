@@ -66,6 +66,18 @@ public class ReferenceRequestService {
      * @param applicationId the owning application
      * @return all reference requests, mapped to DTOs (no token data)
      */
+    /**
+     * Retrieves the raw {@link ReferenceRequest} entities attached to the given application,
+     * ordered by creation time. Intended for callers that need the domain entity
+     * (e.g. data export) rather than the DTO returned by {@link #getReferences(UUID)}.
+     *
+     * @param applicationId the owning application id
+     * @return list of reference requests ordered ascending by creation time
+     */
+    public List<ReferenceRequest> findAllByApplicationIdOrdered(UUID applicationId) {
+        return referenceRequestRepository.findByApplicationApplicationIdOrderByCreatedAtAsc(applicationId);
+    }
+
     public List<ReferenceRequestDTO> getReferences(UUID applicationId) {
         Application application = applicationRepository
             .findByIdWithApplicantAndJob(applicationId)
