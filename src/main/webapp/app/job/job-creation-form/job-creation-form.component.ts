@@ -904,21 +904,46 @@ export class JobCreationFormComponent {
     }
   }
 
+  /**
+   * Applies the action of an accepted AI compliance suggestion to the editor.
+   * Cancels any in-flight translation, syncs the new HTML into the form,
+   * and removes the issue from the pills so it stops showing in the sidebar.
+   */
   onComplianceSuggestionAccepted(issue: ComplianceIssue): void {
-    const applied = this.jobDescriptionEditor()?.applyComplianceSuggestion(issue) ?? false;
-    if (!applied) return;
+    const updatedHtml = this.jobDescriptionEditor()?.applyComplianceSuggestion(issue);
+    if (updatedHtml === undefined) return;
 
-    this.complianceIssues.update(issues => issues.filter(currentIssue => currentIssue !== issue));
+    this.cancelTranslation();
+
+    const lang = this.currentDescriptionLanguage();
+    this.basicInfoForm.get('jobDescription')?.setValue(updatedHtml);
+    if (lang === 'en') {
+      this.jobDescriptionEN.set(updatedHtml);
+    } else {
+      this.jobDescriptionDE.set(updatedHtml);
+    }
+
+    this.complianceIssues.update(issues => issues.filter(i => i !== issue));
     this.closeCompliancePopover();
     this.refreshComplianceHighlights();
   }
 
+  /**
+   * Dismisses a compliance issue without applying it.
+   * The highlight disappears from the editor, but the issue still counts
+   * toward the score and the sidebar total.
+   */
   onComplianceIssueDismissed(issue: ComplianceIssue): void {
     this.dismissedComplianceHighlights.update(issues => issues.concat(issue));
     this.closeCompliancePopover();
     this.refreshComplianceHighlights();
   }
 
+  /**
+   * Renders compliance highlights in the editor based on the current
+   * language and active category filter. Called after issues change
+   * when action state or filter changes.
+   */
   private refreshComplianceHighlights(): void {
     const lang = this.currentDescriptionLanguage();
     const category = this.activeComplianceFilter();
@@ -928,6 +953,7 @@ export class JobCreationFormComponent {
     this.applyHighlights(visibleIssues, lang);
   }
 
+  /** Hides the active compliance popover and clears its hover state. */
   private closeCompliancePopover(): void {
     this.activePopoverIssue.set(undefined);
     this.isCompliancePopoverHovered.set(false);
@@ -1620,6 +1646,10 @@ export class JobCreationFormComponent {
       } else {
         saved = await firstValueFrom(this.jobApi.createJob(currentData));
         this.jobId.set(saved.jobId ?? '');
+      }
+      // Ignore stale auto-save responses if the description changed while the request was in flight.
+      if ((this.basicInfoForm.get('jobDescription')?.value ?? '').trim() !== description.trim()) {
+        return true;
       }
 
       // 3) Sync local state with server response

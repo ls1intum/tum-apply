@@ -420,30 +420,46 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
   }
 
-  public applyComplianceSuggestion({ action, text, suggestion }: ComplianceIssue) {
+  /**
+   * Applies an AI compliance suggestion to the current editor content based on compliance action.
+   * - `Replace`: swaps the target snippet with the suggestion
+   * - `Remove`: deletes the target snippet
+   * - `Add`: inserts the suggestion after the target snippet
+   *
+   * @param issue The compliance issue containing the action, snippet text, and suggestion.
+   * @returns The updated editor HTML for issued text snippet
+   */
+  public applyComplianceSuggestion(issue: ComplianceIssue): string | undefined {
     const editor = this.quillEditorComponent()?.quillEditor;
-    if (!editor) return;
+    if (!editor) return undefined;
 
-    const newText = suggestion?.trim() || '';
-    const oldText = text?.trim() || '';
+    const targetSnippet = issue.text?.trim() ?? '';
+    const replacement = issue.suggestion?.trim() ?? '';
+    const originalText = editor.getText();
+    const targetIndex = targetSnippet ? originalText.toLowerCase().indexOf(targetSnippet.toLowerCase()) : -1;
 
-    // 1. ADD: Text einfach ans Ende anhängen
-    if (action === ComplianceIssueActionEnum.Add) {
-      editor.insertText(editor.getLength(), '\n' + newText);
-      return;
-    }
-
-    // 2. REPLACE & REMOVE: Text suchen und austauschen/löschen
-    const index = editor.getText().toLowerCase().indexOf(oldText.toLowerCase());
-    
-    if (index !== -1) {
-      editor.deleteText(index, oldText.length); // Alten Text immer löschen
-      
-      if (action === ComplianceIssueActionEnum.Replace) {
-        editor.insertText(index, newText);      // Neuen Text einfügen (nur bei Replace)
+    switch (issue.action) {
+      case ComplianceIssueActionEnum.Replace: {
+        if (targetIndex === -1) return undefined;
+        editor.deleteText(targetIndex, targetSnippet.length);
+        editor.insertText(targetIndex, replacement);
+        return editor.root.innerHTML;
       }
+      case ComplianceIssueActionEnum.Remove: {
+        if (targetIndex === -1) return undefined;
+        editor.deleteText(targetIndex, targetSnippet.length);
+        return editor.root.innerHTML;
+      }
+      case ComplianceIssueActionEnum.Add: {
+        const insertAt = targetIndex === -1 ? editor.getLength() : targetIndex + targetSnippet.length;
+        const separator = targetIndex === -1 ? '\n' : ' ';
+        editor.insertText(insertAt, separator + replacement);
+        return editor.root.innerHTML;
+      }
+      default:
+        return undefined;
     }
-}
+  }
 
   /**
    * Sends the text and position of a highlighted item
