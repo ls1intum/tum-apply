@@ -134,7 +134,7 @@
       "referenceLettersRequired": {
         "label": "Erforderliche Empfehlungsschreiben",
         "placeholder": "z.B. 2",
-        "toolTipText": "Anzahl der externen Empfehlungsschreiben, die Bewerbende für diese Stelle einholen müssen. 0 deaktiviert die Anforderung. Die Schreiben werden von den Referenzgebenden selbst über einen Token-Link hochgeladen, der bei der Einreichung verschickt wird."
+        "toolTipText": "Anzahl der externen Empfehlungsschreiben, die Bewerbende für diese Stelle einholen müssen. Die Schreiben werden von den Referenzgebenden selbst über einen Link direkt bei TUMApply hochgeladen."
       },
       "positionOptions": {
         "title": "Optionen zur Stelle",

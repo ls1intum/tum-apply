@@ -1,12 +1,13 @@
 <p>Sehr geehrte/r <#if REFEREE_NAME_TITLE??>${REFEREE_NAME_TITLE} </#if>${REFEREE_FIRST_NAME!} ${REFEREE_LAST_NAME!},</p>
 
-<p>kurze Erinnerung: <strong>${APPLICANT_FIRST_NAME!} ${APPLICANT_LAST_NAME!}</strong> wartet noch auf Ihr
-  Empfehlungsschreiben für die Position <strong>${JOB_TITLE!}</strong> bei ${RESEARCH_GROUP_NAME!}.</p>
+<p>wir kontaktieren Sie bezüglich der Bewerbung von <strong>${APPLICANT_FIRST_NAME!} ${APPLICANT_LAST_NAME!}</strong>
+  für die Position <strong>${JOB_TITLE!}</strong> bei ${RESEARCH_GROUP_NAME!}.</p>
 
-<p>Der Upload-Link ist nur noch bis <strong>${REFERENCE_DEADLINE!}</strong> gültig — bitte laden Sie das Schreiben bis dahin hoch.</p>
+<p>Für diese Bewerbung wurde ein Empfehlungsschreiben von Ihnen angefragt.
+  Wir möchten Sie höflich darauf hinweisen, dass das Portal am <strong>${REFERENCE_DEADLINE!}</strong> schließt — bitte laden Sie das Schreiben bis dahin hoch.</p>
 
 <@ui.ctaButton href=(REFERENCE_LINK!'') label="Empfehlung hochladen" />
 
-<p>Falls Sie das Schreiben bereits eingereicht haben, betrachten Sie diese Nachricht bitte als gegenstandslos.</p>
+<p>Vielen Dank für Ihre Zeit und Ihre Unterstützung.</p>
 
-<p>Mit freundlichen Grüßen,<br />Ihr TUMApply-Team</p>
+<p>Mit freundlichen Grüßen<br />Ihr TUMApply-Team</p>

@@ -85,7 +85,7 @@ public interface ReferenceRequestRepository extends JpaRepository<ReferenceReque
      * additional service-level transaction.
      *
      * @param now           the current UTC timestamp; entries that have already expired are skipped
-     * @param upperBound    the latest deadline still inside the reminder window (typically now + 7 days)
+     * @param upperBound    the latest deadline still inside the reminder window
      * @param maxReminders  cap on entries that already had this many reminders (keeps reminderCount &lt; cap)
      * @return REQUESTED entries with a future deadline within the window and reminderCount below {@code maxReminders}
      */
@@ -112,8 +112,7 @@ public interface ReferenceRequestRepository extends JpaRepository<ReferenceReque
 
     /**
      * Flips every REQUESTED entry whose token has already expired to {@code EXPIRED}. Issued as a
-     * bulk UPDATE so the daily sweep stays a single round-trip even when many entries lapse on the
-     * same day.
+     * bulk UPDATE so the daily sweep stays a single round-trip even when many entries lapse on the same day.
      *
      * @param now the current UTC timestamp
      * @return the number of rows that were transitioned

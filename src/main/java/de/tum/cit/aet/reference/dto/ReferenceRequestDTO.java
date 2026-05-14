@@ -20,7 +20,7 @@ public record ReferenceRequestDTO(
 ) {
     /**
      * @param entity the persisted reference request
-     * @return a DTO mirroring the entity.
+     * @return a DTO mirroring the entity, including the linked document id when a letter was uploaded
      */
     public static ReferenceRequestDTO fromEntity(ReferenceRequest entity) {
         return new ReferenceRequestDTO(

@@ -134,7 +134,7 @@
       "referenceLettersRequired": {
         "label": "Required Recommendation Letters",
         "placeholder": "e.g. 2",
-        "toolTipText": "Number of external recommendation letters applicants must collect for this position. Set to 0 to disable. Letters are uploaded by the referees themselves through a tokenized link sent on submission."
+        "toolTipText": "Number of external recommendation letters applicants must collect for this position. Letters are uploaded by the referees themselves through a link directly on TUMApply."
       },
       "positionOptions": {
         "title": "Position Options",

@@ -257,10 +257,6 @@ public class ReferenceRequestService {
     /**
      * Rotates the token and sends a reminder email for each REQUESTED entry whose deadline is
      * within the configured reminder windows.
-     *
-     * First reminder when the deadline is within {@value #FIRST_REMINDER_HOURS}h and {@code reminderCount &lt; 1}
-     * Final reminder when the deadline is within {@value #FINAL_REMINDER_HOURS}h and {@code reminderCount &lt; 2}
-     *
      * Each reminder rotates the token (the previous hash is overwritten), so the new email's link
      * is the one that works — earlier emails stop accepting uploads.
      *
@@ -288,21 +284,20 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Decides whether the given entry currently qualifies for a reminder. Encapsulates the band logic
-     * so the scheduler stays straight-line.
+     * Decides whether the given entry currently qualifies for a reminder.
+     * First reminder when the deadline is within {@value #FIRST_REMINDER_HOURS}h and {@code reminderCount &lt; 1}
+     * Final reminder when the deadline is within {@value #FINAL_REMINDER_HOURS}h and {@code reminderCount &lt; 2}
      *
      * @param entry the candidate reference request (already filtered by repository query)
      * @param now   the run's reference timestamp
-     * @return true when this entry should receive a reminder right now
+     * @return true when this entry should receive a reminder now
      */
     private boolean shouldSendReminder(ReferenceRequest entry, LocalDateTime now) {
         LocalDateTime deadline = entry.getTokenExpiresAt();
         long hoursUntilDeadline = ChronoUnit.HOURS.between(now, deadline);
-        // final reminder band: 24h
         if (entry.getReminderCount() < MAX_REMINDERS && hoursUntilDeadline <= FINAL_REMINDER_HOURS) {
             return true;
         }
-        // first reminder band: 7d
         return entry.getReminderCount() < 1 && hoursUntilDeadline <= FIRST_REMINDER_HOURS;
     }
 
@@ -393,7 +388,7 @@ public class ReferenceRequestService {
      * @param application the application the referee is attached to
      * @param entry       the reference request entry containing the referee's name and email
      * @param rawToken    the plaintext token to include in the email link
-     * @param emailType   {@link EmailType#REFERENCE_LETTER_INVITATION} or {@link EmailType#REFERENCE_LETTER_REMINDER}
+     * @param emailType   the type of email to send (invitation or reminder)
      */
     private void sendRefereeEmail(Application application, ReferenceRequest entry, String rawToken, EmailType emailType) {
         Job job = application.getJob();

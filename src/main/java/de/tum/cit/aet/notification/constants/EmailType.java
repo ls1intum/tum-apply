@@ -156,7 +156,6 @@ public enum EmailType {
 
     /**
      * Reminder to an external referee that their recommendation letter upload window is about to close.
-     * Sent at most twice per request (7 days and 24 hours before the deadline).
      * To: External referee email (no TUMApply account required)
      */
     REFERENCE_LETTER_REMINDER("REFERENCE_LETTER_REMINDER", Set.of(), false);
