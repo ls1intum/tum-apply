@@ -283,7 +283,7 @@ describe('AuthFacadeService', () => {
     it.each([
       { role: 'PROFESSOR', expected: '/professor' },
       { role: 'EMPLOYEE', expected: '/professor' },
-      { role: 'ADMIN', expected: '/professor' },
+      { role: 'ADMIN', expected: '/' },
       { role: 'APPLICANT', expected: '/' },
     ])('should redirect $role to $expected on server logout', async ({ role, expected }) => {
       const { facade, account, router } = setup();
@@ -299,7 +299,7 @@ describe('AuthFacadeService', () => {
     it.each([
       { role: 'PROFESSOR', expectedSuffix: '/professor' },
       { role: 'EMPLOYEE', expectedSuffix: '/professor' },
-      { role: 'ADMIN', expectedSuffix: '/professor' },
+      { role: 'ADMIN', expectedSuffix: '/' },
       { role: 'APPLICANT', expectedSuffix: '/' },
     ])('should hand $expectedSuffix to keycloak for $role logout', async ({ role, expectedSuffix }) => {
       const { facade, keycloak, account } = setup();

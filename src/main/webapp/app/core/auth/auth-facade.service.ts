@@ -43,7 +43,6 @@ export class AuthFacadeService {
   private static readonly PROFESSOR_PORTAL_AUTHORITIES: UserShortDTORolesEnum[] = [
     UserShortDTORolesEnum.Professor,
     UserShortDTORolesEnum.Employee,
-    UserShortDTORolesEnum.Admin,
   ];
 
   private readonly serverAuthenticationService = inject(ServerAuthenticationService);
