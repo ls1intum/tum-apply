@@ -36,10 +36,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: docs
-        # --ignore-workspace stops pnpm from walking up to the repo-root
-        # `pnpm-workspace.yaml` (which scopes the main app, not the docs site)
-        # and silently no-op'ing the install for `docs/`.
-        run: pnpm install --frozen-lockfile --ignore-workspace
+        run: pnpm install --frozen-lockfile
 
       - name: Build Docusaurus site
         working-directory: docs
