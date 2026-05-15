@@ -20,6 +20,7 @@ import de.tum.cit.aet.job.service.JobService;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,9 @@ public class AiService {
 
     @Value("classpath:prompts/AnalyzeComplianceText.st")
     private Resource complianceResource;
+
+    @Value("classpath:prompts/ComplianceRules.st")
+    private Resource complianceRulesResource;
 
     private final ChatClient chatClient;
 
@@ -115,6 +119,7 @@ public class AiService {
         Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
         Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
         final String locationText = jobFormDTO.location() != null ? jobFormDTO.location().correctLanguageValue(descriptionLanguage) : "";
+        final String complianceRules = complianceRulesText();
 
         return chatClient
             .prompt()
@@ -132,6 +137,7 @@ public class AiService {
                     .param("location", locationText)
                     .param("inclusiveWords", String.join(", ", inclusive))
                     .param("nonInclusiveWords", String.join(", ", nonInclusive))
+                    .param("complianceRules", complianceRules)
             )
             .stream()
             .content()
@@ -365,6 +371,7 @@ public class AiService {
         List<ComplianceIssue> complianceIssues;
         if (aiFeatureToggleService.isAiAvailable()) {
             try {
+                String complianceRules = complianceRulesText();
                 complianceIssues = chatClient
                     .prompt()
                     .user(u ->
@@ -374,6 +381,7 @@ public class AiService {
                             .param("userLang", userLang)
                             .param("jobDescription", text)
                             .param("title", title != null ? title : "")
+                            .param("complianceRules", complianceRules)
                     )
                     .call()
                     .entity(new ParameterizedTypeReference<>() {});
@@ -397,5 +405,16 @@ public class AiService {
         jobService.updateAiAnalysis(jobId, combinedScore, complianceIssues, lang);
 
         return complianceIssues;
+    }
+    /**
+     *  Loads the shared compliance rules used by both the generation and analysis prompts.
+     * @return compliance Rules as String
+     */
+    private String complianceRulesText() {
+        try {
+            return complianceRulesResource.getContentAsString(StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new InternalServerException("Failed to load compliance rules prompt", e);
+        }
     }
 }
