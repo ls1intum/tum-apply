@@ -40,13 +40,18 @@ INPUT TEXT:
 {jobDescription}
 ----------------------
 
-COMPLETENESS CHECK: Before returning, re-read the text and ensure
-every implicit pattern (age/gender/origin/disability hints) is included.
-Do not stop after the obvious explicit violations.
+COMPLETENESS REQUIREMENT:
+Before returning the JSON array, complete all five checks internally:
+1. Explicit discrimination
+2. Implicit AGG patterns
+3. DSGVO minimization violations
+4. Third-party transparency issues
+5. PhD/scientific qualification context
+The final JSON array must reflect the result of all five checks.
+Do not output the checklist, reasoning, summaries, or any field named completeness_requirement.
 
 OUTPUT:
   Return ONLY a valid JSON array. No markdown. No prose.
-  One object per issue
   Object fields must be exactly:
     id, text, category, article, explanation, action, suggestion
   - category must be exactly CRITICAL_AGG, TRANSPARENCY, DSGVO_MINIMIZATION or PUBLIC_SECTOR
