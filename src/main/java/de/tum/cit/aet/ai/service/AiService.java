@@ -406,6 +406,7 @@ public class AiService {
 
         return complianceIssues;
     }
+
     /**
      *  Loads the shared compliance rules used by both the generation and analysis prompts.
      * @return compliance Rules as String
