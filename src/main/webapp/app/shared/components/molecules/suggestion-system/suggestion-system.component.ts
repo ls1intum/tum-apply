@@ -11,7 +11,7 @@ export class SuggestionSystemComponent {
   article = input<string | undefined>(undefined);
   suggestion = input<string | undefined>(undefined);
   explanation = input<string | undefined>(undefined);
-  actionLabel = input<string>('Apply');
+  actionLabel = input<string>('jobCreationForm.positionDetailsSection.jobDescription.popover.applyButton');
 
   accepted = output();
   dismissed = output();

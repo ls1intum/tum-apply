@@ -883,11 +883,6 @@ export class JobCreationFormComponent {
    */
   onHighlightHovered(event: { text: string; x: number; y: number } | undefined): void {
     if (!event) {
-      setTimeout(() => {
-        if (!this.isCompliancePopoverHovered()) {
-          this.activePopoverIssue.set(undefined);
-        }
-      }, 120);
       return;
     }
     const lang = this.currentDescriptionLanguage();

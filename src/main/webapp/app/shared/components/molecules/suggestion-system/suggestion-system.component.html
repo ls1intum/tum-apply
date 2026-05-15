@@ -1,7 +1,7 @@
 <div class="rounded-md bg-background-default p-3 text-xs text-text-primary shadow-lg">
   <div class="space-y-2.5">
     @if (article()) {
-      <p class="m-0 text-[11px] font-semibold text-text-tertiary">{{ article() }}</p>
+      <p class="m-0 text-[0.69rem] font-semibold text-text-tertiary">{{ article() }}</p>
     }
 
     @if (suggestion()) {
@@ -23,8 +23,7 @@
         label="jobCreationForm.positionDetailsSection.jobDescription.popover.dismissButton"
         severity="secondary"
         variant="text"
-        size="xs"
-        classStyling="!h-auto !min-w-0 !rounded-md !border-transparent !bg-transparent !px-2 !py-1.5 !text-[11px] !font-medium !leading-none !text-text-tertiary !shadow-none hover:!border-transparent hover:!bg-background-surface focus:!shadow-none"
+        classStyling="ai-suggestion-ghost-button ai-suggestion-ghost-button-secondary"
         [shouldTranslate]="true"
         (click)="dismissed.emit()"
       />
@@ -32,8 +31,7 @@
         [label]="actionLabel()"
         severity="primary"
         variant="text"
-        size="xs"
-        classStyling="!h-auto !min-w-0 !rounded-md !border-transparent !bg-transparent !px-2 !py-1.5 !text-[11px] !font-medium !leading-none !text-text-primary !shadow-none hover:!border-transparent hover:!bg-background-surface focus:!shadow-none"
+        classStyling="ai-suggestion-ghost-button ai-suggestion-ghost-button-primary"
         [shouldTranslate]="true"
         (mouseenter)="isActionHovered.set(true)"
         (mouseleave)="isActionHovered.set(false)"
