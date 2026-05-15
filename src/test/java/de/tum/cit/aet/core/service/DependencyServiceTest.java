@@ -33,7 +33,7 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests for {@link DependencyService}.
- * Tests parsing of Gradle and npm dependencies, CVSS severity extraction,
+ * Tests parsing of Gradle and pnpm dependencies, CVSS severity extraction,
  * caching behavior, and OSV vulnerability enrichment.
  */
 @ExtendWith(MockitoExtension.class)
