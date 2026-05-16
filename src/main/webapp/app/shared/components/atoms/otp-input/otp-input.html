@@ -21,7 +21,15 @@
     }
   </div>
   <div class="flex justify-between w-full gap-8">
-    <jhi-button (click)="onResend()" [disabled]="disableResend()" [fullWidth]="true" [label]="resendLabel" variant="text" />
+    <jhi-button
+      (click)="onResend()"
+      [disabled]="disableResend()"
+      [fullWidth]="true"
+      [label]="resendLabelKey()"
+      [shouldTranslate]="true"
+      [translationParams]="resendLabelParams()"
+      variant="text"
+    />
     <jhi-button
       (click)="onSubmit()"
       [disabled]="disabledSubmit()"

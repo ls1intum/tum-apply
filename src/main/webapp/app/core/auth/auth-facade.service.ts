@@ -161,13 +161,13 @@ export class AuthFacadeService {
   }
 
   /** Request an OTP to be sent to the user's email. */
-  async requestOtp(registration = false): Promise<void> {
+  async requestOtp(registration = false, resend = false): Promise<void> {
     this.authOrchestrator.resetOtpAttempts();
     const email = this.authOrchestrator.email();
     return this.runAuthAction(
       async () => {
         await this.serverAuthenticationService.sendOtp(email, registration);
-        this.authOrchestrator.nextStep(!registration ? 'otp' : undefined);
+        if (!resend) this.authOrchestrator.nextStep(!registration ? 'otp' : undefined);
       },
       {
         summary: this.translate.instant(`${this.translationKey}.otpSendFailed.summary`),
