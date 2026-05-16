@@ -98,9 +98,9 @@
           (keydown.enter)="fileupload_component.choose()"
           (keydown.space)="$event.preventDefault(); fileupload_component.choose()"
         >
-          <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="background-primary" size="lg" />
+          <fa-icon [icon]="['fas', 'cloud-arrow-up']" size="lg" />
         </span>
-        <div class="text-color" [class.text-center]="!compact()">
+        <div [class.text-center]="!compact()">
           <p class="text-sm" jhiTranslate="entity.upload.instruction"></p>
           <p class="text-xs"><span jhiTranslate="entity.upload.max_size"></span> {{ maxUploadSizeInMb }} MB</p>
         </div>
