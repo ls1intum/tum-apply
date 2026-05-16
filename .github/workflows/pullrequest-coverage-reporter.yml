@@ -138,7 +138,7 @@ jobs:
             const lines = [
               coverageSection,
               '<!-- Please add the test coverages for all changed files modified in this PR here. You can generate the coverage table using one of these options: -->',
-              '<!-- 1. Run `npm run coverage:pr` to generate coverage locally by running only the affected module tests (see supporting_scripts/local-pr-coverage/README.md) -->',
+              '<!-- 1. Run `pnpm run coverage:pr` to generate coverage locally by running only the affected module tests (see supporting_scripts/local-pr-coverage/README.md) -->',
               '<!-- The line coverage must be above 90% for changed files, and you must use extensive and useful assertions for server tests and expect statements for client tests. -->',
               '<!-- Note: Confirm in the last column that you have implemented extensive assertions for server tests and expect statements for client tests. -->',
               '<!--       Remove rows with only trivial changes from the table. -->',

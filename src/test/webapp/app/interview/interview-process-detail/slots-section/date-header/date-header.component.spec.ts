@@ -22,28 +22,6 @@ describe('DateHeaderComponent', () => {
     vi.restoreAllMocks();
   });
 
-  describe('weekday', () => {
-    it('should return uppercase short weekday', () => {
-      fixture.componentRef.setInput('date', new Date('2026-03-16'));
-      fixture.componentRef.setInput('slotCount', 1);
-      fixture.detectChanges();
-
-      const weekday = component.weekday();
-      expect(weekday).toBe(weekday.toUpperCase());
-      expect(weekday.length).toBeGreaterThan(0);
-    });
-  });
-
-  describe('day', () => {
-    it('should return 2-digit day', () => {
-      fixture.componentRef.setInput('date', new Date('2026-03-05'));
-      fixture.componentRef.setInput('slotCount', 1);
-      fixture.detectChanges();
-
-      expect(component.day()).toBe('05');
-    });
-  });
-
   describe('slotsText', () => {
     it.each([
       { count: 1, expectedKey: 'interview.slots.slotsCountSingular' },

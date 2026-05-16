@@ -358,6 +358,16 @@ const routes: Routes = [
   },
 
   // ======================================================================================
+  // External recommendation letter upload (token-only, no auth)
+  // ======================================================================================
+  {
+    path: 'reference/:token',
+    loadComponent: () =>
+      import('./reference/reference-letter-upload/reference-letter-upload.component').then(m => m.ReferenceLetterUploadComponent),
+    title: 'reference.title',
+  },
+
+  // ======================================================================================
   // Data Export
   // ======================================================================================
   {

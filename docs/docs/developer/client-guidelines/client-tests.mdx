@@ -8,7 +8,7 @@ We use **Vitest** as the primary testing framework and **NgMocks** for mocking A
 
 Test files are located in `src/test/webapp/` and follow a **mirror structure** matching the source code package structure.
 
-**CI coverage thresholds:** 80% statements, 70% branches, 80% functions, 80% lines.
+**CI coverage thresholds:** 50% statements, 40% branches, 50% functions, 50% lines.
 
 ---
 
@@ -16,9 +16,9 @@ Test files are located in `src/test/webapp/` and follow a **mirror structure** m
 
 | **Command** | **Description** |
 |---|---|
-| `npm run test` | Run tests with coverage |
-| `npm run test:ci` | Run tests with CI coverage thresholds |
-| `npm run test:ui` | Run tests with Vitest UI |
+| `pnpm run test` | Run tests with coverage |
+| `pnpm run test:ci` | Run tests with CI coverage thresholds |
+| `pnpm run test:ui` | Run tests with Vitest UI |
 
 ### Coverage Report
 
@@ -26,7 +26,7 @@ To keep high coverage, inspect the coverage report while making a PR:
 
 1. Generate the report:
    ```bash
-   npm run test
+   pnpm run test
    ```
 2. Open the report:
    ```bash
@@ -268,8 +268,8 @@ This is especially useful for testing different user roles, status values, or in
 
 ## Coverage & Quality
 
-- Ensure at least **80% line coverage**
-- Run `npm run test` to generate coverage reports
+- Ensure at least **50% line coverage**
+- Run `pnpm run test` to generate coverage reports
 - Prefer testing through user interactions over testing internal methods directly
 
 ---

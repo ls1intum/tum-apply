@@ -24,7 +24,7 @@ import tools.jackson.databind.node.ObjectNode;
  * Service for parsing project dependencies and scanning them for known security vulnerabilities.
  *
  * <p>Collects server-side dependencies from {@code build.gradle} (Java/Gradle) and client-side
- * dependencies from {@code package.json} (npm), then queries the
+ * dependencies from {@code package.json} (pnpm), then queries the
  * <a href="https://osv.dev">OSV.dev</a> vulnerability database to identify known CVEs.</p>
  *
  * <p>Results are cached for {@value #CACHE_TTL_SECONDS} seconds to minimize
@@ -219,7 +219,7 @@ public class DependencyService {
     }
 
     /**
-     * Parses client-side (npm) dependencies from {@code package.json}.
+     * Parses client-side (pnpm) dependencies from {@code package.json}.
      *
      * <p>Extracts both {@code dependencies} and {@code devDependencies} sections,
      * handling scoped packages (e.g. {@code @angular/core}) by splitting into group and name.</p>
@@ -242,7 +242,7 @@ public class DependencyService {
     }
 
     /**
-     * Extracts npm dependencies from a JSON object node and adds them to the result list.
+     * Extracts pnpm dependencies from a JSON object node and adds them to the result list.
      *
      * @param node   the JSON object containing dependency name-version pairs, or {@code null}
      * @param result the list to append parsed dependencies to

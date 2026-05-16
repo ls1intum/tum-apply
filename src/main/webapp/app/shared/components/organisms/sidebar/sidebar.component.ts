@@ -16,7 +16,6 @@ type SidebarCategory = { title: string; buttons: SidebarButton[] };
   selector: 'jhi-sidebar',
   imports: [ButtonModule, DividerModule, PanelModule, SidebarButtonComponent, TranslateDirective],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
   isSidebarCollapsed = input.required<boolean>();

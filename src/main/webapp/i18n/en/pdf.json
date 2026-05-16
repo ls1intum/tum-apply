@@ -22,6 +22,10 @@
       "page": "Page",
       "of": "from"
     },
+    "values": {
+      "yes": "Yes",
+      "no": "No"
+    },
     "couldNotGeneratePdf": {
       "summary": "Error",
       "detail": "The PDF could not be generated. Please try again later or contact us if the problem persists."

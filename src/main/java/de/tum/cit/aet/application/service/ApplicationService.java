@@ -28,6 +28,7 @@ import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
+import de.tum.cit.aet.reference.service.ReferenceRequestService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
@@ -66,6 +67,7 @@ public class ApplicationService {
     private final ApplicantService applicantService;
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
+    private final ReferenceRequestService referenceRequestService;
 
     /**
      * Creates a new job application for the given applicant and job.
@@ -166,12 +168,17 @@ public class ApplicationService {
     @Transactional
     public ApplicationForApplicantDTO updateApplication(UpdateApplicationDTO updateApplicationDTO) {
         Application application = assertCanManageApplication(updateApplicationDTO.applicationId());
-        application.setState(updateApplicationDTO.applicationState());
+        boolean isSubmitting = ApplicationState.SENT.equals(updateApplicationDTO.applicationState());
+        ApplicationState targetState = updateApplicationDTO.applicationState();
+        if (isSubmitting && referenceRequestService.hasIncompleteReferences(application)) {
+            targetState = ApplicationState.PENDING;
+        }
+        application.setState(targetState);
         application.setDesiredStartDate(updateApplicationDTO.desiredDate());
         application.setProjects(HtmlSanitizer.sanitize(updateApplicationDTO.projects()));
         application.setSpecialSkills(HtmlSanitizer.sanitize(updateApplicationDTO.specialSkills()));
         application.setMotivation(HtmlSanitizer.sanitize(updateApplicationDTO.motivation()));
-        if (updateApplicationDTO.applicationState().equals(ApplicationState.SENT)) {
+        if (isSubmitting) {
             application.setAppliedAt(LocalDateTime.now());
         }
 
@@ -203,11 +210,12 @@ public class ApplicationService {
 
         application = applicationRepository.save(application);
 
-        if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
+        if (isSubmitting) {
             syncSnapshotDataToApplicant(application);
             syncDocumentsToApplicantProfile(application);
             confirmApplicationToApplicant(application);
             confirmApplicationToProfessor(application);
+            referenceRequestService.dispatchInvitations(application);
         }
         return ApplicationForApplicantDTO.getFromEntity(application);
     }
@@ -549,6 +557,7 @@ public class ApplicationService {
     /**
      * Retrieves the detail DTO for the given application.
      *
+     *
      * @param applicationId the UUID of the application
      * @return the {@link ApplicationDetailDTO}
      */
@@ -556,7 +565,10 @@ public class ApplicationService {
         if (applicationId == null) {
             throw new IllegalArgumentException("The applicationId may not be null.");
         }
-        Application application = assertCanManageApplication(applicationId);
+        Application application = applicationRepository
+            .findByIdWithApplicantJobAndReferences(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
         return ApplicationDetailDTO.getFromEntity(application, application.getJob());
     }
 

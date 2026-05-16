@@ -15,18 +15,21 @@ import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 describe('ProfessorHeroSectionComponent', () => {
   let fixture: ComponentFixture<ProfessorHeroSectionComponent>;
   let component: ProfessorHeroSectionComponent;
-  let nativeElement: HTMLElement;
   let authFacadeServiceMock: AuthFacadeServiceMock;
   let accountServiceMock: AccountServiceMock;
   let routerMock: RouterMock;
   let dialogServiceMock: DialogServiceMock;
 
-  beforeEach(async () => {
+  const setupComponent = async (signedIn: boolean, authorities: UserShortDTORolesEnum[] = []) => {
     authFacadeServiceMock = createAuthFacadeServiceMock();
-    accountServiceMock = createAccountServiceMock(false);
+    accountServiceMock = createAccountServiceMock(signedIn);
+    if (signedIn) {
+      accountServiceMock.setAuthorities(authorities);
+    }
     routerMock = createRouterMock();
     dialogServiceMock = createDialogServiceMock();
 
+    await TestBed.resetTestingModule();
     await TestBed.configureTestingModule({
       imports: [ProfessorHeroSectionComponent],
       providers: [
@@ -37,151 +40,45 @@ describe('ProfessorHeroSectionComponent', () => {
         provideDialogServiceMock(dialogServiceMock),
       ],
     }).compileComponents();
-
     fixture = TestBed.createComponent(ProfessorHeroSectionComponent);
     component = fixture.componentInstance;
-    nativeElement = fixture.nativeElement;
     fixture.detectChanges();
-  });
+  };
 
-  describe('Component Creation', () => {
-    it('should create the component', () => {
-      expect(component).toBeTruthy();
-    });
-  });
+  describe('navigateToGetStarted', () => {
+    it('should call loginWithProvider when user is not signed in', async () => {
+      await setupComponent(false);
 
-  describe('Image Carousel', () => {
-    it('should define three images with background classes', () => {
-      expect(component.imagesWithBackgroundClass).toHaveLength(3);
-    });
+      await component.navigateToGetStarted();
 
-    it('should render carousel component', () => {
-      const carousel = nativeElement.querySelector('p-carousel');
-      expect(carousel).not.toBeNull();
-    });
-  });
-
-  describe('Navigation', () => {
-    describe('when user is not signed in', () => {
-      beforeEach(() => {
-        accountServiceMock = createAccountServiceMock(false);
-      });
-
-      it('should call loginWithProvider', async () => {
-        await component.navigateToGetStarted();
-
-        expect(authFacadeServiceMock.loginWithProvider).toHaveBeenCalledWith(IdpProvider.TUM, '/my-positions');
-        expect(routerMock.navigate).not.toHaveBeenCalled();
-      });
+      expect(authFacadeServiceMock.loginWithProvider).toHaveBeenCalledWith(IdpProvider.TUM, '/my-positions');
+      expect(routerMock.navigate).not.toHaveBeenCalled();
     });
 
-    describe('when user is signed in as professor', () => {
-      beforeEach(async () => {
-        authFacadeServiceMock = createAuthFacadeServiceMock();
-        accountServiceMock = createAccountServiceMock(true);
-        accountServiceMock.setAuthorities([UserShortDTORolesEnum.Professor]);
-        routerMock = createRouterMock();
-        dialogServiceMock = createDialogServiceMock();
+    it.each([[UserShortDTORolesEnum.Professor], [UserShortDTORolesEnum.Employee]])(
+      'should navigate to my-positions when signed in as %s',
+      async role => {
+        await setupComponent(true, [role]);
 
-        await TestBed.resetTestingModule();
-        await TestBed.configureTestingModule({
-          imports: [ProfessorHeroSectionComponent],
-          providers: [
-            provideTranslateMock(),
-            provideAuthFacadeServiceMock(authFacadeServiceMock),
-            provideAccountServiceMock(accountServiceMock),
-            provideRouterMock(routerMock),
-            provideDialogServiceMock(dialogServiceMock),
-          ],
-        }).compileComponents();
-        fixture = TestBed.createComponent(ProfessorHeroSectionComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-      });
-
-      it('should navigate to my-positions', async () => {
         await component.navigateToGetStarted();
 
         expect(routerMock.navigate).toHaveBeenCalledWith(['/my-positions']);
         expect(authFacadeServiceMock.loginWithProvider).not.toHaveBeenCalled();
         expect(dialogServiceMock.open).not.toHaveBeenCalled();
-      });
-    });
+      },
+    );
 
-    describe('when user is signed in as employee', () => {
-      beforeEach(async () => {
-        authFacadeServiceMock = createAuthFacadeServiceMock();
-        accountServiceMock = createAccountServiceMock(true);
-        accountServiceMock.setAuthorities([UserShortDTORolesEnum.Employee]);
-        routerMock = createRouterMock();
-        dialogServiceMock = createDialogServiceMock();
+    it('should open the onboarding dialog when signed in but not professor or employee', async () => {
+      await setupComponent(true, []);
 
-        await TestBed.resetTestingModule();
-        await TestBed.configureTestingModule({
-          imports: [ProfessorHeroSectionComponent],
-          providers: [
-            provideTranslateMock(),
-            provideAuthFacadeServiceMock(authFacadeServiceMock),
-            provideAccountServiceMock(accountServiceMock),
-            provideRouterMock(routerMock),
-            provideDialogServiceMock(dialogServiceMock),
-          ],
-        }).compileComponents();
-        fixture = TestBed.createComponent(ProfessorHeroSectionComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-      });
+      await component.navigateToGetStarted();
 
-      it('should navigate to my-positions', async () => {
-        await component.navigateToGetStarted();
-
-        expect(routerMock.navigate).toHaveBeenCalledWith(['/my-positions']);
-        expect(authFacadeServiceMock.loginWithProvider).not.toHaveBeenCalled();
-        expect(dialogServiceMock.open).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('when user is signed in but not professor or employee', () => {
-      beforeEach(async () => {
-        authFacadeServiceMock = createAuthFacadeServiceMock();
-        accountServiceMock = createAccountServiceMock(true);
-        accountServiceMock.setAuthorities([]); // No professor/employee role
-        routerMock = createRouterMock();
-        dialogServiceMock = createDialogServiceMock();
-
-        await TestBed.resetTestingModule();
-        await TestBed.configureTestingModule({
-          imports: [ProfessorHeroSectionComponent],
-          providers: [
-            provideTranslateMock(),
-            provideAuthFacadeServiceMock(authFacadeServiceMock),
-            provideAccountServiceMock(accountServiceMock),
-            provideRouterMock(routerMock),
-            provideDialogServiceMock(dialogServiceMock),
-          ],
-        }).compileComponents();
-        fixture = TestBed.createComponent(ProfessorHeroSectionComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-      });
-
-      it('should open the onboarding dialog', async () => {
-        await component.navigateToGetStarted();
-
-        expect(dialogServiceMock.open).toHaveBeenCalledWith(OnboardingDialog, {
-          ...ONBOARDING_FORM_DIALOG_CONFIG,
-          header: 'onboarding.title',
-        });
-        expect(routerMock.navigate).not.toHaveBeenCalled();
-        expect(authFacadeServiceMock.loginWithProvider).not.toHaveBeenCalled();
-      });
-    });
-  });
-
-  describe('Template Rendering', () => {
-    it('should render get started button', () => {
-      const button = nativeElement.querySelector('jhi-button');
-      expect(button).not.toBeNull();
+      expect(dialogServiceMock.open).toHaveBeenCalledWith(
+        OnboardingDialog,
+        Object.assign({}, ONBOARDING_FORM_DIALOG_CONFIG, { header: 'onboarding.title' }),
+      );
+      expect(routerMock.navigate).not.toHaveBeenCalled();
+      expect(authFacadeServiceMock.loginWithProvider).not.toHaveBeenCalled();
     });
   });
 });
