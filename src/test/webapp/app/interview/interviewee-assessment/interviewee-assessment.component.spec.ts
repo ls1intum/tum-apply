@@ -145,83 +145,66 @@ describe('IntervieweeAssessmentComponent', () => {
     });
   });
 
-  describe('Computed Properties', () => {
-    it.each([
-      { property: 'applicantAvatar', expected: '/img/alice.jpg' },
-      { property: 'degreeName', expected: 'Computer Science' },
-      { property: 'universityName', expected: 'TU Munich' },
-      { property: 'motivation', expected: 'I love this role' },
-      { property: 'skills', expected: 'Angular, TypeScript' },
-      { property: 'interests', expected: 'Built a CMS' },
-      { property: 'applicationId', expected: 'app-1' },
-    ])('should compute $property correctly', ({ property, expected }) => {
-      expect(component[property as keyof typeof component]()).toBe(expected);
-    });
-
-    it('should compute applicantName from user', () => {
-      expect(component['applicantName']()).toContain('Alice');
-      expect(component['applicantName']()).toContain('Mueller');
-    });
-
-    it('should compute slotInfo from interviewee', () => {
-      expect(component['slotInfo']()?.location).toBe('Room 303');
-    });
+  it('should compute properties from loaded data', () => {
+    expect(component['applicantAvatar']()).toBe('/img/alice.jpg');
+    expect(component['degreeName']()).toBe('Computer Science');
+    expect(component['universityName']()).toBe('TU Munich');
+    expect(component['motivation']()).toBe('I love this role');
+    expect(component['skills']()).toBe('Angular, TypeScript');
+    expect(component['interests']()).toBe('Built a CMS');
+    expect(component['applicationId']()).toBe('app-1');
+    expect(component['applicantName']()).toContain('Alice');
+    expect(component['slotInfo']()?.location).toBe('Room 303');
   });
 
-  describe('Computed Properties with missing data', () => {
-    beforeEach(async () => {
-      (mockInterviewService.getIntervieweeDetails as ReturnType<typeof vi.fn>).mockReturnValue(of(intervieweeWithoutOptionals));
-      TestBed.resetTestingModule();
-      await configureTestBed();
-      createComponent();
-      await fixture.whenStable();
-    });
+  it('should default computed properties when data is missing', async () => {
+    (mockInterviewService.getIntervieweeDetails as ReturnType<typeof vi.fn>).mockReturnValue(of(intervieweeWithoutOptionals));
+    TestBed.resetTestingModule();
+    await configureTestBed();
+    createComponent();
+    await fixture.whenStable();
 
-    it.each([
-      { property: 'applicantName', expected: '' },
-      { property: 'applicantAvatar', expected: undefined },
-      { property: 'degreeName', expected: '' },
-      { property: 'universityName', expected: '' },
-      { property: 'motivation', expected: '' },
-      { property: 'skills', expected: '' },
-      { property: 'interests', expected: '' },
-      { property: 'savedNotes', expected: '' },
-    ])('should return "$expected" for $property when data is missing', ({ property, expected }) => {
-      expect(component[property as keyof typeof component]()).toBe(expected);
-    });
+    expect(component['applicantName']()).toBe('');
+    expect(component['applicantAvatar']()).toBeUndefined();
+    expect(component['degreeName']()).toBe('');
+    expect(component['universityName']()).toBe('');
+    expect(component['motivation']()).toBe('');
+    expect(component['skills']()).toBe('');
+    expect(component['interests']()).toBe('');
+    expect(component['savedNotes']()).toBe('');
   });
 
-  describe('Save Notes', () => {
-    it('should save notes and show success toast', async () => {
+  describe('Auto-save Notes', () => {
+    it('should persist updated notes and resolve to true', async () => {
       component['notesControl'].setValue('Updated notes');
-      await component.saveNotes();
+      const saved = await component['persistNotes']();
 
       expect(mockInterviewService.updateAssessment).toHaveBeenCalledOnce();
       expect(mockInterviewService.updateAssessment).toHaveBeenCalledWith('proc-1', 'iee-1', { notes: 'Updated notes' });
-      expect(toastMock.showSuccessKey).toHaveBeenCalledWith('interview.assessment.notes.saved');
-      expect(component['saving']()).toBe(false);
+      expect(saved).toBe(true);
     });
 
-    it('should show error toast when saving notes fails', async () => {
+    it('should show error toast and resolve to false when saving notes fails', async () => {
       (mockInterviewService.updateAssessment as ReturnType<typeof vi.fn>).mockReturnValue(throwError(() => new Error('fail')));
 
       component['notesControl'].setValue('New notes');
-      await component.saveNotes();
+      const saved = await component['persistNotes']();
 
       expect(toastMock.showErrorKey).toHaveBeenCalledWith('interview.assessment.error.saveFailed');
-      expect(component['saving']()).toBe(false);
+      expect(saved).toBe(false);
     });
 
-    it('should not save when processId is empty', async () => {
+    it('should not call the assessment endpoint when processId is empty', async () => {
       activatedRouteMock = createActivatedRouteMock({ processId: '', intervieweeId: '' });
       TestBed.resetTestingModule();
       await configureTestBed();
       createComponent();
       await fixture.whenStable();
 
-      await component.saveNotes();
+      const saved = await component['persistNotes']();
 
       expect(mockInterviewService.updateAssessment).not.toHaveBeenCalled();
+      expect(saved).toBe(false);
     });
   });
 

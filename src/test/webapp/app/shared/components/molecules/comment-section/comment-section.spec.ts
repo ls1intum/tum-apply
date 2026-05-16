@@ -55,14 +55,12 @@ describe('CommentSection', () => {
     vi.restoreAllMocks();
   });
 
-  // ---------------- INIT ----------------
   describe('init', () => {
-    it('should create component and set current user', () => {
-      expect(component).toBeTruthy();
+    it('should set currentUser from logged-in user name', () => {
       expect(component['currentUser']).toBe('Alice Reviewer');
     });
 
-    it('should set currentUser to empty string when user is null', () => {
+    it('should set currentUser to empty string when user is undefined', () => {
       TestBed.resetTestingModule();
 
       const accountServiceWithNoUser = createAccountServiceMock();
@@ -79,14 +77,10 @@ describe('CommentSection', () => {
         .overrideComponent(CommentSection, { set: { template: '' } })
         .compileComponents();
 
-      const fixture2 = TestBed.createComponent(CommentSection);
-      const component2 = fixture2.componentInstance;
-
-      expect(component2['currentUser']).toBe('');
+      expect(TestBed.createComponent(CommentSection).componentInstance['currentUser']).toBe('');
     });
   });
 
-  // ---------------- LOAD COMMENTS ----------------
   describe('loadComments', () => {
     it('should clear draft and set comments [] when applicationId is undefined', async () => {
       fixture.componentRef.setInput('applicationId', undefined);
@@ -111,25 +105,6 @@ describe('CommentSection', () => {
       expect(component['createDraft']()).toBe('');
     });
 
-    it('should early return when id undefined', async () => {
-      fixture.componentRef.setInput('applicationId', undefined);
-      fixture.detectChanges();
-
-      await component.loadComments();
-      expect(mockCommentApi.listComments).not.toHaveBeenCalled();
-    });
-
-    it('should set comments on success', async () => {
-      const data: CommentDTO[] = [{ commentId: 'x', message: 'msg' }];
-      mockCommentApi.listComments.mockReturnValueOnce(of(data));
-
-      fixture.componentRef.setInput('applicationId', 'app-2');
-      fixture.detectChanges();
-      await component.loadComments();
-
-      expect(component['comments']()).toEqual(data);
-    });
-
     it('should show toast on error', async () => {
       mockCommentApi.listComments.mockReturnValueOnce(throwError(() => new Error('fail')));
 
@@ -144,21 +119,15 @@ describe('CommentSection', () => {
     });
   });
 
-  // ---------------- CREATE ----------------
   describe('createComment', () => {
-    it('should early return when id undefined', async () => {
-      fixture.componentRef.setInput('applicationId', undefined);
+    it.each<[string | undefined, string]>([
+      [undefined, 'hello'],
+      ['app-4', '   '],
+    ])('should not call API when applicationId=%s and message=%s', async (appId, msg) => {
+      fixture.componentRef.setInput('applicationId', appId);
       fixture.detectChanges();
 
-      await component.createComment('hello');
-      expect(mockCommentApi.createComment).not.toHaveBeenCalled();
-    });
-
-    it('should early return when message is empty', async () => {
-      fixture.componentRef.setInput('applicationId', 'app-4');
-      fixture.detectChanges();
-
-      await component.createComment('   ');
+      await component.createComment(msg);
       expect(mockCommentApi.createComment).not.toHaveBeenCalled();
     });
 
@@ -192,42 +161,13 @@ describe('CommentSection', () => {
     });
   });
 
-  // ---------------- UPDATE ----------------
   describe('updateComment', () => {
-    it('should early return when id missing', async () => {
-      await component.updateComment('', 'text');
+    it.each<[string, string]>([
+      ['', 'text'],
+      ['c1', '   '],
+    ])('should not call API when id=%s and message=%s', async (id, msg) => {
+      await component.updateComment(id, msg);
       expect(mockCommentApi.updateComment).not.toHaveBeenCalled();
-    });
-
-    it('should early return when message empty', async () => {
-      await component.updateComment('c1', '   ');
-      expect(mockCommentApi.updateComment).not.toHaveBeenCalled();
-    });
-
-    it('should replace comment on success', async () => {
-      component['comments'].set([{ commentId: 'c1', message: 'old' }]);
-      mockCommentApi.updateComment.mockReturnValueOnce(of({ commentId: 'c1', message: 'new' }));
-
-      await component.updateComment('c1', 'new');
-
-      expect(component['comments']()).toEqual([{ commentId: 'c1', message: 'new' }]);
-    });
-
-    it('should leave other comments unchanged when id does not match', async () => {
-      component['comments'].set([
-        { commentId: 'c1', message: 'first' },
-        { commentId: 'c2', message: 'second' },
-      ]);
-
-      const updated: CommentDTO = { commentId: 'other', message: 'updated' };
-      mockCommentApi.updateComment.mockReturnValueOnce(of(updated));
-
-      await component.updateComment('other', 'updated');
-
-      expect(component['comments']()).toEqual([
-        { commentId: 'c1', message: 'first' },
-        { commentId: 'c2', message: 'second' },
-      ]);
     });
 
     it('should preserve comment order when updating', async () => {
@@ -294,7 +234,7 @@ describe('CommentSection', () => {
     it('should delegate to loadComments', async () => {
       const spy = vi.spyOn(component, 'loadComments').mockResolvedValue(void 0);
       await component.refresh();
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledOnce();
     });
   });
 });

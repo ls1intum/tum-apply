@@ -24,11 +24,6 @@ describe('BackButtonComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should render back button', () => {
-    const buttonElement = fixture.nativeElement.querySelector('jhi-button');
-    expect(buttonElement).toBeTruthy();
-  });
-
   it('should call location.back when button is clicked', () => {
     const backSpy = vi.spyOn(location, 'back');
 

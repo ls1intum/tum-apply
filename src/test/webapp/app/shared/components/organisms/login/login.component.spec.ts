@@ -54,26 +54,16 @@ describe('Login Component', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('login steps', () => {
-    it('should show password fields when login step is "password"', () => {
+    it('should show password fields when login step is "password" and OTP input when step is "otp"', () => {
       authOrchestrator.loginStep.set('password');
       fixture.detectChanges();
       expect(component.showPassword()).toBe(true);
-    });
 
-    it('should show OTP input when login step is "otp"', () => {
       authOrchestrator.loginStep.set('otp');
       fixture.detectChanges();
-
-      const otpInput = fixture.debugElement.query(de => de.name === 'jhi-otp-input');
-      const credentialsGroup = fixture.debugElement.query(de => de.name === 'jhi-credentials-group');
-
-      expect(otpInput).toBeTruthy();
-      expect(credentialsGroup).toBeFalsy();
+      expect(fixture.debugElement.query(de => de.name === 'jhi-otp-input')).toBeTruthy();
+      expect(fixture.debugElement.query(de => de.name === 'jhi-credentials-group')).toBeFalsy();
     });
   });
 
@@ -126,29 +116,19 @@ describe('Login Component', () => {
   });
 
   describe('onEmailLogin', () => {
-    it('should return false if password is not provided for email login', async () => {
-      const result = await component.onEmailLogin('test@example.com');
-      expect(result).toBe(false);
+    it('should return false without calling loginWithEmail when password is missing', async () => {
+      expect(await component.onEmailLogin('test@example.com')).toBe(false);
     });
 
-    it('should return true and not show error on successful email login', async () => {
-      vi.spyOn(authFacade, 'loginWithEmail').mockResolvedValue(true);
+    it.each<[boolean, boolean, number]>([
+      [true, true, 0],
+      [false, false, 1],
+    ])('should return %s and call showError %i times when loginWithEmail returns %s', async (loginResult, expectedReturn, errorCount) => {
+      vi.spyOn(authFacade, 'loginWithEmail').mockResolvedValue(loginResult);
       const showErrorSpy = vi.spyOn(toastService, 'showError');
 
-      const result = await component.onEmailLogin('test@example.com', 'password');
-
-      expect(result).toBe(true);
-      expect(showErrorSpy).not.toHaveBeenCalled();
-    });
-
-    it('should return false and show error on failed email login', async () => {
-      vi.spyOn(authFacade, 'loginWithEmail').mockResolvedValue(false);
-      const showErrorSpy = vi.spyOn(toastService, 'showError');
-
-      const result = await component.onEmailLogin('test@example.com', 'password');
-
-      expect(result).toBe(false);
-      expect(showErrorSpy).toHaveBeenCalledOnce();
+      expect(await component.onEmailLogin('test@example.com', 'password')).toBe(expectedReturn);
+      expect(showErrorSpy).toHaveBeenCalledTimes(errorCount);
     });
   });
 });

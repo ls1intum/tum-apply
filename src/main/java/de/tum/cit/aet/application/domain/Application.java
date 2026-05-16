@@ -8,6 +8,7 @@ import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -141,4 +142,7 @@ public class Application extends AbstractAuditingEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<ApplicationDocument> applicationDocuments;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
+    private Set<ReferenceRequest> referenceRequests;
 }

@@ -1,7 +1,6 @@
 {
   "global": {
     "title": "TUMApply",
-    "browsehappy": "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/?locale=en\">upgrade your browser</a> to improve your experience.",
     "routes": {
       "landingPage": {
         "applicant": "TUMApply - Applicant Portal",
@@ -51,75 +50,11 @@
       "about-us": "TUMApply - About Us",
       "interview": {
         "overview": "TUMApply - Interview Overview",
-        "detail": "Interview - {jobTitle}",
+        "detail": "TUMApply - Interview",
         "assessment": "TUMApply - Interview Assessment"
       },
       "dataExport": {
         "download": "TUMApply - Data Export Download"
-      }
-    },
-    "menu": {
-      "home": "Home",
-      "colorTheme": "Change Color Theme",
-      "entities": {
-        "main": "Entities",
-        "adminAuthority": "Authority"
-      },
-      "account": {
-        "main": "Account",
-        "settings": "Settings",
-        "password": "Password",
-        "sessions": "Sessions",
-        "login": "Sign in",
-        "logout": "Sign out",
-        "register": "Register"
-      },
-      "admin": {
-        "main": "Administration",
-        "userManagement": "User management",
-        "tracker": "User tracker",
-        "metrics": "Metrics",
-        "health": "Health",
-        "configuration": "Configuration",
-        "logs": "Logs",
-        "apidocs": "API",
-        "database": "Database"
-      },
-      "language": "Language"
-    },
-    "messages": {
-      "info": {
-        "authenticated": {
-          "prefix": "If you want to ",
-          "link": "sign in",
-          "suffix": ", you can try the default accounts:<br/>- Administrator (login=\"admin\" and password=\"admin\") <br/>- User (login=\"user\" and password=\"user\")."
-        },
-        "register": {
-          "noaccount": "You don't have an account yet?",
-          "link": "Register a new account"
-        }
-      },
-      "error": {
-        "dontmatch": "The password and its confirmation do not match!"
-      },
-      "validate": {
-        "newpassword": {
-          "required": "Your password is required.",
-          "minlength": "Your password is required to be at least 4 characters.",
-          "maxlength": "Your password cannot be longer than 50 characters.",
-          "strength": "Password strength:"
-        },
-        "confirmpassword": {
-          "required": "Your confirmation password is required.",
-          "minlength": "Your confirmation password is required to be at least 4 characters.",
-          "maxlength": "Your confirmation password cannot be longer than 50 characters."
-        },
-        "email": {
-          "required": "Your email is required.",
-          "invalid": "Your email is invalid.",
-          "minlength": "Your email is required to be at least 5 characters.",
-          "maxlength": "Your email cannot be longer than 50 characters."
-        }
       }
     },
     "stepper": {
@@ -139,25 +74,16 @@
       }
     },
     "editor": {
-      "header": {
-        "heading": "Heading",
-        "subheading": "Subheading",
-        "normal": "Normal"
-      },
       "align": {
         "center": "center",
         "right": "right",
         "justify": "justify"
       }
     },
-    "field": {
-      "id": "ID"
-    },
     "ribbon": {
       "dev": "Development",
       "test": "Development"
     },
-    "item-count": "Showing {first} - {second} of {total} items.",
     "dataExport": {
       "downloadSuccess": "Download successful!",
       "downloadSuccessMessage": "Your data export has been downloaded successfully.",
@@ -220,19 +146,6 @@
     "delete": {
       "title": "Confirm delete operation"
     },
-    "validation": {
-      "required": "This field is required.",
-      "minlength": "This field is required to be at least {min} characters.",
-      "maxlength": "This field cannot be longer than {max} characters.",
-      "min": "This field should be at least {min}.",
-      "max": "This field cannot be more than {max}.",
-      "minbytes": "This field should be at least {min} bytes.",
-      "maxbytes": "This field cannot be more than {max} bytes.",
-      "pattern": "This field should follow pattern for {pattern}.",
-      "number": "This field should be a number.",
-      "datetimelocal": "This field should be a date and time.",
-      "patternLogin": "This field can only contain letters, digits and e-mail addresses."
-    },
     "filters": {
       "filter": "Filter",
       "sortingAndFilter": "Sorting & Filter",
@@ -274,6 +187,7 @@
         "BACHELOR_TRANSCRIPT": "Bachelor Transcript",
         "MASTER_TRANSCRIPT": "Master Transcript",
         "REFERENCES": "References",
+        "REFERENCE_LETTER": "Reference Letter",
         "CV": "CV",
         "CUSTOM": "Custom"
       },
@@ -336,12 +250,19 @@
       "personal_statements": "Personal Statements",
       "personal_information": "Personal Information",
       "personal_documents": "Personal Documents",
+      "reference_letters": "Recommendation Letters Requests",
+      "reference_status": {
+        "requested": "(requested)",
+        "submitted": "(submitted)",
+        "expired": "(expired)"
+      },
       "not_found": "Application not found"
     },
     "applicationSteps": {
       "personalInformation": "Personal Information",
       "education": "Education",
       "applicationDetails": "Application Details",
+      "references": "Recommendation Letters",
       "summary": "Summary",
       "confirmDialog": {
         "header": "Submit Application",
@@ -463,6 +384,37 @@
         "selectStartDate": "Select a Start Date..."
       }
     },
+    "applicationReferences": {
+      "description": "Please list your referees below. Upon submission, they will be emailed a secure link to upload their recommendation letter.",
+      "requiredCount": "Required: {count} · Added: ",
+      "empty": "No referees added yet.",
+      "section": {
+        "required": "Required Referees"
+      },
+      "label": {
+        "title": "Title",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email"
+      },
+      "button": {
+        "add": "Add"
+      },
+      "toast": {
+        "loadFailed": {
+          "summary": "Could not load referees",
+          "detail": "Failed to load the list of referees. Please reload the page."
+        },
+        "addFailed": {
+          "summary": "Could not add referee",
+          "detail": "The referee could not be added. Please check the entered data and try again."
+        },
+        "removeFailed": {
+          "summary": "Could not remove referee",
+          "detail": "The referee could not be removed. Please try again."
+        }
+      }
+    },
     "applicationPage4": {
       "title": "Overview",
       "message": "Please review your entries before submitting the application.",
@@ -482,6 +434,7 @@
       "state": {
         "draft": "Draft",
         "submitted": "Submitted",
+        "pending": "Pending",
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",
@@ -645,20 +598,50 @@
     }
   },
   "error": {
-    "internalServerError": "Internal server error",
     "server.not.reachable": "Server not reachable",
     "url.not.found": "Not found",
-    "NotNull": "Field {fieldName} cannot be empty!",
-    "Size": "Field {fieldName} does not meet min/max size requirements!",
-    "userexists": "Login name already used!",
-    "emailexists": "Email is already in use!",
-    "idexists": "A new {entityName} cannot already have an ID",
-    "idnull": "Invalid ID",
-    "idinvalid": "Invalid ID",
-    "idnotfound": "ID cannot be found",
     "file": {
       "could.not.extract": "Could not extract file",
       "not.image": "File was expected to be an image but was found to be \"{fileType}\""
+    }
+  },
+  "reference": {
+    "title": "Upload your recommendation letter",
+    "loading": "Loading...",
+    "requestedFor": {
+      "title": "Requested for",
+      "applicant": "Applicant",
+      "jobTitle": "Position",
+      "researchGroup": "Research group"
+    },
+    "upload": {
+      "confirm": "Confirm"
+    },
+    "summary": {
+      "title": "Summary",
+      "applicant": "Applicant",
+      "jobTitle": "Position",
+      "researchGroup": "Research group"
+    },
+    "success": {
+      "title": "Recommendation letter received",
+      "message": "Thank you. Your letter has been submitted successfully."
+    },
+    "expired": {
+      "title": "Deadline reached",
+      "message": "The deadline for this recommendation letter has passed."
+    },
+    "error": {
+      "title": "Link not valid",
+      "invalidLink": "This recommendation letter link is invalid or no longer accessible."
+    },
+    "uploadSuccess": {
+      "summary": "Letter uploaded",
+      "detail": "Your recommendation letter has been received."
+    },
+    "uploadFailed": {
+      "summary": "Upload failed",
+      "detail": "We could not save your letter. Please try again."
     }
   },
   "imageUpload": {

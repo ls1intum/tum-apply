@@ -1,6 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { Location } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
@@ -38,7 +37,6 @@ export class InterviewProcessDetailComponent {
   hasSlots = signal(false);
 
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly interviewApi = inject(InterviewResourceApi);
   private readonly titleService = inject(Title);
   private readonly toastService = inject(ToastService);
@@ -49,8 +47,6 @@ export class InterviewProcessDetailComponent {
       this.updateTabTitle(title);
     }
   });
-
-  private readonly location = inject(Location);
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('processId') ?? undefined;
