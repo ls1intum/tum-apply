@@ -242,7 +242,7 @@ export class AuthOrchestratorService {
     this.otpAttemptCooldownUntil.set(null);
   }
 
-  private startOtpRefreshCooldown(): void {
+  public startOtpRefreshCooldown(): void {
     const cooldown = this.config.otp.resendCooldownSeconds;
     const now = Date.now();
     this.cooldownUntil.set(now + Math.max(0, cooldown) * 1000);

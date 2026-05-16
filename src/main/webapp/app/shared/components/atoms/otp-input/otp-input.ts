@@ -117,6 +117,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
       this.authOrchestratorService.clearError();
       this.setValue('');
       void this.authFacade.requestOtp(this.isRegistration(), true);
+      this.authOrchestratorService.startOtpRefreshCooldown();
     }
   }
 
