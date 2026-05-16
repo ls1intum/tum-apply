@@ -14,7 +14,9 @@
     class="otp-input"
   />
   <div class="text-negative-default">
-    @if (showError()) {
+    @if (isAttemptCooldown()) {
+      <span [translateValues]="{ seconds: attemptCooldownSeconds() }" jhiTranslate="auth.common.otp.attemptCooldown"></span>
+    } @else if (showError()) {
       <span jhiTranslate="auth.common.otp.error"></span>
     }
   </div>
