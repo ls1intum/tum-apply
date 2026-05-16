@@ -389,6 +389,11 @@ export class AuthFacadeService {
       }
       return response;
     } catch (e) {
+      //check if passkey had an error because user refused to use passkey
+      if (e instanceof DOMException && e.name === 'NotAllowedError') {
+        console.log('Passkey prompt dismissed by user. Flow aborted cleanly.');
+        return undefined as any; 
+      }
       this.authOrchestrator.setError(errorMessage);
       throw e;
     } finally {
