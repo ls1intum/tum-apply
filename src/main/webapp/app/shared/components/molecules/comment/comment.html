@@ -3,6 +3,9 @@
   <div class="flex justify-between items-center w-full h-[2.1rem] px-4 py-1 rounded-t-lg border border-border-default">
     <div class="flex flex-row items-center gap-4">
       <span class="font-semibold">{{ author() }}</span>
+      @if (!isCreate() && rating() !== undefined) {
+        <jhi-rating [rating]="rating()" />
+      }
       @if (!isCreate()) {
         <span class="text-[0.8rem] text-text-secondary">
           {{ createdAt() | timeAgo }}

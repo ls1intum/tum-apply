@@ -1,18 +1,15 @@
 import { Component, computed, inject, input, model } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
-import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'jhi-rating',
-  imports: [TooltipModule],
   templateUrl: './rating.component.html',
 })
 export class RatingComponent {
   rating = model<number | undefined>(undefined);
   selectable = input<boolean>(false);
 
-  // Likert scale values from -2 to +2
   readonly likertValues = [-2, -1, 0, 1, 2];
 
   readonly tooltipTexts = computed(() => {
@@ -20,52 +17,46 @@ export class RatingComponent {
     return this.tooltipKeys.map(suffix => this.translateService.instant(`evaluation.ratings.${suffix}`));
   });
 
-  protected readonly Array = Array;
-
   private readonly tooltipKeys = ['very_bad', 'bad', 'neutral', 'good', 'very_good'];
   private translateService = inject(TranslateService);
   private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   onSectionClick(index: number): void {
-    if (!this.selectable()) {
-      return;
-    }
-
+    if (!this.selectable()) return;
     const newRating = this.likertValues[index];
-    // If clicking the same rating, unselect it
-    if (this.rating() === newRating) {
-      this.rating.set(undefined);
-    } else {
-      this.rating.set(newRating);
+    this.rating.set(this.rating() === newRating ? undefined : newRating);
+  }
+
+  getColorForValue(value: number): string {
+    switch (value) {
+      case -2:
+        return 'var(--color-negative-active)';
+      case -1:
+        return 'var(--color-negative-hover)';
+      case 0:
+        return 'var(--color-warning-default)';
+      case 1:
+        return 'var(--color-positive-hover)';
+      case 2:
+        return 'var(--color-positive-active)';
+      default:
+        return 'var(--p-background-surface-alt)';
     }
   }
 
-  getSectionColor(index: number): string {
-    const currentRating = this.rating();
+  getButtonBg(index: number): string {
     const sectionValue = this.likertValues[index];
-
-    if (currentRating === undefined) {
-      return 'var(--p-background-surface-alt)';
-    }
-
-    if (sectionValue === currentRating) {
-      switch (sectionValue) {
-        case -2:
-          return 'var(--color-negative-active)';
-        case -1:
-          return 'var(--color-negative-hover)';
-        case 0:
-          return 'var(--color-warning-default)';
-        case 1:
-          return 'var(--color-positive-hover)';
-        case 2:
-          return 'var(--color-positive-active)';
-      }
-    }
-    return 'var(--p-background-surface-alt)';
+    return this.rating() === sectionValue ? this.getColorForValue(sectionValue) : 'var(--p-background-surface-alt)';
   }
 
-  getCursor(): string {
-    return this.selectable() ? 'pointer' : 'default';
+  getButtonTextColor(index: number): string {
+    return this.rating() === this.likertValues[index] ? 'white' : 'var(--p-text-color)';
+  }
+
+  getSelectedLabel(): string {
+    const r = this.rating();
+    if (r === undefined) return '';
+    const idx = this.likertValues.indexOf(r);
+    return idx >= 0 ? this.tooltipTexts()[idx] : '';
   }
 }

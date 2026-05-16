@@ -1,15 +1,21 @@
-<div class="flex gap-[2%] w-full max-w-[21rem] h-4 rounded-pill overflow-hidden">
-  @for (item of likertValues; track $index) {
-    <div
-      class="flex-1 transition-colors"
-      [class]="selectable() ? 'cursor-pointer hover:brightness-75' : ''"
-      [style.background-color]="getSectionColor($index)"
-      [pTooltip]="tooltipTexts()[$index]"
-      tooltipPosition="top"
-      tabindex="0"
-      role="button"
-      (click)="onSectionClick($index)"
-      (keydown.enter)="onSectionClick($index)"
-    ></div>
-  }
-</div>
+@if (selectable()) {
+  <div class="flex flex-wrap gap-2">
+    @for (item of likertValues; track $index) {
+      <button
+        class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-150 border border-border-default focus:outline-none"
+        [style.background-color]="getButtonBg($index)"
+        [style.color]="getButtonTextColor($index)"
+        (click)="onSectionClick($index)"
+        (keydown.enter)="onSectionClick($index)"
+      >
+        {{ tooltipTexts()[$index] }}
+      </button>
+    }
+  </div>
+} @else if (rating() !== undefined) {
+  <span
+    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
+    [style.background-color]="getColorForValue(rating()!)"
+    >{{ getSelectedLabel() }}</span
+  >
+}

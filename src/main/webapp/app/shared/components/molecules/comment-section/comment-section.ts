@@ -5,6 +5,8 @@ import { ToastService } from 'app/service/toast-service';
 import { Comment } from 'app/shared/components/molecules/comment/comment';
 import { InternalCommentResourceApi } from 'app/generated/api/internal-comment-resource-api';
 import { InternalCommentDTO } from 'app/generated/model/internal-comment-dto';
+import { RatingResourceApi } from 'app/generated/api/rating-resource-api';
+import { RatingDTO } from 'app/generated/model/rating-dto';
 
 import TranslateDirective from '../../../language/translate.directive';
 
@@ -15,12 +17,15 @@ import TranslateDirective from '../../../language/translate.directive';
 })
 export class CommentSection {
   commentApi = inject(InternalCommentResourceApi);
+  ratingApi = inject(RatingResourceApi);
   accountService = inject(AccountService);
   toast = inject(ToastService);
 
   applicationId = input.required<string | undefined>();
 
   protected comments = signal<InternalCommentDTO[]>([]);
+  protected otherRatings = signal<RatingDTO[]>([]);
+  protected currentUserRating = signal<number | undefined>(undefined);
   protected createDraft = signal<string>('');
   protected currentUser = this.accountService.loadedUser()?.name ?? '';
   protected editingId = signal<string | undefined>(undefined);
@@ -30,10 +35,30 @@ export class CommentSection {
     this.createDraft.set('');
     if (id !== undefined) {
       void this.loadComments();
+      void this.loadOtherRatings(id);
     } else {
       this.comments.set([]);
+      this.otherRatings.set([]);
+      this.currentUserRating.set(undefined);
     }
   });
+
+  ratingForAuthor(author: string): number | undefined {
+    if (author === this.currentUser) {
+      return this.currentUserRating();
+    }
+    return this.otherRatings().find(r => r.from === author)?.rating;
+  }
+
+  async loadOtherRatings(applicationId: string): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.ratingApi.getRatings(applicationId));
+      this.otherRatings.set(data.otherRatings ?? []);
+      this.currentUserRating.set(data.currentUserRating ?? undefined);
+    } catch {
+      this.toast.showError({ summary: 'Error', detail: 'Failed to load comment ratings' });
+    }
+  }
 
   async loadComments(): Promise<void> {
     const id = this.applicationId();
