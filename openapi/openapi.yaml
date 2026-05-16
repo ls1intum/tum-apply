@@ -308,7 +308,8 @@ paths:
         required: true
         schema:
           type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, REFERENCE_LETTER,
+            CV, CUSTOM]
       requestBody:
         content:
           multipart/form-data:
@@ -610,7 +611,8 @@ paths:
         required: true
         schema:
           type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, REFERENCE_LETTER,
+            CV, CUSTOM]
       requestBody:
         content:
           multipart/form-data:
@@ -744,6 +746,39 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/AuthSessionInfoDTO'}
+  /api/auth/passkeys:
+    get:
+      tags: [authentication-resource]
+      operationId: listPasskeys
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/PasskeyDTO'}
+  /api/auth/passkeys/action-token:
+    get:
+      tags: [authentication-resource]
+      operationId: createPasskeyActionToken
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PasskeyActionTokenDTO'}
+  /api/auth/passkeys/{credentialId}:
+    delete:
+      tags: [authentication-resource]
+      operationId: removePasskey
+      parameters:
+      - name: credentialId
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200': {description: OK}
   /api/auth/refresh:
     post:
       tags: [authentication-resource]
@@ -2089,9 +2124,44 @@ paths:
           description: OK
           content:
             application/json:
-              schema:
-                type: object
-                additionalProperties: {}
+              schema: {$ref: '#/components/schemas/PublicConfigDTO'}
+  /api/reference-letters/{token}:
+    get:
+      tags: [reference-letter-upload-resource]
+      operationId: getContext
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferenceLetterContextDTO'}
+    post:
+      tags: [reference-letter-upload-resource]
+      operationId: upload
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema: {type: string}
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: {type: string, format: binary}
+              required: [file]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferenceRequestDTO'}
   /api/research-groups:
     get:
       tags: [research-group-resource]
@@ -2782,7 +2852,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
@@ -2793,6 +2863,9 @@ components:
         jobTitle: {type: string}
         motivation: {type: string}
         projects: {type: string}
+        references:
+          type: array
+          items: {$ref: '#/components/schemas/ReferenceRequestDTO'}
         researchGroup: {type: string}
         specialSkills: {type: string}
         supervisingProfessorName: {type: string}
@@ -2841,7 +2914,7 @@ components:
         name: {type: string}
         state:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
     ApplicationEvaluationOverviewListDTO:
       type: object
@@ -2857,7 +2930,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         job: {$ref: '#/components/schemas/JobCardDTO'}
@@ -2871,7 +2944,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         createdAt: {type: string, format: date-time}
         jobId: {type: string, format: uuid}
@@ -3047,7 +3120,8 @@ components:
       properties:
         documentType:
           type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, REFERENCE_LETTER,
+            CV, CUSTOM]
         id: {type: string, format: uuid}
         name: {type: string}
         size: {type: integer, format: int64}
@@ -3258,7 +3332,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         avatar: {type: string}
         contractDuration: {type: integer, format: int32}
@@ -3345,7 +3419,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         contractDuration: {type: integer, format: int32}
         contractExtendable: {type: boolean}
@@ -3472,6 +3546,15 @@ components:
         labels:
           type: object
           additionalProperties: {type: string}
+    KeycloakConfig:
+      type: object
+      properties:
+        clientId: {type: string}
+        externalLoginRealm: {type: string}
+        externalRelyingPartyId: {type: string}
+        relyingPartyId: {type: string}
+        tumLoginRealm: {type: string}
+        url: {type: string}
     KeycloakUserDTO:
       type: object
       properties:
@@ -3501,6 +3584,12 @@ components:
           type: string
           enum: [LOGIN, REGISTER]
       required: [code, email, purpose]
+    OtpConfig:
+      type: object
+      properties:
+        length: {type: integer, format: int32}
+        resendCooldownSeconds: {type: integer, format: int32}
+        ttlSeconds: {type: integer, format: int32}
     PageApplicationOverviewDTO:
       type: object
       properties:
@@ -3614,6 +3703,19 @@ components:
         paged: {type: boolean}
         sort: {$ref: '#/components/schemas/SortObject'}
         unpaged: {type: boolean}
+    PasskeyActionTokenDTO:
+      type: object
+      properties:
+        accessToken: {type: string}
+        clientId: {type: string}
+        expiresIn: {type: integer, format: int32}
+        realm: {type: string}
+    PasskeyDTO:
+      type: object
+      properties:
+        createdDate: {type: integer, format: int64}
+        id: {type: string}
+        label: {type: string}
     ProfOnboardingDTO:
       type: object
       properties:
@@ -3626,6 +3728,11 @@ components:
         lastName: {type: string}
         researchGroupName: {type: string}
         researchGroupWebsite: {type: string}
+    PublicConfigDTO:
+      type: object
+      properties:
+        keycloak: {$ref: '#/components/schemas/KeycloakConfig'}
+        otp: {$ref: '#/components/schemas/OtpConfig'}
     RatingDTO:
       type: object
       properties:
@@ -3639,9 +3746,21 @@ components:
           type: array
           items: {$ref: '#/components/schemas/RatingDTO'}
           uniqueItems: true
+    ReferenceLetterContextDTO:
+      type: object
+      properties:
+        applicantFirstName: {type: string}
+        applicantLastName: {type: string}
+        deadline: {type: string, format: date-time}
+        jobTitle: {type: string}
+        researchGroupName: {type: string}
+        status:
+          type: string
+          enum: [REQUESTED, SUBMITTED, EXPIRED]
     ReferenceRequestDTO:
       type: object
       properties:
+        documentId: {type: string, format: uuid}
         email: {type: string}
         firstName: {type: string}
         lastName: {type: string}
@@ -3811,7 +3930,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         motivation: {type: string}
