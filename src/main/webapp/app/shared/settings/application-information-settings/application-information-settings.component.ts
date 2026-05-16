@@ -197,10 +197,7 @@ export class ApplicationInformationSettingsComponent {
         postcode: normalizedValue.postcode as string,
       };
       this.data.set(nextData);
-      this.isValid.set(form.valid);
-      if (this.initialDataSnapshot() !== undefined && form.valid && this.hasChanges()) {
-        this.autoSave.notifyChanged();
-      }
+      this.queueAutoSaveIfNeeded();
     });
 
     const statusSubscription = form.statusChanges.subscribe(() => {
@@ -276,6 +273,11 @@ export class ApplicationInformationSettingsComponent {
 
   async performAutoSave(): Promise<boolean> {
     try {
+      const form = this.applicationInfoForm();
+      if (!form.valid) {
+        return false;
+      }
+
       const loadedUser = this.accountService.loadedUser();
       if (loadedUser?.id == null) {
         this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
@@ -360,11 +362,6 @@ export class ApplicationInformationSettingsComponent {
 
   private revealPostcodeCountryMismatch(): void {
     const postcodeControl = this.applicationInfoForm().controls.postcode;
-    const postcodeValue = (postcodeControl.value ?? '').trim();
-    if (postcodeValue.length === 0) {
-      return;
-    }
-
     postcodeControl.updateValueAndValidity();
     if (postcodeControl.hasError('invalidPostalCode')) {
       postcodeControl.markAsTouched();
@@ -380,6 +377,9 @@ export class ApplicationInformationSettingsComponent {
     this.isValid.set(form.valid);
     if (form.valid && this.hasChanges()) {
       this.autoSave.notifyChanged();
+      return;
     }
+
+    this.autoSave.reset();
   }
 }

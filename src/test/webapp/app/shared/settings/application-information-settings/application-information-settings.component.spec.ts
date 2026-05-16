@@ -219,11 +219,10 @@ describe('ApplicationInformationSettingsComponent', () => {
       fixture.detectChanges();
 
       const component = fixture.componentInstance;
-      component.data.set({
-        ...component.data(),
-        country: { value: 'de', name: 'countries.de' },
-        postcode: '80333',
-      });
+      const updatedData: ApplicationInformationData = structuredClone(component.data());
+      updatedData.country = { value: 'de', name: 'countries.de' };
+      updatedData.postcode = '80333';
+      component.data.set(updatedData);
       fixture.detectChanges();
 
       component.updateSelect('country', { value: 'NL', name: 'countries.NL' });
@@ -232,6 +231,26 @@ describe('ApplicationInformationSettingsComponent', () => {
       expect(component.applicationInfoForm().controls.postcode.touched).toBe(true);
       expect(component.applicationInfoForm().controls.postcode.errors).toHaveProperty('invalidPostalCode');
       expect(fixture.nativeElement.textContent).toContain('entity.applicationPage1.validation.postalCode');
+      component['autoSave'].reset();
+    });
+
+    it('should treat a whitespace-only postcode as empty when country changes', async () => {
+      const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
+      await flushAsyncWork();
+      fixture.detectChanges();
+
+      const component = fixture.componentInstance;
+      const updatedData: ApplicationInformationData = structuredClone(component.data());
+      updatedData.country = { value: 'de', name: 'countries.de' };
+      updatedData.postcode = '   ';
+      component.data.set(updatedData);
+      fixture.detectChanges();
+
+      component.updateSelect('country', { value: 'NL', name: 'countries.NL' });
+      fixture.detectChanges();
+
+      expect(component.applicationInfoForm().controls.postcode.touched).toBe(false);
+      expect(component.applicationInfoForm().controls.postcode.errors).toBeNull();
       component['autoSave'].reset();
     });
 
@@ -248,6 +267,30 @@ describe('ApplicationInformationSettingsComponent', () => {
           country: undefined,
         }),
       );
+
+      component['autoSave'].reset();
+      vi.useRealTimers();
+    });
+
+    it('should cancel a pending autosave when the form becomes invalid before debounce expiry', async () => {
+      vi.useFakeTimers();
+      const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
+      await flushAsyncWork();
+      fixture.detectChanges();
+
+      const component = fixture.componentInstance;
+      vi.clearAllMocks();
+
+      component.applicationInfoForm().controls.city.setValue('Berlin');
+      fixture.detectChanges();
+
+      component.updateSelect('country', { value: 'NL', name: 'countries.NL' });
+      fixture.detectChanges();
+
+      await vi.advanceTimersByTimeAsync(AUTO_SAVE_DELAY_MS);
+
+      expect(component.applicationInfoForm().valid).toBe(false);
+      expect(applicantApiMock.updateApplicantPersonalInformation).not.toHaveBeenCalled();
 
       component['autoSave'].reset();
       vi.useRealTimers();
@@ -376,6 +419,29 @@ describe('ApplicationInformationSettingsComponent', () => {
 
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.applicationInformation.saveFailed');
       expect(toastServiceMock.showSuccessKey).not.toHaveBeenCalled();
+    });
+
+    it('should not persist when performAutoSave runs while the form is invalid', async () => {
+      const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
+      await flushAsyncWork();
+      fixture.detectChanges();
+
+      const component = fixture.componentInstance;
+      vi.clearAllMocks();
+
+      const updatedData: ApplicationInformationData = structuredClone(component.data());
+      updatedData.country = { value: 'NL', name: 'countries.NL' };
+      component.data.set(updatedData);
+      fixture.detectChanges();
+      component['revealPostcodeCountryMismatch']();
+      fixture.detectChanges();
+
+      const saved = await component.performAutoSave();
+
+      expect(component.applicationInfoForm().valid).toBe(false);
+      expect(saved).toBe(false);
+      expect(applicantApiMock.updateApplicantPersonalInformation).not.toHaveBeenCalled();
+      component['autoSave'].reset();
     });
   });
 });

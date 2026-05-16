@@ -89,7 +89,7 @@ export abstract class BaseInputDirective<T> {
   constructor() {
     effect(onCleanup => {
       const ctrl = this.formControl();
-      this.isTouched.set(ctrl.touched);
+      this.isTouched.set(this.isTouched() || ctrl.touched);
       const statusSub = ctrl.statusChanges.subscribe(() => {
         this.formValidityVersion.update(v => v + 1);
       });
