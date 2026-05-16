@@ -101,6 +101,9 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "suitable_for_disabled")
     private Boolean suitableForDisabled;
 
+    @Column(name = "reference_letters_required", nullable = false)
+    private Integer referenceLettersRequired = 0;
+
     // Contains all the Applications that are submitted to this Job
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Application> applications;

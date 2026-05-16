@@ -33,12 +33,12 @@ export class ApplicationCardComponent {
     return undefined;
   });
 
-  readonly stateSeverityMap: Record<string, 'success' | 'warn' | 'danger' | 'info'> = {
+  readonly stateSeverityMap: Record<string, 'success' | 'warn' | 'danger' | 'info' | 'neutral'> = {
     SENT: 'info',
     ACCEPTED: 'success',
     REJECTED: 'danger',
     IN_REVIEW: 'warn',
-    INTERVIEW: 'info',
+    INTERVIEW: 'neutral',
   };
 
   readonly nameParts = computed<{ first: string; last: string }>(() => {

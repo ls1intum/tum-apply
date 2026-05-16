@@ -145,50 +145,33 @@ describe('IntervieweeAssessmentComponent', () => {
     });
   });
 
-  describe('Computed Properties', () => {
-    it.each([
-      { property: 'applicantAvatar', expected: '/img/alice.jpg' },
-      { property: 'degreeName', expected: 'Computer Science' },
-      { property: 'universityName', expected: 'TU Munich' },
-      { property: 'motivation', expected: 'I love this role' },
-      { property: 'skills', expected: 'Angular, TypeScript' },
-      { property: 'interests', expected: 'Built a CMS' },
-      { property: 'applicationId', expected: 'app-1' },
-    ])('should compute $property correctly', ({ property, expected }) => {
-      expect(component[property as keyof typeof component]()).toBe(expected);
-    });
-
-    it('should compute applicantName from user', () => {
-      expect(component['applicantName']()).toContain('Alice');
-      expect(component['applicantName']()).toContain('Mueller');
-    });
-
-    it('should compute slotInfo from interviewee', () => {
-      expect(component['slotInfo']()?.location).toBe('Room 303');
-    });
+  it('should compute properties from loaded data', () => {
+    expect(component['applicantAvatar']()).toBe('/img/alice.jpg');
+    expect(component['degreeName']()).toBe('Computer Science');
+    expect(component['universityName']()).toBe('TU Munich');
+    expect(component['motivation']()).toBe('I love this role');
+    expect(component['skills']()).toBe('Angular, TypeScript');
+    expect(component['interests']()).toBe('Built a CMS');
+    expect(component['applicationId']()).toBe('app-1');
+    expect(component['applicantName']()).toContain('Alice');
+    expect(component['slotInfo']()?.location).toBe('Room 303');
   });
 
-  describe('Computed Properties with missing data', () => {
-    beforeEach(async () => {
-      (mockInterviewService.getIntervieweeDetails as ReturnType<typeof vi.fn>).mockReturnValue(of(intervieweeWithoutOptionals));
-      TestBed.resetTestingModule();
-      await configureTestBed();
-      createComponent();
-      await fixture.whenStable();
-    });
+  it('should default computed properties when data is missing', async () => {
+    (mockInterviewService.getIntervieweeDetails as ReturnType<typeof vi.fn>).mockReturnValue(of(intervieweeWithoutOptionals));
+    TestBed.resetTestingModule();
+    await configureTestBed();
+    createComponent();
+    await fixture.whenStable();
 
-    it.each([
-      { property: 'applicantName', expected: '' },
-      { property: 'applicantAvatar', expected: undefined },
-      { property: 'degreeName', expected: '' },
-      { property: 'universityName', expected: '' },
-      { property: 'motivation', expected: '' },
-      { property: 'skills', expected: '' },
-      { property: 'interests', expected: '' },
-      { property: 'savedNotes', expected: '' },
-    ])('should return "$expected" for $property when data is missing', ({ property, expected }) => {
-      expect(component[property as keyof typeof component]()).toBe(expected);
-    });
+    expect(component['applicantName']()).toBe('');
+    expect(component['applicantAvatar']()).toBeUndefined();
+    expect(component['degreeName']()).toBe('');
+    expect(component['universityName']()).toBe('');
+    expect(component['motivation']()).toBe('');
+    expect(component['skills']()).toBe('');
+    expect(component['interests']()).toBe('');
+    expect(component['savedNotes']()).toBe('');
   });
 
   describe('Auto-save Notes', () => {

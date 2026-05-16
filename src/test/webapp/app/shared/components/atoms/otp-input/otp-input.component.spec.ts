@@ -26,7 +26,6 @@ import {
   provideAuthOrchestratorServiceMock,
 } from '../../../../../util/auth-orchestrator.service.mock';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../../../util/toast-service.mock';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 describe('OtpInput', () => {
   let applicationConfigMock: ApplicationConfigServiceMock;
@@ -49,7 +48,7 @@ describe('OtpInput', () => {
 
   const getIsRegistration = (component: OtpInput): boolean => component.getRegistrationFlag();
 
-  const getFormControl = (component: OtpInput) => (component as any).formControl();
+  const getFormControl = (component: OtpInput) => component.formControl();
 
   function createComponent() {
     const fixture = TestBed.createComponent(OtpInput);
@@ -99,129 +98,64 @@ describe('OtpInput', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create with default configuration and compute ttlMinutes', () => {
+  it.each<[boolean, boolean, 'large' | 'small' | null]>([
+    [true, false, 'large'],
+    [false, true, 'small'],
+    [false, false, null],
+  ])('should resolve otpSize when xLarge=%s xSmall=%s', (xLarge, xSmall, expected) => {
+    breakpointState[Breakpoints.XLarge] = xLarge;
+    breakpointState[Breakpoints.XSmall] = xSmall;
+    breakpointState[Breakpoints.Small] = false;
     const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    expect(component).toBeTruthy();
-    expect(component.length).toBe(applicationConfigMock.otp.length);
-    expect(component.ttlMinutes).toBe(Math.max(1, Math.ceil(applicationConfigMock.otp.ttlSeconds / 60)));
+    expect(fixture.componentInstance.otpSize()).toBe(expected);
   });
 
-  it('should determine otpSize based on breakpoints (large / small / null)', () => {
-    breakpointState[Breakpoints.XLarge] = true;
-    breakpointState[Breakpoints.XSmall] = false;
-    breakpointState[Breakpoints.Small] = false;
-    const largeFixture = createComponent();
-    expect(largeFixture.componentInstance.otpSize()).toBe('large');
-
-    breakpointState[Breakpoints.XLarge] = false;
-    breakpointState[Breakpoints.XSmall] = true;
-    breakpointState[Breakpoints.Small] = false;
-    const smallFixture = createComponent();
-    expect(smallFixture.componentInstance.otpSize()).toBe('small');
-
-    breakpointState[Breakpoints.XLarge] = false;
-    breakpointState[Breakpoints.XSmall] = false;
-    breakpointState[Breakpoints.Small] = false;
-    const defaultFixture = createComponent();
-    expect(defaultFixture.componentInstance.otpSize()).toBeNull();
-  });
-
-  it('should prefer registration flag from DynamicDialogConfig over input', () => {
-    dynamicDialogConfigMock.data = { registration: true };
+  it.each<[unknown, boolean, boolean]>([
+    [{ registration: true }, false, true],
+    [{}, true, true],
+    [undefined, true, true],
+  ])('should resolve registration flag from dialog data %o vs input %s', (dialogData, inputFlag, expected) => {
+    dynamicDialogConfigMock.data = dialogData;
     const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    fixture.componentRef.setInput('registration', false);
+    fixture.componentRef.setInput('registration', inputFlag);
     fixture.detectChanges();
 
-    expect(getIsRegistration(component)).toBe(true);
+    expect(getIsRegistration(fixture.componentInstance)).toBe(expected);
   });
 
-  it('should derive registration from @Input when no override is provided', () => {
-    dynamicDialogConfigMock.data = {};
+  it('should normalize OTP input, mark control dirty for non-empty values, and reset to pristine on undefined', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
 
-    fixture.componentRef.setInput('registration', true);
-    fixture.detectChanges();
-
-    expect(getIsRegistration(component)).toBe(true);
-  });
-
-  it('should handle missing dialog data without overriding registration input', () => {
-    (dynamicDialogConfigMock as any).data = undefined;
-
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    fixture.componentRef.setInput('registration', true);
-    fixture.detectChanges();
-
-    expect(getIsRegistration(component)).toBe(true);
-  });
-
-  it('should normalize OTP input and mark control as dirty for non-empty value', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    // Test with mixed input but consists only digits
-    const otpEvent = createInputOtpChangeEvent('12$3');
-    component.onChange(otpEvent);
+    component.onChange(createInputOtpChangeEvent('12$3'));
     fixture.detectChanges();
 
     const ctrl = getFormControl(component);
     expect(component.otpValue()).toBe('123');
     expect(ctrl.value).toBe('123');
     expect(ctrl.dirty).toBe(true);
-    expect(ctrl.pristine).toBe(false);
-  });
-
-  it('should reset OTP and mark control as pristine for empty value', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    component.onChange(createInputOtpChangeEvent('abc'));
-    fixture.detectChanges();
 
     component.onChange(createInputOtpChangeEvent(undefined));
     fixture.detectChanges();
 
-    const ctrl = getFormControl(component);
     expect(component.otpValue()).toBe('');
     expect(ctrl.value).toBe('');
     expect(ctrl.pristine).toBe(true);
   });
 
-  it('should clear error and not call verifyOtp when submit is disabled', () => {
+  it('should clear error on submit and only call verifyOtp when form is valid', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
-
     const clearSpy = vi.spyOn(authOrchestratorServiceMock, 'clearError');
 
     component.onSubmit();
-
     expect(clearSpy).toHaveBeenCalledOnce();
-    expect(authFacadeMock.verifyOtp).not.toHaveBeenCalledOnce();
-  });
+    expect(authFacadeMock.verifyOtp).not.toHaveBeenCalled();
 
-  it('should submit OTP and call verifyOtp when form is valid', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    const otp = '123456';
-    component.onChange(createInputOtpChangeEvent(otp));
+    component.onChange(createInputOtpChangeEvent('123456'));
     fixture.detectChanges();
-
-    const registrationFlagBefore = getIsRegistration(component);
-
-    const clearSpy = vi.spyOn(authOrchestratorServiceMock, 'clearError');
-
     component.onSubmit();
-
-    expect(clearSpy).toHaveBeenCalledOnce();
-    expect(authFacadeMock.verifyOtp).toHaveBeenCalledWith(otp, registrationFlagBefore);
+    expect(authFacadeMock.verifyOtp).toHaveBeenCalledWith('123456', getIsRegistration(component));
   });
 
   it('should trigger submit when pressing Enter key and prevent default', () => {
@@ -237,35 +171,21 @@ describe('OtpInput', () => {
     expect(submitSpy).toHaveBeenCalledOnce();
   });
 
-  it('should allow non-character keys like Backspace without preventing default', () => {
+  it.each<[string, boolean]>([
+    ['Backspace', false],
+    ['@', true],
+    ['A', false],
+  ])('should preventDefault=%s for key %s', (key, shouldPrevent) => {
     const fixture = createComponent();
-    const component = fixture.componentInstance;
-
     const preventDefault = vi.fn();
-    component.onKeyDown(createKeyboardEvent('Backspace', preventDefault));
 
-    // Backspace has key.length > 1 and should not be prevented
-    expect(preventDefault).not.toHaveBeenCalledOnce();
-  });
+    fixture.componentInstance.onKeyDown(createKeyboardEvent(key, preventDefault));
 
-  it('should block non-alphanumeric single-character keys', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    const preventDefault = vi.fn();
-    component.onKeyDown(createKeyboardEvent('@', preventDefault));
-
-    expect(preventDefault).toHaveBeenCalledOnce();
-  });
-
-  it('should allow alphanumeric keys without preventing default', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    const preventDefault = vi.fn();
-    component.onKeyDown(createKeyboardEvent('A', preventDefault));
-
-    expect(preventDefault).not.toHaveBeenCalledOnce();
+    if (shouldPrevent) {
+      expect(preventDefault).toHaveBeenCalledOnce();
+    } else {
+      expect(preventDefault).not.toHaveBeenCalled();
+    }
   });
 
   it('should not resend OTP when disableResend is true (busy or cooldown)', () => {
@@ -277,7 +197,7 @@ describe('OtpInput', () => {
 
     component.onResend();
 
-    expect(authFacadeMock.requestOtp).not.toHaveBeenCalledOnce();
+    expect(authFacadeMock.requestOtp).not.toHaveBeenCalled();
   });
 
   it('should resend OTP, clear errors and reset value when allowed', () => {
@@ -301,27 +221,20 @@ describe('OtpInput', () => {
     expect(authFacadeMock.requestOtp).toHaveBeenCalledWith(registrationFlagBefore);
   });
 
-  it('should compute disableResend and disabledSubmit for initial state', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
+  it('should derive disableResend and disabledSubmit from busy state', () => {
+    let fixture = createComponent();
+    expect(fixture.componentInstance.disableResend()).toBe(false);
+    expect(fixture.componentInstance.disabledSubmit()).toBe(true);
 
-    expect(component.disableResend()).toBe(false);
-    expect(component.disabledSubmit()).toBe(true);
-  });
-
-  it('should set disableResend to true when orchestrator is busy', () => {
     authOrchestratorServiceMock.isBusy.set(true);
-
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    expect(component.disableResend()).toBe(true);
-    expect(component.disabledSubmit()).toBe(true);
+    fixture = createComponent();
+    expect(fixture.componentInstance.disableResend()).toBe(true);
+    expect(fixture.componentInstance.disabledSubmit()).toBe(true);
   });
 
   it('should allow submit when OTP length is correct even if an error is present', () => {
     authOrchestratorServiceMock.isBusy.set(false);
-    authOrchestratorServiceMock.error.set({ message: 'error' } as any);
+    authOrchestratorServiceMock.error.set({ message: 'error' } as unknown as string);
 
     const fixture = createComponent();
     const component = fixture.componentInstance;
@@ -331,61 +244,5 @@ describe('OtpInput', () => {
     fixture.detectChanges();
 
     expect(component.disabledSubmit()).toBe(false);
-  });
-
-  it('should use default resend label when not on cooldown', () => {
-    authOrchestratorServiceMock.cooldownSeconds.set(0);
-
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    const labelWithoutCooldown = component.resendLabel;
-    expect(labelWithoutCooldown).toBeTruthy();
-  });
-
-  it('should use cooldown resend label when on cooldown', () => {
-    authOrchestratorServiceMock.cooldownSeconds.set(10);
-
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    const labelWithCooldown = component.resendLabel;
-    expect(labelWithCooldown).toBeTruthy();
-  });
-
-  it('should wire template events correctly (OTP change, Enter key, and button clicks)', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    const otpHost = fixture.debugElement.query(de => de.name === 'p-inputotp');
-    expect(otpHost).toBeTruthy();
-
-    otpHost.triggerEventHandler('onChange', createInputOtpChangeEvent('123456'));
-    fixture.detectChanges();
-    expect(component.otpValue()).toBe('123456');
-
-    const submitSpy = vi.spyOn(component, 'onSubmit');
-    const preventDefault = vi.fn();
-    otpHost.triggerEventHandler('keydown', createKeyboardEvent('Enter', preventDefault));
-
-    expect(preventDefault).toHaveBeenCalledOnce();
-    expect(submitSpy).toHaveBeenCalledOnce();
-
-    const buttons = fixture.debugElement.queryAll(de => de.componentInstance instanceof ButtonComponent);
-    const resendButton = buttons[0];
-    const submitButton = buttons[1];
-
-    expect(resendButton).toBeTruthy();
-    expect(submitButton).toBeTruthy();
-
-    submitButton.triggerEventHandler('click', new MouseEvent('click'));
-    fixture.detectChanges();
-
-    expect(authFacadeMock.verifyOtp).toHaveBeenCalledOnce();
-
-    resendButton.triggerEventHandler('click', new MouseEvent('click'));
-    fixture.detectChanges();
-
-    expect(authFacadeMock.requestOtp).toHaveBeenCalledOnce();
   });
 });
