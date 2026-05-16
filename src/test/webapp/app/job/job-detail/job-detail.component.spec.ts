@@ -274,7 +274,7 @@ describe('JobDetailComponent', () => {
     });
 
     it('should call getResourceGroupDetails with empty string when user has no active research group', async () => {
-      mockAccountService.user.set({ id: 'u2', name: 'NoGroupUser', memberships: [] } as User);
+      mockAccountService.user.set({ id: 'u2', name: 'NoGroupUser', email: 'nogroup@test.com', memberships: [] });
       mockAccountService.activeResearchGroupId.set(undefined);
       const spy = vi.spyOn(researchGroupApi, 'getResourceGroupDetails').mockReturnValue(of({ description: 'none' }));
       await (component as unknown as JobDetailComponentInternals).loadJobDetailsFromForm({
