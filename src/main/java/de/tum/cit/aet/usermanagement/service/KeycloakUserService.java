@@ -247,7 +247,7 @@ public class KeycloakUserService {
      */
     public Optional<KeycloakUserDTO> findKeycloakUserById(UUID userId) {
         try {
-            UserRepresentation rep = keycloak.realm(realm).users().get(userId.toString()).toRepresentation();
+            UserRepresentation rep = externalKeycloak.realm(externalRealm).users().get(userId.toString()).toRepresentation();
             if (rep == null) {
                 return Optional.empty();
             }
@@ -333,7 +333,7 @@ public class KeycloakUserService {
             newUser.setEnabled(true);
             newUser.setEmailVerified(true);
 
-            try (Response resp = keycloak.realm(realm).users().create(newUser)) {
+            try (Response resp = externalKeycloak.realm(externalRealm).users().create(newUser)) {
                 if (resp.getStatus() == 201 && resp.getLocation() != null) {
                     String path = resp.getLocation().getPath();
                     return path.substring(path.lastIndexOf('/') + 1);
@@ -344,7 +344,7 @@ public class KeycloakUserService {
                 throw new IllegalStateException("Keycloak user create failed: status=" + resp.getStatus());
             }
         });
-        boolean passwordSet = setPassword(keycloakUserId, password);
+        boolean passwordSet = setPassword(keycloakUserId, password, null);
         if (!passwordSet) {
             throw new IllegalStateException("Keycloak password set failed for userId=" + keycloakUserId);
         }
