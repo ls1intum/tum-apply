@@ -259,12 +259,4 @@ export class DatePickerComponent {
     }
   }
 
-  isHighlightedDate(date: { day: number; month: number; year: number }): boolean {
-    const highlightedDate = this.highlightedDateParts();
-    if (!highlightedDate) {
-      return false;
-    }
-
-    return highlightedDate.day === date.day && highlightedDate.month === date.month && highlightedDate.year === date.year;
-  }
 }

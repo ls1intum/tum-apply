@@ -135,8 +135,7 @@ describe('DatePickerComponent', () => {
 
       setInputAndDetectChanges(fixture, 'highlightedDate', TEST_DATES.validDate);
 
-      expect(comp.isHighlightedDate({ day: 13, month: 9, year: 2024 })).toBe(true);
-      expect(comp.isHighlightedDate({ day: 14, month: 9, year: 2024 })).toBe(false);
+      expect(comp.highlightedDateParts()).toStrictEqual({ day: 13, month: 9, year: 2024 });
     });
   });
 
