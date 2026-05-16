@@ -11,22 +11,25 @@ import { createHttpClientMock, provideHttpClientMock, HttpClientMock } from 'uti
 describe('ProfileService', () => {
   let httpMock: HttpClientMock;
 
-  const buildInfoResponse = (overrides: Record<string, unknown> = {}) => ({
-    activeProfiles: ['dev'],
-    'display-ribbon-on-profiles': 'dev,test',
-    git: {
-      branch: 'main',
-      commit: {
-        id: {
-          full: 'bffa79953d4a8ae56405d9ba58d04eed1c351574',
-          abbrev: 'bffa799',
+  const buildInfoResponse = (overrides: Record<string, unknown> = {}) =>
+    Object.assign(
+      {
+        activeProfiles: ['dev'],
+        'display-ribbon-on-profiles': 'dev,test',
+        git: {
+          branch: 'main',
+          commit: {
+            id: {
+              full: 'abc1234def5678ghi9012jkl3456mno7890pqrst',
+              abbrev: 'abc1234',
+            },
+            time: '2026-05-10T16:24:58+0200',
+            user: { name: 'Test Committer' },
+          },
         },
-        time: '2026-05-10T16:24:58+0200',
-        user: { name: 'Catherine Kalra' },
       },
-    },
-    ...overrides,
-  });
+      overrides,
+    );
 
   beforeEach(() => {
     httpMock = createHttpClientMock();
@@ -46,10 +49,10 @@ describe('ProfileService', () => {
 
     expect(profileInfo.gitInfo).toEqual({
       branch: 'main',
-      commitHashShort: 'bffa799',
-      commitHashFull: 'bffa79953d4a8ae56405d9ba58d04eed1c351574',
+      commitHashShort: 'abc1234',
+      commitHashFull: 'abc1234def5678ghi9012jkl3456mno7890pqrst',
       commitTime: '2026-05-10T16:24:58+0200',
-      lastCommitter: 'Catherine Kalra',
+      lastCommitter: 'Test Committer',
     });
   });
 
@@ -69,9 +72,9 @@ describe('ProfileService', () => {
           git: {
             branch: 'main',
             commit: {
-              id: 'bffa79953d4a8ae56405d9ba58d04eed1c351574',
+              id: 'abc1234def5678ghi9012jkl3456mno7890pqrst',
               time: '2026-05-10T16:24:58+0200',
-              user: { name: 'Catherine Kalra' },
+              user: { name: 'Test Committer' },
             },
           },
         }),
@@ -83,10 +86,10 @@ describe('ProfileService', () => {
 
     expect(profileInfo.gitInfo).toEqual({
       branch: 'main',
-      commitHashShort: 'bffa799',
-      commitHashFull: 'bffa79953d4a8ae56405d9ba58d04eed1c351574',
+      commitHashShort: 'abc1234',
+      commitHashFull: 'abc1234def5678ghi9012jkl3456mno7890pqrst',
       commitTime: '2026-05-10T16:24:58+0200',
-      lastCommitter: 'Catherine Kalra',
+      lastCommitter: 'Test Committer',
     });
   });
 });

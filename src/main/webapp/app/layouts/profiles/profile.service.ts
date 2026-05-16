@@ -51,7 +51,7 @@ function mapGitInfo(git: InfoGitResponse | undefined): GitInfo | undefined {
   const branch = git?.branch;
   const time = git?.commit?.time;
   const userName = git?.commit?.user?.name;
-  if (fullId == null || abbrevId == null || branch == null || time == null || userName == null) {
+  if (!fullId || !abbrevId || !branch || !time || !userName) {
     return undefined;
   }
   return {

@@ -10,15 +10,15 @@ import { provideTranslateMock } from 'util/translate.mock';
 
 const gitInfo: GitInfo = {
   branch: 'main',
-  commitHashShort: 'bffa799',
-  commitHashFull: 'bffa79953d4a8ae56405d9ba58d04eed1c351574',
+  commitHashShort: 'abc1234',
+  commitHashFull: 'abc1234def5678ghi9012jkl3456mno7890pqrst',
   commitTime: '2026-05-10T16:24:58+0200',
-  lastCommitter: 'Catherine Kalra',
+  lastCommitter: 'Test Committer',
 };
 
 function buildComponent(profileInfo: Partial<ProfileInfo>): ComponentFixture<FooterComponent> {
   const profileServiceMock = {
-    getProfileInfo: vi.fn().mockReturnValue(of({ activeProfiles: [], ...profileInfo })),
+    getProfileInfo: vi.fn().mockReturnValue(of(Object.assign({ activeProfiles: [] }, profileInfo))),
   };
   TestBed.configureTestingModule({
     imports: [FooterComponent],
@@ -35,8 +35,8 @@ describe('FooterComponent', () => {
     const row = fixture.nativeElement.querySelector('[data-testid="footer-git-info"]');
     expect(row).not.toBeNull();
     expect(row.textContent).toContain('main');
-    expect(row.textContent).toContain('bffa799');
-    expect(row.textContent).toContain('Catherine Kalra');
+    expect(row.textContent).toContain('abc1234');
+    expect(row.textContent).toContain('Test Committer');
   });
 
   it('should hide the git info row when ribbonEnv is missing', () => {
@@ -52,7 +52,7 @@ describe('FooterComponent', () => {
   it('should link the commit hash to the full sha on GitHub', () => {
     const fixture = buildComponent({ ribbonEnv: 'dev', gitInfo });
     const link = fixture.nativeElement.querySelector('[data-testid="footer-git-info"] a');
-    expect(link.getAttribute('href')).toBe('https://github.com/ls1intum/tum-apply/commit/bffa79953d4a8ae56405d9ba58d04eed1c351574');
+    expect(link.getAttribute('href')).toBe('https://github.com/ls1intum/tum-apply/commit/abc1234def5678ghi9012jkl3456mno7890pqrst');
     expect(link.getAttribute('target')).toBe('_blank');
     expect(link.getAttribute('rel')).toContain('noopener');
   });

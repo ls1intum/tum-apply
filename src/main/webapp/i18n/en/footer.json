@@ -5,12 +5,6 @@
     "rightsText": "© 2026 <a href=\"https://aet.cit.tum.de/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"footer-links\">TUM AET Team.</a> All rights reserved.",
     "imprint": "Imprint",
     "privacy": "Privacy",
-    "about-us": "About Us",
-    "git": {
-      "branch": "Branch",
-      "commitHash": "Commit Hash",
-      "committerDate": "Committer Date",
-      "lastCommitter": "Last Committer"
-    }
+    "about-us": "About Us"
   }
 }

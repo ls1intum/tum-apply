@@ -1,70 +1,65 @@
-<div class="flex flex-col">
-  <div
-    class="flex items-center bg-background-footer py-4 border-t border-divider-default text-[0.9rem] max-[600px]:py-2 max-[600px]:px-2 max-[600px]:text-xs max-[600px]:flex-col max-[600px]:gap-1 max-[600px]:text-center"
-  >
-    <div class="flex items-center pl-4 pr-2 max-[600px]:px-2">
-      <span class="text-start font-semibold pr-2" jhiTranslate="footer.tumApply"></span>
-      <div class="inline-flex cursor-pointer hover:underline">
-        <a [href]="'https://github.com/ls1intum/tum-apply/releases'" target="_blank" rel="noopener"> {{ version }} </a>
-      </div>
-    </div>
-
-    <div class="flex gap-[0.3rem] max-[600px]:px-2">
-      <span class="copyright" jhiTranslate="footer.rightsText"></span>
-    </div>
-
-    <div class="flex ml-auto pr-4 gap-[0.3rem] max-[600px]:px-2 max-[600px]:ml-0! max-[600px]:pr-0!">
-      <p
-        (click)="navigateToImprint()"
-        (keydown.enter)="navigateToImprint()"
-        class="inline-flex cursor-pointer text-primary hover:underline"
-        jhiTranslate="footer.imprint"
-        tabindex="0"
-        role="button"
-      ></p>
-      <span class="divider">|</span>
-      <p
-        (click)="navigateToPrivacy()"
-        (keydown.enter)="navigateToPrivacy()"
-        class="inline-flex cursor-pointer text-primary hover:underline"
-        jhiTranslate="footer.privacy"
-        tabindex="0"
-        role="button"
-      ></p>
-      <span class="divider">|</span>
-      <p
-        (click)="navigateToAboutUs()"
-        (keydown.enter)="navigateToAboutUs()"
-        class="inline-flex cursor-pointer text-primary hover:underline"
-        jhiTranslate="footer.about-us"
-        tabindex="0"
-        role="button"
-      ></p>
+<div
+  class="flex items-center bg-background-footer py-4 border-t border-divider-default text-[0.9rem] max-[600px]:py-2 max-[600px]:px-2 max-[600px]:text-xs max-[600px]:flex-col max-[600px]:gap-1 max-[600px]:text-center"
+>
+  <div class="flex items-center pl-4 pr-2 max-[600px]:px-2">
+    <span class="text-start font-semibold pr-2" jhiTranslate="footer.tumApply"></span>
+    <div class="inline-flex cursor-pointer hover:underline">
+      <a [href]="'https://github.com/ls1intum/tum-apply/releases'" target="_blank" rel="noopener"> {{ version }} </a>
     </div>
   </div>
 
-  @if (showGitInfo && gitInfo) {
+  <div class="flex gap-[0.3rem] max-[600px]:px-2">
+    <span class="copyright" jhiTranslate="footer.rightsText"></span>
+  </div>
+
+  @if (gitInfo; as gi) {
     <div
       data-testid="footer-git-info"
-      class="flex flex-wrap items-center gap-x-2 gap-y-1 px-4 py-1 text-xs text-text-secondary bg-background-footer border-t border-divider-default max-[600px]:px-2 max-[600px]:justify-center"
+      class="flex items-center gap-1 pl-4 text-xs text-text-secondary max-[600px]:pl-0 max-[600px]:flex-wrap max-[600px]:justify-center"
     >
-      <span><span jhiTranslate="footer.git.branch"></span>: {{ gitInfo.branch }}</span>
+      <span>{{ gi.branch }}</span>
       <span aria-hidden="true">·</span>
-      <span>
-        <span jhiTranslate="footer.git.commitHash"></span>:
-        <a
-          [href]="'https://github.com/ls1intum/tum-apply/commit/' + gitInfo.commitHashFull"
-          target="_blank"
-          rel="noopener"
-          class="text-primary hover:underline"
-        >
-          {{ gitInfo.commitHashShort }}
-        </a>
-      </span>
+      <a
+        [href]="'https://github.com/ls1intum/tum-apply/commit/' + gi.commitHashFull"
+        target="_blank"
+        rel="noopener"
+        class="text-primary hover:underline"
+      >
+        {{ gi.commitHashShort }}
+      </a>
       <span aria-hidden="true">·</span>
-      <span><span jhiTranslate="footer.git.committerDate"></span>: {{ gitInfo.commitTime | date: 'medium' }}</span>
+      <span>{{ gi.commitTime | date: 'dd.MM.yyyy HH:mm' }}</span>
       <span aria-hidden="true">·</span>
-      <span><span jhiTranslate="footer.git.lastCommitter"></span>: {{ gitInfo.lastCommitter }}</span>
+      <span>{{ gi.lastCommitter }}</span>
     </div>
   }
+
+  <div class="flex ml-auto pr-4 gap-[0.3rem] max-[600px]:px-2 max-[600px]:ml-0! max-[600px]:pr-0!">
+    <p
+      (click)="navigateToImprint()"
+      (keydown.enter)="navigateToImprint()"
+      class="inline-flex cursor-pointer text-primary hover:underline"
+      jhiTranslate="footer.imprint"
+      tabindex="0"
+      role="button"
+    ></p>
+    <span class="divider">|</span>
+    <p
+      (click)="navigateToPrivacy()"
+      (keydown.enter)="navigateToPrivacy()"
+      class="inline-flex cursor-pointer text-primary hover:underline"
+      jhiTranslate="footer.privacy"
+      tabindex="0"
+      role="button"
+    ></p>
+    <span class="divider">|</span>
+    <p
+      (click)="navigateToAboutUs()"
+      (keydown.enter)="navigateToAboutUs()"
+      class="inline-flex cursor-pointer text-primary hover:underline"
+      jhiTranslate="footer.about-us"
+      tabindex="0"
+      role="button"
+    ></p>
+  </div>
 </div>
