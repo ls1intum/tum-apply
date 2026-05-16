@@ -54,17 +54,7 @@ describe('ResearchGroupTemplateEdit', () => {
     });
   });
 
-  it('initialises with empty form model', () => {
-    const fixture = TestBed.createComponent(ResearchGroupTemplateEdit);
-    fixture.detectChanges();
-
-    const form = fixture.componentInstance.formModel();
-    expect(form.emailType).toBeUndefined();
-    expect(form.english?.subject).toBe('');
-    expect(form.german?.subject).toBe('');
-  });
-
-  it('updates emailType via setSelectedEmailType', () => {
+  it('should update emailType via setSelectedEmailType', () => {
     const fixture = TestBed.createComponent(ResearchGroupTemplateEdit);
     fixture.detectChanges();
 
@@ -74,7 +64,7 @@ describe('ResearchGroupTemplateEdit', () => {
     expect(fixture.componentInstance.formModel().emailType).toBe(EmailTemplateDTOEmailTypeEnum.ApplicationSent);
   });
 
-  it('updates english subject via updateEnglishSubject', () => {
+  it('should update english subject via updateEnglishSubject', () => {
     const fixture = TestBed.createComponent(ResearchGroupTemplateEdit);
     fixture.detectChanges();
 

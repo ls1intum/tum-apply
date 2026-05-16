@@ -27,7 +27,6 @@ type SubmitHandler = (email: string, password?: string) => Promise<boolean>;
     TranslateDirective,
   ],
   templateUrl: './credentials-group.component.html',
-  styleUrl: './credentials-group.component.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class CredentialsGroupComponent {

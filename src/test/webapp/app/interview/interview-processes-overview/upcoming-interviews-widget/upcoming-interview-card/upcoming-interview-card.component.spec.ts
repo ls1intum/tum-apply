@@ -98,17 +98,11 @@ describe('UpcomingInterviewCardComponent', () => {
       expect(component.location()).toBe(expectedLocation);
     });
 
-    it('should return avatar URL', () => {
+    it('should return avatar URL and format time range', () => {
       fixture.componentRef.setInput('interview', interviewWithAvatar);
       fixture.detectChanges();
 
       expect(component.avatarUrl()).toBe('/img/avatar.jpg');
-    });
-
-    it('should format time range correctly', () => {
-      fixture.componentRef.setInput('interview', interviewWithAvatar);
-      fixture.detectChanges();
-
       expect(component.formattedTimeRange()).toBe('09:00 - 10:30');
     });
   });

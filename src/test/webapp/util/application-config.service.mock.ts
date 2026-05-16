@@ -16,31 +16,30 @@ export interface ApplicationConfigServiceMock extends Partial<ApplicationConfigS
  * Factory that creates a realistic mock of the ApplicationConfigService.
  */
 export function createApplicationConfigServiceMock(overrides: Partial<ApplicationConfigServiceMock> = {}): ApplicationConfigServiceMock {
+  const keycloakDefaults: KeycloakConfig = {
+    url: 'http://mock-keycloak',
+    tumLoginRealm: 'tumidpldap',
+    externalLoginRealm: 'external-login',
+    clientId: 'mock-client',
+    relyingPartyId: '',
+    externalRelyingPartyId: '',
+  };
+  const otpDefaults: OtpConfig = {
+    length: 4,
+    ttlSeconds: 300,
+    resendCooldownSeconds: 60,
+  };
+
   const defaultConfig: ApplicationConfigServiceMock = {
-    keycloak: {
-      url: 'http://mock-keycloak',
-      realm: 'mock-realm',
-      clientId: 'mock-client',
-      ...overrides.keycloak,
-    },
-    otp: {
-      length: 4,
-      ttlSeconds: 300,
-      resendCooldownSeconds: 60,
-      ...overrides.otp,
-    },
-    appConfig: {
-      ...overrides.appConfig,
-    },
+    keycloak: Object.assign({}, keycloakDefaults, overrides.keycloak ?? {}),
+    otp: Object.assign({}, otpDefaults, overrides.otp ?? {}),
+    appConfig: Object.assign({}, overrides.appConfig ?? {}),
     setAppConfig: vi.fn(),
     getAppConfig: vi.fn(),
     getEndpointFor: vi.fn(api => api),
   };
 
-  return {
-    ...defaultConfig,
-    ...overrides,
-  };
+  return Object.assign({}, defaultConfig, overrides);
 }
 
 /**

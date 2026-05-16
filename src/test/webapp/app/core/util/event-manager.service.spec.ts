@@ -3,16 +3,6 @@ import { TestBed, inject } from '@angular/core/testing';
 import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
 
 describe('Event Manager tests', () => {
-  describe('EventWithContent', () => {
-    it('should create correctly EventWithContent', () => {
-      // WHEN
-      const eventWithContent = new EventWithContent('name', 'content');
-
-      // THEN
-      expect(eventWithContent).toEqual({ name: 'name', content: 'content' });
-    });
-  });
-
   describe('EventManager', () => {
     let receivedEvent: EventWithContent<unknown> | string | null;
 

@@ -33,6 +33,7 @@ import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -194,6 +195,8 @@ public class JobService {
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getImage() != null ? job.getImage().getUrl() : null,
             job.getSuitableForDisabled(),
+            job.getStartDateByArrangement(),
+            job.getContractExtendable(),
             job.getGenderBiasScore(),
             job.getComplianceIssues()
         );
@@ -255,6 +258,9 @@ public class JobService {
             applicationId,
             applicationState,
             job.getSuitableForDisabled(),
+            job.getStartDateByArrangement(),
+            job.getContractExtendable(),
+            job.getReferenceLettersRequired(),
             job.getImage() != null ? job.getImage().getImageId() : null
         );
     }
@@ -414,6 +420,9 @@ public class JobService {
         job.setJobDescriptionDE(HtmlSanitizer.sanitize(dto.jobDescriptionDE()));
         job.setState(dto.state());
         job.setSuitableForDisabled(dto.suitableForDisabled());
+        job.setStartDateByArrangement(Boolean.TRUE.equals(dto.startDateByArrangement()));
+        job.setContractExtendable(Boolean.TRUE.equals(dto.contractExtendable()));
+        job.setReferenceLettersRequired(Objects.requireNonNullElse(dto.referenceLettersRequired(), 0));
 
         // Capture old image before any modifications
         Image oldImage = job.getImage();
@@ -474,7 +483,7 @@ public class JobService {
      * @return the job entity if the user can manage it
      */
     private Job assertCanManageJob(UUID jobId) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;
     }
@@ -504,15 +513,25 @@ public class JobService {
      * @param jobId the job identifier
      * @param score the combined AI score to persist
      * @param complianceAnalysis the compliance issues detected for the job description
+     * @param lang the language for which existing issues should be replaced
      */
-    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis) {
+    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis, String lang) {
         if (jobId == null) {
             return;
         }
 
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+
+        // Keep issues from the other language, add new ones for target language
+        List issuesToSave = job
+            .getComplianceIssues()
+            .stream()
+            .filter(issue -> !Objects.equals(issue.getLanguage(), lang))
+            .collect(Collectors.toCollection(ArrayList::new));
+
+        issuesToSave.addAll(complianceAnalysis);
         job.setGenderBiasScore(score);
-        job.setComplianceIssues(complianceAnalysis);
+        job.setComplianceIssues(issuesToSave);
         jobRepository.save(job);
     }
 }

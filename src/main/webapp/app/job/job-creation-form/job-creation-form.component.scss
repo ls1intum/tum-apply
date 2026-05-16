@@ -1,38 +1,4 @@
-@use '../../../content/scss/breakpoints' as bp;
-
-.confirm-dialog {
-  display: none;
-}
-
 input:disabled {
   color: var(--p-text-disabled);
   background-color: var(--p-background-disabled);
-}
-
-.panel1-layout {
-  @media (min-width: bp.$lg) {
-    padding-inline: clamp(1rem, 3vw, 2.5rem);
-  }
-}
-
-.panel1-layout-with-sidebar {
-  @media (min-width: bp.$lg) {
-    display: grid;
-    column-gap: 0.75rem;
-    padding-inline-end: 0;
-    grid-template-columns: minmax(0, 1fr) 1px 18rem;
-  }
-}
-
-.panel1-divider {
-  @media (min-width: bp.$lg) {
-    height: 100%;
-    background-color: var(--color-divider-default);
-  }
-}
-
-.panel1-main {
-  @media (min-width: bp.$lg) {
-    padding-right: 0.5rem;
-  }
 }

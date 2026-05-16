@@ -1,27 +1,11 @@
 .select-wrapper {
-  display: flex;
-  flex-direction: column;
-
-  .external-link {
-    color: var(--p-primary-color);
-    text-decoration: underline;
-    cursor: pointer;
-  }
-
-  .helper-text {
-    font-size: 0.8rem;
-  }
-
-  // Add styling for border and corners of select fields
   .custom-select {
     border: 0.1rem solid var(--p-border-default);
     border-radius: var(--border-radius-md);
 
-    // Add styling for disabled select fields
     &.p-disabled {
       background-color: var(--p-background-disabled);
 
-      // Add styling for text inside disabled select fields
       .ng-fa-icon,
       .p-select-label.ng-star-inserted {
         color: var(--p-text-disabled) !important;

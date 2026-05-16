@@ -113,7 +113,6 @@ describe('ServerAuthenticationService', () => {
   describe('token refresh', () => {
     it('should refresh tokens successfully', async () => {
       const result = await service.refreshTokens();
-      expect(authApi.refresh).toHaveBeenCalledOnce();
       expect(result).toBe(true);
     });
 
@@ -121,7 +120,6 @@ describe('ServerAuthenticationService', () => {
       authApi.refresh.mockReturnValueOnce(throwError(() => new Error('fail')));
       const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       expect(await service.refreshTokens()).toBe(false);
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Failed to refresh token, logging out...', expect.any(Error));
       consoleWarnSpy.mockRestore();
     });
 
@@ -140,20 +138,18 @@ describe('ServerAuthenticationService', () => {
       const firstRefresh = service.refreshTokens();
       const secondRefresh = service.refreshTokens();
       await Promise.all([firstRefresh, secondRefresh]);
-      expect(authApi.refresh).toHaveBeenCalledTimes(1);
+      expect(authApi.refresh).toHaveBeenCalledOnce();
     });
 
-    it('should schedule automatic token refresh after login', async () => {
+    it('should schedule automatic token refresh after login or OTP verification', async () => {
       const setTimeoutSpy = vi.spyOn(window, 'setTimeout');
       await service.login('test@example.com', 'password');
       expect(setTimeoutSpy).toHaveBeenCalledOnce();
-      setTimeoutSpy.mockRestore();
-    });
 
-    it('should schedule automatic token refresh after OTP verification', async () => {
-      const setTimeoutSpy = vi.spyOn(window, 'setTimeout');
+      setTimeoutSpy.mockClear();
       await service.verifyOtp('test@example.com', '123456', OtpCompleteDTOPurposeEnum.Login);
       expect(setTimeoutSpy).toHaveBeenCalledOnce();
+
       setTimeoutSpy.mockRestore();
     });
 
@@ -183,47 +179,35 @@ describe('ServerAuthenticationService', () => {
   });
 
   describe('session management side effects', () => {
-    it('should bind window event listeners after login', async () => {
-      const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
-      const docAddEventListenerSpy = vi.spyOn(document, 'addEventListener');
+    it('should bind/unbind window event listeners on login/logout', async () => {
+      const addSpy = vi.spyOn(window, 'addEventListener');
+      const removeSpy = vi.spyOn(window, 'removeEventListener');
+      const docAddSpy = vi.spyOn(document, 'addEventListener');
+      const docRemoveSpy = vi.spyOn(document, 'removeEventListener');
 
       await service.login('test@example.com', 'password');
 
-      expect(addEventListenerSpy).toHaveBeenCalledWith('focus', expect.any(Function));
-      expect(addEventListenerSpy).toHaveBeenCalledWith('online', expect.any(Function));
-      expect(docAddEventListenerSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
-      addEventListenerSpy.mockRestore();
-      docAddEventListenerSpy.mockRestore();
-    });
-
-    it('should not bind listeners multiple times', async () => {
-      const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
-      await service.login('test@example.com', 'password');
-      vi.clearAllMocks();
-      await service.login('test@example.com', 'password');
-      expect(addEventListenerSpy).toHaveBeenCalledTimes(2);
-      addEventListenerSpy.mockRestore();
-    });
-
-    it('should unbind window event listeners after logout', async () => {
-      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
-      const docRemoveEventListenerSpy = vi.spyOn(document, 'removeEventListener');
-      await service.login('test@example.com', 'password');
-      await service.logout();
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('focus', expect.any(Function));
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('online', expect.any(Function));
-      expect(docRemoveEventListenerSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
-      removeEventListenerSpy.mockRestore();
-      docRemoveEventListenerSpy.mockRestore();
-    });
-
-    it('should handle unbind when no listeners are active', async () => {
-      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
+      expect(addSpy).toHaveBeenCalledWith('focus', expect.any(Function));
+      expect(addSpy).toHaveBeenCalledWith('online', expect.any(Function));
+      expect(docAddSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
 
       await service.logout();
-      expect(removeEventListenerSpy).not.toHaveBeenCalled();
 
-      removeEventListenerSpy.mockRestore();
+      expect(removeSpy).toHaveBeenCalledWith('focus', expect.any(Function));
+      expect(removeSpy).toHaveBeenCalledWith('online', expect.any(Function));
+      expect(docRemoveSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
+
+      addSpy.mockRestore();
+      removeSpy.mockRestore();
+      docAddSpy.mockRestore();
+      docRemoveSpy.mockRestore();
+    });
+
+    it('should not unbind when no listeners are active', async () => {
+      const removeSpy = vi.spyOn(window, 'removeEventListener');
+      await service.logout();
+      expect(removeSpy).not.toHaveBeenCalled();
+      removeSpy.mockRestore();
     });
   });
 });

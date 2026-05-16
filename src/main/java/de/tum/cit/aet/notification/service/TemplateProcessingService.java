@@ -10,6 +10,7 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
 import de.tum.cit.aet.notification.dto.DataExportEmailContextDTO;
 import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTO;
+import de.tum.cit.aet.notification.dto.ReferenceLetterInvitationContextDTO;
 import de.tum.cit.aet.notification.dto.ResearchGroupEmailContextDTO;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -161,6 +162,7 @@ public class TemplateProcessingService {
             case Interviewee interviewee -> addIntervieweeData(dataModel, interviewee);
             case DataExportEmailContextDTO ctx -> addDataExportContextData(dataModel, ctx);
             case JobPublicationEmailContextDTO ctx -> addJobPublicationContextData(dataModel, ctx);
+            case ReferenceLetterInvitationContextDTO ctx -> addReferenceLetterInvitationContextData(dataModel, ctx);
             case User user -> addUserData(dataModel, user);
             default -> throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
         }
@@ -284,6 +286,24 @@ public class TemplateProcessingService {
         dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_EMAIL.getValue(), ctx.supervisingProfessorEmail());
         dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), ctx.researchGroupName());
         dataModel.put(TemplateVariable.SUBJECT_AREA.getValue(), ctx.subjectArea());
+    }
+
+    /**
+     * Adds variables related to reference letter invitations to the template data model.
+     *
+     * @param dataModel the data model map
+     * @param ctx       the invitation context for the external referee
+     */
+    private void addReferenceLetterInvitationContextData(Map<String, Object> dataModel, ReferenceLetterInvitationContextDTO ctx) {
+        dataModel.put(TemplateVariable.REFEREE_NAME_TITLE.getValue(), ctx.refereeNameTitle());
+        dataModel.put(TemplateVariable.REFEREE_FIRST_NAME.getValue(), ctx.refereeFirstName());
+        dataModel.put(TemplateVariable.REFEREE_LAST_NAME.getValue(), ctx.refereeLastName());
+        dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), ctx.applicantFirstName());
+        dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), ctx.applicantLastName());
+        dataModel.put(TemplateVariable.JOB_TITLE.getValue(), ctx.jobTitle());
+        dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), ctx.researchGroupName());
+        dataModel.put(TemplateVariable.REFERENCE_LINK.getValue(), ctx.referenceLink());
+        dataModel.put(TemplateVariable.REFERENCE_DEADLINE.getValue(), ctx.referenceDeadline());
     }
 
     /**

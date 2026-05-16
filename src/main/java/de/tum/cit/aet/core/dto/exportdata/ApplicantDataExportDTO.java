@@ -23,5 +23,6 @@ public record ApplicantDataExportDTO(
     Set<DocumentExportDTO> documents,
     List<ApplicationExportDTO> applications,
     List<IntervieweeExportDTO> interviewees,
-    List<String> subjectAreaSubscriptions
+    List<String> subjectAreaSubscriptions,
+    List<ApplicantReferenceRequestExportDTO> referenceRequests
 ) {}
