@@ -84,12 +84,12 @@
     <span jhiTranslate="privacy.privacyConsent.title"></span>
   </p-divider>
 
-  <div class="data-privacy-notice mb-2">
+  <div class="mb-2">
     <p jhiTranslate="privacy.privacyConsent.text"></p>
   </div>
 
   <div [formGroup]="additionalInfoForm">
-    <div class="flex align-items-center gap-2">
+    <div class="flex items-center gap-2">
       <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" inputId="privacyCheckbox" />
       <label for="privacyCheckbox"
         ><span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span
@@ -105,12 +105,12 @@
     <span jhiTranslate="entity.applicationPage4.doctoralRequirements.title"></span>
   </p-divider>
 
-  <div class="data-privacy-notice mb-2">
+  <div class="mb-2">
     <p jhiTranslate="entity.applicationPage4.doctoralRequirements.text"></p>
   </div>
 
   <div [formGroup]="additionalInfoForm">
-    <div class="flex align-items-center">
+    <div class="flex items-center">
       <div class="relative mr-2">
         <p-checkbox formControlName="doctoralRequirementsAccepted" [binary]="true" size="small" inputId="doctoralRequirementsCheckbox" />
         <span class="required">*</span>
