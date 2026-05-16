@@ -24,11 +24,12 @@ export interface AdminApplicationOverviewDTO {
     readonly supervisingProfessorName?: string;
 }
 
-export type AdminApplicationOverviewDTOStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'JOB_CLOSED_DRAFT' | 'INTERVIEW';
+export type AdminApplicationOverviewDTOStateEnum = 'SAVED' | 'SENT' | 'PENDING' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'JOB_CLOSED_DRAFT' | 'INTERVIEW';
 
 export const AdminApplicationOverviewDTOStateEnum = {
     Saved: 'SAVED' as const,
     Sent: 'SENT' as const,
+    Pending: 'PENDING' as const,
     Accepted: 'ACCEPTED' as const,
     InReview: 'IN_REVIEW' as const,
     Rejected: 'REJECTED' as const,
@@ -38,5 +39,5 @@ export const AdminApplicationOverviewDTOStateEnum = {
     Interview: 'INTERVIEW' as const,
 } as const;
 
-export const AdminApplicationOverviewDTOStateEnumValues = ['SAVED', 'SENT', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'JOB_CLOSED_DRAFT', 'INTERVIEW'] as const;
+export const AdminApplicationOverviewDTOStateEnumValues = ['SAVED', 'SENT', 'PENDING', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'JOB_CLOSED_DRAFT', 'INTERVIEW'] as const;
 

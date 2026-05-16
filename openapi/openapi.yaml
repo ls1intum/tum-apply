@@ -2843,7 +2843,7 @@ components:
         researchGroupName: {type: string}
         state:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         supervisingProfessorId: {type: string, format: uuid}
         supervisingProfessorName: {type: string}
