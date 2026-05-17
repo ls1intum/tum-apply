@@ -50,9 +50,9 @@ public class ReferenceRequestService {
     private static final int DEFAULT_VALIDITY_MONTHS = 2;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final DateTimeFormatter DEADLINE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm 'UTC'");
-    static final int MAX_REMINDERS = 2;
-    static final long FIRST_REMINDER_HOURS = 24L * 7;
-    static final long FINAL_REMINDER_HOURS = 24L;
+    private static final int MAX_REMINDERS = 2;
+    private static final long FIRST_REMINDER_HOURS = 24L * 7;
+    private static final long FINAL_REMINDER_HOURS = 24L;
 
     private final ReferenceRequestRepository referenceRequestRepository;
     private final ApplicationRepository applicationRepository;
