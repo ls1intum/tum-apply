@@ -16,9 +16,9 @@ describe('HTML text validators', () => {
 
     const createSpy = vi.spyOn(document, 'createElement').mockReturnValue(mockEl as HTMLElement);
 
-    // Case 1: non-empty innerText -> valid (undefined)
+    // Case 1: non-empty innerText -> valid (null)
     const valid = htmlTextRequiredValidator(new FormControl('<p>ignored</p>'));
-    expect(valid).toBeUndefined();
+    expect(valid).toBeNull();
 
     // Case 2: empty innerText -> invalid ({ required: true })
     (mockEl as HTMLElement).innerText = '';
