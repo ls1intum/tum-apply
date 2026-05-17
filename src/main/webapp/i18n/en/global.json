@@ -214,15 +214,15 @@
         },
         "upload_failed": {
           "summary": "Upload Failed",
-          "detail": "Failed to upload document. Please try again."
+          "detail": "Check your connection and try again. Contact us if it keeps failing."
         },
         "delete_failed": {
           "summary": "Delete Failed",
-          "detail": "Failed to delete document. Please try again."
+          "detail": "Please try again. Contact us if it keeps failing."
         },
         "rename_failed": {
           "summary": "Rename Failed",
-          "detail": "Failed to rename document. Please try again."
+          "detail": "Please try again. Contact us if it keeps failing."
         }
       }
     },
@@ -278,7 +278,7 @@
       "loading": "Extracting...",
       "aiExtractionFailed": {
         "summary": "Extraction Failed",
-        "detail": "Could not extract the data. Please try again."
+        "detail": "Make sure the file is a clear, readable PDF, or fill the fields in manually."
       }
     },
     "applicationPage1": {
@@ -476,64 +476,64 @@
           "detail": "Thank you for your application."
         },
         "invalidJobId": {
-          "summary": "Error",
-          "detail": "This is not a valid jobId."
+          "summary": "Invalid job link",
+          "detail": "The link may be broken or the position removed. Try browsing available positions."
         },
         "invalidApplicationId": {
-          "summary": "Error",
-          "detail": "This is not a valid applicationId."
+          "summary": "Invalid application link",
+          "detail": "Open the application from your applications overview instead."
         },
         "errorApplicationId": {
-          "summary": "Error",
-          "detail": "There is an error with the applicationId."
+          "summary": "Could not open application",
+          "detail": "Reload the page, or open it from your applications overview."
         },
         "invalidPageLink": {
-          "summary": "Error",
-          "detail": "This is not a valid application page link."
+          "summary": "Invalid application page link",
+          "detail": "Open the application from your applications overview."
         },
         "saveFailedWithStatus": {
-          "summary": "Submission failed",
-          "detail": "Failed to submit application: {status}"
+          "summary": "Could not submit application",
+          "detail": "Submission failed ({status}). Please try again or contact us."
         },
         "fetchApplicationFailed": {
-          "summary": "Application not loaded",
-          "detail": "The application could not be loaded. Please try again, or contact us if the problem persists."
+          "summary": "Could not load application",
+          "detail": "Reload the page, or contact us if it keeps failing."
         },
         "fetchDocumentIdsFailed": {
-          "summary": "Error",
-          "detail": "Failed to fetch document IDs for this application. Please try again, or contact us if the problem persists."
+          "summary": "Documents not loaded",
+          "detail": "Reload the page, or contact us if it keeps failing."
         },
         "notEditable": {
-          "summary": "Error",
-          "detail": "This application cannot be edited as it has already been submitted or is in a non-draft state."
+          "summary": "Application no longer editable",
+          "detail": "It has already been submitted. You can still view it from your overview."
         },
         "authRequired": {
-          "summary": "Error",
-          "detail": "Cannot submit application: User authentication required."
+          "summary": "Sign in to submit",
+          "detail": "Please sign in and try again."
         },
         "saveFailed": {
-          "summary": "Error",
-          "detail": "Failed to save application. Please try again, or contact us if the problem persists."
+          "summary": "Could not save application",
+          "detail": "Check your connection and try again, or contact us."
         },
         "loadFailed": {
-          "summary": "Error",
-          "detail": "Failed to load application. Please try again, or contact us if the problem persists."
+          "summary": "Could not load application",
+          "detail": "Reload the page, or contact us if it keeps failing."
         },
         "initLoadFailed": {
-          "summary": "Error",
-          "detail": "Failed to load application. Please try again, or contact us if the problem persists."
+          "summary": "Could not load application",
+          "detail": "Reload the page, or contact us if it keeps failing."
         },
         "missingJobIdUnauthenticated": {
-          "summary": "Error",
-          "detail": "Job ID must be provided when not authenticated."
+          "summary": "Sign in or open via a job link",
+          "detail": "Sign in, or open this page from a job link."
         },
         "applicationDeleted": {
           "summary": "Application deleted",
           "detail": "The application was deleted successfully."
         },
         "errorDeletingApplication": {
-          "summary": "Delete failed",
-          "detail": "The application could not be deleted. Please try again, or contact us if the problem persists."
+          "summary": "Could not delete application",
+          "detail": "Please try again. Contact us if it keeps failing."
         },
         "applicationWithdrawn": {
           "summary": "Application withdrawn",
@@ -541,31 +541,31 @@
         },
         "errorWithdrawingApplication": {
           "summary": "Withdrawal failed",
-          "detail": "The application could not be withdrawn. Please try again, or contact us if the problem persists."
+          "detail": "Please try again. Contact us if it keeps failing."
         },
         "jobIdNotAvailable": {
-          "summary": "Error",
-          "detail": "Job ID is not available for this application."
+          "summary": "Job reference missing",
+          "detail": "Open it from your applications overview, or contact us."
         },
         "invalidEmail": {
-          "summary": "Error",
-          "detail": "Please provide a valid email address."
+          "summary": "Email required",
+          "detail": "Please enter a valid email address before continuing."
         },
         "invalidFirstName": {
-          "summary": "Error",
-          "detail": "Please provide a valid first name."
+          "summary": "First name required",
+          "detail": "Please enter a valid first name before continuing."
         },
         "invalidLastName": {
-          "summary": "Error",
-          "detail": "Please provide a valid last name."
+          "summary": "Last name required",
+          "detail": "Please enter a valid last name before continuing."
         },
         "migrationFailed": {
-          "summary": "Error",
-          "detail": "Failed to save local draft. Try again, reload the page or check your connection."
+          "summary": "Could not save draft",
+          "detail": "Please try again, reload the page, or check your connection."
         },
         "otpVerificationFailed": {
-          "summary": "Error",
-          "detail": "Email verification failed. Please try again."
+          "summary": "Email verification failed",
+          "detail": "Your code may be expired or incorrect. Request a new code and try again."
         }
       },
       "applicationOverview": {
@@ -576,7 +576,7 @@
           },
           "error": {
             "summary": "Delete failed",
-            "detail": "The draft could not be deleted. Please try again."
+            "detail": "Please try again. Contact us if it keeps failing."
           }
         },
         "withdraw": {
@@ -636,7 +636,7 @@
     },
     "uploadFailed": {
       "summary": "Upload failed",
-      "detail": "We could not save your letter. Please try again."
+      "detail": "Please try again, or contact us using the support email."
     }
   },
   "imageUpload": {
@@ -659,7 +659,7 @@
       },
       "uploadFailed": {
         "summary": "Upload Failed",
-        "detail": "Failed to upload image. Please try again"
+        "detail": "Check your connection and try again, or contact us."
       }
     }
   }
