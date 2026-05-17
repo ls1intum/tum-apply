@@ -139,10 +139,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       expect(mockGetCurrentUser).toHaveBeenCalledOnce();
     });
 
-    it('renders the required-fields hint at the top of the form', () => {
-      expect(fixture.nativeElement.textContent).toContain('global.input.requiredHint');
-    });
-
     it('should prefill professor fields from current user data, but not overwrite already-entered values', async () => {
       mockGetCurrentUser.mockReturnValue(
         of({

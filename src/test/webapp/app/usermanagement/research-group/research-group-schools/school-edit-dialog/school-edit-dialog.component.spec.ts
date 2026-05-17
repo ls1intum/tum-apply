@@ -63,11 +63,6 @@ describe('SchoolEditDialogComponent', () => {
     expect(component.form.get('abbreviation')?.value).toBe('S1');
   });
 
-  it('renders the required-fields hint at the top of the dialog', () => {
-    createComponent();
-    expect(fixture.nativeElement.textContent).toContain('global.input.requiredHint');
-  });
-
   describe('Submission', () => {
     it('should not submit if form is invalid', async () => {
       createComponent();

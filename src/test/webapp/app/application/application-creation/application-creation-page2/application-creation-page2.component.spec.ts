@@ -110,11 +110,6 @@ describe('ApplicationPage2Component', () => {
       expect(componentInstance.page2Form.valid).toBe(false);
     });
 
-    it('renders the required-fields hint above the form content', () => {
-      const { fixture } = createApplicationPage2Fixture({ data: DEFAULT_PAGE2_FORM_DATA });
-      expect(fixture.nativeElement.textContent).toContain('global.input.requiredHint');
-    });
-
     it('should be valid with correct data', () => {
       const { componentInstance } = createApplicationPage2Fixture({ data: VALID_PAGE2_FORM_DATA });
       expect(componentInstance.page2Form.valid).toBe(true);

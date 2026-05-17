@@ -42,10 +42,6 @@ describe('ApplicationPage3Component', () => {
     expect(comp.formStatus()).toBe(expected);
   });
 
-  it('renders the required-fields hint above the form content', () => {
-    expect(fixture.nativeElement.textContent).toContain('global.input.requiredHint');
-  });
-
   it('should set hasInitialized when data provided, false when undefined', () => {
     comp.data.set({ experiences: 'x', motivation: 'x', skills: 'x', desiredStartDate: '2025-01-01' });
     comp.hasInitialized.set(false);

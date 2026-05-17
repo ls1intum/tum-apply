@@ -1,6 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
 import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
@@ -16,7 +15,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 @Component({
   selector: 'jhi-department-edit-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslateModule, TranslateDirective, ButtonComponent, StringInputComponent, SelectComponent],
+  imports: [ReactiveFormsModule, TranslateDirective, ButtonComponent, StringInputComponent, SelectComponent],
   templateUrl: './department-edit-dialog.component.html',
 })
 export class DepartmentEditDialogComponent {

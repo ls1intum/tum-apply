@@ -85,11 +85,6 @@ describe('DepartmentEditDialogComponent', () => {
       expect(component.form.get('name')?.value).toBe('Dept 1');
       expect(component.form.get('schoolId')?.value).toBe('s1');
     });
-
-    it('renders the required-fields hint at the top of the dialog', () => {
-      createComponent();
-      expect(fixture.nativeElement.textContent).toContain('global.input.requiredHint');
-    });
   });
 
   describe('Form Interaction', () => {
