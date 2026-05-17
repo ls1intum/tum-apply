@@ -1,6 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { TableLazyLoadEvent, TableModule } from 'primeng/table';
-import { PaginatorModule } from 'primeng/paginator';
+import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom, map } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -14,16 +13,19 @@ import { TranslateDirective } from 'app/shared/language';
 import { AccountService } from 'app/core/auth/account.service';
 import { JobFormDTOLocationEnum, JobFormDTOSubjectAreaEnum } from 'app/generated/model/job-form-dto';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+import { DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
 import { JobCardDTO } from '../../../generated/model/job-card-dto';
 import { JobResourceApi } from '../../../generated/api/job-resource-api';
 import * as DropdownOptions from '../.././dropdown-options';
 
+export const JOBS_PER_PAGE_STORAGE_KEY = 'jobsPerPage';
+
 @Component({
   selector: 'jhi-job-card-list',
   standalone: true,
-  imports: [TableModule, JobCardComponent, PaginatorModule, SearchFilterSortBar, TranslateModule, TranslateDirective, RouterLink],
+  imports: [DynamicTableComponent, JobCardComponent, SearchFilterSortBar, TranslateModule, TranslateDirective, RouterLink],
   templateUrl: './job-card-list.component.html',
 })
 export class JobCardListComponent {
@@ -32,8 +34,10 @@ export class JobCardListComponent {
   jobs = signal<JobCardDTO[]>([]);
   totalRecords = signal<number>(0);
   page = signal<number>(0);
-  pageSize = signal<number>(12);
+  pageSize = signal<number>(10);
   searchQuery = signal<string>('');
+
+  readonly jobsPerPageStorageKey = JOBS_PER_PAGE_STORAGE_KEY;
 
   sortBy = signal<string>('startDate');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
@@ -90,6 +94,10 @@ export class JobCardListComponent {
     const size = event.rows ?? this.pageSize();
 
     this.page.set(page);
+    this.pageSize.set(size);
+  }
+
+  onPageSizeHydrated(size: number): void {
     this.pageSize.set(size);
   }
 
