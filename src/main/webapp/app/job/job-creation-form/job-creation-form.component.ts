@@ -1298,7 +1298,7 @@ export class JobCreationFormComponent {
       tvlGrade: positionDetailsValue.tvlGrade?.value as JobFormDTOTvlGradeEnum,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
-      referenceLettersRequired: (positionDetailsValue.referenceLettersRequired?.value as number) ?? 0,
+      referenceLettersRequired: positionDetailsValue.referenceLettersRequired?.value as number,
       state,
     } as JobFormDTO;
   }
