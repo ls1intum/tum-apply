@@ -186,6 +186,10 @@
         "CV": "Lebenslauf",
         "CUSTOM": "Benutzerdefiniert"
       },
+      "aria": {
+        "removeFile": "Datei entfernen",
+        "selectFileToUpload": "Datei zum Hochladen auswählen"
+      },
       "tooltip": {
         "to_upload": "Muss noch hochgeladen werden",
         "already_uploaded": "Bereits hochgeladen",

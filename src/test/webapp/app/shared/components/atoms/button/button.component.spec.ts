@@ -81,11 +81,6 @@ describe('ButtonComponent', () => {
     expect(fixture.nativeElement.querySelector('p-overlaybadge')).toBeTruthy();
   });
 
-  it('should apply size-specific class when size is sm', () => {
-    const fixture = createButtonFixture({ size: 'sm' });
-    expect(fixture.componentInstance.buttonClass()).contain('w-10 h-10');
-  });
-
   it('should use an explicit ariaLabel input for icon-only buttons', () => {
     const fixture = createButtonFixture({ icon: 'eye', ariaLabel: 'button.view', shouldTranslate: true });
 

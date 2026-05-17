@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { By } from '@angular/platform-browser';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
@@ -9,6 +10,7 @@ import { ApplicationCarouselComponent } from 'app/shared/components/organisms/ap
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/application-evaluation-detail-dto';
 import { ApplicationDetailDTO, ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 import { ProfessorDTO } from 'app/generated/model/professor-dto';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 describe('ApplicationCarouselComponent', () => {
   let fixture: ComponentFixture<ApplicationCarouselComponent>;
@@ -163,6 +165,18 @@ describe('ApplicationCarouselComponent', () => {
 
       expect(spy).toHaveBeenCalledOnce();
     });
+  });
+
+  it('should use translation keys for carousel navigation aria labels', () => {
+    const buttons = fixture.debugElement
+      .queryAll(By.directive(ButtonComponent))
+      .map(debugElement => debugElement.componentInstance as ButtonComponent);
+
+    const previousButton = buttons.find(button => button.icon() === 'chevron-left');
+    const nextButton = buttons.find(button => button.icon() === 'chevron-right');
+
+    expect(previousButton?.ariaLabel()).toBe('button.previous');
+    expect(nextButton?.ariaLabel()).toBe('button.next');
   });
 
   describe('keyboard handling', () => {

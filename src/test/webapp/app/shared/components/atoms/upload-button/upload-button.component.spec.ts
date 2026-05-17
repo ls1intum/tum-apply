@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
@@ -23,6 +24,7 @@ import {
 } from 'util/applicant-resource-api.service.mock';
 import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
 import { DocumentCacheService } from 'app/service/document-cache.service';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 describe('UploadButtonComponent', () => {
   let applicationApi: ApplicationResourceApiMock;
@@ -292,13 +294,35 @@ describe('UploadButtonComponent', () => {
 
     const queuedDocument = component.documentIds()?.[0];
     expect(queuedDocument).toBeDefined();
-    expect(component.hasPreview(queuedDocument!)).toBe(true);
+    if (!queuedDocument) {
+      return;
+    }
+
+    expect(component.hasPreview(queuedDocument)).toBe(true);
     expect(component.previewDocumentHolders()[0]?.file).toBe(file);
 
     component.queuedFilesById.set(new Map());
 
-    expect(component.hasPreview(queuedDocument!)).toBe(false);
+    expect(component.hasPreview(queuedDocument)).toBe(false);
     expect(component.previewDocumentHolders()).toEqual([]);
+  });
+
+  it('should use translation keys for upload aria labels instead of hardcoded English strings', () => {
+    const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
+    const component = fixture.componentInstance;
+
+    component.selectedFiles.set([new File(['queued'], 'queued.pdf', { type: 'application/pdf' })]);
+    fixture.detectChanges();
+
+    const removeButton = fixture.debugElement
+      .queryAll(By.directive(ButtonComponent))
+      .map(debugElement => debugElement.componentInstance as ButtonComponent)
+      .find(button => button.icon() === 'times');
+
+    const selectFileTrigger: HTMLSpanElement | null = fixture.nativeElement.querySelector('span[role="button"][aria-label]');
+
+    expect(removeButton?.ariaLabel()).toBe('entity.upload.aria.removeFile');
+    expect(selectFileTrigger?.getAttribute('aria-label')).toBe('entity.upload.aria.selectFileToUpload');
   });
 
   it('should rename document if name is valid and update documentIds correctly', async () => {
@@ -330,13 +354,24 @@ describe('UploadButtonComponent', () => {
       currentFiles: [new File(['old-content'], 'original.pdf', { type: 'application/pdf' })],
     } as FileSelectEvent);
 
-    const queuedDocument = component.documentIds()![0];
+    const queuedDocument = component.documentIds()?.[0];
+    expect(queuedDocument).toBeDefined();
+    if (!queuedDocument) {
+      return;
+    }
+
     await component.renameDocument({ id: queuedDocument.id, name: 'renamed.pdf', size: queuedDocument.size });
 
-    expect(component.documentIds()![0].name).toBe('renamed.pdf');
+    const renamedDocument = component.documentIds()?.[0];
+    expect(renamedDocument).toBeDefined();
+    expect(renamedDocument?.name).toBe('renamed.pdf');
     expect(component.queuedFiles()[0].name).toBe('renamed.pdf');
 
-    await component.deleteDictionary(component.documentIds()![0]);
+    if (!renamedDocument) {
+      return;
+    }
+
+    await component.deleteDictionary(renamedDocument);
 
     expect(component.documentIds()).toEqual([]);
     expect(component.queuedFiles()).toEqual([]);
@@ -350,7 +385,12 @@ describe('UploadButtonComponent', () => {
 
     await component.onFileSelected({ currentFiles: [new File(['old'], 'original.pdf', { type: 'application/pdf' })] } as FileSelectEvent);
 
-    const queuedDocument = component.documentIds()![0];
+    const queuedDocument = component.documentIds()?.[0];
+    expect(queuedDocument).toBeDefined();
+    if (!queuedDocument) {
+      return;
+    }
+
     await component.renameDocument({ id: queuedDocument.id, name: 'renamed.pdf', size: queuedDocument.size });
 
     const replacementFile = new File(['replacement-content'], 'renamed.pdf', { type: 'application/pdf' });
@@ -359,7 +399,7 @@ describe('UploadButtonComponent', () => {
     await component.onConfirmDuplicate();
 
     expect(component.documentIds()).toHaveLength(1);
-    expect(component.documentIds()![0].name).toBe('renamed.pdf');
+    expect(component.documentIds()?.[0]?.name).toBe('renamed.pdf');
     expect(component.queuedFiles()).toHaveLength(1);
     expect(component.queuedFiles()[0].size).toBe(replacementFile.size);
   });

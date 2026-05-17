@@ -6,7 +6,7 @@ import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
@@ -37,7 +37,17 @@ export type UploadTarget = 'application' | 'applicantProfile';
  */
 @Component({
   selector: 'jhi-upload-button',
-  imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateDirective, ConfirmDialog, DocumentDialog],
+  imports: [
+    FontAwesomeModule,
+    FormsModule,
+    FileUpload,
+    ButtonComponent,
+    TooltipModule,
+    TranslateModule,
+    TranslateDirective,
+    ConfirmDialog,
+    DocumentDialog,
+  ],
   templateUrl: './upload-button.component.html',
   standalone: true,
 })
