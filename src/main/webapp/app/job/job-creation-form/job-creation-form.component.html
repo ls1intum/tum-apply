@@ -345,18 +345,15 @@
 
           <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
-              <jhi-number-input
+              <jhi-select
                 label="jobCreationForm.basicInformationSection.referenceLettersRequired.label"
-                placeholder="jobCreationForm.basicInformationSection.referenceLettersRequired.placeholder"
-                [model]="positionDetailsForm.get('referenceLettersRequired')?.value"
-                [control]="positionDetailsForm.get('referenceLettersRequired') ?? undefined"
-                [min]="0"
-                [max]="5"
-                [minFractionDigits]="0"
-                [maxFractionDigits]="0"
-                [errorEnabled]="true"
+                [selected]="positionDetailsForm.get('referenceLettersRequired')?.value"
+                (selectedChange)="positionDetailsForm.get('referenceLettersRequired')?.setValue($event)"
+                [items]="referenceLettersRequiredOptions"
                 icon="circle-info"
                 tooltipText="jobCreationForm.basicInformationSection.referenceLettersRequired.toolTipText"
+                [width]="'100%'"
+                [dataKey]="'value'"
               />
             </div>
             <div class="flex-1"></div>
