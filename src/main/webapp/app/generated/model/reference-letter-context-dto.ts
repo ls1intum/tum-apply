@@ -18,13 +18,14 @@ export interface ReferenceLetterContextDTO {
     readonly status?: ReferenceLetterContextDTOStatusEnum;
 }
 
-export type ReferenceLetterContextDTOStatusEnum = 'REQUESTED' | 'SUBMITTED' | 'EXPIRED';
+export type ReferenceLetterContextDTOStatusEnum = 'ADDED' | 'REQUESTED' | 'SUBMITTED' | 'EXPIRED';
 
 export const ReferenceLetterContextDTOStatusEnum = {
+    Added: 'ADDED' as const,
     Requested: 'REQUESTED' as const,
     Submitted: 'SUBMITTED' as const,
     Expired: 'EXPIRED' as const,
 } as const;
 
-export const ReferenceLetterContextDTOStatusEnumValues = ['REQUESTED', 'SUBMITTED', 'EXPIRED'] as const;
+export const ReferenceLetterContextDTOStatusEnumValues = ['ADDED', 'REQUESTED', 'SUBMITTED', 'EXPIRED'] as const;
 

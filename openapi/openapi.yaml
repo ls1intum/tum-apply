@@ -3757,7 +3757,7 @@ components:
         researchGroupName: {type: string}
         status:
           type: string
-          enum: [REQUESTED, SUBMITTED, EXPIRED]
+          enum: [ADDED, REQUESTED, SUBMITTED, EXPIRED]
     ReferenceRequestDTO:
       type: object
       properties:
@@ -3768,7 +3768,7 @@ components:
         referenceRequestId: {type: string, format: uuid}
         status:
           type: string
-          enum: [REQUESTED, SUBMITTED, EXPIRED]
+          enum: [ADDED, REQUESTED, SUBMITTED, EXPIRED]
         title: {type: string}
     RejectDTO:
       type: object
