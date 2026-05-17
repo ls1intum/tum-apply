@@ -1,22 +1,31 @@
 package de.tum.cit.aet.reference;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
+import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.reference.dto.CreateReferenceRequestDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
+import de.tum.cit.aet.reference.service.ReferenceRequestService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -36,6 +45,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 import tools.jackson.core.type.TypeReference;
 
 class ReferenceRequestResourceTest extends AbstractResourceTest {
@@ -62,10 +72,15 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
     ReferenceRequestRepository referenceRequestRepository;
 
     @Autowired
+    ReferenceRequestService referenceRequestService;
+
+    @Autowired
     DatabaseCleaner databaseCleaner;
 
     @Autowired
     MvcTestClient api;
+
+    private AsyncEmailSender mockSender;
 
     private ResearchGroup researchGroup;
     private User professor;
@@ -77,6 +92,8 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
     void setup() {
         databaseCleaner.clean();
         api.withoutPostProcessors();
+        mockSender = mock(AsyncEmailSender.class);
+        ReflectionTestUtils.setField(referenceRequestService, "emailSender", mockSender);
         researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
         professor = UserTestData.savedProfessor(userRepository, researchGroup);
         applicant = ApplicantTestData.savedWithNewUser(applicantRepository, userRepository);
@@ -262,6 +279,69 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                 );
 
             assertThat(referenceRequestRepository.findById(foreignEntry.getReferenceRequestId())).isPresent();
+        }
+    }
+
+    @Nested
+    class SubmitFlow {
+
+        private void saveAddedReference(String email) {
+            ReferenceRequest entry = ReferenceRequestTestData.newReferenceRequest(savedApplication, email);
+            entry.setStatus(ReferenceRequestStatus.ADDED);
+            referenceRequestRepository.save(entry);
+        }
+
+        private void submitApplication() {
+            UpdateApplicationDTO payload = new UpdateApplicationDTO(
+                savedApplication.getApplicationId(),
+                ApplicantDTO.getFromEntity(applicant),
+                null,
+                ApplicationState.SENT,
+                null,
+                null,
+                null
+            );
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead("/api/applications", payload, ApplicationForApplicantDTO.class, 200);
+        }
+
+        @Test
+        void shouldTransitionReferencesToRequestedAndDispatchEmailsWhenApplicationIsSubmitted() {
+            saveAddedReference("first@example.com");
+            saveAddedReference("second@example.com");
+
+            submitApplication();
+
+            assertThat(referenceRequestRepository.findByApplicationApplicationIdOrderByCreatedAtAsc(savedApplication.getApplicationId()))
+                .hasSize(2)
+                .allSatisfy(entry -> {
+                    assertThat(entry.getStatus()).isEqualTo(ReferenceRequestStatus.REQUESTED);
+                    assertThat(entry.getTokenHash()).isNotBlank();
+                    assertThat(entry.getTokenExpiresAt()).isNotNull();
+                });
+            verify(mockSender, times(2)).sendAsync(any());
+        }
+
+        @Test
+        void shouldHoldApplicationInPendingStateWhenReferenceLettersAreStillMissing() {
+            saveAddedReference("waiting@example.com");
+
+            submitApplication();
+
+            Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
+            assertThat(reloaded.getState()).isEqualTo(ApplicationState.PENDING);
+        }
+
+        @Test
+        void shouldPromoteToSentWhenJobRequiresNoReferenceLetters() {
+            jobWithReferences.setReferenceLettersRequired(0);
+            jobRepository.save(jobWithReferences);
+
+            submitApplication();
+
+            Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
+            assertThat(reloaded.getState()).isEqualTo(ApplicationState.SENT);
         }
     }
 }
