@@ -103,7 +103,7 @@ public class ReferenceRequestService {
         entry.setFirstName(payload.firstName().trim());
         entry.setLastName(payload.lastName().trim());
         entry.setEmail(payload.email().trim());
-        entry.setStatus(ReferenceRequestStatus.REQUESTED);
+        entry.setStatus(ReferenceRequestStatus.ADDED);
         return ReferenceRequestDTO.fromEntity(referenceRequestRepository.save(entry));
     }
 
@@ -142,10 +142,11 @@ public class ReferenceRequestService {
             application.getApplicationId()
         );
         for (ReferenceRequest entry : entries) {
-            if (entry.getStatus() != ReferenceRequestStatus.REQUESTED || entry.getTokenHash() != null) {
+            if (entry.getStatus() != ReferenceRequestStatus.ADDED || entry.getTokenHash() != null) {
                 continue;
             }
             String rawToken = generateToken();
+            entry.setStatus(ReferenceRequestStatus.REQUESTED);
             entry.setTokenHash(hashToken(rawToken));
             entry.setTokenExpiresAt(computeTokenExpiry(application.getJob()));
             referenceRequestRepository.save(entry);

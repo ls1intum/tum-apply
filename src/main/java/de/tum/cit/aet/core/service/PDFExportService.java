@@ -732,13 +732,12 @@ public class PDFExportService {
     }
 
     private String formatReferenceStatus(ReferenceRequestStatus status, Map<String, String> labels) {
-        if (status == null) {
-            return "";
-        }
         return switch (status) {
-            case REQUESTED -> labels.getOrDefault("referenceStatusRequested", "Requested");
-            case SUBMITTED -> labels.getOrDefault("referenceStatusSubmitted", "Submitted");
-            case EXPIRED -> labels.getOrDefault("referenceStatusExpired", "Expired");
+            case null -> "";
+            case ADDED -> labels.getOrDefault("referenceStatusAdded", "(added)");
+            case REQUESTED -> labels.getOrDefault("referenceStatusRequested", "(requested)");
+            case SUBMITTED -> labels.getOrDefault("referenceStatusSubmitted", "(submitted)");
+            case EXPIRED -> labels.getOrDefault("referenceStatusExpired", "(expired)");
         };
     }
 }

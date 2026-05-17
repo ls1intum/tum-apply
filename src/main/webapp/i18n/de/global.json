@@ -247,6 +247,7 @@
       "personal_documents": "Persönliche Dokumente",
       "reference_letters": "Empfehlungsschreiben Anfragen",
       "reference_status": {
+        "added": "(hinzugefügt)",
         "requested": "(angefragt)",
         "submitted": "(eingereicht)",
         "expired": "(abgelaufen)"
