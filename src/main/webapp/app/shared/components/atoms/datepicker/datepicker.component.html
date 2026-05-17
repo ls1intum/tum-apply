@@ -41,10 +41,7 @@
     <ng-template pTemplate="date" let-date>
       @let highlightedDate = highlightedDateParts();
       @let isHighlighted =
-        highlightedDate &&
-        highlightedDate.day === date.day &&
-        highlightedDate.month === date.month &&
-        highlightedDate.year === date.year;
+        highlightedDate && highlightedDate.day === date.day && highlightedDate.month === date.month && highlightedDate.year === date.year;
       @let tooltipLabel = highlightedDateLabel();
       <span
         class="inline-flex size-full items-center justify-center"

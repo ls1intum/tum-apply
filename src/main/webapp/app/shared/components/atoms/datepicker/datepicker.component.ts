@@ -258,5 +258,4 @@ export class DatePickerComponent {
       this.selectedDateChange.emit(undefined);
     }
   }
-
 }
