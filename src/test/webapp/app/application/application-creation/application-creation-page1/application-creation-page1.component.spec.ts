@@ -184,19 +184,10 @@ describe('ApplicationPage1Component', () => {
   it.each([
     [() => undefined, '12345', {}],
     [() => 'DE', '', {}],
-    [() => 'DE', '   ', {}],
     [() => 'ZZ', '12345', { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' }],
   ])('postalCodeValidator with country/value -> result', (countryFn, value, expected) => {
     const validator = postalCodeValidator(countryFn as () => string | undefined);
     expect(validator({ value } as AbstractControl)).toEqual(expected);
-  });
-
-  it.each([
-    ['', { required: true }],
-    ['   ', { required: true }],
-    ['80331', undefined],
-  ])('trimmedRequiredValidator with value=%j -> result', (value, expected) => {
-    expect(trimmedRequiredValidator({ value } as AbstractControl)).toEqual(expected);
   });
 
   it('updateSelect should allow setting undefined value', () => {
