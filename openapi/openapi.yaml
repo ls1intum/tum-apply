@@ -2139,7 +2139,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/ReferenceLetterContextDTO'}
+              schema: {$ref: '#/components/schemas/ReferenceLetterUploadContextDTO'}
     post:
       tags: [reference-letter-upload-resource]
       operationId: upload
@@ -3747,7 +3747,7 @@ components:
           type: array
           items: {$ref: '#/components/schemas/RatingDTO'}
           uniqueItems: true
-    ReferenceLetterContextDTO:
+    ReferenceLetterUploadContextDTO:
       type: object
       properties:
         applicantFirstName: {type: string}

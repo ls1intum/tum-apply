@@ -12,13 +12,13 @@ import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.EmailType;
-import de.tum.cit.aet.notification.dto.ReferenceLetterInvitationContextDTO;
+import de.tum.cit.aet.notification.dto.ReferenceLetterContextDTO;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.reference.dto.CreateReferenceRequestDTO;
-import de.tum.cit.aet.reference.dto.ReferenceLetterContextDTO;
+import de.tum.cit.aet.reference.dto.ReferenceLetterUploadContextDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -152,7 +152,9 @@ public class ReferenceRequestService {
             entry.setTokenHash(hashToken(rawToken));
             entry.setTokenExpiresAt(expiry);
 
-            long hoursUntilDeadline = ChronoUnit.HOURS.between(LocalDateTime.now(ZoneOffset.UTC), expiry);
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime deadline = entry.getTokenExpiresAt().atZone(ZoneOffset.systemDefault()).toLocalDateTime();
+            long hoursUntilDeadline = ChronoUnit.HOURS.between(now, deadline);
             if (hoursUntilDeadline <= FINAL_REMINDER_HOURS) {
                 entry.setReminderCount(MAX_REMINDERS);
             } else if (hoursUntilDeadline <= FIRST_REMINDER_HOURS) {
@@ -173,11 +175,11 @@ public class ReferenceRequestService {
      * @return the context the referee sees on the upload page
      * @throws EntityNotFoundException when the token is unknown
      */
-    public ReferenceLetterContextDTO getContextByToken(String rawToken) {
+    public ReferenceLetterUploadContextDTO getContextByToken(String rawToken) {
         ReferenceRequest entry = findByRawToken(rawToken);
         Application application = entry.getApplication();
         Job job = application.getJob();
-        return new ReferenceLetterContextDTO(
+        return new ReferenceLetterUploadContextDTO(
             application.getApplicantFirstName(),
             application.getApplicantLastName(),
             job.getTitle(),
@@ -274,7 +276,7 @@ public class ReferenceRequestService {
      * @return the number of reminder emails dispatched in this run
      */
     public int sendReminders() {
-        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now();
         LocalDateTime upperBound = now.plusHours(FIRST_REMINDER_HOURS);
         List<ReferenceRequest> candidates = referenceRequestRepository.findReminderCandidates(now, upperBound, MAX_REMINDERS);
 
@@ -304,7 +306,7 @@ public class ReferenceRequestService {
      * @return true when this entry should receive a reminder now
      */
     private boolean shouldSendReminder(ReferenceRequest entry, LocalDateTime now) {
-        LocalDateTime deadline = entry.getTokenExpiresAt();
+        LocalDateTime deadline = entry.getTokenExpiresAt().atZone(ZoneOffset.systemDefault()).toLocalDateTime();
         long hoursUntilDeadline = ChronoUnit.HOURS.between(now, deadline);
         if (entry.getReminderCount() < MAX_REMINDERS && hoursUntilDeadline <= FINAL_REMINDER_HOURS) {
             return true;
@@ -335,7 +337,7 @@ public class ReferenceRequestService {
         if (entry.getStatus() == ReferenceRequestStatus.EXPIRED) {
             throw new OperationNotAllowedException("This reference letter upload link has expired.");
         }
-        if (entry.getTokenExpiresAt() != null && entry.getTokenExpiresAt().isBefore(LocalDateTime.now(ZoneOffset.UTC))) {
+        if (entry.getTokenExpiresAt() != null && entry.getTokenExpiresAt().isBefore(LocalDateTime.now())) {
             throw new OperationNotAllowedException("This reference letter upload link has expired.");
         }
         if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
@@ -410,9 +412,15 @@ public class ReferenceRequestService {
 
         String referenceLink = clientUrl + "/reference/" + rawToken;
         String deadline =
-            entry.getTokenExpiresAt() != null ? entry.getTokenExpiresAt().atZone(ZoneOffset.UTC).format(DEADLINE_FORMATTER) : "";
+            entry.getTokenExpiresAt() != null
+                ? entry
+                      .getTokenExpiresAt()
+                      .atZone(ZoneOffset.systemDefault())
+                      .withZoneSameInstant(ZoneOffset.UTC)
+                      .format(DEADLINE_FORMATTER)
+                : "";
 
-        ReferenceLetterInvitationContextDTO ctx = new ReferenceLetterInvitationContextDTO(
+        ReferenceLetterContextDTO ctx = new ReferenceLetterContextDTO(
             entry.getTitle(),
             entry.getFirstName(),
             entry.getLastName(),
@@ -446,9 +454,9 @@ public class ReferenceRequestService {
     private LocalDateTime computeTokenExpiry(Job job) {
         LocalDate jobEnd = job.getEndDate();
 
-        LocalDate expiryDate = (jobEnd != null) ? jobEnd : LocalDate.now(ZoneOffset.UTC).plusMonths(DEFAULT_VALIDITY_MONTHS);
+        LocalDate expiryDate = (jobEnd != null) ? jobEnd : LocalDate.now().plusMonths(DEFAULT_VALIDITY_MONTHS);
 
-        return expiryDate.atTime(23, 59, 59);
+        return expiryDate.atTime(23, 59, 59).atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneOffset.systemDefault()).toLocalDateTime();
     }
 
     /**
