@@ -57,3 +57,18 @@ Used for: User-facing content in the UI.
 | Benutzer | Konto / Benutzer:in |
 | Benutzername | Login |
 | Prüfer | Bewertet von |
+
+---
+
+## Grammatical Person in Email Templates
+
+Email templates under `src/main/resources/templates/{de,en}/` always speak in the
+**first-person plural** (*wir / uns / unser* in German, *we / us / our* in
+English), regardless of who actually sends or signs the email. The voice is the
+research group team for application/interview emails and the TUMApply system for
+automated notifications.
+
+Do not use first-person singular (*ich / mich / mein*, *I / me / my*) in the body,
+even for templates that carry a personal sign-off such as `APPLICATION_ACCEPTED`.
+The professor's name still appears in the signature; the body itself stays in
+the plural register.

@@ -35,6 +35,7 @@ import { UpdateApplicationDTO } from 'app/generated/model/update-application-dto
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
 import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
 import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
@@ -70,6 +71,7 @@ const applyflow = 'entity.toast.applyFlow';
     TranslateDirective,
     MessageComponent,
     SavingBadgeComponent,
+    CheckboxComponent,
   ],
   templateUrl: './application-creation-form.component.html',
   providers: [DialogService],
