@@ -8,6 +8,7 @@ import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.AlreadyMemberOfResearchGroupException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.InvalidParameterException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
@@ -592,16 +593,25 @@ public class ResearchGroupService {
      * Verifies that the current user is an admin or a member of the target research group
      * before proceeding. For each provided Keycloak user, this method ensures they exist in
      * the local database. If a user does not exist locally, they are created. The user is then
-     * assigned to the specified research group. An email notification is sent only if the user
-     * is newly created or if their research group assignment has changed.
+     * assigned to the specified research group with the role specified on the DTO (defaulting
+     * to {@link UserRole#EMPLOYEE} when none is supplied). An email notification is sent only
+     * if the user is newly created or if their research group assignment has changed.
      *
-     * @param keycloakUsers   A list of {@link KeycloakUserDTO} representing the users to be added.
-     * @param researchGroupId The ID of the research group to which the members will be added.
-     *                        If null, the current user's group is used (if they are a professor).
-     * @throws AccessDeniedException if the current user is not a member of the target group
+     * @param dto the payload describing which users to add, the target research group and the
+     *            role to assign to each user
+     * @throws AccessDeniedException     if the current user is not a member of the target group
+     * @throws InvalidParameterException if the requested role is neither {@link UserRole#EMPLOYEE}
+     *                                   nor {@link UserRole#PROFESSOR}
      */
     @Transactional
-    public void addMembersToResearchGroup(List<KeycloakUserDTO> keycloakUsers, UUID researchGroupId) {
+    public void addMembersToResearchGroup(AddMembersToResearchGroupDTO dto) {
+        UserRole targetRole = dto.roleOrDefault();
+        if (targetRole != UserRole.EMPLOYEE && targetRole != UserRole.PROFESSOR) {
+            throw new InvalidParameterException("Only EMPLOYEE or PROFESSOR roles can be assigned via add-members.");
+        }
+
+        UUID researchGroupId = dto.researchGroupId();
+        List<KeycloakUserDTO> keycloakUsers = dto.keycloakUsers();
         UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfMember();
         // Throws AccessDeniedException if the current user is neither an admin nor a member of the target group
         currentUserService.isAdminOrMemberOf(targetGroupId);
@@ -637,7 +647,7 @@ public class ResearchGroupService {
             userRepository.save(user);
 
             // Ensure the user has a role in the research group
-            ensureUserRoleInGroup(user, researchGroup, UserRole.EMPLOYEE);
+            ensureUserRoleInGroup(user, researchGroup, targetRole);
 
             // Send notification email because the group was newly assigned or changed
             sendWelcomeToResearchGroupEmail(user, researchGroup);

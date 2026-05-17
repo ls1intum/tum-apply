@@ -42,6 +42,11 @@
         "exports": "TUMApply - Admin Exports",
         "systemSettings": "TUMApply - System Settings"
       },
+      "user": {
+        "manageUsers": "TUMApply - Manage Users",
+        "createUser": "TUMApply - Create User",
+        "userDetail": "TUMApply - User Detail"
+      },
       "about-us": "TUMApply - About Us",
       "interview": {
         "overview": "TUMApply - Interview Overview",
