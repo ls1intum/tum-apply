@@ -6,12 +6,13 @@ import { SchoolResourceApi } from 'app/generated/api/school-resource-api';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { TranslateDirective } from 'app/shared/language';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'jhi-school-edit-dialog',
-  imports: [ReactiveFormsModule, TranslateModule, ButtonComponent, StringInputComponent],
+  imports: [ReactiveFormsModule, TranslateModule, TranslateDirective, ButtonComponent, StringInputComponent],
   templateUrl: './school-edit-dialog.component.html',
 })
 export class SchoolEditDialogComponent {
