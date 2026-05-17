@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
 import { firstValueFrom, map } from 'rxjs';
@@ -69,20 +69,8 @@ export class JobCardListComponent {
   private jobApi = inject(JobResourceApi);
   private readonly toastService = inject(ToastService);
 
-  private readonly loadJobsEffect = effect(() => {
-    this.page();
-    this.pageSize();
-    this.searchQuery();
-    this.selectedSubjectAreaFilters();
-    this.selectedLocationFilters();
-    this.selectedSupervisorFilters();
-    this.sortBy();
-    this.sortDirection();
-    void this.loadJobs();
-  });
-
   constructor() {
-    void this.loadAllFilter();
+    void this.initializePage();
   }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
@@ -91,6 +79,7 @@ export class JobCardListComponent {
 
     this.page.set(page);
     this.pageSize.set(size);
+    void this.loadJobs();
   }
 
   onSearchEmit(searchQuery: string): void {
@@ -100,6 +89,7 @@ export class JobCardListComponent {
     if (normalizedQuery !== currentQuery) {
       this.page.set(0);
       this.searchQuery.set(normalizedQuery);
+      void this.loadJobs();
     }
   }
 
@@ -115,25 +105,31 @@ export class JobCardListComponent {
     } else {
       return;
     }
+    void this.loadJobs();
   }
 
   onSortEmit(event: Sort): void {
     this.page.set(0);
     this.sortBy.set(event.field);
     this.sortDirection.set(event.direction);
+    void this.loadJobs();
   }
 
-  async loadAllFilter(): Promise<void> {
+  async loadAllFilter(showErrorToast = true): Promise<boolean> {
     try {
       const filterOptions = await firstValueFrom(this.jobApi.getAllFilters());
       this.allSupervisorNames.set(filterOptions.supervisorNames ?? []);
+      return true;
     } catch {
       this.allSupervisorNames.set([]);
-      this.toastService.showErrorKey('jobOverviewPage.errors.loadFilter');
+      if (showErrorToast) {
+        this.toastService.showErrorKey('jobOverviewPage.errors.loadFilter');
+      }
+      return false;
     }
   }
 
-  async loadJobs(): Promise<void> {
+  async loadJobs(showErrorToast = true): Promise<boolean> {
     try {
       const pageData = await firstValueFrom(
         this.jobApi.getAvailableJobs(
@@ -149,9 +145,13 @@ export class JobCardListComponent {
       );
       this.jobs.set(pageData.content ?? []);
       this.totalRecords.set(pageData.totalElements ?? 0);
+      return true;
     } catch (error) {
       console.error('Failed to load jobs from API:', error);
-      this.toastService.showErrorKey('jobOverviewPage.errors.loadJobs');
+      if (showErrorToast) {
+        this.toastService.showErrorKey('jobOverviewPage.errors.loadJobs');
+      }
+      return false;
     }
   }
 
@@ -166,5 +166,18 @@ export class JobCardListComponent {
     ];
 
     return headerImages[index % headerImages.length];
+  }
+
+  private async initializePage(): Promise<void> {
+    const [filtersLoaded, jobsLoaded] = await Promise.all([this.loadAllFilter(false), this.loadJobs(false)]);
+
+    if (!jobsLoaded) {
+      this.toastService.showErrorKey('jobOverviewPage.errors.loadJobs');
+      return;
+    }
+
+    if (!filtersLoaded) {
+      this.toastService.showErrorKey('jobOverviewPage.errors.loadFilter');
+    }
   }
 }
