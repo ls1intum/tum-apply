@@ -1,4 +1,6 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4 py-4">
+  <p class="m-0 text-sm text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
+
   <div>
     <jhi-string-input
       [control]="form.controls.name"

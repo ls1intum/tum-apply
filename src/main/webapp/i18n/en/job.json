@@ -181,6 +181,8 @@
       "complianceTooltipText": "Colors indicate category, not severity. All items are equally important."
     },
     "positionDetailsSection": {
+      "selectedDeadline": "Selected Deadline",
+      "selectedStartDate": "Selected Start Date",
       "jobDescription": {
         "label": "Job Description",
         "aiLabel": "AI writes, improves and translates for you.",

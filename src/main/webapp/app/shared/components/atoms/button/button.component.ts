@@ -41,6 +41,7 @@ export class ButtonComponent {
   icon = input<string | undefined>(undefined);
   isExternalLink = input<boolean | undefined>(false);
   label = input<string | undefined>(undefined);
+  ariaLabel = input<string | undefined>(undefined);
   numberOfFavorites = input<number | undefined>(undefined);
   disabled = input<boolean>(false);
   shouldTranslate = input<boolean>(true);
@@ -59,7 +60,14 @@ export class ButtonComponent {
 
   displayTooltip = computed(() => this.translator.translate(this.tooltip(), this.shouldTranslate(), this.translationParams()));
   displayLabel = computed(() => this.translator.translate(this.label(), this.shouldTranslate(), this.translationParams()));
-  ariaLabel = computed(() => (this.label() === undefined ? this.displayTooltip() : undefined));
+  resolvedAriaLabel = computed(() => {
+    const explicitLabel = this.ariaLabel();
+    if (explicitLabel !== undefined) {
+      return this.translator.translate(explicitLabel, this.shouldTranslate(), this.translationParams());
+    }
+
+    return this.label() === undefined ? this.displayTooltip() : undefined;
+  });
 
   private translator = injectTranslator();
 

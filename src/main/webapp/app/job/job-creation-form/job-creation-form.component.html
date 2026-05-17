@@ -50,6 +50,7 @@
           <div class="grid items-start gap-4">
             <div>
               <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
+              <p class="mb-4 text-sm text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
               <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
               <div class="flex flex-col">
                 <div class="flex flex-col lg:flex-row lg:gap-8">
@@ -233,8 +234,12 @@
           <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
               <jhi-datepicker
+                inputId="applicationDeadline"
                 [selectedDate]="positionDetailsForm.get('applicationDeadline')?.value"
                 (selectedDateChange)="positionDetailsForm.get('applicationDeadline')?.setValue($event)"
+                [maxDate]="applicationDeadlineMaxDate()"
+                [highlightedDate]="applicationDeadlineMaxDate()"
+                [highlightedDateLabel]="'jobCreationForm.positionDetailsSection.selectedStartDate'"
                 [label]="'jobCreationForm.basicInformationSection.applicationDeadline.label'"
                 [placeholder]="'jobCreationForm.basicInformationSection.applicationDeadline.placeholder'"
                 icon="circle-info"
@@ -263,8 +268,12 @@
           <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
               <jhi-datepicker
+                inputId="startDate"
                 [selectedDate]="positionDetailsForm.get('startDate')?.value"
                 (selectedDateChange)="positionDetailsForm.get('startDate')?.setValue($event)"
+                [minDate]="startDateMinDate()"
+                [highlightedDate]="startDateMinDate()"
+                [highlightedDateLabel]="'jobCreationForm.positionDetailsSection.selectedDeadline'"
                 [label]="'jobCreationForm.basicInformationSection.startDate.label'"
                 [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
                 icon="circle-info"
