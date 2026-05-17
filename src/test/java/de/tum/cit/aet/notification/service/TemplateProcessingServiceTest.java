@@ -7,6 +7,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.notification.constants.SignoffType;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -69,6 +70,45 @@ class TemplateProcessingServiceTest {
             assertThatThrownBy(() -> service.renderTemplate(Language.ENGLISH, "<p>Hi</p>", "unsupported")).isInstanceOf(
                 TemplateProcessingException.class
             );
+        }
+
+        @Test
+        void renderTemplate_appendsSystemSignoff_inEnglish() {
+            Application application = sampleApplication("Bob", "Smith");
+
+            String rendered = service.renderTemplate(Language.ENGLISH, "<p>Hi</p>", application, SignoffType.SYSTEM);
+
+            assertThat(rendered).contains("Your TUMApply Team");
+            assertThat(rendered).doesNotContain("The RG Team");
+        }
+
+        @Test
+        void renderTemplate_appendsResearchGroupSignoff_inGerman_withGroupNameSubstituted() {
+            Application application = sampleApplication("Alice", "Smith");
+
+            String rendered = service.renderTemplate(Language.GERMAN, "<p>Hallo</p>", application, SignoffType.RESEARCH_GROUP);
+
+            assertThat(rendered).contains("Dein RG Team");
+            assertThat(rendered).doesNotContain("Dein TUMApply Team");
+        }
+
+        @Test
+        void renderTemplate_appendsSystemFormalSignoff_inGerman() {
+            Application application = sampleApplication("Alice", "Smith");
+
+            String rendered = service.renderTemplate(Language.GERMAN, "<p>Hallo</p>", application, SignoffType.SYSTEM_FORMAL);
+
+            assertThat(rendered).contains("Ihr TUMApply Team");
+        }
+
+        @Test
+        void renderTemplate_appendsNoSignoff_whenSignoffIsNone() {
+            Application application = sampleApplication("Alice", "Smith");
+
+            String rendered = service.renderTemplate(Language.ENGLISH, "<p>Hi</p>", application, SignoffType.NONE);
+
+            assertThat(rendered).doesNotContain("Your TUMApply Team");
+            assertThat(rendered).doesNotContain("The RG Team");
         }
     }
 
