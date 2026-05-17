@@ -375,6 +375,34 @@ public class JobService {
         return jobRepository.findAllJobsByResearchGroup(researchGroupId, enumStates, normalizedSearchQuery, pageable);
     }
 
+    /**
+     * Returns a paginated list of jobs across every research group for admin views.
+     * Supports optional filters for state, research group, and supervising professor,
+     * plus a search string matching job title or professor full name.
+     *
+     * @param pageDTO          pagination configuration
+     * @param adminFilter      DTO containing all optionally filterable fields
+     * @param sortDTO          sorting configuration
+     * @param searchQuery      search string for supervising professor or job title
+     * @return a page of {@link AdminCreatedJobDTO} matching the criteria
+     */
+    public Page<AdminCreatedJobDTO> getAllJobs(PageDTO pageDTO, AdminJobsFilterDTO adminFilter, SortDTO sortDTO, String searchQuery) {
+        Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
+        List<JobState> enumStates = null;
+        if (adminFilter.states() != null && !adminFilter.states().isEmpty()) {
+            enumStates = adminFilter.states().stream().map(JobState::fromValue).filter(Objects::nonNull).toList();
+        }
+        List<UUID> researchGroupIds = (adminFilter.researchGroupIds() == null || adminFilter.researchGroupIds().isEmpty())
+            ? null
+            : adminFilter.researchGroupIds();
+        List<UUID> supervisingProfessorIds = (adminFilter.supervisingProfessorIds() == null ||
+            adminFilter.supervisingProfessorIds().isEmpty())
+            ? null
+            : adminFilter.supervisingProfessorIds();
+        String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
+        return jobRepository.findAllJobsForAdmin(enumStates, researchGroupIds, supervisingProfessorIds, normalizedSearchQuery, pageable);
+    }
+
     private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {
         User supervisingProfessor = userRepository.findByIdElseThrow(dto.supervisingProfessor());
         // Ensure that the current user is either an admin or a research group member of

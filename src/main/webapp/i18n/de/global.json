@@ -11,7 +11,8 @@
         "creation": "TUMApply - Stellenerstellung",
         "edit": "TUMApply - Stellenbearbeitung",
         "overview": "TUMApply - Stellenübersicht",
-        "myPositions": "TUMApply - Stellen"
+        "myPositions": "TUMApply - Stellen",
+        "allPositions": "TUMApply - Alle Stellen"
       },
       "application": {
         "creation": "TUMApply - Bewerbungserstellung",

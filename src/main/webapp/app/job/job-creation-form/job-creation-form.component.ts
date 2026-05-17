@@ -709,7 +709,7 @@ export class JobCreationFormComponent {
   /**
    * Publishes the job posting after validation.
    * Requires privacy consent and valid forms.
-   * Navigates to /my-positions on success.
+   * Navigates to the return route on success.
    *
    * Before sending the Published DTO, cancels any pending debounced autosave
    * and waits for an in-flight autosave to settle. Otherwise a Draft autosave
@@ -731,7 +731,7 @@ export class JobCreationFormComponent {
       // refresh local truth from server response
       this.applyServerJobForm(saved);
       this.toastService.showSuccessKey('toast.published');
-      void this.router.navigate(['/my-positions']);
+      this.onBack();
     } catch {
       this.toastService.showErrorKey('toast.publishFailed');
     }
@@ -1460,11 +1460,15 @@ export class JobCreationFormComponent {
   }
 
   /**
-   * Loads professors of the current research group for the supervising professor select.
+   * Loads professors for the supervising-professor select.
+   * Admins see every professor in the system; everyone else sees only their research group's professors.
    */
   private async loadSupervisingProfessors(): Promise<void> {
     try {
-      const response = await firstValueFrom(this.researchGroupApi.getResearchGroupProfessors());
+      const isAdmin = this.accountService.userAuthorities?.includes(UserShortDTORolesEnum.Admin) ?? false;
+      const response = isAdmin
+        ? await firstValueFrom(this.researchGroupApi.getAllProfessors())
+        : await firstValueFrom(this.researchGroupApi.getResearchGroupProfessors());
       const options = response
         .filter(member => member.roles?.includes(UserShortDTORolesEnum.Professor) && member.userId)
         .map(member => {
