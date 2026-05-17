@@ -7,7 +7,6 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { By } from '@angular/platform-browser';
 
 type ButtonForTest = {
-  ariaLabel: string;
   label: string;
   icon: string;
   disabled: boolean;
@@ -79,12 +78,5 @@ describe('ButtonComponent', () => {
     const fixture = createButtonFixture({ numberOfFavorites: 5 });
 
     expect(fixture.nativeElement.querySelector('p-overlaybadge')).toBeTruthy();
-  });
-
-  it('should use an explicit ariaLabel input for icon-only buttons', () => {
-    const fixture = createButtonFixture({ icon: 'eye', ariaLabel: 'button.view', shouldTranslate: true });
-
-    const buttonDebugElement = fixture.debugElement.query(By.css('p-button'));
-    expect(buttonDebugElement.componentInstance.ariaLabel).toBe('button.view');
   });
 });

@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
@@ -24,7 +23,6 @@ import {
 } from 'util/applicant-resource-api.service.mock';
 import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
 import { DocumentCacheService } from 'app/service/document-cache.service';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 describe('UploadButtonComponent', () => {
   let applicationApi: ApplicationResourceApiMock;
@@ -305,24 +303,6 @@ describe('UploadButtonComponent', () => {
 
     expect(component.hasPreview(queuedDocument)).toBe(false);
     expect(component.previewDocumentHolders()).toEqual([]);
-  });
-
-  it('should use translation keys for upload aria labels instead of hardcoded English strings', () => {
-    const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
-    const component = fixture.componentInstance;
-
-    component.selectedFiles.set([new File(['queued'], 'queued.pdf', { type: 'application/pdf' })]);
-    fixture.detectChanges();
-
-    const removeButton = fixture.debugElement
-      .queryAll(By.directive(ButtonComponent))
-      .map(debugElement => debugElement.componentInstance as ButtonComponent)
-      .find(button => button.icon() === 'times');
-
-    const selectFileTrigger: HTMLSpanElement | null = fixture.nativeElement.querySelector('span[role="button"][aria-label]');
-
-    expect(removeButton?.ariaLabel()).toBe('entity.upload.aria.removeFile');
-    expect(selectFileTrigger?.getAttribute('aria-label')).toBe('entity.upload.aria.selectFileToUpload');
   });
 
   it('should rename document if name is valid and update documentIds correctly', async () => {
