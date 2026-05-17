@@ -542,19 +542,22 @@ describe('JobCreationFormComponent', () => {
 
     it('should toggle image step disabled with form validity', () => {
       mockAllPanelTemplates(component);
+      const imageStepDisabled = (): boolean | undefined =>
+        getPrivate(component)
+          .buildStepData()
+          .find((s: Step) => s.name.includes('imageSelection'))?.disabled;
+
       component.basicInfoValid.set(false);
       component.positionDetailsValid.set(false);
-      let imageStep = getPrivate(component)
-        .buildStepData()
-        .find(s => s.name.includes('imageSelection'));
-      expect(imageStep?.disabled).toBe(true);
+      expect(imageStepDisabled()).toBe(true);
+
+      component.basicInfoValid.set(false);
+      component.positionDetailsValid.set(true);
+      expect(imageStepDisabled()).toBe(true);
 
       component.basicInfoValid.set(true);
       component.positionDetailsValid.set(true);
-      imageStep = getPrivate(component)
-        .buildStepData()
-        .find(s => s.name.includes('imageSelection'));
-      expect(imageStep?.disabled).toBe(false);
+      expect(imageStepDisabled()).toBe(false);
     });
   });
 
