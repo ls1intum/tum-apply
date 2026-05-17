@@ -313,6 +313,11 @@ export class JobCreationFormComponent {
   /** When set, only issues of this category are highlighted in the editor. (undefined = all categories shown) */
   readonly activeComplianceFilter = signal<string | undefined>(undefined);
 
+  /** Dismiss hides the marker, but keeps the issue in score/count. */
+  readonly dismissedComplianceHighlights = signal<ComplianceIssue[]>([]);
+
+  readonly isCompliancePopoverHovered = signal(false);
+
   /** Returns the explanation of a compliance issue whose text appears in the job title, if any. */
   readonly titleComplianceError = computed(() => {
     this.basicInfoFormValueSignal();
@@ -883,8 +888,11 @@ export class JobCreationFormComponent {
    * @param lang The current language of the editor content
    */
   private applyHighlights(compliance: ComplianceIssue[] | undefined, lang: string): void {
+    const dismissedIssues = this.dismissedComplianceHighlights();
     const highlights = (compliance ?? []).flatMap(issue =>
-      issue.text && issue.category && (!issue.language || issue.language === lang) ? [{ text: issue.text, category: issue.category }] : [],
+      issue.text && issue.category && (!issue.language || issue.language === lang) && !dismissedIssues.includes(issue)
+        ? [{ text: issue.text, category: issue.category }]
+        : [],
     );
     this.jobDescriptionEditor()?.highlightTexts(highlights);
   }
@@ -895,7 +903,6 @@ export class JobCreationFormComponent {
    */
   onHighlightHovered(event: { text: string; x: number; y: number } | undefined): void {
     if (!event) {
-      this.activePopoverIssue.set(undefined);
       return;
     }
     const lang = this.currentDescriptionLanguage();
@@ -903,6 +910,68 @@ export class JobCreationFormComponent {
     this.activePopoverIssue.set(match);
     this.popoverX.set(Math.min(event.x, window.innerWidth - this.POPOVER_WIDTH));
     this.popoverY.set(event.y);
+  }
+
+  onPopoverHovered(isHovered: boolean): void {
+    this.isCompliancePopoverHovered.set(isHovered);
+    if (!isHovered) {
+      this.closeCompliancePopover();
+    }
+  }
+
+  /**
+   * Applies the action of an accepted AI compliance suggestion to the editor.
+   * Cancels any in-flight translation, syncs the new HTML into the form,
+   * and removes the issue from the pills so it stops showing in the sidebar.
+   */
+  onComplianceSuggestionAccepted(issue: ComplianceIssue): void {
+    const updatedHtml = this.jobDescriptionEditor()?.applyComplianceSuggestion(issue);
+    if (updatedHtml === undefined) return;
+
+    this.cancelTranslation();
+
+    const lang = this.currentDescriptionLanguage();
+    this.basicInfoForm.get('jobDescription')?.setValue(updatedHtml);
+    if (lang === 'en') {
+      this.jobDescriptionEN.set(updatedHtml);
+    } else {
+      this.jobDescriptionDE.set(updatedHtml);
+    }
+
+    this.complianceIssues.update(issues => issues.filter(i => i !== issue));
+    this.closeCompliancePopover();
+    this.refreshComplianceHighlights();
+  }
+
+  /**
+   * Dismisses a compliance issue without applying it.
+   * The highlight disappears from the editor, but the issue still counts
+   * toward the score and the sidebar total.
+   */
+  onComplianceIssueDismissed(issue: ComplianceIssue): void {
+    this.dismissedComplianceHighlights.update(issues => issues.concat(issue));
+    this.closeCompliancePopover();
+    this.refreshComplianceHighlights();
+  }
+
+  /**
+   * Renders compliance highlights in the editor based on the current
+   * language and active category filter. Called after issues change
+   * when action state or filter changes.
+   */
+  private refreshComplianceHighlights(): void {
+    const lang = this.currentDescriptionLanguage();
+    const category = this.activeComplianceFilter();
+    const visibleIssues = category
+      ? this.complianceIssues().filter(currentIssue => currentIssue.category === category)
+      : this.complianceIssues();
+    this.applyHighlights(visibleIssues, lang);
+  }
+
+  /** Hides the active compliance popover and clears its hover state. */
+  private closeCompliancePopover(): void {
+    this.activePopoverIssue.set(undefined);
+    this.isCompliancePopoverHovered.set(false);
   }
 
   /**
@@ -1597,6 +1666,10 @@ export class JobCreationFormComponent {
       } else {
         saved = await firstValueFrom(this.jobApi.createJob(currentData));
         this.jobId.set(saved.jobId ?? '');
+      }
+      // Ignore stale auto-save responses if the description changed while the request was in flight.
+      if ((this.basicInfoForm.get('jobDescription')?.value ?? '').trim() !== description.trim()) {
+        return true;
       }
 
       // 3) Sync local state with server response

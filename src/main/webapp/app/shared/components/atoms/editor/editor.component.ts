@@ -17,7 +17,12 @@ import { InfoIconComponent } from 'app/shared/components/atoms/info-icon/info-ic
 import { ChangeDetectorRef } from '@angular/core';
 import { viewChild } from '@angular/core';
 import { TranslateDirective } from 'app/shared/language';
-import { ComplianceIssueCategoryEnum, ComplianceIssueCategoryEnumValues } from 'app/generated/model/compliance-issue';
+import {
+  ComplianceIssue,
+  ComplianceIssueActionEnum,
+  ComplianceIssueCategoryEnum,
+  ComplianceIssueCategoryEnumValues,
+} from 'app/generated/model/compliance-issue';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -412,6 +417,47 @@ export class EditorComponent extends BaseInputDirective<string> {
         editor.formatText(index, text.length, 'customHighlight', { category });
         startIndex = index + text.length;
       }
+    }
+  }
+
+  /**
+   * Applies an AI compliance suggestion to the current editor content based on compliance action.
+   * - `Replace`: swaps the target snippet with the suggestion
+   * - `Remove`: deletes the target snippet
+   * - `Add`: inserts the suggestion after the target snippet
+   *
+   * @param issue The compliance issue containing the action, snippet text, and suggestion.
+   * @returns The updated editor HTML for issued text snippet
+   */
+  public applyComplianceSuggestion(issue: ComplianceIssue): string | undefined {
+    const editor = this.quillEditorComponent()?.quillEditor;
+    if (!editor) return undefined;
+
+    const targetSnippet = issue.text?.trim() ?? '';
+    const replacement = issue.suggestion?.trim() ?? '';
+    const originalText = editor.getText();
+    const targetIndex = targetSnippet ? originalText.toLowerCase().indexOf(targetSnippet.toLowerCase()) : -1;
+
+    switch (issue.action) {
+      case ComplianceIssueActionEnum.Replace: {
+        if (targetIndex === -1) return undefined;
+        editor.deleteText(targetIndex, targetSnippet.length);
+        editor.insertText(targetIndex, replacement);
+        return editor.root.innerHTML;
+      }
+      case ComplianceIssueActionEnum.Remove: {
+        if (targetIndex === -1) return undefined;
+        editor.deleteText(targetIndex, targetSnippet.length);
+        return editor.root.innerHTML;
+      }
+      case ComplianceIssueActionEnum.Add: {
+        const insertAt = targetIndex === -1 ? editor.getLength() : targetIndex + targetSnippet.length;
+        const separator = targetIndex === -1 ? '\n' : ' ';
+        editor.insertText(insertAt, separator + replacement);
+        return editor.root.innerHTML;
+      }
+      default:
+        return undefined;
     }
   }
 

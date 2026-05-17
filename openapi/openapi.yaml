@@ -3019,6 +3019,7 @@ components:
         explanation: {type: string}
         id: {type: string}
         language: {type: string}
+        suggestion: {type: string}
         text: {type: string}
     ConflictDataDTO:
       type: object
