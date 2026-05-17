@@ -12,6 +12,10 @@
     "universityName": "Technische Universität München",
     "lightMode": "Helles Theme",
     "darkMode": "Dunkles Theme",
-    "systemMode": "System Theme"
+    "systemMode": "System Theme",
+    "menu": "Menü",
+    "menuToggle": "Menü öffnen",
+    "language": "Sprache",
+    "theme": "Theme"
   }
 }
