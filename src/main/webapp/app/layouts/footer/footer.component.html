@@ -12,6 +12,28 @@
     <span class="copyright" jhiTranslate="footer.rightsText"></span>
   </div>
 
+  @if (gitInfo; as gi) {
+    <div
+      data-testid="footer-git-info"
+      class="flex items-center gap-1 pl-4 text-xs text-text-secondary max-[600px]:pl-0 max-[600px]:flex-wrap max-[600px]:justify-center"
+    >
+      <span>{{ gi.branch }}</span>
+      <span aria-hidden="true">·</span>
+      <a
+        [href]="'https://github.com/ls1intum/tum-apply/commit/' + gi.commitHashFull"
+        target="_blank"
+        rel="noopener"
+        class="text-primary hover:underline"
+      >
+        {{ gi.commitHashShort }}
+      </a>
+      <span aria-hidden="true">·</span>
+      <span>{{ gi.commitTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+      <span aria-hidden="true">·</span>
+      <span>{{ gi.lastCommitter }}</span>
+    </div>
+  }
+
   <div class="flex ml-auto pr-4 gap-[0.3rem] max-[600px]:px-2 max-[600px]:ml-0! max-[600px]:pr-0!">
     <p
       (click)="navigateToImprint()"

@@ -23,6 +23,17 @@ plugins {
   id "org.springdoc.openapi-gradle-plugin" version "${springdocPluginVersion}"
 }
 
+gitProperties {
+  // Write git.properties into a generated build directory. The plugin registers this as a
+  // resource source dir, so it ends up on the runtime classpath for Gradle and IntelliJ alike
+  // (without duplicating src/main/resources, which would break processResources on Gradle 9+).
+  gitPropertiesResourceDir.set(layout.buildDirectory.dir('generated/resources/git-properties'))
+}
+
+tasks.named('processResources') {
+  dependsOn 'generateGitProperties'
+}
+
 group = "de.tum.cit.aet"
 
 // Version configuration based on profile:

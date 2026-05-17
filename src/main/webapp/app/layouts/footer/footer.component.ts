@@ -1,23 +1,31 @@
 import { Component, ViewEncapsulation, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { VERSION } from 'app/app.constants';
 
 import TranslateDirective from '../../shared/language/translate.directive';
+import { ProfileService } from '../profiles/profile.service';
+import { GitInfo } from '../profiles/profile-info.model';
 
 @Component({
   selector: 'jhi-footer',
   standalone: true,
   templateUrl: './footer.component.html',
-  imports: [TranslateDirective],
+  imports: [DatePipe, TranslateDirective],
   encapsulation: ViewEncapsulation.None,
 })
 export default class FooterComponent {
   version: string;
 
+  protected profileInfo;
+
   private router = inject(Router);
+  private profileService = inject(ProfileService);
 
   constructor() {
     this.version = VERSION;
+    this.profileInfo = toSignal(this.profileService.getProfileInfo());
   }
 
   navigateToImprint(): void {
@@ -30,5 +38,10 @@ export default class FooterComponent {
 
   navigateToAboutUs(): void {
     void this.router.navigate(['/about-us']);
+  }
+
+  protected get gitInfo(): GitInfo | undefined {
+    const info = this.profileInfo();
+    return info?.ribbonEnv && info?.gitInfo ? info.gitInfo : undefined;
   }
 }
