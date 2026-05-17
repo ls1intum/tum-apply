@@ -22,6 +22,7 @@ import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
 import de.tum.cit.aet.evaluation.dto.EvaluationFilterDTO;
 import de.tum.cit.aet.evaluation.dto.RejectDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
+import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
@@ -43,6 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.UUID;
@@ -64,6 +66,7 @@ public class ApplicationEvaluationService {
     private final CurrentUserService currentUserService;
     private final ZipExportService zipExportService;
     private final RatingRepository ratingRepository;
+    private final ApplicationReviewRepository applicationReviewRepository;
     private final ReferenceRequestService referenceRequestService;
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
@@ -413,6 +416,16 @@ public class ApplicationEvaluationService {
         return applicationEvaluationRepository
             .findById(applicationId)
             .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+    }
+
+    /**
+     * Looks up the {@link ApplicationReview} attached to the given application, if any.
+     *
+     * @param applicationId the id of the application
+     * @return the review if present, otherwise empty
+     */
+    public Optional<ApplicationReview> findReviewByApplicationId(UUID applicationId) {
+        return applicationReviewRepository.findByApplicationApplicationId(applicationId);
     }
 
     /**
