@@ -186,6 +186,8 @@
       "complianceTooltipText": "Farben dienen nur der Kategorisierung, nicht der Priorisierung. Es gibt keine Unterschiede in der Wichtigkeit."
     },
     "positionDetailsSection": {
+      "selectedDeadline": "Gewählte Bewerbungsfrist",
+      "selectedStartDate": "Gewähltes Startdatum",
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "aiLabel": "KI schreibt, verbessert und übersetzt für dich.",

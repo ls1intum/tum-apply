@@ -128,6 +128,15 @@ describe('DatePickerComponent', () => {
       setInputAndDetectChanges(fixture, 'minDate', TEST_DATES.customMinDate);
       expect(fixture.componentInstance.effectiveMinDate()).toStrictEqual(TEST_DATES.customMinDate);
     });
+
+    it('should identify the highlighted reference date', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+
+      setInputAndDetectChanges(fixture, 'highlightedDate', TEST_DATES.validDate);
+
+      expect(comp.highlightedDateParts()).toStrictEqual({ day: 13, month: 9, year: 2024 });
+    });
   });
 
   describe('Scroll Event Management', () => {

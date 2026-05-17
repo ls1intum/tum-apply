@@ -56,6 +56,7 @@
       "progress": "Step {current} of {total}"
     },
     "input": {
+      "requiredHint": "Fields marked with * are required.",
       "error": {
         "required": "This field is required.",
         "minLength": "This field is required to be at least {min} characters.",
@@ -185,6 +186,10 @@
         "REFERENCE_LETTER": "Reference Letter",
         "CV": "CV",
         "CUSTOM": "Custom"
+      },
+      "aria": {
+        "removeFile": "Remove file",
+        "selectFileToUpload": "Select file to upload"
       },
       "tooltip": {
         "to_upload": "Still needs to be uploaded",
