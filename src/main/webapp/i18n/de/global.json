@@ -16,7 +16,8 @@
       "application": {
         "creation": "TUMApply - Bewerbungserstellung",
         "overview": "TUMApply - Bewerbungsübersicht",
-        "detail": "TUMApply - Bewerbungsdetail"
+        "detail": "TUMApply - Bewerbungsdetail",
+        "allApplications": "TUMApply - Alle Bewerbungen"
       },
       "evaluation": {
         "overview": "TUMApply - Evaluierungsübersicht",
@@ -455,6 +456,56 @@
         "description1": "Du hast noch keine Bewerbung eingereicht.",
         "description2": "Schau dir die verfügbaren Stellen an und reiche deine erste Bewerbung ein.",
         "browsePositions": "Stellen durchsuchen"
+      }
+    },
+    "allApplicationsPage": {
+      "header": {
+        "title": "Alle Bewerbungen"
+      },
+      "searchFilterSortBar": {
+        "searchText": "Nach Name der Bewerbenden oder Stellentitel suchen",
+        "filterOptions": {
+          "stateSearchPlaceholder": "Status suchen",
+          "researchGroupSearchPlaceholder": "Forschungsgruppen suchen",
+          "professorSearchPlaceholder": "Professoren suchen",
+          "jobSearchPlaceholder": "Stellen suchen"
+        }
+      },
+      "tableColumn": {
+        "applicant": "Bewerbende",
+        "job": "Stelle",
+        "researchGroup": "Forschungsgruppe",
+        "supervisingProfessor": "Betreuender Professor",
+        "status": "Status",
+        "created": "Erstellt"
+      },
+      "filters": {
+        "statusLabel": "Status",
+        "researchGroupLabel": "Forschungsgruppe",
+        "professorLabel": "Betreuender Professor",
+        "jobLabel": "Stelle"
+      },
+      "confirmDialog": {
+        "deleteHeader": "Bewerbung löschen",
+        "deleteMessage": "Möchtest du diese Bewerbung wirklich löschen?",
+        "withdrawHeader": "Bewerbung zurückziehen",
+        "withdrawMessage": "Möchtest du diese Bewerbung wirklich zurückziehen?"
+      },
+      "errors": {
+        "loadJobs": {
+          "summary": "Bewerbungen konnten nicht geladen werden",
+          "detail": ""
+        },
+        "loadFilters": {
+          "summary": "Filteroptionen konnten nicht geladen werden",
+          "detail": ""
+        }
+      },
+      "toastMessages": {
+        "deleteSuccess": "Bewerbung gelöscht.",
+        "deleteFailed": "Bewerbung konnte nicht gelöscht werden: {{ detail }}",
+        "withdrawSuccess": "Bewerbung zurückgezogen.",
+        "withdrawFailed": "Bewerbung konnte nicht zurückgezogen werden: {{ detail }}"
       }
     },
     "applicationDetail": {
