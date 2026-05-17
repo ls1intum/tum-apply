@@ -87,10 +87,10 @@ export function tumIdValidator(control: AbstractControl): ValidationErrors | und
  *
  * @param control - The form control containing the value to validate.
  * @returns A `{ required: true }` error if the trimmed value is empty,
- *          otherwise `undefined`.
+ *          otherwise `null` (required by Angular's `ValidatorFn` contract).
  */
-export function trimmedRequiredValidator(control: AbstractControl): ValidationErrors | undefined {
-  return trimStringControlValue(control.value).length === 0 ? { required: true } : undefined;
+export function trimmedRequiredValidator(control: AbstractControl): ValidationErrors | null {
+  return trimStringControlValue(control.value).length === 0 ? { required: true } : null;
 }
 
 /**
@@ -102,7 +102,7 @@ export function trimmedRequiredValidator(control: AbstractControl): ValidationEr
  *
  * @param getCountryFn - A function that returns the current country code (e.g., 'US', 'DE').
  * @returns A validator function that returns a `{ invalidPostalCode: string }` error if invalid,
- *          otherwise `undefined` to indicate valid input.
+ *          otherwise `null` (required by Angular's `ValidatorFn` contract).
  *
  * @example
  * ```typescript
@@ -113,12 +113,12 @@ export function trimmedRequiredValidator(control: AbstractControl): ValidationEr
  * ```
  */
 export function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | undefined => {
+  return (control: AbstractControl): ValidationErrors | null => {
     const country = getCountryFn()?.toUpperCase();
     const value = trimStringControlValue(control.value);
-    if (country === undefined || country.length === 0 || value.length === 0) return undefined;
+    if (country === undefined || country.length === 0 || value.length === 0) return null;
     const isPostalCodeValid: boolean | string = postalCodes.validate(country, value);
     const validationError: ValidationErrors = { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' } as ValidationErrors;
-    return isPostalCodeValid === true ? undefined : validationError;
+    return isPostalCodeValid === true ? null : validationError;
   };
 }

@@ -182,8 +182,8 @@ describe('ApplicationPage1Component', () => {
   });
 
   it.each([
-    [() => undefined, '12345', undefined],
-    [() => 'DE', '', undefined],
+    [() => undefined, '12345', null],
+    [() => 'DE', '', null],
     [() => 'ZZ', '12345', { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' }],
   ])('postalCodeValidator with country/value -> result', (countryFn, value, expected) => {
     const validator = postalCodeValidator(countryFn as () => string | undefined);
