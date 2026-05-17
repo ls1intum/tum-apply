@@ -35,6 +35,7 @@ import { UpdateApplicationDTO } from 'app/generated/model/update-application-dto
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
 import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
 import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
@@ -49,7 +50,6 @@ import ApplicationCreationPage1Component, {
   getPage1FromApplication,
 } from '../application-creation-page1/application-creation-page1.component';
 import ApplicationCreationReferencesComponent from '../application-creation-references/application-creation-references.component';
-import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 
 const applyflow = 'entity.toast.applyFlow';
 
