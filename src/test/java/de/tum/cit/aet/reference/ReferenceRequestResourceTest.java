@@ -138,7 +138,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
     class AddReference {
 
         @Test
-        void shouldPersistReferenceWithRequestedStatus() {
+        void shouldPersistReferenceWithAddedStatus() {
             CreateReferenceRequestDTO payload = defaultPayload();
 
             ReferenceRequestDTO created = api
@@ -147,7 +147,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
 
             assertThat(created.referenceRequestId()).isNotNull();
             assertThat(created.email()).isEqualTo(payload.email());
-            assertThat(created.status()).isEqualTo(ReferenceRequestStatus.REQUESTED);
+            assertThat(created.status()).isEqualTo(ReferenceRequestStatus.ADDED);
 
             assertThat(referenceRequestRepository.findByApplicationApplicationIdOrderByCreatedAtAsc(savedApplication.getApplicationId()))
                 .singleElement()
@@ -155,7 +155,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                     assertThat(persisted.getEmail()).isEqualTo(payload.email());
                     assertThat(persisted.getFirstName()).isEqualTo(payload.firstName());
                     assertThat(persisted.getLastName()).isEqualTo(payload.lastName());
-                    assertThat(persisted.getStatus()).isEqualTo(ReferenceRequestStatus.REQUESTED);
+                    assertThat(persisted.getStatus()).isEqualTo(ReferenceRequestStatus.ADDED);
                 });
         }
 

@@ -146,9 +146,19 @@ public class ReferenceRequestService {
                 continue;
             }
             String rawToken = generateToken();
+            LocalDateTime expiry = computeTokenExpiry(application.getJob());
+
             entry.setStatus(ReferenceRequestStatus.REQUESTED);
             entry.setTokenHash(hashToken(rawToken));
-            entry.setTokenExpiresAt(computeTokenExpiry(application.getJob()));
+            entry.setTokenExpiresAt(expiry);
+
+            long hoursUntilDeadline = ChronoUnit.HOURS.between(LocalDateTime.now(ZoneOffset.UTC), expiry);
+            if (hoursUntilDeadline <= FINAL_REMINDER_HOURS) {
+                entry.setReminderCount(MAX_REMINDERS);
+            } else if (hoursUntilDeadline <= FIRST_REMINDER_HOURS) {
+                entry.setReminderCount(1);
+            }
+
             referenceRequestRepository.save(entry);
             sendRefereeEmail(application, entry, rawToken, EmailType.REFERENCE_LETTER_INVITATION);
         }
