@@ -21,6 +21,7 @@ import { AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep 
  *  - Computes progress indicators for multi-step registration and exposes a reactive cooldown timer
  *    for OTP resend.
  *  - Automatically starts the OTP cooldown whenever the user reaches the OTP step in login or register flow.
+ *  - Tracks consecutive failed OTP attempts and enforces a submission cooldown after too many failures.
  *  - Provides helper methods to switch flows, navigate between steps, and reset state.
  *
  * Notes
@@ -29,6 +30,8 @@ import { AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep 
  *  - Intended to be used by `AuthDialogService` and other UI components to drive the authentication UI.
  */
 export class AuthOrchestratorService {
+  private static readonly OTP_MAX_FAILED_ATTEMPTS = 3;
+  private static readonly OTP_ATTEMPT_COOLDOWN_SECONDS = 30;
   readonly config = inject(ApplicationConfigService);
   readonly toastService = inject(ToastService);
   readonly router = inject(Router);
@@ -55,6 +58,9 @@ export class AuthOrchestratorService {
   readonly totalRegisterSteps = REGISTER_STEPS.length - 1;
   // cooldown for OTP resend
   readonly cooldownUntil = signal<number | null>(null);
+  // cooldown for OTP submission after too many failed attempts
+  readonly failedOtpAttempts = signal(0);
+  readonly otpAttemptCooldownUntil = signal<number | null>(null);
   readonly injector = inject(Injector);
   readonly _tick = toSignal(
     toObservable(this.cooldownUntil).pipe(
@@ -85,6 +91,27 @@ export class AuthOrchestratorService {
     const remainingTimeInMs = cooldownUntilTimestamp - Date.now();
     return remainingTimeInMs <= 0 ? 0 : Math.ceil(remainingTimeInMs / 1000);
   });
+
+  readonly _otpAttemptTick = toSignal(
+    toObservable(this.otpAttemptCooldownUntil).pipe(
+      switchMap(ts => {
+        if (ts === null) return EMPTY;
+        const remaining = Math.max(0, ts - Date.now());
+        if (remaining === 0) return timer(0);
+        return interval(250).pipe(takeUntil(timer(remaining)), endWith(0));
+      }),
+      startWith(0),
+    ),
+    { initialValue: 0, injector: this.injector },
+  );
+  readonly otpAttemptCooldownSeconds = computed(() => {
+    this._otpAttemptTick();
+    const ts = this.otpAttemptCooldownUntil();
+    if (ts === null) return 0;
+    const remaining = ts - Date.now();
+    return remaining <= 0 ? 0 : Math.ceil(remaining / 1000);
+  });
+  readonly isOtpAttemptCooldown = computed(() => this.otpAttemptCooldownSeconds() > 0);
 
   // Auto-start OTP cooldown when the user enters the OTP step in login or register
   private readonly _autoStartOtpCooldown = effect(
@@ -130,6 +157,7 @@ export class AuthOrchestratorService {
 
   close(): void {
     this.isOpen.set(false);
+    this.resetOtpAttempts();
   }
 
   // call after successful authentication to close and notify
@@ -199,7 +227,22 @@ export class AuthOrchestratorService {
 
   // -------- Helpers ----------
 
-  private startOtpRefreshCooldown(): void {
+  recordFailedOtpAttempt(): void {
+    const next = this.failedOtpAttempts() + 1;
+    if (next >= AuthOrchestratorService.OTP_MAX_FAILED_ATTEMPTS) {
+      this.failedOtpAttempts.set(0);
+      this.otpAttemptCooldownUntil.set(Date.now() + AuthOrchestratorService.OTP_ATTEMPT_COOLDOWN_SECONDS * 1000);
+    } else {
+      this.failedOtpAttempts.set(next);
+    }
+  }
+
+  resetOtpAttempts(): void {
+    this.failedOtpAttempts.set(0);
+    this.otpAttemptCooldownUntil.set(null);
+  }
+
+  public startOtpRefreshCooldown(): void {
     const cooldown = this.config.otp.resendCooldownSeconds;
     const now = Date.now();
     this.cooldownUntil.set(now + Math.max(0, cooldown) * 1000);

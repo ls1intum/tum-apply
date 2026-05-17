@@ -15,6 +15,10 @@ export interface AuthOrchestratorServiceMock {
   isBusy: WritableSignal<boolean>;
   error: WritableSignal<string | null>;
   cooldownSeconds: WritableSignal<number>;
+  isOtpAttemptCooldown: WritableSignal<boolean>;
+  otpAttemptCooldownSeconds: WritableSignal<number>;
+  recordFailedOtpAttempt: ReturnType<typeof vi.fn>;
+  resetOtpAttempts: ReturnType<typeof vi.fn>;
   isOpen: WritableSignal<boolean>;
   mode: WritableSignal<AuthFlowMode>;
   loginStep: WritableSignal<LoginStep>;
@@ -31,6 +35,8 @@ export function createAuthOrchestratorServiceMock(): AuthOrchestratorServiceMock
   const isBusy = signal(false);
   const error = signal<string | null>(null);
   const cooldownSeconds = signal(0);
+  const isOtpAttemptCooldown = signal(false);
+  const otpAttemptCooldownSeconds = signal(0);
 
   const isOpenSignal = signal<boolean>(true);
   const errorSignal = signal<string | null>(null);
@@ -55,6 +61,10 @@ export function createAuthOrchestratorServiceMock(): AuthOrchestratorServiceMock
     isBusy,
     error,
     cooldownSeconds,
+    isOtpAttemptCooldown,
+    otpAttemptCooldownSeconds,
+    recordFailedOtpAttempt: vi.fn(),
+    resetOtpAttempts: vi.fn(),
     isOpen: isOpenSignal,
     mode: signal<AuthFlowMode>('login'),
     loginStep: signal<LoginStep>('email'),
