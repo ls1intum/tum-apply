@@ -186,6 +186,10 @@
         "CV": "CV",
         "CUSTOM": "Custom"
       },
+      "aria": {
+        "removeFile": "Remove file",
+        "selectFileToUpload": "Select file to upload"
+      },
       "tooltip": {
         "to_upload": "Still needs to be uploaded",
         "already_uploaded": "Already uploaded",
