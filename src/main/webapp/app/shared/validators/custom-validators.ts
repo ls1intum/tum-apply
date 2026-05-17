@@ -12,18 +12,18 @@ function trimStringControlValue(value: unknown): string {
  * may contain HTML tags but no actual user-entered content.
  *
  * If the stripped text content is empty, the validator returns a `{ required: true }` error.
- * Otherwise, it returns `null` to indicate valid input.
+ * Otherwise, it returns `undefined` to indicate valid input.
  *
  * @param control - The form control containing an HTML string.
- * @returns A `ValidationErrors` object if the input is empty, otherwise `null`.
+ * @returns A `ValidationErrors` object if the input is empty, otherwise `undefined`.
  */
-export function htmlTextRequiredValidator(control: AbstractControl): ValidationErrors | null {
+export function htmlTextRequiredValidator(control: AbstractControl): ValidationErrors | undefined {
   const htmlText = control.value ?? '';
   const temp = document.createElement('div');
   temp.innerHTML = htmlText;
   const plainText = (temp.textContent as string | null | undefined) ?? temp.innerText;
 
-  return plainText.length === 0 ? { required: true } : null;
+  return plainText.length === 0 ? { required: true } : undefined;
 }
 
 /**
@@ -35,7 +35,7 @@ export function htmlTextRequiredValidator(control: AbstractControl): ValidationE
  *
  * @param maxLength - Maximum allowed number of characters.
  * @returns A validator function that returns a `{ maxlength: { requiredLength, actualLength } }`
- *          error if the input exceeds the limit, otherwise `null`.
+ *          error if the input exceeds the limit, otherwise `undefined`.
  */
 export function htmlTextMaxLengthValidator(maxLength: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -61,14 +61,14 @@ export function htmlTextMaxLengthValidator(maxLength: number): ValidatorFn {
  * Example: ab12cde
  *
  * @param control - The form control containing the TUM ID string.
- * @returns A `ValidationErrors` object with `{ pattern: true }` if invalid, otherwise `null`.
+ * @returns A `ValidationErrors` object with `{ pattern: true }` if invalid, otherwise `undefined`.
  */
-export function tumIdValidator(control: AbstractControl): ValidationErrors | null {
+export function tumIdValidator(control: AbstractControl): ValidationErrors | undefined {
   const value = control.value;
 
   // Allow empty values (use Validators.required separately if needed)
   if (!value || value === '') {
-    return null;
+    return undefined;
   }
 
   // Trim whitespace before validating
@@ -76,7 +76,7 @@ export function tumIdValidator(control: AbstractControl): ValidationErrors | nul
 
   const tumIdPattern = /^[a-z]{2}[0-9]{2}[a-z]{3}$/;
 
-  return tumIdPattern.test(trimmedValue) ? null : { pattern: true };
+  return tumIdPattern.test(trimmedValue) ? undefined : { pattern: true };
 }
 
 /**
@@ -87,10 +87,10 @@ export function tumIdValidator(control: AbstractControl): ValidationErrors | nul
  *
  * @param control - The form control containing the value to validate.
  * @returns A `{ required: true }` error if the trimmed value is empty,
- *          otherwise `null`.
+ *          otherwise `undefined`.
  */
-export function trimmedRequiredValidator(control: AbstractControl): ValidationErrors | null {
-  return trimStringControlValue(control.value).length === 0 ? { required: true } : null;
+export function trimmedRequiredValidator(control: AbstractControl): ValidationErrors | undefined {
+  return trimStringControlValue(control.value).length === 0 ? { required: true } : undefined;
 }
 
 /**
@@ -102,7 +102,7 @@ export function trimmedRequiredValidator(control: AbstractControl): ValidationEr
  *
  * @param getCountryFn - A function that returns the current country code (e.g., 'US', 'DE').
  * @returns A validator function that returns a `{ invalidPostalCode: string }` error if invalid,
- *          otherwise `null` to indicate valid input.
+ *          otherwise `undefined` to indicate valid input.
  *
  * @example
  * ```typescript
@@ -113,12 +113,12 @@ export function trimmedRequiredValidator(control: AbstractControl): ValidationEr
  * ```
  */
 export function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
+  return (control: AbstractControl): ValidationErrors | undefined => {
     const country = getCountryFn()?.toUpperCase();
     const value = trimStringControlValue(control.value);
-    if (country === undefined || country.length === 0 || value.length === 0) return null;
+    if (country === undefined || country.length === 0 || value.length === 0) return undefined;
     const isPostalCodeValid: boolean | string = postalCodes.validate(country, value);
     const validationError: ValidationErrors = { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' } as ValidationErrors;
-    return isPostalCodeValid === true ? null : validationError;
+    return isPostalCodeValid === true ? undefined : validationError;
   };
 }

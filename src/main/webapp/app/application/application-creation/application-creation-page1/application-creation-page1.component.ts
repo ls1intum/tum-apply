@@ -190,7 +190,7 @@ export default class ApplicationCreationPage1Component {
           linkedIn: rawValue.linkedIn ?? '',
           street: rawValue.street ?? '',
           city: rawValue.city ?? '',
-          postcode: (rawValue.postcode as string | null | undefined) ?? '',
+          postcode: rawValue.postcode ?? '',
           gender: data.gender,
           nationality: data.nationality,
           country: data.country,
