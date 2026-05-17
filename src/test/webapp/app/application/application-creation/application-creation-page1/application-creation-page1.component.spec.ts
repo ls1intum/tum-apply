@@ -151,7 +151,7 @@ describe('ApplicationPage1Component', () => {
     expect(changedSpy).toHaveBeenCalledOnce();
   });
 
-  it('shows the postcode mismatch error when country changes after a prefilled postcode', () => {
+  it('should show the postcode mismatch error when country changes after a prefilled postcode', () => {
     const updatedData = structuredClone(comp.data());
     updatedData.country = { value: 'DE', name: 'Germany' };
     updatedData.postcode = '80331';
@@ -166,7 +166,7 @@ describe('ApplicationPage1Component', () => {
     expect(fixture.nativeElement.textContent).toContain('entity.applicationPage1.validation.postalCode');
   });
 
-  it('treats a whitespace-only postcode as empty when country changes', () => {
+  it('should treat a whitespace-only postcode as empty when country changes', () => {
     const updatedData = structuredClone(comp.data());
     updatedData.country = { value: 'DE', name: 'Germany' };
     updatedData.postcode = '   ';
@@ -182,8 +182,8 @@ describe('ApplicationPage1Component', () => {
   });
 
   it.each([
-    [() => undefined, '12345', null],
-    [() => 'DE', '', null],
+    [() => undefined, '12345', {}],
+    [() => 'DE', '', {}],
     [() => 'ZZ', '12345', { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' }],
   ])('postalCodeValidator with country/value -> result', (countryFn, value, expected) => {
     const validator = postalCodeValidator(countryFn as () => string | undefined);

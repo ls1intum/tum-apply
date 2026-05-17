@@ -87,10 +87,10 @@ export function tumIdValidator(control: AbstractControl): ValidationErrors | und
  *
  * @param control - The form control containing the value to validate.
  * @returns A `{ required: true }` error if the trimmed value is empty,
- *          otherwise `null` (required by Angular's `ValidatorFn` contract).
+ *          otherwise an empty `ValidationErrors` object (collapsed to no-error by `Validators.compose`).
  */
-export function trimmedRequiredValidator(control: AbstractControl): ValidationErrors | null {
-  return trimStringControlValue(control.value).length === 0 ? { required: true } : null;
+export function trimmedRequiredValidator(control: AbstractControl): ValidationErrors {
+  return trimStringControlValue(control.value).length === 0 ? { required: true } : {};
 }
 
 /**
@@ -102,7 +102,7 @@ export function trimmedRequiredValidator(control: AbstractControl): ValidationEr
  *
  * @param getCountryFn - A function that returns the current country code (e.g., 'US', 'DE').
  * @returns A validator function that returns a `{ invalidPostalCode: string }` error if invalid,
- *          otherwise `null` (required by Angular's `ValidatorFn` contract).
+ *          otherwise an empty `ValidationErrors` object (collapsed to no-error by `Validators.compose`).
  *
  * @example
  * ```typescript
@@ -113,12 +113,12 @@ export function trimmedRequiredValidator(control: AbstractControl): ValidationEr
  * ```
  */
 export function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
+  return (control: AbstractControl): ValidationErrors => {
     const country = getCountryFn()?.toUpperCase();
     const value = trimStringControlValue(control.value);
-    if (country === undefined || country.length === 0 || value.length === 0) return null;
+    if (country === undefined || country.length === 0 || value.length === 0) return {};
     const isPostalCodeValid: boolean | string = postalCodes.validate(country, value);
     const validationError: ValidationErrors = { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' } as ValidationErrors;
-    return isPostalCodeValid === true ? null : validationError;
+    return isPostalCodeValid === true ? {} : validationError;
   };
 }
