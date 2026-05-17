@@ -112,6 +112,38 @@ export class HeaderComponent {
   profileMenu = viewChild<MenuComponent>('profileMenu');
   isProfileMenuOpen = signal(false);
 
+  groupSwitcherMenu = viewChild<MenuComponent>('groupSwitcherMenu');
+  isGroupSwitcherOpen = signal(false);
+  hasMultipleMemberships = this.accountService.hasMultipleMemberships;
+  activeResearchGroup = this.accountService.activeResearchGroup;
+  activeResearchGroupLabel = computed(() => {
+    this.langChange();
+    return this.activeResearchGroup()?.name ?? this.translateService.instant('header.activeResearchGroup');
+  });
+  activeResearchGroupAriaLabel = computed(() => {
+    this.langChange();
+    return this.translateService.instant('header.activeResearchGroup');
+  });
+
+  groupSwitcherItems = computed<JhiMenuItem[]>(() => {
+    const memberships = this.accountService.memberships();
+    if (memberships.length < 2) {
+      return [];
+    }
+    const activeId = this.accountService.activeResearchGroupId();
+    return memberships.map(m => ({
+      label: m.name ?? '',
+      icon: activeId === m.researchGroupId ? 'check' : 'circle',
+      severity: 'primary',
+      command: () => {
+        if (m.researchGroupId !== undefined && m.researchGroupId !== activeId) {
+          this.accountService.setActiveResearchGroup(m.researchGroupId);
+          void this.router.navigateByUrl(this.router.url, { onSameUrlNavigation: 'reload', skipLocationChange: false });
+        }
+      },
+    }));
+  });
+
   profileMenuItems = computed<JhiMenuItem[]>(() => {
     this.currentLanguage();
     if (!this.user()) {
@@ -245,6 +277,10 @@ export class HeaderComponent {
 
   toggleProfileMenu(event: Event): void {
     this.profileMenu()?.toggle(event);
+  }
+
+  toggleGroupSwitcher(event: Event): void {
+    this.groupSwitcherMenu()?.toggle(event);
   }
 
   private setupBannerObserver(): void {

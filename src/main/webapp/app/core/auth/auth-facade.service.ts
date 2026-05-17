@@ -355,6 +355,7 @@ export class AuthFacadeService {
   private handlePostLogoutState(sessionExpired: boolean): void {
     this.accountService.user.set(undefined);
     this.accountService.loaded.set(true);
+    this.accountService.clearActiveResearchGroup();
 
     if (sessionExpired) {
       this.toastService.showWarnKey('auth.common.toast.logout.sessionExpired');

@@ -39,10 +39,17 @@ describe('ResearchGroupInfoComponent', () => {
     id: 'user-1',
     email: 'john.doe@example.com',
     name: 'John Doe',
-    researchGroup: {
-      researchGroupId: 'rg-1',
-      name: 'Test Research Group',
-    },
+    memberships: [
+      {
+        researchGroupId: 'rg-1',
+        name: 'Test Research Group',
+      },
+    ],
+  };
+
+  const setActiveUser = (...args: [] | [string | undefined]) => {
+    mockAccountService.user.set(mockUser);
+    mockAccountService.activeResearchGroupId.set(args.length === 0 ? 'rg-1' : args[0]);
   };
 
   beforeEach(async () => {
@@ -98,10 +105,26 @@ describe('ResearchGroupInfoComponent', () => {
     });
   });
 
+  describe('User and Research Group ID', () => {
+    it('should compute researchGroupId from active research group', () => {
+      setActiveUser();
+      fixture.detectChanges();
+
+      expect(component.researchGroupId()).toBe('rg-1');
+    });
+
+    it('should return undefined researchGroupId when no active research group', () => {
+      setActiveUser(undefined);
+      fixture.detectChanges();
+
+      expect(component.researchGroupId()).toBeUndefined();
+    });
+  });
+
   describe('Data Loading', () => {
     it('should load research group data and populate form when user is available', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
+      setActiveUser();
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -121,13 +144,10 @@ describe('ResearchGroupInfoComponent', () => {
     });
 
     it.each([
-      { description: 'no research group', user: () => Object.assign({}, mockUser, { researchGroup: undefined }) },
-      {
-        description: 'empty research group id',
-        user: () => Object.assign({}, mockUser, { researchGroup: Object.assign({}, mockUser.researchGroup, { researchGroupId: '' }) }),
-      },
-    ])('should not initialize when user has $description', async ({ user }) => {
-      mockAccountService.user.set(user());
+      { description: 'no active research group id', active: undefined },
+      { description: 'an empty active research group id', active: '' },
+    ])('should not initialize when user has $description', async ({ active }) => {
+      setActiveUser(active);
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -137,7 +157,7 @@ describe('ResearchGroupInfoComponent', () => {
 
     it('should show error toast when loading fails', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
-      mockAccountService.user.set(mockUser);
+      setActiveUser();
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -151,7 +171,7 @@ describe('ResearchGroupInfoComponent', () => {
     it('should only initialize once even if effect runs multiple times', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
 
-      mockAccountService.user.set(mockUser);
+      setActiveUser();
       fixture.detectChanges();
       await fixture.whenStable();
 
@@ -169,7 +189,7 @@ describe('ResearchGroupInfoComponent', () => {
     it('should save research group data successfully', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
+      setActiveUser();
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -192,7 +212,7 @@ describe('ResearchGroupInfoComponent', () => {
 
     it('should not save when form is invalid', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
+      setActiveUser();
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -209,7 +229,7 @@ describe('ResearchGroupInfoComponent', () => {
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(
         new Promise(resolve => setTimeout(() => resolve(mockResearchGroupData), 100)),
       );
-      mockAccountService.user.set(mockUser);
+      setActiveUser();
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -223,8 +243,11 @@ describe('ResearchGroupInfoComponent', () => {
       expect(component.isSaving()).toBe(false);
     });
 
-    it('should show error when saving without research group id', async () => {
-      mockAccountService.user.set(Object.assign({}, mockUser, { researchGroup: undefined }));
+    it.each([
+      { description: 'no active research group id', active: undefined },
+      { description: 'an empty active research group id', active: '' },
+    ])('should show error when saving with $description', async ({ active }) => {
+      setActiveUser(active);
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -243,7 +266,7 @@ describe('ResearchGroupInfoComponent', () => {
     it('should show error toast when save fails', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
-      mockAccountService.user.set(mockUser);
+      setActiveUser();
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -261,7 +284,7 @@ describe('ResearchGroupInfoComponent', () => {
     it('should map street field between form address and DTO street', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(Object.assign({}, mockResearchGroupData, { street: 'Test Street' })));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
+      setActiveUser();
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -278,7 +301,7 @@ describe('ResearchGroupInfoComponent', () => {
     it('should default undefined optional fields to empty strings on save', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of({ name: 'Test', head: 'Test Head' }));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
+      setActiveUser();
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -302,7 +325,7 @@ describe('ResearchGroupInfoComponent', () => {
     it('should default null name and head to empty strings on save', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
+      setActiveUser();
 
       fixture.detectChanges();
       await fixture.whenStable();

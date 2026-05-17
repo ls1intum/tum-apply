@@ -11,7 +11,6 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ResearchGroupShortDTO } from 'app/generated/model/research-group-short-dto';
 import { UserShortDTO } from 'app/generated/model/user-short-dto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserAvatarComponent } from 'app/shared/components/atoms/user-avatar/user-avatar.component';
@@ -31,7 +30,6 @@ interface MembersRow {
   email?: string;
   firstName?: string;
   lastName?: string;
-  researchGroup?: ResearchGroupShortDTO;
   roles?: UserShortDTORolesEnum[];
   userId?: string;
   name: string;
@@ -97,7 +95,6 @@ export class ResearchGroupMembersComponent {
         avatar: member.avatar,
         firstName: member.firstName,
         lastName: member.lastName,
-        researchGroup: member.researchGroup,
         roles: member.roles,
         userId: member.userId,
         name: formatFullName(member.firstName, member.lastName),

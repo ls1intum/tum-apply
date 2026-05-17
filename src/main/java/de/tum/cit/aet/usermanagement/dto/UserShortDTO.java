@@ -20,7 +20,11 @@ public class UserShortDTO {
     private String firstName;
     private String lastName;
     private List<UserRole> roles;
-    private ResearchGroupShortDTO researchGroup;
+
+    /**
+     * Every PROFESSOR/EMPLOYEE research group the user is a member of.
+     */
+    private List<ResearchGroupShortDTO> memberships;
 
     public UserShortDTO() {
         // default constructor
@@ -34,6 +38,14 @@ public class UserShortDTO {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.roles = user.getResearchGroupRoles().stream().map(UserResearchGroupRole::getRole).toList();
-        this.researchGroup = user.getResearchGroup() != null ? new ResearchGroupShortDTO(user.getResearchGroup()) : null;
+        this.memberships = user
+            .getResearchGroupRoles()
+            .stream()
+            .filter(r -> r.getRole() == UserRole.PROFESSOR || r.getRole() == UserRole.EMPLOYEE)
+            .map(UserResearchGroupRole::getResearchGroup)
+            .filter(rg -> rg != null)
+            .distinct()
+            .map(ResearchGroupShortDTO::new)
+            .toList();
     }
 }
