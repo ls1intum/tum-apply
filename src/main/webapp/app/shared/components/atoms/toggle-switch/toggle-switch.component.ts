@@ -1,4 +1,6 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
@@ -7,7 +9,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
   selector: 'jhi-toggle-switch',
   standalone: true,
   templateUrl: './toggle-switch.component.html',
-  imports: [CommonModule, ToggleSwitchModule, FormsModule],
+  imports: [CommonModule, ToggleSwitchModule, FormsModule, FontAwesomeModule],
 })
 export class ToggleSwitchComponent {
   /**
@@ -29,6 +31,27 @@ export class ToggleSwitchComponent {
    * Optional style class passed to PrimeNG ToggleSwitch.
    */
   classStyling = input<string>('');
+
+  readonly enabledIcon = faCheck;
+  readonly disabledIcon = faXmark;
+
+  readonly toggleClass = computed(() =>
+    [
+      'jhi-toggle-switch',
+      '[&_.p-toggleswitch-slider]:border-negative-default',
+      '[&_.p-toggleswitch-slider]:bg-negative-default',
+      '[&_.p-toggleswitch-slider]:transition-colors',
+      '[&_.p-toggleswitch-handle]:flex',
+      '[&_.p-toggleswitch-handle]:items-center',
+      '[&_.p-toggleswitch-handle]:justify-center',
+      '[&.p-toggleswitch-checked_.p-toggleswitch-slider]:border-positive-default',
+      '[&.p-toggleswitch-checked_.p-toggleswitch-slider]:bg-positive-default',
+      '[&.p-disabled]:opacity-70',
+      this.classStyling(),
+    ]
+      .filter(Boolean)
+      .join(' '),
+  );
 
   onChange(value: boolean): void {
     this.modelChange.emit(value);
