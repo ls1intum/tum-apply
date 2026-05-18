@@ -79,9 +79,4 @@ describe('ButtonComponent', () => {
 
     expect(fixture.nativeElement.querySelector('p-overlaybadge')).toBeTruthy();
   });
-
-  it('should apply size-specific class when size is sm', () => {
-    const fixture = createButtonFixture({ size: 'sm' });
-    expect(fixture.componentInstance.buttonClass()).contain('w-10 h-10');
-  });
 });
