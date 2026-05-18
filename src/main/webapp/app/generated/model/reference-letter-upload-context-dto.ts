@@ -9,22 +9,23 @@
  */
 
 
-export interface ReferenceLetterContextDTO {
+export interface ReferenceLetterUploadContextDTO {
     readonly applicantFirstName?: string;
     readonly applicantLastName?: string;
     readonly deadline?: string;
     readonly jobTitle?: string;
     readonly researchGroupName?: string;
-    readonly status?: ReferenceLetterContextDTOStatusEnum;
+    readonly status?: ReferenceLetterUploadContextDTOStatusEnum;
 }
 
-export type ReferenceLetterContextDTOStatusEnum = 'REQUESTED' | 'SUBMITTED' | 'EXPIRED';
+export type ReferenceLetterUploadContextDTOStatusEnum = 'ADDED' | 'REQUESTED' | 'SUBMITTED' | 'EXPIRED';
 
-export const ReferenceLetterContextDTOStatusEnum = {
+export const ReferenceLetterUploadContextDTOStatusEnum = {
+    Added: 'ADDED' as const,
     Requested: 'REQUESTED' as const,
     Submitted: 'SUBMITTED' as const,
     Expired: 'EXPIRED' as const,
 } as const;
 
-export const ReferenceLetterContextDTOStatusEnumValues = ['REQUESTED', 'SUBMITTED', 'EXPIRED'] as const;
+export const ReferenceLetterUploadContextDTOStatusEnumValues = ['ADDED', 'REQUESTED', 'SUBMITTED', 'EXPIRED'] as const;
 

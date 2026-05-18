@@ -252,6 +252,7 @@
       "personal_documents": "Personal Documents",
       "reference_letters": "Recommendation Letters Requests",
       "reference_status": {
+        "added": "(added)",
         "requested": "(requested)",
         "submitted": "(submitted)",
         "expired": "(expired)"

@@ -299,7 +299,7 @@
             </div>
           </div>
 
-          <div class="flex flex-col gap-6 lg:flex-row lg:gap-8">
+          <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
               <jhi-select
                 [selected]="positionDetailsForm.get('fundingType')?.value"
@@ -311,6 +311,7 @@
                 [filter]="true"
                 [showClear]="true"
                 [dataKey]="'value'"
+                [errorEnabled]="true"
               />
             </div>
             <div class="flex-1">
@@ -337,8 +338,25 @@
                 [filter]="true"
                 [showClear]="true"
                 [dataKey]="'value'"
+                [errorEnabled]="true"
               />
             </div>
+          </div>
+
+          <div class="flex flex-col lg:flex-row lg:gap-8">
+            <div class="flex-1">
+              <jhi-select
+                label="jobCreationForm.basicInformationSection.referenceLettersRequired.label"
+                [selected]="positionDetailsForm.get('referenceLettersRequired')?.value"
+                (selectedChange)="positionDetailsForm.get('referenceLettersRequired')?.setValue($event)"
+                [items]="referenceLettersRequiredOptions"
+                icon="circle-info"
+                tooltipText="jobCreationForm.basicInformationSection.referenceLettersRequired.toolTipText"
+                [width]="'100%'"
+                [dataKey]="'value'"
+              />
+            </div>
+            <div class="flex-1"></div>
           </div>
 
           <!-- Position Options card -->

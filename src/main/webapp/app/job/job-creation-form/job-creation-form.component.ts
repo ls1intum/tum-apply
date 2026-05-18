@@ -68,6 +68,11 @@ import { tvlGrades } from '.././dropdown-options';
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
 
+const REFERENCE_LETTERS_REQUIRED_OPTIONS: { value: number; name: string }[] = [0, 1, 2, 3, 4, 5].map(n => ({
+  value: n,
+  name: String(n),
+}));
+
 /**
  * JobCreationFormComponent
  *
@@ -1225,6 +1230,7 @@ export class JobCreationFormComponent {
         contractDuration: [undefined],
         contractExtendable: [false],
         suitableForDisabled: [true],
+        referenceLettersRequired: [REFERENCE_LETTERS_REQUIRED_OPTIONS[0]],
       },
       {
         validators: [dateOrderValidator('applicationDeadline', 'startDate')],
@@ -1292,6 +1298,7 @@ export class JobCreationFormComponent {
       tvlGrade: positionDetailsValue.tvlGrade?.value as JobFormDTOTvlGradeEnum,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
+      referenceLettersRequired: positionDetailsValue.referenceLettersRequired?.value as number,
       state,
     } as JobFormDTO;
   }
@@ -1441,6 +1448,9 @@ export class JobCreationFormComponent {
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
       tvlGrade: this.findDropdownOption(DropdownOptions.tvlGrades, job?.tvlGrade),
       suitableForDisabled: job?.suitableForDisabled ?? true,
+      referenceLettersRequired:
+        this.findDropdownOption(this.referenceLettersRequiredOptions, job?.referenceLettersRequired ?? 0) ??
+        this.referenceLettersRequiredOptions[0],
     });
 
     if (job?.imageId !== undefined && job.imageUrl !== undefined) {
@@ -1967,4 +1977,6 @@ export class JobCreationFormComponent {
   }
 
   protected readonly tvlGrades = tvlGrades;
+
+  protected readonly referenceLettersRequiredOptions = REFERENCE_LETTERS_REQUIRED_OPTIONS;
 }
