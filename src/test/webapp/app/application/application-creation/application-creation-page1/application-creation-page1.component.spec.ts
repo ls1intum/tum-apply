@@ -151,6 +151,28 @@ describe('ApplicationPage1Component', () => {
     expect(changedSpy).toHaveBeenCalledOnce();
   });
 
+  it('should surface a prefilled postcode-country mismatch without user interaction', () => {
+    comp.data.set({
+      firstName: 'Alice',
+      lastName: 'Smith',
+      email: 'alice@example.com',
+      phoneNumber: '123456',
+      gender: undefined,
+      nationality: undefined,
+      dateOfBirth: '',
+      website: '',
+      linkedIn: '',
+      street: 'Main St',
+      city: 'Munich',
+      country: { value: 'NL', name: 'Netherlands' },
+      postcode: '80331',
+    });
+    fixture.detectChanges();
+
+    expect(comp.page1Form().controls.postcode.touched).toBe(true);
+    expect(comp.page1Form().controls.postcode.errors).toHaveProperty('invalidPostalCode');
+  });
+
   it('should show the postcode mismatch error when country changes after a prefilled postcode', () => {
     const updatedData = structuredClone(comp.data());
     updatedData.country = { value: 'DE', name: 'Germany' };

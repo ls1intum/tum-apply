@@ -205,6 +205,7 @@ export class ApplicationInformationSettingsComponent {
     });
 
     this.isValid.set(form.valid);
+    this.revealPostcodeCountryMismatch();
 
     onCleanup(() => {
       valueSubscription.unsubscribe();
@@ -362,7 +363,7 @@ export class ApplicationInformationSettingsComponent {
 
   private revealPostcodeCountryMismatch(): void {
     const postcodeControl = this.applicationInfoForm().controls.postcode;
-    postcodeControl.updateValueAndValidity();
+    postcodeControl.updateValueAndValidity({ emitEvent: false });
     if (postcodeControl.hasError('invalidPostalCode')) {
       postcodeControl.markAsTouched();
     }
