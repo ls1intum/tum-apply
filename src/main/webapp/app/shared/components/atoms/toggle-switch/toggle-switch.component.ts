@@ -47,7 +47,6 @@ export class ToggleSwitchComponent {
       '[&.p-toggleswitch-checked_.p-toggleswitch-slider]:bg-positive-strong',
       '[&.p-disabled_.p-toggleswitch-slider]:!bg-background-disabled',
       '[&.p-disabled_.p-toggleswitch-slider]:!border-border-default',
-      '[&.p-disabled]:opacity-70',
       this.classStyling(),
     ]
       .filter(Boolean)
