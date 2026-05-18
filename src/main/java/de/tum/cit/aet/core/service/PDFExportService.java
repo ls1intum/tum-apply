@@ -13,6 +13,8 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
+import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
+import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -21,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -117,6 +121,18 @@ public class PDFExportService {
         builder.startInfoSection(labels.get("motivation")).addSectionContent(getValue(app.motivation()));
         builder.startInfoSection(labels.get("skills")).addSectionContent(getValue(app.specialSkills()));
         builder.startInfoSection(labels.get("researchExperience")).addSectionContent(getValue(app.projects()));
+
+        // Recommendation Letters Group (one row per requested referee with their current status)
+        if (app.references() != null && !app.references().isEmpty()) {
+            builder.startSectionGroup(labels.get("references"));
+            builder.startInfoSection(labels.get(""));
+            for (ReferenceRequestDTO reference : app.references()) {
+                builder.addSectionData(
+                    formatRefereeName(reference),
+                    getValue(reference.email()) + " " + formatReferenceStatus(reference.status(), labels)
+                );
+            }
+        }
 
         // Personal Information Group
         builder.startSectionGroup(labels.get("personalInformation"));
@@ -706,5 +722,22 @@ public class PDFExportService {
         Locale countryLocale = Locale.of("", countryCode);
         Locale displayLanguage = Locale.of(lang);
         return countryLocale.getDisplayCountry(displayLanguage);
+    }
+
+    private String formatRefereeName(ReferenceRequestDTO reference) {
+        String fullName = Stream.of(reference.title(), reference.firstName(), reference.lastName())
+            .filter(this::hasValue)
+            .collect(Collectors.joining(" "));
+        return getValue(fullName);
+    }
+
+    private String formatReferenceStatus(ReferenceRequestStatus status, Map<String, String> labels) {
+        return switch (status) {
+            case null -> "";
+            case ADDED -> labels.getOrDefault("referenceStatusAdded", "(added)");
+            case REQUESTED -> labels.getOrDefault("referenceStatusRequested", "(requested)");
+            case SUBMITTED -> labels.getOrDefault("referenceStatusSubmitted", "(submitted)");
+            case EXPIRED -> labels.getOrDefault("referenceStatusExpired", "(expired)");
+        };
     }
 }

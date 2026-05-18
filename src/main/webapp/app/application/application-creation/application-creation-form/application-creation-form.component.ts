@@ -779,6 +779,7 @@ export default class ApplicationCreationFormComponent {
       desiredDate: p3.desiredStartDate,
       projects: p3.experiences,
       jobTitle: this.title(),
+      references: this.references(),
     };
 
     if (state !== undefined) {

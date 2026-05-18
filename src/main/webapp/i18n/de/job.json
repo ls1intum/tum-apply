@@ -131,6 +131,10 @@
         "placeholder": "z.B. 3 Jahre",
         "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 6 Jahre eingeben."
       },
+      "referenceLettersRequired": {
+        "label": "Erforderliche Empfehlungsschreiben",
+        "toolTipText": "Anzahl der externen Empfehlungsschreiben, die Bewerbende für diese Stelle einholen müssen. Die Schreiben werden von den Referenzgebenden selbst über einen Link direkt bei TUMApply hochgeladen."
+      },
       "positionOptions": {
         "title": "Optionen zur Stelle",
         "uponArrangement": {
