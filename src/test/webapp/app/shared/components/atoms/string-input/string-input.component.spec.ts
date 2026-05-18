@@ -60,13 +60,14 @@ describe('StringInputComponent', () => {
       expect(comp.isTouched()).toBe(true);
     });
 
-    it('should mirror programmatic touched state from the bound control', () => {
+    it('should pick up a control that is already touched when it is bound', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       const ctrl = new FormControl('', []);
-      fixture.componentRef.setInput('control', ctrl);
       ctrl.setErrors({ required: true });
       ctrl.markAsTouched();
+
+      fixture.componentRef.setInput('control', ctrl);
       fixture.detectChanges();
 
       expect(comp.isTouched()).toBe(true);
