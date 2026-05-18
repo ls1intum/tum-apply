@@ -403,6 +403,16 @@ export const sharedComponentConfig = {
     handle: {
       size: '0.8rem',
     },
+    colorScheme: {
+      dark: {
+        handle: {
+          background: '{surface.900}',
+          hoverBackground: '{surface.900}',
+          checkedBackground: '{surface.900}',
+          checkedHoverBackground: '{surface.900}',
+        },
+      },
+    },
   },
   popover: {
     root: {
