@@ -1,18 +1,19 @@
 package de.tum.cit.aet.ai.service;
 
-import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
-
+import de.tum.cit.aet.ai.constants.ComplianceCategory;
+import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
+import de.tum.cit.aet.ai.util.ComplianceScoreCalculator;
 import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.core.constants.GenderBiasWordLists;
+import de.tum.cit.aet.core.constants.GenderCategory;
 import de.tum.cit.aet.core.documents.service.DocumentService;
-import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.InternalServerException;
 import de.tum.cit.aet.core.exception.PDFExtractionException;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
 import de.tum.cit.aet.core.util.CountryCodeNormalizer;
 import de.tum.cit.aet.core.util.DateNormalizer;
 import de.tum.cit.aet.job.dto.JobFormDTO;
@@ -76,8 +77,6 @@ public class AiService {
 
     private final GenderBiasAnalysisService genderBiasAnalysisService;
 
-    private final ComplianceScoreService complianceScoreService;
-
     private final AiFeatureToggleService aiFeatureToggleService;
 
     public AiService(
@@ -87,7 +86,6 @@ public class AiService {
         DocumentService documentService,
         CurrentUserService currentUserService,
         GenderBiasAnalysisService genderBiasAnalysisService,
-        ComplianceScoreService complianceScoreService,
         AiFeatureToggleService aiFeatureToggleService
     ) {
         this.chatClient = chatClientBuilder.build();
@@ -96,7 +94,6 @@ public class AiService {
         this.documentService = documentService;
         this.currentUserService = currentUserService;
         this.genderBiasAnalysisService = genderBiasAnalysisService;
-        this.complianceScoreService = complianceScoreService;
         this.aiFeatureToggleService = aiFeatureToggleService;
     }
 
@@ -112,8 +109,8 @@ public class AiService {
     public Flux<String> generateJobApplicationDraftStream(JobFormDTO jobFormDTO, String descriptionLanguage) {
         String input = "de".equals(descriptionLanguage) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
 
-        Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
-        Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
+        Set<String> inclusive = GenderBiasWordLists.getWords(descriptionLanguage, GenderCategory.INCLUSIVE);
+        Set<String> nonInclusive = GenderBiasWordLists.getWords(descriptionLanguage, GenderCategory.NON_INCLUSIVE);
         final String locationText = jobFormDTO.location() != null ? jobFormDTO.location().correctLanguageValue(descriptionLanguage) : "";
 
         return chatClient
@@ -149,8 +146,8 @@ public class AiService {
      * @return Flux of content chunks as they are generated
      */
     public Flux<String> translateTextStream(String text, String toLang) {
-        Set<String> inclusive = "de".equals(toLang) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
-        Set<String> nonInclusive = "de".equals(toLang) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
+        Set<String> inclusive = GenderBiasWordLists.getWords(toLang, GenderCategory.INCLUSIVE);
+        Set<String> nonInclusive = GenderBiasWordLists.getWords(toLang, GenderCategory.NON_INCLUSIVE);
 
         return chatClient
             .prompt()
@@ -329,7 +326,7 @@ public class AiService {
     public List<ComplianceIssue> analyzeCurrentJobDescription(JobFormDTO jobFormDTO, String lang, String userLang) {
         String raw = "de".equals(lang) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
         String input = raw != null ? Jsoup.parse(raw).text() : "";
-        GenderBiasAnalysisResponse genderAnalysis = genderBiasAnalysisService.analyzeText(input, lang);
+        List<BiasedIssue> genderAnalysis = genderBiasAnalysisService.analyzeText(input, lang);
         return analyzeJobDescription(jobFormDTO.title(), jobFormDTO.jobId(), input, lang, userLang, genderAnalysis, null);
     }
 
@@ -359,8 +356,8 @@ public class AiService {
         String text,
         String lang,
         String userLang,
-        GenderBiasAnalysisResponse analysis,
-        GenderBiasAnalysisResponse translatedAnalysis
+        List<BiasedIssue> analysis,
+        List<BiasedIssue> translatedAnalysis
     ) {
         List<ComplianceIssue> complianceIssues;
         if (aiFeatureToggleService.isAiAvailable()) {
@@ -388,14 +385,21 @@ public class AiService {
             complianceIssues = List.of();
         }
 
-        int genderScore = complianceScoreService.calculateGenderScore(analysis, translatedAnalysis);
-
-        int legalScore = complianceScoreService.calculateLegalScore(complianceIssues);
+        int genderScore = ComplianceScoreCalculator.calculateGenderScore(types(analysis), types(translatedAnalysis), text);
+        int legalScore = ComplianceScoreCalculator.calculateLegalScore(categories(complianceIssues));
         // geometric means
         int combinedScore = (int) Math.round(Math.sqrt((double) genderScore * legalScore));
 
-        jobService.updateAiAnalysis(jobId, combinedScore, complianceIssues, lang);
+        jobService.updateAiAnalysis(jobId, combinedScore, complianceIssues, analysis, lang);
 
         return complianceIssues;
+    }
+
+    private static List<GenderCategory> types(List<BiasedIssue> issues) {
+        return issues == null ? null : issues.stream().map(BiasedIssue::getType).toList();
+    }
+
+    private static List<ComplianceCategory> categories(List<ComplianceIssue> issues) {
+        return issues == null ? null : issues.stream().map(ComplianceIssue::getCategory).toList();
     }
 }

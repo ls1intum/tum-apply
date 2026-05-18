@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.domain;
 
+import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
@@ -12,6 +13,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -115,4 +117,8 @@ public class Job extends AbstractAuditingEntity {
     @ElementCollection
     @CollectionTable(name = "job_compliance_issues", joinColumns = @JoinColumn(name = "job_id"))
     private List<ComplianceIssue> complianceIssues = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "job_biased_issues", joinColumns = @JoinColumn(name = "job_id"))
+    private Set<BiasedIssue> biasedIssues = new HashSet<>();
 }

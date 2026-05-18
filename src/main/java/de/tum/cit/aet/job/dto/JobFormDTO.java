@@ -1,6 +1,7 @@
 package de.tum.cit.aet.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
@@ -9,6 +10,7 @@ import de.tum.cit.aet.job.domain.Job;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -34,7 +36,8 @@ public record JobFormDTO(
     Boolean startDateByArrangement, // Start date is to be agreed upon individually
     Boolean contractExtendable, // Contract may be extended beyond the stated duration
     Integer genderBiasScore,
-    List<ComplianceIssue> complianceIssues
+    List<ComplianceIssue> complianceIssues,
+    Set<BiasedIssue> biasedIssues
 ) {
     /**
      * Converts a Job entity to a form DTO.
@@ -45,6 +48,23 @@ public record JobFormDTO(
      * @return a JobFormDTO containing the data from the job entity
      */
     public static JobFormDTO getFromEntity(Job job) {
+        if (job == null) {
+            throw new EntityNotFoundException("Cannot convert non-existent Job entity to JobFormDTO");
+        }
+        return getFromEntity(job, job.getComplianceIssues(), job.getBiasedIssues());
+    }
+
+    /**
+     * Converts a Job entity to a DTO using explicitly loaded analysis collections.
+     * This allows callers to fetch compliance and biased issues separately and
+     * avoid joining multiple list-based element collections in one query.
+     *
+     * @param job the job entity to convert
+     * @param complianceIssues the compliance issues to include in the DTO
+     * @param biasedIssues the biased issues to include in the DTO
+     * @return a JobFormDTO containing the data from the job entity and analysis collections
+     */
+    public static JobFormDTO getFromEntity(Job job, List<ComplianceIssue> complianceIssues, Set<BiasedIssue> biasedIssues) {
         if (job == null) {
             throw new EntityNotFoundException("Cannot convert non-existent Job entity to JobFormDTO");
         }
@@ -71,7 +91,8 @@ public record JobFormDTO(
             job.getStartDateByArrangement(),
             job.getContractExtendable(),
             job.getGenderBiasScore(),
-            job.getComplianceIssues()
+            complianceIssues,
+            biasedIssues
         );
     }
 }

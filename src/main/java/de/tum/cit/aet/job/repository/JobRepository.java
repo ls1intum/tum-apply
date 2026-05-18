@@ -1,5 +1,6 @@
 package de.tum.cit.aet.job.repository;
 
+import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.JobState;
@@ -320,4 +321,13 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     @EntityGraph(attributePaths = { "complianceIssues", "supervisingProfessor", "researchGroup", "image" })
     @Query("SELECT j FROM Job j WHERE j.jobId = :jobId")
     Optional<Job> findByIdWithCompliance(@Param("jobId") UUID jobId);
+
+    /**
+     * Returns all biased issues for a job without loading the full Job entity.
+     *
+     * @param jobId the job id
+     * @return the set of biased issues, empty if none exist
+     */
+    @Query("SELECT bi FROM Job j JOIN j.biasedIssues bi WHERE j.jobId = :jobId")
+    Set<BiasedIssue> findBiasedIssuesByJobId(@Param("jobId") UUID jobId);
 }

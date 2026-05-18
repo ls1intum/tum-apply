@@ -8,9 +8,9 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
-import type { GenderBiasAnalysisResponse } from './gender-bias-analysis-response';
+import type { BiasedIssue } from './biased-issue';
 
 export interface TranslateComplianceDTO {
-    readonly originalAnalysis?: GenderBiasAnalysisResponse;
+    readonly originalAnalysis?: Array<BiasedIssue>;
     readonly text: string;
 }
