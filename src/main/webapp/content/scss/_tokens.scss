@@ -51,7 +51,7 @@
   --color-positive-active: var(--p-success-active-color);
   --color-positive-disabled: var(--p-success-disabled-color);
   // Darker variant for state indicators on light surfaces (>=3:1 contrast)
-  --color-positive-strong: var(--p-success-600);
+  --color-positive-strong: var(--p-success-hover-color);
 
   // Warning Semantic Colors
   --color-warning-DEFAULT: var(--p-warn-color);
@@ -67,7 +67,7 @@
   --color-negative-active: var(--p-danger-active-color);
   --color-negative-disabled: var(--p-danger-disabled-color);
   // Darker variant for state indicators on light surfaces (>=3:1 contrast)
-  --color-negative-strong: var(--p-danger-600);
+  --color-negative-strong: var(--p-danger-hover-color);
 
   // Accent Semantic Colors (TUM accent / contrast palette)
   --color-accent-DEFAULT: var(--p-accent-color);
