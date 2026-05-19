@@ -12,19 +12,10 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { ToastService } from '../../../../service/toast-service';
 import { ApplicationDocumentIdsDTO } from '../../../../generated/model/application-document-ids-dto';
-import { DocumentInformationHolderDTO } from '../../../../generated/model/document-information-holder-dto';
 import { ReferenceRequestDTO } from '../../../../generated/model/reference-request-dto';
 import { ApplicationEvaluationResourceApi } from '../../../../generated/api/application-evaluation-resource-api';
+import type { DocumentHolder } from '../../../models/document-holder';
 import { DocumentDialog } from '../../molecules/document-dialog/document-dialog';
-
-export interface DocumentHolder {
-  /** Translation key for the row title — never a pre-translated string. */
-  label: string;
-  /** Optional placeholder values interpolated into the translation (e.g. {@code name}). */
-  labelParams?: Record<string, unknown>;
-  document: DocumentInformationHolderDTO;
-}
-
 @Component({
   selector: 'jhi-document-section',
   imports: [DocumentViewerComponent, SubSection, FontAwesomeModule, ButtonComponent, TranslateDirective, TooltipModule, DocumentDialog],
@@ -77,15 +68,21 @@ export class DocumentSection {
 
     const result: DocumentHolder[] = [];
 
-    dto?.masterDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeMaster', document: d }));
+    dto?.masterDocumentIds?.forEach(d =>
+      result.push({ label: 'evaluation.details.documentTypeMaster', document: d, shouldTranslateLabel: true }),
+    );
 
     if (dto?.cvDocumentId) {
-      result.push({ label: 'evaluation.details.documentTypeCV', document: dto.cvDocumentId });
+      result.push({ label: 'evaluation.details.documentTypeCV', document: dto.cvDocumentId, shouldTranslateLabel: true });
     }
 
-    dto?.bachelorDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeBachelor', document: d }));
+    dto?.bachelorDocumentIds?.forEach(d =>
+      result.push({ label: 'evaluation.details.documentTypeBachelor', document: d, shouldTranslateLabel: true }),
+    );
 
-    dto?.referenceDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeReference', document: d }));
+    dto?.referenceDocumentIds?.forEach(d =>
+      result.push({ label: 'evaluation.details.documentTypeReference', document: d, shouldTranslateLabel: true }),
+    );
 
     letters
       .filter((letter): letter is ReferenceRequestDTO & { documentId: string } => !!letter.documentId)

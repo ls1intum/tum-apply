@@ -61,6 +61,7 @@
       "progress": "Schritt {current} von {total}"
     },
     "input": {
+      "requiredHint": "(Mit * markierte Felder sind Pflichtfelder.)",
       "error": {
         "required": "Dieses Feld ist ein Pflichtfeld.",
         "minLength": "Dieses Feld muss mindestens {min} Zeichen lang sein.",
@@ -191,6 +192,10 @@
         "CV": "Lebenslauf",
         "CUSTOM": "Benutzerdefiniert"
       },
+      "aria": {
+        "removeFile": "Datei entfernen",
+        "selectFileToUpload": "Datei zum Hochladen auswählen"
+      },
       "tooltip": {
         "to_upload": "Muss noch hochgeladen werden",
         "already_uploaded": "Bereits hochgeladen",
@@ -252,6 +257,7 @@
       "personal_documents": "Persönliche Dokumente",
       "reference_letters": "Empfehlungsschreiben Anfragen",
       "reference_status": {
+        "added": "(hinzugefügt)",
         "requested": "(angefragt)",
         "submitted": "(eingereicht)",
         "expired": "(abgelaufen)"
