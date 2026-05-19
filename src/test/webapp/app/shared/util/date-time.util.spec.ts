@@ -21,7 +21,7 @@ describe('getLocale', () => {
     ['en', 'en-US'],
     ['fr', 'en-US'],
   ])('should return %s locale mapping as %s', (currentLang, expectedLocale) => {
-    const translateService = { currentLang } as TranslateService;
+    const translateService = { getCurrentLang: () => currentLang } as TranslateService;
 
     expect(getLocale(translateService)).toBe(expectedLocale);
   });
