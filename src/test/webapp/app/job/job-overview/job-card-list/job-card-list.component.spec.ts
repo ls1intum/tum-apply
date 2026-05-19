@@ -17,10 +17,6 @@ import { createAccountServiceMock, provideAccountServiceMock } from 'src/test/we
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 import { getRequiredAnchor } from 'src/test/webapp/util/utility-methods/dom-query.util';
 
-type JobCardListComponentInternals = {
-  initializePage(): Promise<void>;
-};
-
 describe('JobCardListComponent', () => {
   let fixture: ComponentFixture<JobCardListComponent>;
   let component: JobCardListComponent;
@@ -98,6 +94,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should show a single jobs toast when initial filters and jobs both fail', async () => {
+    fixture.destroy();
     jobApi.getAllFilters.mockReset();
     jobApi.getAllFilters.mockReturnValue(throwError(() => new Error('filter fail')));
     jobApi.getAvailableJobs.mockReset();
@@ -106,13 +103,20 @@ describe('JobCardListComponent', () => {
     jobApi.getAvailableJobs.mockClear();
     mockToastService.showErrorKey.mockClear();
 
-    await runSilently(() => (component as unknown as JobCardListComponentInternals).initializePage());
+    const failingFixture = TestBed.createComponent(JobCardListComponent);
+    await runSilently(async () => {
+      failingFixture.componentInstance.loadOnTableEmit({ first: 0, rows: 12 });
+      await Promise.resolve();
+      await Promise.resolve();
+    });
 
     expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
     expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobOverviewPage.errors.loadJobs');
+    expect(jobApi.getAvailableJobs).toHaveBeenCalledTimes(1);
   });
 
   it('should show only the filter toast when initial filter loading fails but jobs still load', async () => {
+    fixture.destroy();
     jobApi.getAllFilters.mockReset();
     jobApi.getAllFilters.mockReturnValue(throwError(() => new Error('filter fail')));
     jobApi.getAvailableJobs.mockReset();
@@ -133,7 +137,8 @@ describe('JobCardListComponent', () => {
     jobApi.getAvailableJobs.mockClear();
     mockToastService.showErrorKey.mockClear();
 
-    await (component as unknown as JobCardListComponentInternals).initializePage();
+    const partialFailureFixture = TestBed.createComponent(JobCardListComponent);
+    await (partialFailureFixture.componentInstance as unknown as { initializePage(): Promise<void> }).initializePage();
 
     expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
     expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobOverviewPage.errors.loadFilter');

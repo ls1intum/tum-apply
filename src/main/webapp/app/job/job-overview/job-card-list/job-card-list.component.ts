@@ -65,13 +65,9 @@ export class JobCardListComponent {
   readonly canManageSubjectAreaSubscriptions = computed(
     () => this.accountService.signedIn() && this.accountService.hasAnyAuthority([UserShortDTORolesEnum.Applicant]),
   );
-
+  private hasHandledInitialLazyLoad = false;
   private jobApi = inject(JobResourceApi);
   private readonly toastService = inject(ToastService);
-
-  constructor() {
-    void this.initializePage();
-  }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -79,6 +75,13 @@ export class JobCardListComponent {
 
     this.page.set(page);
     this.pageSize.set(size);
+
+    if (!this.hasHandledInitialLazyLoad) {
+      this.hasHandledInitialLazyLoad = true;
+      void this.initializePage();
+      return;
+    }
+
     void this.loadJobs();
   }
 
