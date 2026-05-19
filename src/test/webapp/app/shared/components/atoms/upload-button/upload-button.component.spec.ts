@@ -21,6 +21,8 @@ import {
   createApplicantResourceApiMock,
   provideApplicantResourceApiMock,
 } from 'util/applicant-resource-api.service.mock';
+import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
+import { DocumentCacheService } from 'app/service/document-cache.service';
 
 describe('UploadButtonComponent', () => {
   let applicationApi: ApplicationResourceApiMock;
@@ -55,6 +57,8 @@ describe('UploadButtonComponent', () => {
         provideFontAwesomeTesting(),
         provideTranslateMock(),
         provideNoopAnimations(),
+        { provide: DocumentResourceApi, useValue: { downloadDocument: vi.fn().mockReturnValue(of({ body: new ArrayBuffer(0) })) } },
+        { provide: DocumentCacheService, useValue: { get: vi.fn(), set: vi.fn() } },
       ],
     }).compileComponents();
   });
@@ -258,6 +262,49 @@ describe('UploadButtonComponent', () => {
     firstValueFromSpy.mockRestore();
   });
 
+  it('should open the preview dialog for persisted documents', () => {
+    const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
+    const component = fixture.componentInstance;
+    const document = { id: '1', name: 'cv.pdf', size: 1234 };
+
+    component.documentIds.set([document]);
+    component.openPreview(document);
+
+    expect(component.previewSelectedId()).toBe('1');
+    expect(component.previewDialogVisible()).toBe(true);
+    expect(component.previewDocumentHolders()).toEqual([
+      {
+        label: 'cv.pdf',
+        document,
+        file: undefined,
+        shouldTranslateLabel: false,
+      },
+    ]);
+  });
+
+  it('should only allow preview for deferred documents while the local file is available', async () => {
+    const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV', deferUpload: true });
+    const component = fixture.componentInstance;
+    component.fileUploadComponent = signal({ clear: vi.fn() } as unknown as FileUpload);
+
+    const file = new File(['pdf'], 'queued.pdf', { type: 'application/pdf' });
+    await component.onFileSelected({ currentFiles: [file] } as FileSelectEvent);
+
+    const queuedDocument = component.documentIds()?.[0];
+    expect(queuedDocument).toBeDefined();
+    if (!queuedDocument) {
+      return;
+    }
+
+    expect(component.hasPreview(queuedDocument)).toBe(true);
+    expect(component.previewDocumentHolders()[0]?.file).toBe(file);
+
+    component.queuedFilesById.set(new Map());
+
+    expect(component.hasPreview(queuedDocument)).toBe(false);
+    expect(component.previewDocumentHolders()).toEqual([]);
+  });
+
   it('should rename document if name is valid and update documentIds correctly', async () => {
     const fixture = createUploadButtonFixture({ applicationId: 'app-id', documentType: 'CV' });
     const component = fixture.componentInstance;
@@ -287,13 +334,24 @@ describe('UploadButtonComponent', () => {
       currentFiles: [new File(['old-content'], 'original.pdf', { type: 'application/pdf' })],
     } as FileSelectEvent);
 
-    const queuedDocument = component.documentIds()![0];
+    const queuedDocument = component.documentIds()?.[0];
+    expect(queuedDocument).toBeDefined();
+    if (!queuedDocument) {
+      return;
+    }
+
     await component.renameDocument({ id: queuedDocument.id, name: 'renamed.pdf', size: queuedDocument.size });
 
-    expect(component.documentIds()![0].name).toBe('renamed.pdf');
+    const renamedDocument = component.documentIds()?.[0];
+    expect(renamedDocument).toBeDefined();
+    expect(renamedDocument?.name).toBe('renamed.pdf');
     expect(component.queuedFiles()[0].name).toBe('renamed.pdf');
 
-    await component.deleteDictionary(component.documentIds()![0]);
+    if (!renamedDocument) {
+      return;
+    }
+
+    await component.deleteDictionary(renamedDocument);
 
     expect(component.documentIds()).toEqual([]);
     expect(component.queuedFiles()).toEqual([]);
@@ -307,7 +365,12 @@ describe('UploadButtonComponent', () => {
 
     await component.onFileSelected({ currentFiles: [new File(['old'], 'original.pdf', { type: 'application/pdf' })] } as FileSelectEvent);
 
-    const queuedDocument = component.documentIds()![0];
+    const queuedDocument = component.documentIds()?.[0];
+    expect(queuedDocument).toBeDefined();
+    if (!queuedDocument) {
+      return;
+    }
+
     await component.renameDocument({ id: queuedDocument.id, name: 'renamed.pdf', size: queuedDocument.size });
 
     const replacementFile = new File(['replacement-content'], 'renamed.pdf', { type: 'application/pdf' });
@@ -316,7 +379,7 @@ describe('UploadButtonComponent', () => {
     await component.onConfirmDuplicate();
 
     expect(component.documentIds()).toHaveLength(1);
-    expect(component.documentIds()![0].name).toBe('renamed.pdf');
+    expect(component.documentIds()?.[0]?.name).toBe('renamed.pdf');
     expect(component.queuedFiles()).toHaveLength(1);
     expect(component.queuedFiles()[0].size).toBe(replacementFile.size);
   });

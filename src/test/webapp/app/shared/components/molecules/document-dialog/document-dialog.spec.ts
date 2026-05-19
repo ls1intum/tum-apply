@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { of } from 'rxjs';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
-import { DocumentHolder } from 'app/shared/components/organisms/document-section/document-section';
 import { DocumentDialog } from 'app/shared/components/molecules/document-dialog/document-dialog';
+import { DocumentHolder } from 'app/shared/models/document-holder';
 import { provideTranslateMock } from '../../../../../util/translate.mock';
 import { DocumentResourceApi } from 'app/generated/api/document-resource-api';
 
@@ -52,10 +52,10 @@ describe('DocumentDialog', () => {
       expected: 'doc1',
     },
     {
-      desc: 'should not override selectedId if already set',
+      desc: 'should fall back to the first document when selectedId is not present in the current list',
       holders: [createHolder('doc1', 'Doc 1')],
       selected: 'customId',
-      expected: 'customId',
+      expected: 'doc1',
     },
   ])('initialization', ({ desc, holders, selected, expected }) => {
     it(desc, () => {
@@ -78,10 +78,10 @@ describe('DocumentDialog', () => {
       expected: 'doc2',
     },
     {
-      desc: 'should return undefined if selectedId not found',
+      desc: 'should fall back to the first document if selectedId is missing from the list',
       holders: [createHolder('doc1', 'Doc 1')],
       selected: 'missing',
-      expected: undefined,
+      expected: 'doc1',
     },
   ])('selectedDocument', ({ desc, holders, selected, expected }) => {
     it(desc, () => {

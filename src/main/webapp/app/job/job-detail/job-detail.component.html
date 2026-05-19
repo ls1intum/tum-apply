@@ -158,12 +158,6 @@
                   <span class="value">
                     {{ job.contractDuration }}
                     <span [jhiTranslate]="job.contractDuration === '1' ? 'jobDetailPage.units.year' : 'jobDetailPage.units.years'"></span>
-                    @if (job.contractExtendable) {
-                      <span
-                        class="block text-text-secondary"
-                        jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.extendable.overviewLabel"
-                      ></span>
-                    }
                   </span>
                 } @else {
                   <span class="value">-</span>
