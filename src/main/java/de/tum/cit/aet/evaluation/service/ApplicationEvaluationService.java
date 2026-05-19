@@ -20,9 +20,13 @@ import de.tum.cit.aet.evaluation.dto.AcceptDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
 import de.tum.cit.aet.evaluation.dto.EvaluationFilterDTO;
+import de.tum.cit.aet.evaluation.dto.RatingSummary;
 import de.tum.cit.aet.evaluation.dto.RejectDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
+import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
+import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.service.JobService;
@@ -38,6 +42,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
@@ -64,6 +69,7 @@ public class ApplicationEvaluationService {
     private final CurrentUserService currentUserService;
     private final ZipExportService zipExportService;
     private final RatingRepository ratingRepository;
+    private final IntervieweeRepository intervieweeRepository;
     private final ReferenceRequestService referenceRequestService;
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
@@ -275,7 +281,7 @@ public class ApplicationEvaluationService {
             totalRecords,
             (int) idx,
             windowIndex,
-            this::calculateAverageRating
+            this::calculateRatingSummary
         );
     }
 
@@ -308,7 +314,7 @@ public class ApplicationEvaluationService {
             totalRecords,
             null,
             null,
-            this::calculateAverageRating
+            this::calculateRatingSummary
         );
     }
 
@@ -481,16 +487,31 @@ public class ApplicationEvaluationService {
     }
 
     /**
-     * Calculates the average rating for the given application.
+     * Calculates the aggregated rating for the given application.
+     * The summary combines all professor/employee Likert ratings with the
+     * interview rating (if any) on the same -2..+2 scale.
      *
-     * @param application the application for which to calculate the average rating
-     * @return the average rating, or null if no ratings exist
+     * @param application the application to summarise
+     * @return a {@link RatingSummary} with the mean and total count; the mean is
+     *         {@code null} when no rating of any kind exists
      */
-    private Double calculateAverageRating(Application application) {
-        Set<Rating> ratings = ratingRepository.findByApplicationApplicationId(application.getApplicationId());
+    private RatingSummary calculateRatingSummary(Application application) {
+        UUID applicationId = application.getApplicationId();
 
-        OptionalDouble avg = ratings.stream().map(Rating::getRating).filter(Objects::nonNull).mapToInt(Integer::intValue).average();
+        Set<Rating> ratings = ratingRepository.findByApplicationApplicationId(applicationId);
+        List<Integer> values = ratings.stream().map(Rating::getRating).filter(Objects::nonNull).collect(Collectors.toCollection(ArrayList::new));
 
-        return avg.isPresent() ? avg.getAsDouble() : null;
+        intervieweeRepository
+            .findByApplicationApplicationIdAndRatingIsNotNull(applicationId)
+            .map(Interviewee::getRating)
+            .map(AssessmentRating::getValue)
+            .ifPresent(values::add);
+
+        if (values.isEmpty()) {
+            return RatingSummary.empty();
+        }
+
+        OptionalDouble avg = values.stream().mapToInt(Integer::intValue).average();
+        return new RatingSummary(avg.isPresent() ? avg.getAsDouble() : null, values.size());
     }
 }
