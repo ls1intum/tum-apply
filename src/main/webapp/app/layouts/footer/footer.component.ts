@@ -42,6 +42,6 @@ export default class FooterComponent {
 
   protected get gitInfo(): GitInfo | undefined {
     const info = this.profileInfo();
-    return info?.ribbonEnv && info?.gitInfo ? info.gitInfo : undefined;
+    return info?.ribbonEnv && info.gitInfo ? info.gitInfo : undefined;
   }
 }
