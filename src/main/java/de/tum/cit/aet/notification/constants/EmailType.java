@@ -18,12 +18,7 @@ public enum EmailType {
      * To: Applicant whose application was accepted
      * BCC: Supervising Professor of accepted application
      */
-    APPLICATION_ACCEPTED(
-        "APPLICATION_ACCEPTED",
-        Set.of(UserRole.APPLICANT, UserRole.PROFESSOR, UserRole.EMPLOYEE),
-        true,
-        SignoffType.NONE
-    ),
+    APPLICATION_ACCEPTED("APPLICATION_ACCEPTED", Set.of(UserRole.APPLICANT, UserRole.PROFESSOR, UserRole.EMPLOYEE), true, SignoffType.NONE),
 
     /**
      * Rejection because the position has been filled.

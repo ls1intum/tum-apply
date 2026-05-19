@@ -153,13 +153,7 @@ public class TemplateProcessingService {
      * @return fully rendered HTML including layout
      * @throws TemplateProcessingException if layout template rendering fails
      */
-    private String renderLayout(
-        Language language,
-        String html,
-        boolean sanitize,
-        SignoffType signoff,
-        Map<String, Object> dataModelSeed
-    ) {
+    private String renderLayout(Language language, String html, boolean sanitize, SignoffType signoff, Map<String, Object> dataModelSeed) {
         try {
             Template layout = freemarkerConfig.getTemplate(BASE_RAW_TEMPLATE);
 
