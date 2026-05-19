@@ -124,7 +124,7 @@ describe('parseLocalDateString', () => {
     expect(parsedDate?.getMilliseconds()).toBe(0);
   });
 
-  it.each([undefined, '', '   ', '2025-02-30', '2025-13-01', '1900-01-01'])(
+  it.each([undefined, '', '   ', '2025-02', '2025-xx-01', '2025-02-00', '2025-02-30', '2025-13-01', '1900-01-01'])(
     'should return undefined for invalid input %s',
     invalidValue => {
       expect(parseLocalDateString(invalidValue)).toBeUndefined();

@@ -3,11 +3,11 @@ import { describe, expect, it } from 'vitest';
 
 import { dateOrderValidator, INVALID_DATE_ORDER_ERROR } from 'app/shared/validators/date-order-validator';
 
-function createDateOrderGroup(startDate: string, endDate: string): FormGroup {
+function createDateOrderGroup(applicationDeadline: string, startDate: string): FormGroup {
   return new FormGroup(
     {
-      applicationDeadline: new FormControl(startDate),
-      startDate: new FormControl(endDate),
+      applicationDeadline: new FormControl(applicationDeadline),
+      startDate: new FormControl(startDate),
     },
     {
       validators: [dateOrderValidator('applicationDeadline', 'startDate')],
