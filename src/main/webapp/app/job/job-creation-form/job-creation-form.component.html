@@ -382,20 +382,6 @@
               </div>
               <div class="flex flex-col">
                 <jhi-checkbox
-                  label="jobCreationForm.basicInformationSection.positionOptions.extendable.label"
-                  tooltipText="jobCreationForm.basicInformationSection.positionOptions.extendable.tooltip"
-                  [model]="positionDetailsForm.get('contractExtendable')?.value"
-                  (modelChange)="positionDetailsForm.get('contractExtendable')?.setValue($event)"
-                  [shouldTranslate]="true"
-                  [errorEnabled]="false"
-                />
-                <p
-                  class="text-sm text-text-secondary ml-6"
-                  jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.extendable.subtitle"
-                ></p>
-              </div>
-              <div class="flex flex-col">
-                <jhi-checkbox
                   label="jobCreationForm.basicInformationSection.positionOptions.suitableForDisabled.label"
                   tooltipText="jobCreationForm.basicInformationSection.positionOptions.suitableForDisabled.tooltip"
                   [model]="positionDetailsForm.get('suitableForDisabled')?.value"

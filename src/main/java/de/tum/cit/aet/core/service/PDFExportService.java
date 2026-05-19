@@ -91,11 +91,7 @@ public class PDFExportService {
                 .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
                 .addOverviewItem(
                     labels.get("duration"),
-                    formatDurationForOverview(
-                        formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years")),
-                        job.contractExtendable(),
-                        labels
-                    )
+                    formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years"))
                 )
                 .addOverviewItem(
                     labels.get("fundingType"),
@@ -230,11 +226,7 @@ public class PDFExportService {
                 job.subjectArea() != null ? job.subjectArea().correctLanguageValue(lang) : "-",
                 job.researchArea(),
                 formatWorkload(job.workload(), labels.get("hoursPerWeek")),
-                formatDurationForOverview(
-                    formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years")),
-                    job.contractExtendable(),
-                    labels
-                ),
+                formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years")),
                 job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-",
                 job.tvlGrade() != null ? job.tvlGrade().name() : "-",
                 job.referenceLettersRequired(),
@@ -302,11 +294,7 @@ public class PDFExportService {
                 jobFormDTO.subjectArea() != null ? jobFormDTO.subjectArea().correctLanguageValue(lang) : "-",
                 jobFormDTO.researchArea(),
                 jobFormDTO.workload() != null ? jobFormDTO.workload() + labels.get("hoursPerWeek") : "-",
-                formatDurationForOverview(
-                    formatContractDuration(jobFormDTO.contractDuration(), labels.get("year"), labels.get("years")),
-                    jobFormDTO.contractExtendable(),
-                    labels
-                ),
+                formatContractDuration(jobFormDTO.contractDuration(), labels.get("year"), labels.get("years")),
                 jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().correctLanguageValue(lang) : "-",
                 jobFormDTO.tvlGrade() != null ? jobFormDTO.tvlGrade().name() : "-",
                 jobFormDTO.referenceLettersRequired(),
@@ -457,16 +445,6 @@ public class PDFExportService {
             return formattedDate + " (" + labels.get("uponAgreement") + ")";
         }
         return formattedDate;
-    }
-
-    /**
-     * Formats a contract duration for PDF rendering. Appends the "Extension possible" label when extendable.
-     */
-    private String formatDurationForOverview(String duration, Boolean extendable, Map<String, String> labels) {
-        if (Boolean.TRUE.equals(extendable)) {
-            return duration + " (" + labels.get("extendable") + ")";
-        }
-        return duration;
     }
 
     /**
