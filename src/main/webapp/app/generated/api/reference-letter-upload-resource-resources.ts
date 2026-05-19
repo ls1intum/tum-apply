@@ -15,7 +15,7 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { ReferenceLetterContextDTO } from '../model/reference-letter-context-dto';
+import { ReferenceLetterUploadContextDTO } from '../model/reference-letter-upload-context-dto';
 const BASE_PATH = '';
 
 /**
@@ -24,8 +24,8 @@ const BASE_PATH = '';
  * Creates a reactive HTTP resource that automatically refetches when signals change.
  * @param token 
  */
-export function getContextResource(token: Signal<string> | string): HttpResourceRef<ReferenceLetterContextDTO | undefined> {
-    return httpResource<ReferenceLetterContextDTO>(() => {
+export function getContextResource(token: Signal<string> | string): HttpResourceRef<ReferenceLetterUploadContextDTO | undefined> {
+    return httpResource<ReferenceLetterUploadContextDTO>(() => {
         const tokenValue = typeof token === 'function' ? token() : token;
         const tokenPath = encodeURIComponent(String(tokenValue));
         return `${BASE_PATH}/api/reference-letters/${tokenPath}`;

@@ -1,7 +1,6 @@
 {
   "global": {
     "title": "TUMApply",
-    "browsehappy": "Du benutzt einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/?locale=de/\">aktualisiere deinen Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
     "routes": {
       "landingPage": {
         "applicant": "TUMApply - Bewerber Portal",
@@ -53,74 +52,11 @@
         "download": "TUMApply - Datenexport Download"
       }
     },
-    "menu": {
-      "home": "Startseite",
-      "colorTheme": "Farbschema ändern",
-      "entities": {
-        "main": "Entitäten",
-        "adminAuthority": "Authority"
-      },
-      "account": {
-        "main": "Zugang",
-        "settings": "Einstellungen",
-        "password": "Passwort",
-        "sessions": "Sitzungen",
-        "login": "Anmelden",
-        "logout": "Abmelden",
-        "register": "Registrierung"
-      },
-      "admin": {
-        "main": "Administration",
-        "userManagement": "Benutzerverwaltung",
-        "tracker": "Benutzer Aktivitäten",
-        "metrics": "Metriken",
-        "health": "Status",
-        "configuration": "Konfiguration",
-        "logs": "Protokoll",
-        "apidocs": "API",
-        "database": "Datenbank"
-      },
-      "language": "Sprache"
-    },
-    "messages": {
-      "info": {
-        "authenticated": {
-          "prefix": "Wenn du dich ",
-          "link": "anmelden",
-          "suffix": " möchtest, versuche es mit <br/>- Administrator (Name=\"admin\" und Passwort=\"admin\")<br/>- Benutzer (Name=\"user\" und Passwort=\"user\")."
-        },
-        "register": {
-          "noaccount": "Du hast noch keinen Zugang?",
-          "link": "Registriere dich"
-        }
-      },
-      "error": {
-        "dontmatch": "Das bestätigte Passwort entspricht nicht dem neuen Passwort!"
-      },
-      "validate": {
-        "newpassword": {
-          "required": "Ein neues Passwort wird benötigt.",
-          "minlength": "Das neue Passwort muss mindestens 4 Zeichen lang sein",
-          "maxlength": "Das neue Passwort darf nicht länger als 50 Zeichen sein",
-          "strength": "Passwortstärke:"
-        },
-        "confirmpassword": {
-          "required": "Du musst das Passwort bestätigen.",
-          "minlength": "Das bestätigte Passwort muss mindestens 4 Zeichen lang sein",
-          "maxlength": "Das bestätigte Passwort darf nicht länger als 50 Zeichen sein"
-        },
-        "email": {
-          "required": "Deine Email Adresse wird benötigt.",
-          "invalid": "Deine Email Adresse ist ungültig.",
-          "minlength": "Deine Email Adresse muss mindestens 5 Zeichen lang sein",
-          "maxlength": "Deine Email Adresse darf nicht länger als 50 Zeichen sein"
-        }
-      }
-    },
     "stepper": {
       "progress": "Schritt {current} von {total}"
     },
     "input": {
+      "requiredHint": "Mit * markierte Felder sind Pflichtfelder.",
       "error": {
         "required": "Dieses Feld ist ein Pflichtfeld.",
         "minLength": "Dieses Feld muss mindestens {min} Zeichen lang sein.",
@@ -134,25 +70,16 @@
       }
     },
     "editor": {
-      "header": {
-        "heading": "Heading",
-        "subheading": "Subheading",
-        "normal": "Normal"
-      },
       "align": {
         "center": "center",
         "right": "right",
         "justify": "justify"
       }
     },
-    "field": {
-      "id": "ID"
-    },
     "ribbon": {
       "dev": "Entwicklung",
       "test": "Entwicklung"
     },
-    "item-count": "Ergebnis {first} - {second} von {total} Elemente.",
     "dataExport": {
       "downloadSuccess": "Download erfolgreich!",
       "downloadSuccessMessage": "Dein Datenexport wurde erfolgreich heruntergeladen.",
@@ -215,19 +142,6 @@
     "delete": {
       "title": "Löschen bestätigen"
     },
-    "validation": {
-      "required": "Dieses Feld wird benötigt.",
-      "minlength": "Dieses Feld muss mind. {min} Zeichen lang sein.",
-      "maxlength": "Dieses Feld darf max. {max} Zeichen lang sein.",
-      "min": "Dieses Feld muss mind. {min} sein.",
-      "max": "Dieses Feld darf max. {max} sein.",
-      "minbytes": "Dieses Feld sollte mehr als {min} bytes haben.",
-      "maxbytes": "Dieses Feld sollte nicht mehr als {max} bytes haben.",
-      "pattern": "Dieses Feld muss das Muster {pattern} erfüllen.",
-      "number": "Dieses Feld muss eine Zahl sein.",
-      "datetimelocal": "Dieses Feld muss eine Datums- und Zeitangabe enthalten.",
-      "patternLogin": "Dieses Feld darf nur Buchstaben, Ziffern und E-Mail-Adressen enthalten."
-    },
     "filters": {
       "filter": "Filter",
       "sortingAndFilter": "Sortierung & Filter",
@@ -272,6 +186,10 @@
         "REFERENCE_LETTER": "Empfehlungsschreiben",
         "CV": "Lebenslauf",
         "CUSTOM": "Benutzerdefiniert"
+      },
+      "aria": {
+        "removeFile": "Datei entfernen",
+        "selectFileToUpload": "Datei zum Hochladen auswählen"
       },
       "tooltip": {
         "to_upload": "Muss noch hochgeladen werden",
@@ -334,6 +252,7 @@
       "personal_documents": "Persönliche Dokumente",
       "reference_letters": "Empfehlungsschreiben Anfragen",
       "reference_status": {
+        "added": "(hinzugefügt)",
         "requested": "(angefragt)",
         "submitted": "(eingereicht)",
         "expired": "(abgelaufen)"
@@ -680,17 +599,8 @@
     }
   },
   "error": {
-    "internalServerError": "Interner Serverfehler",
     "server.not.reachable": "Server ist nicht erreichbar",
     "url.not.found": "Nicht gefunden",
-    "NotNull": "Feld {fieldName} kann nicht leer sein!",
-    "Size": "Feld {fieldName} erfüllt nicht die minimalen/maximalen Voraussetzungen!",
-    "userexists": "Benutzername bereits vergeben!",
-    "emailexists": "Email wird bereits verwendet!",
-    "idexists": "Ein neuer {entityName} kann noch keine ID haben",
-    "idnull": "Ungültige ID",
-    "idinvalid": "Ungültige ID",
-    "idnotfound": "ID konnte nicht gefunden werden",
     "file": {
       "could.not.extract": "Datei konnte nicht extrahiert werden",
       "not.image": "Es wird erwartet, dass die Datei ein Bild ist. Die Datei ist jedoch vom Typ \"{fileType}\""

@@ -34,6 +34,7 @@ public record JobDTO(
     Boolean suitableForDisabled,
     Boolean startDateByArrangement,
     Boolean contractExtendable,
+    Integer referenceLettersRequired,
     Integer genderBiasScore,
     List<ComplianceIssue> complianceIssues
 ) {}

@@ -3,7 +3,7 @@ package de.tum.cit.aet.notification.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * Context for the {@code REFERENCE_LETTER_INVITATION} email sent to an external referee.
+ * Context for the emails sent to an external referee.
  *
  * @param refereeNameTitle        the referee's name title (e.g. "Prof.") or null if none
  * @param refereeFirstName        the referee's first name
@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @param referenceDeadline       human-readable deadline (e.g. dd.MM.yyyy) by which the letter must be uploaded
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ReferenceLetterInvitationContextDTO(
+public record ReferenceLetterContextDTO(
     String refereeNameTitle,
     String refereeFirstName,
     String refereeLastName,

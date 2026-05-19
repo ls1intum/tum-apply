@@ -7,7 +7,7 @@ import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ReferenceLetterUploadResourceApi } from 'app/generated/api/reference-letter-upload-resource-api';
-import { ReferenceLetterContextDTO } from 'app/generated/model/reference-letter-context-dto';
+import { ReferenceLetterUploadContextDTO } from 'app/generated/model/reference-letter-upload-context-dto';
 import {
   DocumentInformationHolderDTO,
   DocumentInformationHolderDTODocumentTypeEnum,
@@ -31,7 +31,7 @@ export class ReferenceLetterUploadComponent {
   protected readonly errorKey = signal<string | undefined>(undefined);
   protected readonly justUploaded = signal<boolean>(false);
 
-  protected readonly context = signal<ReferenceLetterContextDTO | undefined>(undefined);
+  protected readonly context = signal<ReferenceLetterUploadContextDTO | undefined>(undefined);
   protected uploadedDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
   protected readonly queuedFile = signal<File | undefined>(undefined);
   protected readonly hasQueuedFile = computed(() => !!this.queuedFile());

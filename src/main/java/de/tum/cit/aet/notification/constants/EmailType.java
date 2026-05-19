@@ -152,7 +152,13 @@ public enum EmailType {
      * Invitation to an external referee asking them to upload a recommendation letter for a specific application.
      * To: External referee email (no TUMApply account required)
      */
-    REFERENCE_LETTER_INVITATION("REFERENCE_LETTER_INVITATION", Set.of(), false);
+    REFERENCE_LETTER_INVITATION("REFERENCE_LETTER_INVITATION", Set.of(), false),
+
+    /**
+     * Reminder to an external referee that their recommendation letter upload window is about to close.
+     * To: External referee email (no TUMApply account required)
+     */
+    REFERENCE_LETTER_REMINDER("REFERENCE_LETTER_REMINDER", Set.of(), false);
 
     private final String value;
 
