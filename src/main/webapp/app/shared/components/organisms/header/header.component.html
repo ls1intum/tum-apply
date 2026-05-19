@@ -50,7 +50,7 @@
         aria-haspopup="menu"
       >
         <jhi-user-avatar [fullName]="user()?.name" [avatarUrl]="user()?.avatar" />
-        <span class="hidden sm:inline font-medium">{{ user()?.name }}</span>
+        <span class="font-medium">{{ user()?.name }}</span>
         <fa-icon
           class="text-xs text-text-default transition-transform duration-300"
           [class.rotate-180]="isProfileMenuOpen()"
@@ -77,18 +77,8 @@
 </header>
 
 <!-- Mobile navigation drawer: contains the same actions stacked vertically. -->
-<p-drawer
-  [visible]="mobileMenuOpen()"
-  (visibleChange)="mobileMenuOpen.set($event)"
-  position="right"
-  styleClass="!w-72 max-w-[85vw]"
-  [showCloseIcon]="true"
-  [dismissible]="true"
-  [modal]="true"
->
-  <ng-template #header>
-    <span class="text-base font-semibold text-text-primary" jhiTranslate="header.menu"></span>
-  </ng-template>
+<jhi-right-drawer [(open)]="mobileMenuOpen">
+  <span drawer-header class="text-base font-semibold text-text-primary" jhiTranslate="header.menu"></span>
 
   <div class="flex flex-col gap-4 pt-2">
     @if (user(); as currentUser) {
@@ -135,11 +125,11 @@
       </div>
     }
   </div>
-</p-drawer>
+</jhi-right-drawer>
 
 <!-- Shared snippets reused in both the desktop header and the mobile drawer. -->
 <ng-template #languageSwitcher let-vertical="vertical">
-  <div [class]="vertical ? 'flex items-center gap-1' : 'flex items-center gap-1 sm:mr-2'">
+  <div [class]="vertical ? 'flex items-center gap-1' : 'flex items-center gap-1 mr-2'">
     @for (language of languages; track language; let isLast = $last) {
       <button
         type="button"

@@ -1,0 +1,14 @@
+<p-drawer
+  [visible]="open()"
+  (visibleChange)="open.set($event)"
+  position="right"
+  [styleClass]="styleClass()"
+  [showCloseIcon]="showCloseIcon()"
+  [dismissible]="dismissible()"
+  [modal]="true"
+>
+  <ng-template #header>
+    <ng-content select="[drawer-header]" />
+  </ng-template>
+  <ng-content />
+</p-drawer>

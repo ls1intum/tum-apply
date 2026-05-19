@@ -17,7 +17,6 @@ import { NavigationEnd, Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, map } from 'rxjs';
-import { DrawerModule } from 'primeng/drawer';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
@@ -31,6 +30,7 @@ import { SelectOption } from '../../atoms/select/select.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { JhiMenuItem, MenuComponent } from '../../atoms/menu/menu.component';
 import { UserAvatarComponent } from '../../atoms/user-avatar/user-avatar.component';
+import { RightDrawerComponent } from '../../molecules/right-drawer/right-drawer.component';
 
 @Component({
   selector: 'jhi-header',
@@ -39,8 +39,8 @@ import { UserAvatarComponent } from '../../atoms/user-avatar/user-avatar.compone
     CommonModule,
     ButtonComponent,
     FontAwesomeModule,
-    DrawerModule,
     DynamicDialogModule,
+    RightDrawerComponent,
     TranslateDirective,
     MenuComponent,
     UserAvatarComponent,

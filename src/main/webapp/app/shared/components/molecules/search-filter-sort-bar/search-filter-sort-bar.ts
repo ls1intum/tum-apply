@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { DrawerModule } from 'primeng/drawer';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -12,6 +11,7 @@ import TranslateDirective from '../../../language/translate.directive';
 import { Filter, FilterChange, FilterMultiselect } from '../../atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortDirection, SortOption, Sorting } from '../../atoms/sorting/sorting';
 import { ButtonComponent } from '../../atoms/button/button.component';
+import { RightDrawerComponent } from '../right-drawer/right-drawer.component';
 
 @Component({
   selector: 'jhi-search-filter-sort-bar',
@@ -20,12 +20,12 @@ import { ButtonComponent } from '../../atoms/button/button.component';
     InputTextModule,
     IconFieldModule,
     InputIconModule,
-    DrawerModule,
     FontAwesomeModule,
     TranslateDirective,
     FilterMultiselect,
     Sorting,
     ButtonComponent,
+    RightDrawerComponent,
   ],
   templateUrl: './search-filter-sort-bar.html',
   styleUrl: './search-filter-sort-bar.scss',
@@ -54,7 +54,7 @@ export class SearchFilterSortBar {
 
   // text entered in the search input field
   inputText = '';
-  isMobileSidebarOpen = false;
+  isMobileSidebarOpen = signal(false);
 
   selectedFiltersById = signal<Record<string, string[]>>({});
   selectedSortField = signal<string | undefined>(undefined);
@@ -119,11 +119,11 @@ export class SearchFilterSortBar {
   }
 
   openMobileSidebar(): void {
-    this.isMobileSidebarOpen = true;
+    this.isMobileSidebarOpen.set(true);
   }
 
   closeMobileSidebar(): void {
-    this.isMobileSidebarOpen = false;
+    this.isMobileSidebarOpen.set(false);
   }
 
   clearAllFilter(): void {
