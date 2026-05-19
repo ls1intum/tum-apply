@@ -192,6 +192,7 @@ export class HeaderComponent {
   }
 
   login(): void {
+    this.closeMobileMenu();
     if (this.isProfessorPage()) {
       void this.onTUMSSOLogin();
     } else {
@@ -206,10 +207,12 @@ export class HeaderComponent {
   }
 
   redirectToProfessorLandingPage(): void {
+    this.closeMobileMenu();
     void this.router.navigate(['/professor']);
   }
 
   redirectToApplicantLandingPage(): void {
+    this.closeMobileMenu();
     void this.router.navigate(['/']);
   }
 
@@ -218,14 +221,17 @@ export class HeaderComponent {
   }
 
   async onProfessorPasskeyLogin(): Promise<void> {
+    this.closeMobileMenu();
     await this.authFacadeService.loginWithPasskey(KeycloakRealmKind.Tum, this.router.url);
   }
 
   async onApplicantPasskeyLogin(): Promise<void> {
+    this.closeMobileMenu();
     await this.authFacadeService.loginWithPasskey(KeycloakRealmKind.External, this.router.url);
   }
 
   logout(): void {
+    this.closeMobileMenu();
     void this.authFacadeService.logout();
   }
 
@@ -246,6 +252,7 @@ export class HeaderComponent {
   }
 
   navigateToSettings(): void {
+    this.closeMobileMenu();
     void this.router.navigate(['/settings']);
   }
 
@@ -262,6 +269,17 @@ export class HeaderComponent {
 
   toggleProfileMenu(event: Event): void {
     this.profileMenu()?.toggle(event);
+  }
+
+  /**
+   * Eagerly closes the mobile drawer so its modal scroll lock (overflow: hidden on body)
+   * is released before navigation starts; otherwise the new page renders behind the drawer's
+   * exit animation and the user can't scroll for the duration of that animation.
+   */
+  private closeMobileMenu(): void {
+    if (this.mobileMenuOpen()) {
+      this.mobileMenuOpen.set(false);
+    }
   }
 
   private setupBannerObserver(): void {
