@@ -19,13 +19,14 @@ export interface ReferenceRequestDTO {
     readonly title?: string;
 }
 
-export type ReferenceRequestDTOStatusEnum = 'REQUESTED' | 'SUBMITTED' | 'EXPIRED';
+export type ReferenceRequestDTOStatusEnum = 'ADDED' | 'REQUESTED' | 'SUBMITTED' | 'EXPIRED';
 
 export const ReferenceRequestDTOStatusEnum = {
+    Added: 'ADDED' as const,
     Requested: 'REQUESTED' as const,
     Submitted: 'SUBMITTED' as const,
     Expired: 'EXPIRED' as const,
 } as const;
 
-export const ReferenceRequestDTOStatusEnumValues = ['REQUESTED', 'SUBMITTED', 'EXPIRED'] as const;
+export const ReferenceRequestDTOStatusEnumValues = ['ADDED', 'REQUESTED', 'SUBMITTED', 'EXPIRED'] as const;
 

@@ -131,6 +131,10 @@
         "placeholder": "e.g. 3 years",
         "toolTipText": "Indicate the duration of the contract for the doctoral position in years (e.g. 1.5). You can enter up to 6 years."
       },
+      "referenceLettersRequired": {
+        "label": "Required Recommendation Letters",
+        "toolTipText": "Number of external recommendation letters applicants must collect for this position. Letters are uploaded by the referees themselves through a link directly on TUMApply."
+      },
       "positionOptions": {
         "title": "Position Options",
         "uponArrangement": {
@@ -138,12 +142,6 @@
           "overviewLabel": "Flexible start date possible",
           "subtitle": "Start date can be arranged individually",
           "tooltip": "Mark this if the actual start date will be agreed upon individually with the candidate."
-        },
-        "extendable": {
-          "label": "Extend contract",
-          "overviewLabel": "Contract extension possible",
-          "subtitle": "Contract duration may be extended",
-          "tooltip": "Mark this if the contract may be extended beyond the stated duration."
         },
         "suitableForDisabled": {
           "label": "Suitable for persons with disabilities",
@@ -181,6 +179,8 @@
       "complianceTooltipText": "Colors indicate category, not severity. All items are equally important."
     },
     "positionDetailsSection": {
+      "selectedDeadline": "Selected Deadline",
+      "selectedStartDate": "Selected Start Date",
       "jobDescription": {
         "label": "Job Description",
         "aiLabel": "AI writes, improves and translates for you.",
