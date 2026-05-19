@@ -6,7 +6,7 @@ import { provideTranslateMock } from 'util/translate.mock';
 import ApplicationCreationPage1Component, {
   getPage1FromApplication,
 } from 'app/application/application-creation/application-creation-page1/application-creation-page1.component';
-import { postalCodeValidator } from 'app/shared/validators/custom-validators';
+import { postalCodeValidator, trimmedRequiredValidator } from 'app/shared/validators/custom-validators';
 import { selectGender } from 'app/shared/constants/genders';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { AccountService } from 'app/core/auth/account.service';
@@ -67,6 +67,7 @@ describe('ApplicationPage1Component', () => {
   it.each([
     { postcode: '80331', valid: true },
     { postcode: '987877', valid: false },
+    { postcode: '   ', valid: false },
   ])('postcode=$postcode -> valid=$valid for German country', ({ postcode, valid }) => {
     const countryOption = { value: 'DE', name: 'Germany' };
     comp.data.set(Object.assign({}, comp.data(), { country: countryOption }));
@@ -81,7 +82,8 @@ describe('ApplicationPage1Component', () => {
     form.updateValueAndValidity();
 
     expect(form.valid).toBe(valid);
-    if (!valid) expect(form.controls.postcode.errors).toHaveProperty('invalidPostalCode');
+    if (!valid && postcode.trim().length > 0) expect(form.controls.postcode.errors).toHaveProperty('invalidPostalCode');
+    if (!valid && postcode.trim().length === 0) expect(form.controls.postcode.errors).toEqual({ required: true });
   });
 
   it('getPage1FromApplication maps fields properly', () => {
@@ -147,6 +149,58 @@ describe('ApplicationPage1Component', () => {
     comp.updateSelect('nationality', nationalityOption);
     expect(comp.data().nationality).toBe(nationalityOption);
     expect(changedSpy).toHaveBeenCalledOnce();
+  });
+
+  it('should surface a prefilled postcode-country mismatch without user interaction', () => {
+    comp.data.set({
+      firstName: 'Alice',
+      lastName: 'Smith',
+      email: 'alice@example.com',
+      phoneNumber: '123456',
+      gender: undefined,
+      nationality: undefined,
+      dateOfBirth: '',
+      website: '',
+      linkedIn: '',
+      street: 'Main St',
+      city: 'Munich',
+      country: { value: 'NL', name: 'Netherlands' },
+      postcode: '80331',
+    });
+    fixture.detectChanges();
+
+    expect(comp.page1Form().controls.postcode.touched).toBe(true);
+    expect(comp.page1Form().controls.postcode.errors).toHaveProperty('invalidPostalCode');
+  });
+
+  it('should show the postcode mismatch error when country changes after a prefilled postcode', () => {
+    const updatedData = structuredClone(comp.data());
+    updatedData.country = { value: 'DE', name: 'Germany' };
+    updatedData.postcode = '80331';
+    comp.data.set(updatedData);
+    fixture.detectChanges();
+
+    comp.updateSelect('country', { value: 'NL', name: 'Netherlands' });
+    fixture.detectChanges();
+
+    expect(comp.page1Form().controls.postcode.touched).toBe(true);
+    expect(comp.page1Form().controls.postcode.errors).toHaveProperty('invalidPostalCode');
+    expect(fixture.nativeElement.textContent).toContain('entity.applicationPage1.validation.postalCode');
+  });
+
+  it('should treat a whitespace-only postcode as empty when country changes', () => {
+    const updatedData = structuredClone(comp.data());
+    updatedData.country = { value: 'DE', name: 'Germany' };
+    updatedData.postcode = '   ';
+    comp.data.set(updatedData);
+    fixture.detectChanges();
+
+    comp.updateSelect('country', { value: 'NL', name: 'Netherlands' });
+    fixture.detectChanges();
+
+    expect(comp.page1Form().controls.postcode.touched).toBe(false);
+    expect(comp.page1Form().controls.postcode.errors).toEqual({ required: true });
+    expect(comp.page1Form().controls.postcode.errors).not.toHaveProperty('invalidPostalCode');
   });
 
   it.each([

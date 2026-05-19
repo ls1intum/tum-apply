@@ -2,6 +2,15 @@
   [ngModel]="model()"
   (ngModelChange)="onChange($event)"
   [disabled]="disabled()"
-  [class]="classStyling()"
+  [class]="toggleClass()"
   [ngModelOptions]="{ standalone: true }"
-/>
+>
+  <ng-template #handle let-checked="checked">
+    <fa-icon
+      class="jhi-toggle-switch__icon text-[0.55rem] leading-none"
+      [class.text-positive-strong]="checked"
+      [class.text-negative-strong]="!checked"
+      [icon]="checked ? enabledIcon : disabledIcon"
+    />
+  </ng-template>
+</p-toggleSwitch>

@@ -12,13 +12,13 @@ import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.EmailType;
-import de.tum.cit.aet.notification.dto.ReferenceLetterInvitationContextDTO;
+import de.tum.cit.aet.notification.dto.ReferenceLetterContextDTO;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.reference.dto.CreateReferenceRequestDTO;
-import de.tum.cit.aet.reference.dto.ReferenceLetterContextDTO;
+import de.tum.cit.aet.reference.dto.ReferenceLetterUploadContextDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,9 @@ public class ReferenceRequestService {
     private static final int DEFAULT_VALIDITY_MONTHS = 2;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final DateTimeFormatter DEADLINE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm 'UTC'");
+    private static final int MAX_REMINDERS = 2;
+    private static final long FIRST_REMINDER_HOURS = 24L * 7;
+    private static final long FINAL_REMINDER_HOURS = 24L;
 
     private final ReferenceRequestRepository referenceRequestRepository;
     private final ApplicationRepository applicationRepository;
@@ -99,7 +103,7 @@ public class ReferenceRequestService {
         entry.setFirstName(payload.firstName().trim());
         entry.setLastName(payload.lastName().trim());
         entry.setEmail(payload.email().trim());
-        entry.setStatus(ReferenceRequestStatus.REQUESTED);
+        entry.setStatus(ReferenceRequestStatus.ADDED);
         return ReferenceRequestDTO.fromEntity(referenceRequestRepository.save(entry));
     }
 
@@ -138,14 +142,27 @@ public class ReferenceRequestService {
             application.getApplicationId()
         );
         for (ReferenceRequest entry : entries) {
-            if (entry.getStatus() != ReferenceRequestStatus.REQUESTED || entry.getTokenHash() != null) {
+            if (entry.getStatus() != ReferenceRequestStatus.ADDED || entry.getTokenHash() != null) {
                 continue;
             }
             String rawToken = generateToken();
+            LocalDateTime expiry = computeTokenExpiry(application.getJob());
+
+            entry.setStatus(ReferenceRequestStatus.REQUESTED);
             entry.setTokenHash(hashToken(rawToken));
-            entry.setTokenExpiresAt(computeTokenExpiry(application.getJob()));
+            entry.setTokenExpiresAt(expiry);
+
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime deadline = entry.getTokenExpiresAt().atZone(ZoneOffset.systemDefault()).toLocalDateTime();
+            long hoursUntilDeadline = ChronoUnit.HOURS.between(now, deadline);
+            if (hoursUntilDeadline <= FINAL_REMINDER_HOURS) {
+                entry.setReminderCount(MAX_REMINDERS);
+            } else if (hoursUntilDeadline <= FIRST_REMINDER_HOURS) {
+                entry.setReminderCount(1);
+            }
+
             referenceRequestRepository.save(entry);
-            sendInvitation(application, entry, rawToken);
+            sendRefereeEmail(application, entry, rawToken, EmailType.REFERENCE_LETTER_INVITATION);
         }
     }
 
@@ -158,11 +175,11 @@ public class ReferenceRequestService {
      * @return the context the referee sees on the upload page
      * @throws EntityNotFoundException when the token is unknown
      */
-    public ReferenceLetterContextDTO getContextByToken(String rawToken) {
+    public ReferenceLetterUploadContextDTO getContextByToken(String rawToken) {
         ReferenceRequest entry = findByRawToken(rawToken);
         Application application = entry.getApplication();
         Job job = application.getJob();
-        return new ReferenceLetterContextDTO(
+        return new ReferenceLetterUploadContextDTO(
             application.getApplicantFirstName(),
             application.getApplicantLastName(),
             job.getTitle(),
@@ -242,6 +259,62 @@ public class ReferenceRequestService {
     }
 
     /**
+     * Flips every {@code REQUESTED} entry whose token has already lapsed to {@code EXPIRED}.
+     *
+     * @return the number of rows that were transitioned to EXPIRED
+     */
+    public int expireOverdueRequests() {
+        return referenceRequestRepository.expireOverdueRequests(LocalDateTime.now());
+    }
+
+    /**
+     * Rotates the token and sends a reminder email for each REQUESTED entry whose deadline is
+     * within the configured reminder windows.
+     * Each reminder rotates the token (the previous hash is overwritten), so the new email's link
+     * is the one that works — earlier emails stop accepting uploads.
+     *
+     * @return the number of reminder emails dispatched in this run
+     */
+    public int sendReminders() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime upperBound = now.plusHours(FIRST_REMINDER_HOURS);
+        List<ReferenceRequest> candidates = referenceRequestRepository.findReminderCandidates(now, upperBound, MAX_REMINDERS);
+
+        int sent = 0;
+        for (ReferenceRequest entry : candidates) {
+            if (!shouldSendReminder(entry, now)) {
+                continue;
+            }
+            String rawToken = generateToken();
+            entry.setTokenHash(hashToken(rawToken));
+            entry.setReminderCount(entry.getReminderCount() + 1);
+            entry.setLastReminderAt(now);
+            referenceRequestRepository.save(entry);
+            sendRefereeEmail(entry.getApplication(), entry, rawToken, EmailType.REFERENCE_LETTER_REMINDER);
+            sent++;
+        }
+        return sent;
+    }
+
+    /**
+     * Decides whether the given entry currently qualifies for a reminder.
+     * First reminder when the deadline is within {@value #FIRST_REMINDER_HOURS}h and {@code reminderCount &lt; 1}
+     * Final reminder when the deadline is within {@value #FINAL_REMINDER_HOURS}h and {@code reminderCount &lt; 2}
+     *
+     * @param entry the candidate reference request (already filtered by repository query)
+     * @param now   the run's reference timestamp
+     * @return true when this entry should receive a reminder now
+     */
+    private boolean shouldSendReminder(ReferenceRequest entry, LocalDateTime now) {
+        LocalDateTime deadline = entry.getTokenExpiresAt().atZone(ZoneOffset.systemDefault()).toLocalDateTime();
+        long hoursUntilDeadline = ChronoUnit.HOURS.between(now, deadline);
+        if (entry.getReminderCount() < MAX_REMINDERS && hoursUntilDeadline <= FINAL_REMINDER_HOURS) {
+            return true;
+        }
+        return entry.getReminderCount() < 1 && hoursUntilDeadline <= FIRST_REMINDER_HOURS;
+    }
+
+    /**
      * Resolves a raw token to its persisted request. Caller is responsible for any lifecycle checks.
      *
      * @param rawToken the plaintext token from the invitation email
@@ -261,11 +334,14 @@ public class ReferenceRequestService {
      * @param entry the reference request being uploaded against
      */
     private void assertUploadAllowed(ReferenceRequest entry) {
+        if (entry.getStatus() == ReferenceRequestStatus.EXPIRED) {
+            throw new OperationNotAllowedException("This reference letter upload link has expired.");
+        }
+        if (entry.getTokenExpiresAt() != null && entry.getTokenExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new OperationNotAllowedException("This reference letter upload link has expired.");
+        }
         if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
             throw new OperationNotAllowedException("This reference letter upload link is no longer accepting files.");
-        }
-        if (entry.getTokenExpiresAt() != null && entry.getTokenExpiresAt().isBefore(LocalDateTime.now(ZoneOffset.UTC))) {
-            throw new OperationNotAllowedException("This reference letter upload link has expired.");
         }
     }
 
@@ -318,14 +394,16 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Builds the invitation email and hands it to the async sender. The referee has no User
-     * account, so a transient {@link User} stub holds the email address required by the mail layer.
+     * Builds a referee-facing email (invitation or reminder) and hands it to the async sender. The
+     * referee has no User account, so a transient {@link User} stub holds the email address required
+     * by the mail layer.
      *
      * @param application the application the referee is attached to
      * @param entry       the reference request entry containing the referee's name and email
-     * @param rawToken    the plaintext token to include in the email
+     * @param rawToken    the plaintext token to include in the email link
+     * @param emailType   the type of email to send (invitation or reminder)
      */
-    private void sendInvitation(Application application, ReferenceRequest entry, String rawToken) {
+    private void sendRefereeEmail(Application application, ReferenceRequest entry, String rawToken, EmailType emailType) {
         Job job = application.getJob();
         User refereeStub = new User();
         refereeStub.setEmail(entry.getEmail());
@@ -334,9 +412,15 @@ public class ReferenceRequestService {
 
         String referenceLink = clientUrl + "/reference/" + rawToken;
         String deadline =
-            entry.getTokenExpiresAt() != null ? entry.getTokenExpiresAt().atZone(ZoneOffset.UTC).format(DEADLINE_FORMATTER) : "";
+            entry.getTokenExpiresAt() != null
+                ? entry
+                      .getTokenExpiresAt()
+                      .atZone(ZoneOffset.systemDefault())
+                      .withZoneSameInstant(ZoneOffset.UTC)
+                      .format(DEADLINE_FORMATTER)
+                : "";
 
-        ReferenceLetterInvitationContextDTO ctx = new ReferenceLetterInvitationContextDTO(
+        ReferenceLetterContextDTO ctx = new ReferenceLetterContextDTO(
             entry.getTitle(),
             entry.getFirstName(),
             entry.getLastName(),
@@ -351,7 +435,7 @@ public class ReferenceRequestService {
         Email email = Email.builder()
             .to(refereeStub)
             .language(Language.ENGLISH)
-            .emailType(EmailType.REFERENCE_LETTER_INVITATION)
+            .emailType(emailType)
             .content(ctx)
             .researchGroup(job.getResearchGroup())
             .sendAlways(true)
@@ -370,9 +454,9 @@ public class ReferenceRequestService {
     private LocalDateTime computeTokenExpiry(Job job) {
         LocalDate jobEnd = job.getEndDate();
 
-        LocalDate expiryDate = (jobEnd != null) ? jobEnd : LocalDate.now(ZoneOffset.UTC).plusMonths(DEFAULT_VALIDITY_MONTHS);
+        LocalDate expiryDate = (jobEnd != null) ? jobEnd : LocalDate.now().plusMonths(DEFAULT_VALIDITY_MONTHS);
 
-        return expiryDate.atTime(23, 59, 59);
+        return expiryDate.atTime(23, 59, 59).atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneOffset.systemDefault()).toLocalDateTime();
     }
 
     /**
