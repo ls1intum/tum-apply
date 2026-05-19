@@ -1,7 +1,7 @@
 @if (data()) {
   <form [formGroup]="page2Form">
     <p jhiTranslate="entity.applicationPage2.description"></p>
-    <p class="mb-4 text-sm text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
+    <p class="mb-4 text-xs text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
     <jhi-degree-document-section
       [applicationId]="applicationIdForDocuments()"
       [required]="true"

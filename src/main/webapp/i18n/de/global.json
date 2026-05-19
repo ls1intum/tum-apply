@@ -56,7 +56,7 @@
       "progress": "Schritt {current} von {total}"
     },
     "input": {
-      "requiredHint": "Mit * markierte Felder sind Pflichtfelder.",
+      "requiredHint": "(Mit * markierte Felder sind Pflichtfelder.)",
       "error": {
         "required": "Dieses Feld ist ein Pflichtfeld.",
         "minLength": "Dieses Feld muss mindestens {min} Zeichen lang sein.",
