@@ -1,7 +1,15 @@
 import { TranslateService } from '@ngx-translate/core';
 import { describe, expect, it, vi, afterEach } from 'vitest';
 
-import { formatDate, formatDateWithWeekday, formatTime, getLocale, parseLocalDateString } from 'app/shared/util/date-time.util';
+import {
+  formatDate,
+  formatDateWithWeekday,
+  formatTime,
+  formatTimeRange,
+  getLocale,
+  parseLocalDateString,
+  toLocalDateString,
+} from 'app/shared/util/date-time.util';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -62,6 +70,22 @@ describe('formatTime', () => {
   });
 });
 
+describe('formatTimeRange', () => {
+  it('should format a time range using the provided locale', () => {
+    const timeSpy = vi.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValueOnce('14:30').mockReturnValueOnce('15:00');
+
+    expect(formatTimeRange('2025-02-28T14:30:00', '2025-02-28T15:00:00', 'de-DE')).toBe('14:30 - 15:00');
+    expect(timeSpy).toHaveBeenNthCalledWith(1, 'de-DE', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    expect(timeSpy).toHaveBeenNthCalledWith(2, 'de-DE', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  });
+});
+
 describe('formatDateWithWeekday', () => {
   it('should return an empty string for missing date', () => {
     expect(formatDateWithWeekday(undefined, 'en-US')).toBe('');
@@ -77,6 +101,12 @@ describe('formatDateWithWeekday', () => {
       month: '2-digit',
       year: 'numeric',
     });
+  });
+});
+
+describe('toLocalDateString', () => {
+  it('should convert a date to YYYY-MM-DD using local date values', () => {
+    expect(toLocalDateString(new Date(2025, 1, 3, 14, 30, 0, 0))).toBe('2025-02-03');
   });
 });
 
