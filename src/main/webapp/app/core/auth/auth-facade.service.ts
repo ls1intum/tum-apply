@@ -390,6 +390,10 @@ export class AuthFacadeService {
       }
       return response;
     } catch (e) {
+      // сheck if passkey had an error because user refused to use passkey
+      if (e instanceof DOMException && e.name === 'NotAllowedError') {
+        return undefined as unknown as T;
+      }
       this.authOrchestrator.setError(errorMessage);
       throw e;
     } finally {
