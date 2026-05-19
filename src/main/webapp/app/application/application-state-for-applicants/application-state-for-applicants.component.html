@@ -5,6 +5,9 @@
   @case (AppState.Sent) {
     <jhi-tag text="entity.applicationOverview.state.submitted" color="secondary" width="7rem" />
   }
+  @case (AppState.Pending) {
+    <jhi-tag text="entity.applicationOverview.state.pending" color="warn" width="7rem" />
+  }
   @case (AppState.Accepted) {
     <jhi-tag text="entity.applicationOverview.state.accepted" color="success" width="7rem" />
   }

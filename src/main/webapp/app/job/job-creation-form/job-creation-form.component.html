@@ -50,6 +50,7 @@
           <div class="grid items-start gap-4">
             <div>
               <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
+              <p class="mb-4 text-xs text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
               <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
               <div class="flex flex-col">
                 <div class="flex flex-col lg:flex-row lg:gap-8">
@@ -203,7 +204,7 @@
           class="flex flex-col mx-auto mt-4 w-full max-w-208 overflow-hidden bg-background-default lg:sticky lg:top-0 lg:mx-0 lg:mt-0 lg:w-full lg:max-w-full lg:self-start"
         >
           <div class="flex items-center">
-            <div class="flex flex-1 items-center justify-start min-h-16 gap-3 px-5 py-3 text-text-primary">
+            <div class="flex flex-1 items-center justify-start min-h-12 gap-3 px-5 py-1 text-text-primary">
               <fa-icon class="shrink-0 text-sm text-primary" [icon]="['fas', 'custom-sparkle']" />
               <span class="text-base leading-tight font-bold text-text-primary" jhiTranslate="jobCreationForm.aiSidebar.header"></span>
             </div>
@@ -233,8 +234,12 @@
           <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
               <jhi-datepicker
+                inputId="applicationDeadline"
                 [selectedDate]="positionDetailsForm.get('applicationDeadline')?.value"
                 (selectedDateChange)="positionDetailsForm.get('applicationDeadline')?.setValue($event)"
+                [maxDate]="applicationDeadlineMaxDate()"
+                [highlightedDate]="applicationDeadlineMaxDate()"
+                [highlightedDateLabel]="'jobCreationForm.positionDetailsSection.selectedStartDate'"
                 [label]="'jobCreationForm.basicInformationSection.applicationDeadline.label'"
                 [placeholder]="'jobCreationForm.basicInformationSection.applicationDeadline.placeholder'"
                 icon="circle-info"
@@ -263,8 +268,12 @@
           <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
               <jhi-datepicker
+                inputId="startDate"
                 [selectedDate]="positionDetailsForm.get('startDate')?.value"
                 (selectedDateChange)="positionDetailsForm.get('startDate')?.setValue($event)"
+                [minDate]="startDateMinDate()"
+                [highlightedDate]="startDateMinDate()"
+                [highlightedDateLabel]="'jobCreationForm.positionDetailsSection.selectedDeadline'"
                 [label]="'jobCreationForm.basicInformationSection.startDate.label'"
                 [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
                 icon="circle-info"
@@ -290,7 +299,7 @@
             </div>
           </div>
 
-          <div class="flex flex-col gap-6 lg:flex-row lg:gap-8">
+          <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
               <jhi-select
                 [selected]="positionDetailsForm.get('fundingType')?.value"
@@ -302,6 +311,7 @@
                 [filter]="true"
                 [showClear]="true"
                 [dataKey]="'value'"
+                [errorEnabled]="true"
               />
             </div>
             <div class="flex-1">
@@ -328,8 +338,25 @@
                 [filter]="true"
                 [showClear]="true"
                 [dataKey]="'value'"
+                [errorEnabled]="true"
               />
             </div>
+          </div>
+
+          <div class="flex flex-col lg:flex-row lg:gap-8">
+            <div class="flex-1">
+              <jhi-select
+                label="jobCreationForm.basicInformationSection.referenceLettersRequired.label"
+                [selected]="positionDetailsForm.get('referenceLettersRequired')?.value"
+                (selectedChange)="positionDetailsForm.get('referenceLettersRequired')?.setValue($event)"
+                [items]="referenceLettersRequiredOptions"
+                icon="circle-info"
+                tooltipText="jobCreationForm.basicInformationSection.referenceLettersRequired.toolTipText"
+                [width]="'100%'"
+                [dataKey]="'value'"
+              />
+            </div>
+            <div class="flex-1"></div>
           </div>
 
           <!-- Position Options card -->
@@ -351,20 +378,6 @@
                 <p
                   class="text-sm text-text-secondary ml-6"
                   jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.subtitle"
-                ></p>
-              </div>
-              <div class="flex flex-col">
-                <jhi-checkbox
-                  label="jobCreationForm.basicInformationSection.positionOptions.extendable.label"
-                  tooltipText="jobCreationForm.basicInformationSection.positionOptions.extendable.tooltip"
-                  [model]="positionDetailsForm.get('contractExtendable')?.value"
-                  (modelChange)="positionDetailsForm.get('contractExtendable')?.setValue($event)"
-                  [shouldTranslate]="true"
-                  [errorEnabled]="false"
-                />
-                <p
-                  class="text-sm text-text-secondary ml-6"
-                  jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.extendable.subtitle"
                 ></p>
               </div>
               <div class="flex flex-col">

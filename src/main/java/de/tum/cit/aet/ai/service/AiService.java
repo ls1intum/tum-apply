@@ -394,7 +394,7 @@ public class AiService {
         // geometric means
         int combinedScore = (int) Math.round(Math.sqrt((double) genderScore * legalScore));
 
-        jobService.updateAiAnalysis(jobId, combinedScore, complianceIssues);
+        jobService.updateAiAnalysis(jobId, combinedScore, complianceIssues, lang);
 
         return complianceIssues;
     }

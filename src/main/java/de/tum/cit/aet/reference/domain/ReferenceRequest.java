@@ -50,11 +50,14 @@ public class ReferenceRequest extends AbstractAuditingEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private ReferenceRequestStatus status = ReferenceRequestStatus.REQUESTED;
+    private ReferenceRequestStatus status = ReferenceRequestStatus.ADDED;
 
     @Column(name = "last_reminder_at")
     private LocalDateTime lastReminderAt;
 
     @Column(name = "reminder_count", nullable = false)
     private int reminderCount = 0;
+
+    @Column(name = "document_id")
+    private UUID documentId;
 }

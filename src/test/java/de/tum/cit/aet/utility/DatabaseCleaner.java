@@ -29,6 +29,7 @@ public class DatabaseCleaner {
         "jobs",
         "applicant_subject_area_subscriptions",
         "ratings",
+        "reference_requests",
         "research_groups",
         "schools",
         "user_research_group_roles",

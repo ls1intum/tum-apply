@@ -1,5 +1,5 @@
 <div [class.active]="isCalendarOpen()" class="label-top datepicker-container flex flex-col relative">
-  <label class="mb-1 mr-4 text-text-primary" for="startDate">
+  <label class="mb-1 mr-4 text-text-primary" [for]="resolvedInputId()">
     @if (label() !== undefined) {
       @if (shouldTranslate()) {
         <span jhiTranslate="{{ label() }}"></span>
@@ -12,9 +12,9 @@
     }
     @if (icon(); as icon) {
       @if (icon === 'circle-info' && tooltipText()) {
-        <fa-icon class="icon" [icon]="['fas', icon]" [pTooltip]="displayTooltipText() ?? ''" tooltipPosition="top" />
+        <fa-icon class="text-primary-default" [icon]="['fas', icon]" [pTooltip]="displayTooltipText() ?? ''" tooltipPosition="top" />
       } @else {
-        <fa-icon class="icon" [icon]="['fas', icon]" />
+        <fa-icon [icon]="['fas', icon]" />
       }
     }
   </label>
@@ -30,16 +30,36 @@
     [defaultDate]="defaultDate()"
     [showButtonBar]="true"
     [style]="{ width: width() }"
-    class="custom-datepicker flex-1"
+    class="{{ datepickerClass }}"
     [dateFormat]="dateFormat()"
     iconDisplay="button"
-    inputId="startDate"
+    [inputId]="resolvedInputId()"
     showIcon="true"
-    [inputStyleClass]="'w-full'"
+    [inputStyleClass]="inputStyleClass"
     [appendTo]="'body'"
   >
+    <ng-template pTemplate="date" let-date>
+      @let highlightedDate = highlightedDateParts();
+      @let isHighlighted =
+        highlightedDate && highlightedDate.day === date.day && highlightedDate.month === date.month && highlightedDate.year === date.year;
+      @let tooltipLabel = highlightedDateLabel();
+      <span
+        class="inline-flex size-full items-center justify-center"
+        [class.datepicker-reference-day]="isHighlighted"
+        [class.rounded-full]="isHighlighted"
+        [class.font-semibold]="isHighlighted"
+        [class.ring-2]="isHighlighted"
+        [class.ring-inset]="isHighlighted"
+        [class.ring-primary-default]="isHighlighted"
+        [pTooltip]="tooltipLabel ? (shouldTranslate() ? (tooltipLabel | translate) : tooltipLabel) : undefined"
+        tooltipPosition="top"
+        [tooltipDisabled]="!isHighlighted || !tooltipLabel"
+      >
+        {{ date.day }}
+      </span>
+    </ng-template>
     <ng-template pTemplate="triggericon">
-      <fa-icon [icon]="['fas', 'calendar']" class="text-text-on-primary" />
+      <fa-icon [icon]="['fas', 'calendar']" />
     </ng-template>
   </p-datepicker>
   @if (errorEnabled()) {

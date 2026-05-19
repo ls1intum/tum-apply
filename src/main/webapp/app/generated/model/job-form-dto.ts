@@ -13,7 +13,6 @@ import type { ComplianceIssue } from './compliance-issue';
 export interface JobFormDTO {
     readonly complianceIssues?: Array<ComplianceIssue>;
     readonly contractDuration?: number;
-    readonly contractExtendable?: boolean;
     readonly endDate?: string;
     readonly fundingType?: JobFormDTOFundingTypeEnum;
     readonly genderBiasScore?: number;
