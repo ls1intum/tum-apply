@@ -88,18 +88,7 @@
     <p jhiTranslate="privacy.privacyConsent.text"></p>
   </div>
 
-  <div [formGroup]="additionalInfoForm">
-    <div class="flex items-center gap-2">
-      <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" inputId="privacyCheckbox" />
-      <label for="privacyCheckbox"
-        ><span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span
-      ></label>
-    </div>
-
-    @if (!privacyAcceptedSignal() && submitAttempted()) {
-      <div class="error-text mt-1" jhiTranslate="privacy.privacyConsent.errorText"></div>
-    }
-  </div>
+  <jhi-checkbox [control]="additionalInfoForm.controls.privacyAccepted" label="privacy.privacyConsent.confirmationText" [required]="true" />
 
   <p-divider layout="horizontal">
     <span jhiTranslate="entity.applicationPage4.doctoralRequirements.title"></span>
@@ -109,19 +98,11 @@
     <p jhiTranslate="entity.applicationPage4.doctoralRequirements.text"></p>
   </div>
 
-  <div [formGroup]="additionalInfoForm">
-    <div class="flex items-center">
-      <div class="relative mr-2">
-        <p-checkbox formControlName="doctoralRequirementsAccepted" [binary]="true" size="small" inputId="doctoralRequirementsCheckbox" />
-        <span class="required">*</span>
-      </div>
-      <label for="doctoralRequirementsCheckbox" jhiTranslate="entity.applicationPage4.doctoralRequirements.confirmationText"></label>
-    </div>
-
-    @if (!doctoralRequirementsAcceptedSignal() && submitAttempted()) {
-      <div class="error-text mt-1" jhiTranslate="entity.applicationPage4.doctoralRequirements.missingConfirmation"></div>
-    }
-  </div>
+  <jhi-checkbox
+    [control]="additionalInfoForm.controls.doctoralRequirementsAccepted"
+    label="entity.applicationPage4.doctoralRequirements.confirmationText"
+    [required]="true"
+  />
 </ng-template>
 
 <ng-template #saving_state_panel>

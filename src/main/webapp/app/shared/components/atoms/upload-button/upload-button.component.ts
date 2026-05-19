@@ -6,7 +6,7 @@ import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
 import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
@@ -16,6 +16,9 @@ import {
 } from 'app/generated/model/document-information-holder-dto';
 import { FileSelectEvent } from 'primeng/fileupload';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { DocumentDialog } from 'app/shared/components/molecules/document-dialog/document-dialog';
+import type { DocumentHolder } from 'app/shared/models/document-holder';
+import { createTemporaryDocumentId, isTemporaryDocumentId } from 'app/shared/util/document.util';
 
 import { ButtonComponent } from '../button/button.component';
 
@@ -34,14 +37,24 @@ export type UploadTarget = 'application' | 'applicantProfile';
  */
 @Component({
   selector: 'jhi-upload-button',
-  imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateDirective, ConfirmDialog],
+  imports: [
+    FontAwesomeModule,
+    FormsModule,
+    FileUpload,
+    ButtonComponent,
+    TooltipModule,
+    TranslateModule,
+    TranslateDirective,
+    ConfirmDialog,
+    DocumentDialog,
+  ],
   templateUrl: './upload-button.component.html',
   standalone: true,
 })
 export class UploadButtonComponent {
   readonly maxUploadSizeInMb = 25;
   readonly inputClass =
-    'w-full px-1 py-1 border-b border-dashed outline-none transition-all hover:border-solid focus:border-solid focus:border-primary';
+    'w-full min-w-0 px-1 py-1 border-b border-dashed outline-none transition-all hover:border-solid focus:border-solid focus:border-primary';
   readonly rowClass = 'transition-colors hover:bg-background-surface';
 
   fileUploadComponent = viewChild<FileUpload>(FileUpload);
@@ -69,6 +82,18 @@ export class UploadButtonComponent {
   queuedFilesById = signal<Map<string, File>>(new Map());
   queuedFiles = computed(() => Array.from(this.queuedFilesById().values()));
   compact = input<boolean>(false);
+  previewDialogVisible = signal(false);
+  previewSelectedId = signal<string | undefined>(undefined);
+  previewDocumentHolders = computed<DocumentHolder[]>(() =>
+    (this.documentIds() ?? [])
+      .filter(documentInfo => this.hasPreview(documentInfo))
+      .map(documentInfo => ({
+        label: documentInfo.name ?? '',
+        document: documentInfo,
+        file: this.queuedFilesById().get(documentInfo.id),
+        shouldTranslateLabel: false,
+      })),
+  );
 
   // Duplicate dialog state
   pendingDuplicateFile = signal<File | null>(null);
@@ -250,6 +275,15 @@ export class UploadButtonComponent {
     this.resetNativeFileInput();
   }
 
+  openPreview(documentInfo: DocumentInformationHolderDTO): void {
+    if (!this.hasPreview(documentInfo)) {
+      return;
+    }
+
+    this.previewSelectedId.set(documentInfo.id);
+    this.previewDialogVisible.set(true);
+  }
+
   /**
    * Persists an inline filename edit when possible.
    *
@@ -303,6 +337,14 @@ export class UploadButtonComponent {
     const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
     const size = bytes / Math.pow(k, i);
     return `${parseFloat(size.toFixed(1))} ${sizes[i]}`;
+  }
+
+  hasPreview(documentInfo: DocumentInformationHolderDTO): boolean {
+    if (isTemporaryDocumentId(documentInfo.id)) {
+      return this.queuedFilesById().has(documentInfo.id);
+    }
+
+    return true;
   }
 
   /**
@@ -394,7 +436,7 @@ export class UploadButtonComponent {
     if (this.deferUpload()) {
       const updatedQueuedFiles = new Map(this.queuedFilesById());
       const tempDocumentEntries: DocumentInformationHolderDTO[] = files.map(file => {
-        const id = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const id = createTemporaryDocumentId();
         updatedQueuedFiles.set(id, file);
         return {
           id,
