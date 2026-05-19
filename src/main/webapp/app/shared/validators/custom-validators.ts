@@ -1,6 +1,10 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import * as postalCodes from 'postal-codes-js';
 
+function trimStringControlValue(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
 /**
  * Custom validator that checks whether an HTML string contains any non-empty visible text.
  *
@@ -76,6 +80,20 @@ export function tumIdValidator(control: AbstractControl): ValidationErrors | und
 }
 
 /**
+ * Custom validator that treats whitespace-only strings as empty values.
+ *
+ * This is useful for required text inputs where `"   "` should behave the same
+ * as an empty string.
+ *
+ * @param control - The form control containing the value to validate.
+ * @returns A `{ required: true }` error if the trimmed value is empty,
+ *          otherwise an empty `ValidationErrors` object (collapsed to no-error by `Validators.compose`).
+ */
+export function trimmedRequiredValidator(control: AbstractControl): ValidationErrors {
+  return trimStringControlValue(control.value).length === 0 ? { required: true } : {};
+}
+
+/**
  * Custom validator that checks whether a postal code is valid for a given country.
  *
  * This validator uses the postal-codes-js library to validate postal codes
@@ -84,7 +102,7 @@ export function tumIdValidator(control: AbstractControl): ValidationErrors | und
  *
  * @param getCountryFn - A function that returns the current country code (e.g., 'US', 'DE').
  * @returns A validator function that returns a `{ invalidPostalCode: string }` error if invalid,
- *          otherwise an empty object `{}` to indicate valid input.
+ *          otherwise an empty `ValidationErrors` object (collapsed to no-error by `Validators.compose`).
  *
  * @example
  * ```typescript
@@ -97,7 +115,7 @@ export function tumIdValidator(control: AbstractControl): ValidationErrors | und
 export function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorFn {
   return (control: AbstractControl): ValidationErrors => {
     const country = getCountryFn()?.toUpperCase();
-    const value: string = control.value as string;
+    const value = trimStringControlValue(control.value);
     if (country === undefined || country.length === 0 || value.length === 0) return {};
     const isPostalCodeValid: boolean | string = postalCodes.validate(country, value);
     const validationError: ValidationErrors = { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' } as ValidationErrors;

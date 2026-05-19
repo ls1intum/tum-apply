@@ -1,6 +1,7 @@
 package de.tum.cit.aet.reference.web;
 
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
+import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.reference.dto.CreateReferenceRequestDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.reference.service.ReferenceRequestService;
@@ -31,11 +32,11 @@ public class ReferenceRequestResource {
      * @param applicationId the application owning the references
      * @return ordered list of reference DTOs
      */
-    @ApplicantOrAdmin
+    @Authenticated
     @GetMapping
     public ResponseEntity<List<ReferenceRequestDTO>> getReferences(@PathVariable UUID applicationId) {
         log.info("GET /api/applications/{}/references - Fetching references", applicationId);
-        return ResponseEntity.ok(referenceRequestService.listForApplication(applicationId));
+        return ResponseEntity.ok(referenceRequestService.getReferences(applicationId));
     }
 
     /**

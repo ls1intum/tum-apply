@@ -158,7 +158,6 @@ class PDFExportResourceTest extends AbstractResourceTest {
         labels.put("endDate", "End Date");
         labels.put("suitableForDisabled", "Suitable for Disabled");
         labels.put("uponAgreement", "Upon agreement");
-        labels.put("extendable", "Extension possible");
         labels.put("yes", "Yes");
         labels.put("no", "No");
         labels.put("jobDescription", "Job Description");
@@ -433,7 +432,6 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 null,
                 true,
                 false,
-                false,
                 null,
                 null
             );
@@ -502,7 +500,6 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 JobState.DRAFT,
                 null,
                 true,
-                false,
                 false,
                 null,
                 null
