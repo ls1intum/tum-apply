@@ -15,7 +15,7 @@ export class DynamicTableColumn {
   template?: TemplateRef<unknown>;
 }
 
-export const DEFAULT_ROWS_PER_PAGE_OPTIONS: readonly number[] = [10, 20, 30, 40, 50];
+export const DEFAULT_ROWS_PER_PAGE_OPTIONS: number[] = [10, 20, 30, 40, 50];
 
 @Component({
   selector: 'jhi-dynamic-table',
@@ -35,7 +35,7 @@ export class DynamicTableComponent {
   hideHeader = input<boolean>(false);
   paginator = input<boolean>(true);
   lazy = input<boolean>(true);
-  rowsPerPageOptions = input<readonly number[]>(DEFAULT_ROWS_PER_PAGE_OPTIONS);
+  rowsPerPageOptions = input<number[]>(DEFAULT_ROWS_PER_PAGE_OPTIONS);
   storageKey = input<string | undefined>(undefined);
 
   lazyLoad = output<TableLazyLoadEvent>();
