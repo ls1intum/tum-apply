@@ -58,7 +58,7 @@
     </div>
   </div>
 
-  <jhi-right-drawer [(open)]="isMobileSidebarOpen" [showCloseIcon]="false" styleClass="w-[90vw] max-w-xs">
+  <jhi-right-drawer [(open)]="isMobileSidebarOpen" [showCloseIcon]="false" panelClass="w-[90vw] max-w-xs">
     <div drawer-header class="flex h-full flex-1 items-center justify-between font-semibold">
       <span jhiTranslate="entity.filters.sortingAndFilter"></span>
       <jhi-button [icon]="'times'" [size]="'sm'" [variant]="'text'" (click)="closeMobileSidebar()" />
