@@ -64,13 +64,6 @@ public class ReferenceRequestService {
     private String clientUrl;
 
     /**
-     * Lists all referee contacts attached to the given application, ordered by creation time.
-     * Checks that the current user owns the application or is an admin or a research group member of the job.
-     *
-     * @param applicationId the owning application
-     * @return all reference requests, mapped to DTOs (no token data)
-     */
-    /**
      * Retrieves the raw {@link ReferenceRequest} entities attached to the given application,
      * ordered by creation time. Intended for callers that need the domain entity
      * (e.g. data export) rather than the DTO returned by {@link #getReferences(UUID)}.
@@ -82,6 +75,13 @@ public class ReferenceRequestService {
         return referenceRequestRepository.findByApplicationApplicationIdOrderByCreatedAtAsc(applicationId);
     }
 
+    /**
+     * Lists all referee contacts attached to the given application, ordered by creation time.
+     * Checks that the current user owns the application or is an admin or a research group member of the job.
+     *
+     * @param applicationId the owning application
+     * @return all reference requests, mapped to DTOs (no token data)
+     */
     public List<ReferenceRequestDTO> getReferences(UUID applicationId) {
         Application application = applicationRepository
             .findByIdWithApplicantAndJob(applicationId)
