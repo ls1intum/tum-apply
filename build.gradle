@@ -87,8 +87,8 @@ if (project.hasProperty("war")) {
   apply from: "gradle/war.gradle"
 }
 
-tasks.register("npmSetCacheDockerfile", NpmTask) {
-  args = ["set", "cache", "/opt/tum-apply/.npm"]
+tasks.register("pnpmSetCacheDockerfile", PnpmTask) {
+  args = ["config", "set", "store-dir", "/opt/tum-apply/.pnpm-store"]
 }
 
 idea {
@@ -320,7 +320,7 @@ wrapper {
 node {
   download = true
   version = "${node_version}"
-  npmVersion = "${npm_version}"
+  pnpmVersion = "${pnpm_version}"
 }
 
 def isNonStable = { String version ->

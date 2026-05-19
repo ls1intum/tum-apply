@@ -14,7 +14,6 @@ export interface JobDetailDTO {
     readonly applicationId?: string;
     readonly applicationState?: JobDetailDTOApplicationStateEnum;
     readonly contractDuration?: number;
-    readonly contractExtendable?: boolean;
     readonly createdAt: string;
     readonly endDate?: string;
     readonly fundingType?: JobDetailDTOFundingTypeEnum;

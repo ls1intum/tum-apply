@@ -12,7 +12,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { selectGender } from 'app/shared/constants/genders';
-import { postalCodeValidator } from 'app/shared/validators/custom-validators';
+import { postalCodeValidator, trimmedRequiredValidator } from 'app/shared/validators/custom-validators';
 import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
@@ -159,7 +159,7 @@ export default class ApplicationCreationPage1Component {
       street: [currentData.street, Validators.required],
       city: [currentData.city, Validators.required],
       country: [currentData.country, Validators.required],
-      postcode: [currentData.postcode, [Validators.required, postalCodeValidator(() => this.data().country?.value as string)]],
+      postcode: [currentData.postcode, [trimmedRequiredValidator, postalCodeValidator(() => this.data().country?.value as string)]],
 
       // Optional fields
       gender: [currentData.gender ?? null],
@@ -205,6 +205,7 @@ export default class ApplicationCreationPage1Component {
       });
 
       this.valid.emit(form.valid && this.cvValid());
+      this.revealPostcodeCountryMismatch();
 
       onCleanup(() => {
         valueSubscription.unsubscribe();
@@ -239,6 +240,9 @@ export default class ApplicationCreationPage1Component {
       ...this.data(),
       [field]: value,
     });
+    if (field === 'country') {
+      this.revealPostcodeCountryMismatch();
+    }
     this.emitChanged();
   }
 
@@ -274,5 +278,13 @@ export default class ApplicationCreationPage1Component {
     }
 
     this.educationDataExtracted.emit(extractedData.education);
+  }
+
+  private revealPostcodeCountryMismatch(): void {
+    const postcodeControl = this.page1Form().controls.postcode;
+    postcodeControl.updateValueAndValidity({ emitEvent: false });
+    if (postcodeControl.hasError('invalidPostalCode')) {
+      postcodeControl.markAsTouched();
+    }
   }
 }

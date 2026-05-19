@@ -33,7 +33,7 @@ public record JobDTO(
     String imageUrl,
     Boolean suitableForDisabled,
     Boolean startDateByArrangement,
-    Boolean contractExtendable,
+    Integer referenceLettersRequired,
     Integer genderBiasScore,
     List<ComplianceIssue> complianceIssues
 ) {}
