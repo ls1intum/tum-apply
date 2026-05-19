@@ -21,7 +21,12 @@
               When disabled, all AI-powered features are turned off system-wide.
             </div>
           </div>
-          <jhi-toggle-switch class="shrink-0 mt-2.5" [model]="!manuallyDisabled()" [disabled]="isUpdating()" (modelChange)="onAiToggleChanged($event)" />
+          <jhi-toggle-switch
+            class="shrink-0 mt-2.5"
+            [model]="!manuallyDisabled()"
+            [disabled]="isUpdating()"
+            (modelChange)="onAiToggleChanged($event)"
+          />
         </div>
 
         <!-- Circuit Breaker Status -->
