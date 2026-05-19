@@ -393,6 +393,7 @@ export const sharedComponentConfig = {
     root: {
       width: '2.875rem',
       height: '1.5rem',
+      borderRadius: '{border-radius-pill}',
       focusRing: {
         width: '0',
         color: 'transparent',
@@ -402,14 +403,19 @@ export const sharedComponentConfig = {
     },
     handle: {
       size: '1.0rem',
+      borderRadius: '{border-radius-pill}',
+      background: '{base.white}',
+      hoverBackground: '{base.white}',
+      checkedBackground: '{base.white}',
+      checkedHoverBackground: '{base.white}',
     },
     colorScheme: {
       dark: {
         handle: {
-          background: '{surface.900}',
-          hoverBackground: '{surface.900}',
-          checkedBackground: '{surface.900}',
-          checkedHoverBackground: '{surface.900}',
+          background: '{base.white}',
+          hoverBackground: '{base.white}',
+          checkedBackground: '{base.white}',
+          checkedHoverBackground: '{base.white}',
         },
       },
     },
