@@ -1,6 +1,7 @@
 package de.tum.cit.aet.evaluation.dto;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService.RatingSummary;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;

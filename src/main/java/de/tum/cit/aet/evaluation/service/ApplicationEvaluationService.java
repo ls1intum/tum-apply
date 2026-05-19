@@ -20,7 +20,6 @@ import de.tum.cit.aet.evaluation.dto.AcceptDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
 import de.tum.cit.aet.evaluation.dto.EvaluationFilterDTO;
-import de.tum.cit.aet.evaluation.dto.RatingSummary;
 import de.tum.cit.aet.evaluation.dto.RejectDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
@@ -484,6 +483,20 @@ public class ApplicationEvaluationService {
      */
     public List<String> getAllJobNames(UUID researchGroupId) {
         return applicationEvaluationRepository.findAllUniqueJobNames(researchGroupId);
+    }
+
+    /**
+     * Aggregated rating information for an application. Combines professor/employee
+     * ratings with the interview rating on the same Likert scale (-2 to +2).
+     * Internal to the evaluation service; never serialised to JSON.
+     *
+     * @param average the mean Likert value, or {@code null} if no rating of any kind exists
+     * @param count   the total number of contributing ratings
+     */
+    public record RatingSummary(Double average, int count) {
+        public static RatingSummary empty() {
+            return new RatingSummary(null, 0);
+        }
     }
 
     /**
