@@ -3,7 +3,6 @@ package de.tum.cit.aet.evaluation.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
-import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService.RatingSummary;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.dto.ProfessorDTO;
 import jakarta.validation.constraints.NotNull;
