@@ -131,6 +131,10 @@
         "placeholder": "z.B. 3 Jahre",
         "toolTipText": "Gib die Dauer des Vertrags für die Doktorandenstelle in Jahren an (z.B. 1.5). Du kannst bis zu 6 Jahre eingeben."
       },
+      "referenceLettersRequired": {
+        "label": "Erforderliche Empfehlungsschreiben",
+        "toolTipText": "Anzahl der externen Empfehlungsschreiben, die Bewerbende für diese Stelle einholen müssen. Die Schreiben werden von den Referenzgebenden selbst über einen Link direkt bei TUMApply hochgeladen."
+      },
       "positionOptions": {
         "title": "Optionen zur Stelle",
         "uponArrangement": {
@@ -138,12 +142,6 @@
           "overviewLabel": "Flexibles Startdatum möglich",
           "subtitle": "Startdatum kann individuell vereinbart werden",
           "tooltip": "Aktiviere diese Option, wenn das Startdatum individuell mit der Kandidatin oder dem Kandidaten vereinbart wird."
-        },
-        "extendable": {
-          "label": "Vertrag verlängern",
-          "overviewLabel": "Vertragsverlängerung möglich",
-          "subtitle": "Verlängerung der Vertragslaufzeit möglich",
-          "tooltip": "Aktiviere diese Option, wenn der Vertrag über die angegebene Laufzeit hinaus verlängert werden kann."
         },
         "suitableForDisabled": {
           "label": "Geeignet für Menschen mit Behinderung",
@@ -181,6 +179,8 @@
       "complianceTooltipText": "Farben dienen nur der Kategorisierung, nicht der Priorisierung. Es gibt keine Unterschiede in der Wichtigkeit."
     },
     "positionDetailsSection": {
+      "selectedDeadline": "Gewählte Bewerbungsfrist",
+      "selectedStartDate": "Gewähltes Startdatum",
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "aiLabel": "KI schreibt, verbessert und übersetzt für dich.",

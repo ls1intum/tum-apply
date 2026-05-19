@@ -88,10 +88,13 @@ export abstract class BaseInputDirective<T> {
 
   private controlSubscriptionsEffect = effect(onCleanup => {
     const ctrl = this.formControl();
+    this.isTouched.set(this.isTouched() || ctrl.touched);
     const statusSub = ctrl.statusChanges.subscribe(() => {
       this.formValidityVersion.update(v => v + 1);
     });
     // Clear local touched flag when the bound control is reset to untouched (e.g. via form.reset / markAsUntouched).
+    // Re-syncing on touched=true here would override the autofocus-pristine skip in onBlur, because Angular's
+    // FormControlDirective auto-calls markAsTouched on every native blur.
     const eventsSub = ctrl.events.subscribe(event => {
       if (event instanceof TouchedChangeEvent && !event.touched) {
         this.isTouched.set(false);

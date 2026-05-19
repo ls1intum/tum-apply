@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for managing Software Bill of Materials (SBOM) as admin.
  *
  * <p>Provides endpoints for retrieving the project's server-side (Java/Gradle) and
- * client-side (npm) dependencies along with their known security vulnerabilities
+ * client-side (pnpm) dependencies along with their known security vulnerabilities
  * sourced from <a href="https://osv.dev">OSV.dev</a>.</p>
  */
 @Slf4j

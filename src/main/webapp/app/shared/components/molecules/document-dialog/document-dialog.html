@@ -6,10 +6,10 @@
 >
   <div class="flex flex-col md:flex-row gap-6 h-[70vh] max-h-[calc(90vh-8rem)] overflow-hidden">
     <!-- LEFT: List of documents -->
-    <div class="overflow-y-auto md:overflow-visible md:max-h-[40vh] md:w-[30%] md:min-w-[12rem] md:h-full md:flex-shrink-0">
+    <div class="min-w-0 overflow-y-auto md:overflow-visible md:max-h-[40vh] md:w-[30%] md:min-w-[12rem] md:h-full md:flex-shrink-0">
       <ul class="divide-y divide-[var(--p-border-default)]">
         @for (item of documentHolders(); track item.document.id) {
-          <li class="flex items-center gap-3 px-3 py-2">
+          <li class="flex min-w-0 items-center gap-3 px-3 py-2">
             <!-- Checkbox -->
             <!-- Removed until download functionality is added
             <p-checkbox
@@ -22,7 +22,7 @@
             -->
             <!-- Label container -->
             <div
-              class="grow cursor-pointer px-3 py-2 rounded-md hover:text-text-on-primary hover:bg-primary-default"
+              class="min-w-0 grow cursor-pointer px-3 py-2 rounded-md hover:text-text-on-primary hover:bg-primary-default"
               [class.bg-background-surface-alt]="isSelected(item.document.id)()"
               (click)="selectDoc(item.document.id)"
               role="button"
@@ -30,7 +30,11 @@
               (keydown.enter)="selectDoc(item.document.id)"
               (keydown.space)="selectDoc(item.document.id); $event.preventDefault()"
             >
-              <span class="block truncate" [jhiTranslate]="item.label" [translateValues]="item.labelParams ?? {}"></span>
+              @if (item.shouldTranslateLabel) {
+                <span class="block truncate" [jhiTranslate]="item.label" [translateValues]="item.labelParams ?? {}"></span>
+              } @else {
+                <span class="block truncate">{{ item.label }}</span>
+              }
             </div>
           </li>
         }
@@ -38,10 +42,10 @@
     </div>
 
     <!-- RIGHT: Document viewer -->
-    <div class="h-full flex items-center justify-center overflow-hidden md:flex-1">
+    <div class="min-w-0 h-full flex items-center justify-center overflow-hidden md:flex-1">
       @if (selectedDocument(); as doc) {
         <div class="h-full w-full max-w-full rounded-lg overflow-hidden bg-white">
-          <jhi-document-viewer class="w-full h-full object-contain" [documentId]="doc" />
+          <jhi-document-viewer class="w-full h-full object-contain" [documentId]="doc" [documentFile]="selectedFile()" />
         </div>
       }
     </div>
