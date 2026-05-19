@@ -7,9 +7,7 @@ import { ClickableDirective } from 'app/shared/directives/clickable.directive';
 
 @Component({
   imports: [ClickableDirective],
-  template: `
-    <div jhiClickable [role]="role()" (click)="onClick()" data-testid="host">target</div>
-  `,
+  template: ` <div jhiClickable [role]="role()" (click)="onClick()" data-testid="host">target</div> `,
 })
 class HostComponent {
   readonly role = signal<'button' | 'link'>('button');
