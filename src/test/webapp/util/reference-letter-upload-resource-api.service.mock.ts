@@ -2,7 +2,7 @@ import { Provider } from '@angular/core';
 import { vi } from 'vitest';
 import { of } from 'rxjs';
 import { ReferenceLetterUploadResourceApi } from 'app/generated/api/reference-letter-upload-resource-api';
-import { ReferenceLetterContextDTO } from 'app/generated/model/reference-letter-context-dto';
+import { ReferenceLetterUploadContextDTO } from 'app/generated/model/reference-letter-upload-context-dto';
 import { ReferenceRequestDTO, ReferenceRequestDTOStatusEnum } from 'app/generated/model/reference-request-dto';
 
 export type ReferenceLetterUploadResourceApiMock = {
@@ -10,7 +10,7 @@ export type ReferenceLetterUploadResourceApiMock = {
   upload: ReturnType<typeof vi.fn>;
 };
 
-export const createMockContext = (overrides: Partial<ReferenceLetterContextDTO> = {}): ReferenceLetterContextDTO =>
+export const createMockContext = (overrides: Partial<ReferenceLetterUploadContextDTO> = {}): ReferenceLetterUploadContextDTO =>
   Object.assign(
     {
       applicantFirstName: 'Sample',
@@ -23,7 +23,7 @@ export const createMockContext = (overrides: Partial<ReferenceLetterContextDTO> 
   );
 
 export function createReferenceLetterUploadResourceApiMock(
-  initialContext: ReferenceLetterContextDTO = createMockContext(),
+  initialContext: ReferenceLetterUploadContextDTO = createMockContext(),
 ): ReferenceLetterUploadResourceApiMock {
   const submitted: ReferenceRequestDTO = {
     referenceRequestId: 'submitted-id',

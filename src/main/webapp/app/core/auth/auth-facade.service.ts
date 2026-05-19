@@ -40,6 +40,11 @@ type AuthMethod = 'none' | 'server' | 'keycloak';
  *  - UI routing beyond post-auth redirects is not handled here; components/pages remain responsible for navigation.
  */
 export class AuthFacadeService {
+  private static readonly PROFESSOR_PORTAL_AUTHORITIES: UserShortDTORolesEnum[] = [
+    UserShortDTORolesEnum.Professor,
+    UserShortDTORolesEnum.Employee,
+  ];
+
   private readonly serverAuthenticationService = inject(ServerAuthenticationService);
   private readonly keycloakAuthenticationService = inject(KeycloakAuthenticationService);
   private readonly accountService = inject(AccountService);
@@ -324,11 +329,11 @@ export class AuthFacadeService {
 
   private getLogoutRedirectRoutes(): { targetRoute: string; redirectUrl: string } {
     const user = this.accountService.user();
-    const isProfessorOrEmployee =
-      (user?.authorities?.includes(UserShortDTORolesEnum.Professor) ?? false) ||
-      (user?.authorities?.includes(UserShortDTORolesEnum.Employee) ?? false);
+    const belongsToProfessorPortal = AuthFacadeService.PROFESSOR_PORTAL_AUTHORITIES.some(
+      role => user?.authorities?.includes(role) ?? false,
+    );
 
-    const targetRoute = isProfessorOrEmployee ? '/professor' : '/';
+    const targetRoute = belongsToProfessorPortal ? '/professor' : '/';
     const redirectUrl = window.location.origin + targetRoute;
 
     return { targetRoute, redirectUrl };
@@ -384,6 +389,10 @@ export class AuthFacadeService {
       }
       return response;
     } catch (e) {
+      // сheck if passkey had an error because user refused to use passkey
+      if (e instanceof DOMException && e.name === 'NotAllowedError') {
+        return undefined as unknown as T;
+      }
       this.authOrchestrator.setError(errorMessage);
       throw e;
     } finally {

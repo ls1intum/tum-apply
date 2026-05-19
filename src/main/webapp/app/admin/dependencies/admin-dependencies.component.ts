@@ -23,7 +23,7 @@ import { VulnerabilityDTO } from 'app/generated/model/vulnerability-dto';
  * Admin page component for displaying the project's software dependencies
  * and their known security vulnerabilities.
  *
- * Shows server-side (Java/Gradle) and client-side (npm) dependencies in a
+ * Shows server-side (Java/Gradle) and client-side (pnpm) dependencies in a
  * filterable, sortable, paginated table with vulnerability severity indicators.
  * Data is fetched from the server, which queries OSV.dev for vulnerability information.
  */

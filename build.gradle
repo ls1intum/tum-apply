@@ -87,8 +87,8 @@ if (project.hasProperty("war")) {
   apply from: "gradle/war.gradle"
 }
 
-tasks.register("npmSetCacheDockerfile", NpmTask) {
-  args = ["set", "cache", "/opt/tum-apply/.npm"]
+tasks.register("pnpmSetCacheDockerfile", PnpmTask) {
+  args = ["config", "set", "store-dir", "/opt/tum-apply/.pnpm-store"]
 }
 
 idea {
@@ -101,6 +101,15 @@ defaultTasks "bootRun"
 
 springBoot {
   mainClass = "de.tum.cit.aet.TumApplyApp"
+}
+
+// Netty's NativeLibraryUtil calls System.loadLibrary at startup, which JDK 24+
+// flags as a restricted method when invoked from an unnamed module (Netty is
+// on the classpath, not on the module path). Explicitly enabling native access
+// for ALL-UNNAMED suppresses the warning the JDK itself recommends. The same
+// flag is added to test tasks in gradle/test.gradle.
+tasks.named("bootRun") {
+  jvmArgs += "--enable-native-access=ALL-UNNAMED"
 }
 
 test {
@@ -311,7 +320,7 @@ wrapper {
 node {
   download = true
   version = "${node_version}"
-  npmVersion = "${npm_version}"
+  pnpmVersion = "${pnpm_version}"
 }
 
 def isNonStable = { String version ->
