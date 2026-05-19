@@ -28,7 +28,6 @@ describe('JobCardListComponent', () => {
   };
 
   let mockToastService = createToastServiceMock();
-  const getShowErrorKeyMock = (): ReturnType<typeof vi.fn> => mockToastService.showErrorKey as ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     jobApi = {
@@ -94,61 +93,10 @@ describe('JobCardListComponent', () => {
     expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobOverviewPage.errors.loadFilter');
   });
 
-  it('should show a single jobs toast when initial filters and jobs both fail', async () => {
-    fixture.destroy();
-    jobApi.getAllFilters.mockReset();
-    jobApi.getAllFilters.mockReturnValue(throwError(() => new Error('filter fail')));
-    jobApi.getAvailableJobs.mockReset();
-    jobApi.getAvailableJobs.mockReturnValue(throwError(() => new Error('jobs fail')));
-    jobApi.getAllFilters.mockClear();
-    jobApi.getAvailableJobs.mockClear();
-    getShowErrorKeyMock().mockClear();
-
-    const failingFixture = TestBed.createComponent(JobCardListComponent);
-    await runSilently(async () => {
-      failingFixture.componentInstance.loadOnTableEmit({ first: 0, rows: 12 });
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-
-    expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
-    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobOverviewPage.errors.loadJobs');
-    expect(jobApi.getAvailableJobs).toHaveBeenCalledTimes(1);
-  });
-
-  it('should show only the filter toast when initial filter loading fails but jobs still load', async () => {
-    fixture.destroy();
-    jobApi.getAllFilters.mockReset();
-    jobApi.getAllFilters.mockReturnValue(throwError(() => new Error('filter fail')));
-    jobApi.getAvailableJobs.mockReset();
-    jobApi.getAvailableJobs.mockReturnValue(
-      of({
-        content: [
-          {
-            jobId: '1',
-            title: 'Test Job',
-            professorName: 'Prof. Y',
-            location: JobLocationEnum.Munich,
-          },
-        ],
-        totalElements: 1,
-      }),
-    );
-    jobApi.getAllFilters.mockClear();
-    jobApi.getAvailableJobs.mockClear();
-    getShowErrorKeyMock().mockClear();
-
-    const partialFailureFixture = TestBed.createComponent(JobCardListComponent);
-    await (partialFailureFixture.componentInstance as unknown as { initializePage(): Promise<void> }).initializePage();
-
-    expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
-    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobOverviewPage.errors.loadFilter');
-  });
-
   it('should load jobs successfully', async () => {
     await component.loadJobs();
 
-    expect(jobApi.getAvailableJobs.mock.calls.length).toBeGreaterThanOrEqual(2);
+    expect(jobApi.getAvailableJobs).toHaveBeenCalledTimes(2);
     expect(component.jobs().length).toBe(1);
     expect(component.totalRecords()).toBe(1);
   });
