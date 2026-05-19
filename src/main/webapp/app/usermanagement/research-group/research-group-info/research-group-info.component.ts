@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -76,16 +77,14 @@ export class ResearchGroupInfoComponent {
 
   private currentUser = this.accountService.loadedUser;
 
-  constructor() {
-    // 1) Whenever the form mutates after the initial load, debounce-save it.
-    // 2) Mutations triggered by `populateFormData` are gated by `hasInitialized`,
-    //    so loading the data does not trigger a write back to the server.
-    this.form.valueChanges.subscribe(() => {
-      if (this.hasInitialized() && this.form.valid) {
-        this.autoSave.notifyChanged();
-      }
-    });
-  }
+  // 1) Whenever the form mutates after the initial load, debounce-save it.
+  // 2) Mutations triggered by `populateFormData` are gated by `hasInitialized`,
+  //    so loading the data does not trigger a write back to the server.
+  private readonly autoSaveOnFormChange = this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+    if (this.hasInitialized() && this.form.valid) {
+      this.autoSave.notifyChanged();
+    }
+  });
 
   /**
    * Persists the current form values to the API. Invoked by the
