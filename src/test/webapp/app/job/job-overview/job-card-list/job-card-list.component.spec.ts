@@ -28,6 +28,7 @@ describe('JobCardListComponent', () => {
   };
 
   let mockToastService = createToastServiceMock();
+  const getShowErrorKeyMock = (): ReturnType<typeof vi.fn> => mockToastService.showErrorKey as ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     jobApi = {
@@ -101,7 +102,7 @@ describe('JobCardListComponent', () => {
     jobApi.getAvailableJobs.mockReturnValue(throwError(() => new Error('jobs fail')));
     jobApi.getAllFilters.mockClear();
     jobApi.getAvailableJobs.mockClear();
-    mockToastService.showErrorKey.mockClear();
+    getShowErrorKeyMock().mockClear();
 
     const failingFixture = TestBed.createComponent(JobCardListComponent);
     await runSilently(async () => {
@@ -135,7 +136,7 @@ describe('JobCardListComponent', () => {
     );
     jobApi.getAllFilters.mockClear();
     jobApi.getAvailableJobs.mockClear();
-    mockToastService.showErrorKey.mockClear();
+    getShowErrorKeyMock().mockClear();
 
     const partialFailureFixture = TestBed.createComponent(JobCardListComponent);
     await (partialFailureFixture.componentInstance as unknown as { initializePage(): Promise<void> }).initializePage();
