@@ -25,8 +25,11 @@ import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.
 import { InfoIconComponent } from 'app/shared/components/atoms/info-icon/info-icon.component';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
-import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { SavingStates } from 'app/shared/constants/saving-states';
+import { AutoSaveController } from 'app/shared/util/auto-save-controller';
+import { SavingBadgeComponent } from 'app/shared/components/atoms/saving-badge/saving-badge.component';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { INVALID_DATE_ORDER_ERROR, dateOrderValidator } from 'app/shared/validators/date-order-validator';
 import { AiResourceApi } from 'app/generated/api/ai-resource-api';
 import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { AiStreamingService } from 'app/service/ai-streaming.service';
@@ -39,6 +42,7 @@ import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageResourceApi } from 'app/generated/api/image-resource-api';
 import { ImageDTO } from 'app/generated/model/image-dto';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { parseLocalDateString } from 'app/shared/util/date-time.util';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
 import {
@@ -63,6 +67,11 @@ import { tvlGrades } from '.././dropdown-options';
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
+
+const REFERENCE_LETTERS_REQUIRED_OPTIONS: { value: number; name: string }[] = [0, 1, 2, 3, 4, 5].map(n => ({
+  value: n,
+  name: String(n),
+}));
 
 /**
  * JobCreationFormComponent
@@ -111,6 +120,7 @@ type JobFormMode = 'create' | 'edit';
     AiAssistantCardComponent,
     CompliancePopoverComponent,
     TooltipModule,
+    SavingBadgeComponent,
   ],
   providers: [JobResourceApi],
 })
@@ -122,6 +132,7 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
   readonly publishButtonSeverity = 'primary' as ButtonColor;
   readonly publishButtonIcon = 'paper-plane';
+  readonly stepContainerClass = 'mx-auto w-full max-w-4xl px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10';
   /** Width of the compliance popover, used to clamp its position within the viewport.
    * matches the width w-72 set in ai-compliance-popover.component.html.
    */
@@ -144,8 +155,8 @@ export class JobCreationFormComponent {
   // SAVING STATE SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /** Current auto-save state: 'SAVED', 'SAVING', or 'FAILED' */
-  savingState = signal<SavingState>(SavingStates.SAVED);
+  /** Debounced auto-save controller. Owns the 3 s timer and the badge state. */
+  readonly autoSave = new AutoSaveController({ save: () => this.runAutoSave() });
 
   /** Snapshot of the last successfully saved job data (used for change detection) */
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
@@ -184,6 +195,9 @@ export class JobCreationFormComponent {
 
   /** Last successfully translated German text (used to avoid redundant translations) */
   lastTranslatedDE = signal<string>('');
+
+  /** Tracks the currently in-flight translation request to deduplicate identical calls. */
+  private activeTranslationRequest: { sourceLang: Language; sourceText: string; targetLang: Language } | undefined;
 
   /** Last analyzed description text per language (used to avoid redundant compliance analysis) */
   private lastAnalyzedText: Record<string, string> = {};
@@ -306,6 +320,7 @@ export class JobCreationFormComponent {
 
   /** Returns the explanation of a compliance issue whose text appears in the job title, if any. */
   readonly titleComplianceError = computed(() => {
+    this.basicInfoFormValueSignal();
     const title = (this.basicInfoForm.get('title')?.value ?? '').toLowerCase();
     if (!title) return undefined;
     for (const issue of this.complianceIssues()) {
@@ -450,18 +465,6 @@ export class JobCreationFormComponent {
     this.mode() === 'edit' ? 'jobCreationForm.header.title.edit' : 'jobCreationForm.header.title.create',
   );
 
-  /** Computed: CSS classes for the saving state badge based on current state */
-  readonly savingBadgeCalculatedClass = computed(
-    () =>
-      `flex flex-wrap justify-around content-center gap-1 ${
-        this.savingState() === SavingStates.SAVED
-          ? 'saved_color'
-          : this.savingState() === SavingStates.FAILED
-            ? 'failed_color'
-            : 'saving_color'
-      }`,
-  );
-
   // ═══════════════════════════════════════════════════════════════════════════
   // STEPPER CONFIGURATION
   // ═══════════════════════════════════════════════════════════════════════════
@@ -541,6 +544,24 @@ export class JobCreationFormComponent {
     initialValue: this.positionDetailsForm.getRawValue(),
   });
 
+  /** Computed: earliest selectable start date, based on the chosen application deadline */
+  readonly startDateMinDate = computed(() => {
+    const applicationDeadline = this.positionDetailsFormValueSignal().applicationDeadline;
+    return parseLocalDateString(applicationDeadline);
+  });
+
+  /** Computed: latest selectable application deadline, based on the chosen start date */
+  readonly applicationDeadlineMaxDate = computed(() => {
+    const startDate = this.positionDetailsFormValueSignal().startDate;
+    return parseLocalDateString(startDate);
+  });
+
+  /** Computed: true when start date is before the application deadline */
+  readonly hasInvalidDateOrder = computed(() => {
+    this.positionDetailsChanges();
+    return this.positionDetailsForm.hasError(INVALID_DATE_ORDER_ERROR);
+  });
+
   /** Signal that emits the current imageForm values */
   imageFormValueSignal = toSignal(this.imageForm.valueChanges, {
     initialValue: this.imageForm.getRawValue(),
@@ -558,11 +579,8 @@ export class JobCreationFormComponent {
   // AUTO-SAVE INTERNALS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /** Timer ID for the debounced auto-save (2-second delay) */
-  private autoSaveTimer: number | undefined;
-
   /** The currently in-flight auto-save promise, or undefined if none is running. */
-  private autoSaveInFlight: Promise<void> | undefined;
+  private autoSaveInFlight: Promise<boolean> | undefined;
 
   /** Flag to prevent auto-save from triggering during initial form population */
   private autoSaveInitialized = false;
@@ -616,6 +634,7 @@ export class JobCreationFormComponent {
       this.translationAbortController.abort();
       this.translationAbortController = undefined;
     }
+    this.activeTranslationRequest = undefined;
     this.isTranslating.set(false);
     this.translationTargetLang.set(undefined);
   }
@@ -638,12 +657,7 @@ export class JobCreationFormComponent {
     // syncCurrentEditorIntoLanguageSignals copies the editor HTML into the
     // language signal, but the languageChangeEffect below sets the form
     // value with emitEvent:false — so the autosave effect won't re-trigger.
-    // We must call performAutoSave explicitly to persist the content.
-    if (this.autoSaveTimer !== undefined) {
-      this.clearAutoSaveTimer();
-      this.syncCurrentEditorIntoLanguageSignals();
-      void this.performAutoSave();
-    }
+    void this.autoSave.flush();
 
     this.currentDescriptionLanguage.set(newLang);
   }
@@ -712,7 +726,7 @@ export class JobCreationFormComponent {
 
     if (!jobData) return;
 
-    this.clearAutoSaveTimer();
+    this.autoSave.dispose();
     if (this.autoSaveInFlight) {
       await this.autoSaveInFlight;
     }
@@ -758,12 +772,7 @@ export class JobCreationFormComponent {
    * Performs a save after changing the step.
    */
   async onStepChange(): Promise<void> {
-    // Timer sofort abbrechen und speichern
-    if (this.autoSaveTimer !== undefined) {
-      this.clearAutoSaveTimer();
-      this.syncCurrentEditorIntoLanguageSignals();
-      await this.performAutoSave();
-    }
+    await this.autoSave.flush();
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -903,14 +912,27 @@ export class JobCreationFormComponent {
 
   /**
    * Handles category filter changes from the AI assistant sidebar.
-   * Filters highlights to show only the selected category, or all if cleared.
+   * Updates filter signal to show only the selected category
    */
   onComplianceFilterChange(category: string | undefined): void {
     this.activeComplianceFilter.set(category);
-    const lang = this.currentDescriptionLanguage();
-    const filtered = category ? this.complianceIssues().filter(i => i.category === category) : this.complianceIssues();
-    this.applyHighlights(filtered, lang);
   }
+
+  /**
+   * Handles highlights after reload, page switches, language switches or new analysis.
+   * Skips while AI is actively generating new draft or translating.
+   */
+  private highlightsEffect = effect(() => {
+    const editor = this.jobDescriptionEditor();
+    const lang = this.currentDescriptionLanguage();
+    const issues = this.complianceIssues();
+    const filter = this.activeComplianceFilter();
+    if (!editor) return;
+    if (untracked(() => this.isGeneratingDraft() || (this.isTranslating() && this.translationTargetLang() === lang))) return;
+    const filtered = filter ? issues.filter(i => i.category === filter) : issues;
+
+    this.applyHighlights(filtered, lang);
+  });
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI GENERATION METHODS
@@ -1026,7 +1048,7 @@ export class JobCreationFormComponent {
    */
   private async postGenerationSaveAndProcess(sourceLang: Language, sourceText: string): Promise<void> {
     const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
-    this.savingState.set('SAVING');
+    this.autoSave.setState(SavingStates.SAVING);
 
     try {
       // 1) Persist the generated content to the server
@@ -1042,15 +1064,14 @@ export class JobCreationFormComponent {
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
-      this.savingState.set('SAVED');
+      this.autoSave.setState(SavingStates.SAVED);
 
-      // 3) Start translation only — analysis runs once at the end of translation,
-      //    after both languages are available, for the most accurate score.
+      // 3) Analyze source language first so the user sees highlights + score immediately.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
-        void this.translateAndStoreOtherLanguage(sourceLang, sourceText);
+        void Promise.all([this.analyzeAndUpdateScore(sourceLang), this.translateAndStoreOtherLanguage(sourceLang, sourceText)]);
       }
     } catch {
-      this.savingState.set('FAILED');
+      this.autoSave.setState(SavingStates.FAILED);
       this.isAnalyzing.set(false);
       this.toastService.showErrorKey('toast.saveFailed');
     }
@@ -1197,16 +1218,23 @@ export class JobCreationFormComponent {
    * All fields are optional: funding type, start date, deadline, workload, duration
    */
   private createPositionDetailsForm(): FormGroup {
-    return this.fb.group({
-      // Position Details Form: Currently required for publishing a job
-      fundingType: [undefined],
-      tvlGrade: [undefined],
-      startDate: [''],
-      applicationDeadline: [''],
-      workload: [undefined],
-      contractDuration: [undefined],
-      suitableForDisabled: [true],
-    });
+    return this.fb.group(
+      {
+        // Position Details Form: Currently required for publishing a job
+        fundingType: [undefined],
+        tvlGrade: [undefined],
+        startDate: [''],
+        startDateByArrangement: [false],
+        applicationDeadline: [''],
+        workload: [undefined],
+        contractDuration: [undefined],
+        suitableForDisabled: [true],
+        referenceLettersRequired: [REFERENCE_LETTERS_REQUIRED_OPTIONS[0]],
+      },
+      {
+        validators: [dateOrderValidator('applicationDeadline', 'startDate')],
+      },
+    );
   }
 
   /**
@@ -1260,6 +1288,7 @@ export class JobCreationFormComponent {
       jobDescriptionDE: jobDescriptionDE ?? undefined,
 
       startDate: positionDetailsValue.startDate ?? undefined,
+      startDateByArrangement: positionDetailsValue.startDateByArrangement ?? false,
       endDate: positionDetailsValue.applicationDeadline ?? undefined,
       workload: positionDetailsValue.workload,
       contractDuration: positionDetailsValue.contractDuration,
@@ -1267,6 +1296,7 @@ export class JobCreationFormComponent {
       tvlGrade: positionDetailsValue.tvlGrade?.value as JobFormDTOTvlGradeEnum,
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
+      referenceLettersRequired: positionDetailsValue.referenceLettersRequired?.value as number,
       state,
     } as JobFormDTO;
   }
@@ -1405,18 +1435,19 @@ export class JobCreationFormComponent {
     });
 
     this.jobDescriptionSignal.set(en);
-    this.jobDescriptionEditor()?.forceUpdate(en, () => {
-      this.applyHighlights(this.complianceIssues(), 'en');
-    });
 
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',
+      startDateByArrangement: job?.startDateByArrangement ?? false,
       applicationDeadline: job?.endDate ?? '',
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
       tvlGrade: this.findDropdownOption(DropdownOptions.tvlGrades, job?.tvlGrade),
       suitableForDisabled: job?.suitableForDisabled ?? true,
+      referenceLettersRequired:
+        this.findDropdownOption(this.referenceLettersRequiredOptions, job?.referenceLettersRequired ?? 0) ??
+        this.referenceLettersRequiredOptions[0],
     });
 
     if (job?.imageId !== undefined && job.imageUrl !== undefined) {
@@ -1507,8 +1538,8 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * Sets up the auto-save effect with 2-second debounce.
-   * Triggers save when any form value changes.
+   * Wires up the auto-save controller to track every form-value signal.
+   * Each value change debounces a save through {@link AutoSaveController}.
    * Skips during initial population and AI generation.
    */
   private setupAutoSave(): void {
@@ -1535,36 +1566,20 @@ export class JobCreationFormComponent {
         return;
       }
 
-      // 4) Update the description signal and schedule the debounced save
+      // 4) Update the description signal and (re)start the debounce timer.
+      //    The badge stays on its current state until the timer fires, so the
+      //    user does not see "Saving changes..." flicker on every keystroke.
       this.jobDescriptionSignal.set(description);
-      this.clearAutoSaveTimer();
-      this.savingState.set('SAVING');
-
-      this.autoSaveTimer = window.setTimeout(() => {
-        // 5) Sync editor content to language signals and persist
-        this.syncCurrentEditorIntoLanguageSignals();
-        void this.performAutoSave();
-      }, 2000);
+      this.autoSave.notifyChanged();
     });
   }
 
   /**
-   * Clears any pending auto-save timer.
+   * Save callback invoked by the {@link AutoSaveController} when its timer fires.
+   * Returns `true` on success so the controller can flip the badge to `SAVED`.
    */
-  private clearAutoSaveTimer(): void {
-    if (this.autoSaveTimer !== undefined) {
-      clearTimeout(this.autoSaveTimer);
-      this.autoSaveTimer = undefined;
-    }
-  }
-
-  /**
-   * Performs the actual auto-save operation.
-   * Creates job on first save, updates on subsequent saves.
-   * Triggers translation after successful save if content changed.
-   */
-  private performAutoSave(): Promise<void> {
-    const work = this.runAutoSave();
+  private runAutoSave(): Promise<boolean> {
+    const work = this.executeAutoSave();
     this.autoSaveInFlight = work;
     void work.finally(() => {
       if (this.autoSaveInFlight === work) {
@@ -1574,8 +1589,9 @@ export class JobCreationFormComponent {
     return work;
   }
 
-  private async runAutoSave(): Promise<void> {
+  private async executeAutoSave(): Promise<boolean> {
     // 1) Capture current form state before any async work
+    this.syncCurrentEditorIntoLanguageSignals();
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
     const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
@@ -1594,17 +1610,18 @@ export class JobCreationFormComponent {
       this.lastSavedData.set(saved);
       this.jobDescriptionEN.set(saved.jobDescriptionEN ?? this.jobDescriptionEN());
       this.jobDescriptionDE.set(saved.jobDescriptionDE ?? this.jobDescriptionDE());
-      this.savingState.set('SAVED');
 
       // 4) Fire translation (fire-and-forget). Analysis runs once at the end
       //    of translation after both languages are available — avoids duplicate
       //    analysis calls that cause score flash issues.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
-        void this.translateAndStoreOtherLanguage(currentLang, description);
+        // highlighting before translation
+        void Promise.all([this.analyzeAndUpdateScore(currentLang), this.translateAndStoreOtherLanguage(currentLang, description)]);
       }
+      return true;
     } catch {
-      this.savingState.set('FAILED');
       this.toastService.showErrorKey('toast.saveFailed');
+      return false;
     }
   }
 
@@ -1620,14 +1637,23 @@ export class JobCreationFormComponent {
     const text = currentText.trim();
     if (!text) return;
 
+    const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
+    // If an identical translation is already in flight, skips the call to avoid a redundant LLM request.
+    const active = this.activeTranslationRequest;
+    if (active?.sourceLang === currentLang && active.sourceText === text && active.targetLang === targetLang) {
+      return;
+    }
+
     // 1) Skip if the text hasn't changed since the last translation
     const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
     if (text === lastBaseline) return;
 
     // 2) Cancel any active translation and set up fresh state
     this.cancelTranslation();
-    const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
     const abortController = new AbortController();
+    // If a newer request exists, keep it to avoid breaking duplicate checks.
+    const activeRequest = { sourceLang: currentLang, sourceText: text, targetLang };
+    this.activeTranslationRequest = activeRequest;
     this.translationAbortController = abortController;
     this.isTranslating.set(true);
     this.translationTargetLang.set(targetLang);
@@ -1680,7 +1706,7 @@ export class JobCreationFormComponent {
             this.jobDescriptionEditor()?.forceUpdate(finalContent);
           }
 
-          // 7) Persist the translated content and run compliance analysis.
+          // 7) Persist the translated content and run target compliance analysis.
           //    Set isAnalyzing BEFORE the finally block clears isTranslating,
           //    so isScoreLoading never drops to false between the two states.
           const jobId = this.jobId();
@@ -1690,7 +1716,7 @@ export class JobCreationFormComponent {
               const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
               this.lastSavedData.set(saved);
               this.isAnalyzing.set(true);
-              await Promise.all([this.analyzeAndUpdateScore(currentLang), this.analyzeAndUpdateScore(targetLang)]);
+              await this.analyzeAndUpdateScore(targetLang);
             } catch {
               // Silent save failure — will be caught by next autosave
             }
@@ -1708,6 +1734,10 @@ export class JobCreationFormComponent {
         this.isTranslating.set(false);
         this.translationTargetLang.set(undefined);
         this.translationAbortController = undefined;
+      }
+      // Clear only if this is still the same request.
+      if (this.activeTranslationRequest === activeRequest) {
+        this.activeTranslationRequest = undefined;
       }
     }
   }
@@ -1775,8 +1805,8 @@ export class JobCreationFormComponent {
    * Defines 4 steps with their templates, navigation buttons, and validation states:
    *
    * 1. Basic Info - Back exits, Next requires basicInfoValid
-   * 2. Position Details - Optional fields, always navigable
-   * 3. Image Selection - Optional, always navigable
+   * 2. Position Details - Disabled until Step 1 is valid
+   * 3. Image Selection - Disabled until Steps 1 and 2 are valid
    * 4. Summary - Shows publish button instead of next
    *
    * @returns Array of StepData objects for the ProgressStepperComponent
@@ -1886,7 +1916,7 @@ export class JobCreationFormComponent {
             changePanel: true,
           },
         ],
-        disabled: !this.positionDetailsValid(),
+        disabled: !(this.basicInfoValid() && this.positionDetailsValid()),
         status: templates.status,
       });
     }
@@ -1944,4 +1974,6 @@ export class JobCreationFormComponent {
   }
 
   protected readonly tvlGrades = tvlGrades;
+
+  protected readonly referenceLettersRequiredOptions = REFERENCE_LETTERS_REQUIRED_OPTIONS;
 }

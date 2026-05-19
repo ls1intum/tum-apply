@@ -95,11 +95,13 @@ class JobResourceTest extends AbstractResourceTest {
             job.getContractDuration(),
             job.getFundingType(),
             job.getTvlGrade(),
+            job.getReferenceLettersRequired(),
             job.getJobDescriptionEN(),
             job.getJobDescriptionDE(),
             JobState.DRAFT,
             imageId,
             true,
+            false,
             null,
             null
         );
@@ -203,11 +205,13 @@ class JobResourceTest extends AbstractResourceTest {
                 12,
                 FundingType.FULLY_FUNDED,
                 TvlGrade.E13,
+                0,
                 "Build ML pipelines",
                 "ML Pipeline erstellen",
                 JobState.PUBLISHED,
                 null,
                 true,
+                false,
                 null,
                 null
             );
@@ -300,11 +304,13 @@ class JobResourceTest extends AbstractResourceTest {
                 6,
                 FundingType.FULLY_FUNDED,
                 null,
+                0,
                 "desc",
                 "desc",
                 JobState.DRAFT,
                 null,
                 true,
+                false,
                 null,
                 null
             );
@@ -334,11 +340,13 @@ class JobResourceTest extends AbstractResourceTest {
                 6,
                 FundingType.PARTIALLY_FUNDED,
                 TvlGrade.E15,
+                0,
                 "Updated Description",
                 "Neue Beschreibung",
                 JobState.DRAFT,
                 null,
                 true,
+                false,
                 null,
                 null
             );
@@ -381,11 +389,13 @@ class JobResourceTest extends AbstractResourceTest {
                 6,
                 FundingType.FULLY_FUNDED,
                 TvlGrade.E12,
+                2,
                 "desc",
                 "desc",
                 JobState.DRAFT,
                 null,
                 true,
+                false,
                 null,
                 null
             );
@@ -413,11 +423,13 @@ class JobResourceTest extends AbstractResourceTest {
                 3,
                 FundingType.FULLY_FUNDED,
                 null,
+                3,
                 "desc",
                 "desc",
                 JobState.DRAFT,
                 null,
                 true,
+                false,
                 null,
                 null
             );

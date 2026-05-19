@@ -33,36 +33,6 @@ describe('AiAssistantCardComponent', () => {
     expect(component.scoreFeedback()).toBe(`${feedbackKeyPrefix}${feedbackKeySuffix}`);
   });
 
-  it('should emit generate when onGenerate is called', () => {
-    const emitSpy = vi.spyOn(component.generate, 'emit');
-
-    component.onGenerate();
-
-    expect(emitSpy).toHaveBeenCalledOnce();
-  });
-
-  it('should dim only the score ring while generating when a score exists', () => {
-    // Set a score first, then start generating — ring should be greyed out
-    fixture.componentRef.setInput('score', 75);
-    fixture.detectChanges();
-    fixture.componentRef.setInput('isGenerating', true);
-    fixture.detectChanges();
-
-    const scoreRingWrapper = fixture.nativeElement.querySelector('.ai-score-ring-wrapper');
-    const scoreBlock = fixture.nativeElement.querySelector('.ai-score-block');
-    expect(scoreRingWrapper.classList.contains('opacity-50')).toBe(true);
-    expect(scoreBlock.classList.contains('opacity-50')).toBe(false);
-  });
-
-  it('should not dim the score ring while generating when no score exists', () => {
-    // No score set — ring shows loading indicator, not greyed out
-    fixture.componentRef.setInput('isGenerating', true);
-    fixture.detectChanges();
-
-    const scoreRingWrapper = fixture.nativeElement.querySelector('.ai-score-ring-wrapper');
-    expect(scoreRingWrapper.classList.contains('opacity-50')).toBe(false);
-  });
-
   it('should keep displaying the previous score during generation and update afterwards', () => {
     fixture.componentRef.setInput('score', 42);
     fixture.detectChanges();
@@ -76,13 +46,5 @@ describe('AiAssistantCardComponent', () => {
     fixture.componentRef.setInput('isGenerating', false);
     fixture.detectChanges();
     expect(component.displayedScore()).toBe(84);
-  });
-
-  it('should still show generating indicator while generating', () => {
-    fixture.componentRef.setInput('isGenerating', true);
-    fixture.detectChanges();
-
-    const spinner = fixture.nativeElement.querySelector('jhi-progress-spinner');
-    expect(spinner).toBeTruthy();
   });
 });

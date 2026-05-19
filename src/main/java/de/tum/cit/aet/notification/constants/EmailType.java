@@ -123,8 +123,7 @@ public enum EmailType {
     INTERVIEW_CANCELLED("INTERVIEW_CANCELLED", Set.of(UserRole.APPLICANT), true),
 
     /**
-     * Notification that an interview slot was cancelled and the applicant is
-     * requested to reschedule
+     * Notification that an interview slot was cancelled and the applicant is requested to reschedule
      * To: Applicant
      */
     INTERVIEW_RESCHEDULE_REQUESTED("INTERVIEW_RESCHEDULE_REQUESTED", Set.of(UserRole.APPLICANT), true),
@@ -136,12 +135,10 @@ public enum EmailType {
     DATA_EXPORT_READY("DATA_EXPORT_READY", Set.of(UserRole.APPLICANT, UserRole.PROFESSOR, UserRole.EMPLOYEE, UserRole.ADMIN), false),
 
     /**
-     * Warning email sent to inactive users before their data is deleted due to
-     * prolonged inactivity.
+     * Warning email sent to inactive users before their data is deleted due to prolonged inactivity.
      * This notification is triggered 28 days before the scheduled deletion date,
      * giving users time to log in and reactivate their account.
-     * To: Inactive applicants, employees, and professors who are approaching the
-     * data deletion threshold.
+     * To: Inactive applicants, employees, and professors who are approaching the data deletion threshold.
      */
     USER_DATA_DELETION_WARNING("USER_DATA_DELETION_WARNING", Set.of(UserRole.APPLICANT, UserRole.EMPLOYEE, UserRole.PROFESSOR), false),
 
@@ -149,7 +146,19 @@ public enum EmailType {
      * Warning email sent to applicants before their application data is deleted as part of the applicant retention policy.
      * To: Applicants whose data is scheduled for deletion under the retention policy.
      */
-    APPLICANT_DATA_DELETION_WARNING("APPLICANT_DATA_DELETION_WARNING", Set.of(UserRole.APPLICANT), false);
+    APPLICANT_DATA_DELETION_WARNING("APPLICANT_DATA_DELETION_WARNING", Set.of(UserRole.APPLICANT), false),
+
+    /**
+     * Invitation to an external referee asking them to upload a recommendation letter for a specific application.
+     * To: External referee email (no TUMApply account required)
+     */
+    REFERENCE_LETTER_INVITATION("REFERENCE_LETTER_INVITATION", Set.of(), false),
+
+    /**
+     * Reminder to an external referee that their recommendation letter upload window is about to close.
+     * To: External referee email (no TUMApply account required)
+     */
+    REFERENCE_LETTER_REMINDER("REFERENCE_LETTER_REMINDER", Set.of(), false);
 
     private final String value;
 

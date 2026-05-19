@@ -1,0 +1,67 @@
+<p class="mb-6" jhiTranslate="entity.applicationReferences.description"></p>
+<p class="mb-4 text-xs text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
+
+<form [formGroup]="addForm" class="flex flex-col gap-3" (ngSubmit)="onAdd()">
+  <div class="grid grid-cols-1 md:gap-3 md:grid-cols-4">
+    <jhi-select
+      label="entity.applicationReferences.label.title"
+      [items]="titleOptions"
+      [selected]="selectedTitleOption()"
+      [showClear]="true"
+      (selectedChange)="onTitleSelected($event)"
+      class="mb-6"
+    />
+
+    <jhi-string-input
+      label="entity.applicationReferences.label.firstName"
+      [control]="addForm.controls.firstName"
+      [required]="true"
+      width="100%"
+    />
+
+    <jhi-string-input
+      label="entity.applicationReferences.label.lastName"
+      [control]="addForm.controls.lastName"
+      [required]="true"
+      width="100%"
+    />
+
+    <jhi-string-input label="entity.applicationReferences.label.email" [control]="addForm.controls.email" [required]="true" width="100%" />
+  </div>
+
+  <div class="flex justify-end">
+    <jhi-button
+      type="submit"
+      severity="primary"
+      icon="plus"
+      [disabled]="addForm.invalid || loading()"
+      label="entity.applicationReferences.button.add"
+      [shouldTranslate]="true"
+    />
+  </div>
+</form>
+
+<p-divider layout="horizontal">
+  <span jhiTranslate="entity.applicationReferences.section.required"></span>
+</p-divider>
+
+<p class="text-sm text-text-secondary mb-4">
+  <span jhiTranslate="entity.applicationReferences.requiredCount" [translateValues]="{ count: requiredCount() }"></span>
+  <strong>{{ references().length }}/{{ requiredCount() }}</strong>
+</p>
+
+@if (references().length === 0) {
+  <p class="text-text-disabled text-sm mb-3" jhiTranslate="entity.applicationReferences.empty"></p>
+} @else {
+  <ul class="list-none p-0 mb-4">
+    @for (reference of references(); track reference.referenceRequestId) {
+      <li class="flex items-center justify-between gap-3 py-2 border-b border-divider-default">
+        <div class="flex flex-col">
+          <span class="font-medium">{{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}</span>
+          <span class="text-text-secondary text-sm">{{ reference.email }}</span>
+        </div>
+        <jhi-button severity="danger" variant="text" icon="trash" [disabled]="loading()" (click)="onRemove(reference)" />
+      </li>
+    }
+  </ul>
+}

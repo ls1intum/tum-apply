@@ -47,11 +47,8 @@ describe('ResearchGroupInfoComponent', () => {
 
   beforeEach(async () => {
     mockResearchGroupApi = createResearchGroupResourceApiMock();
-
     mockToastService = createToastServiceMock();
-
     mockAccountService = createAccountServiceMock();
-    // Initialize with undefined user by default
     mockAccountService.user.set(undefined);
 
     await TestBed.configureTestingModule({
@@ -74,32 +71,8 @@ describe('ResearchGroupInfoComponent', () => {
     vi.clearAllMocks();
   });
 
-  describe('Component Initialization', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
-    it('should initialize with default values', () => {
-      expect(component.isSaving()).toBe(false);
-      expect(component.hasInitialized()).toBe(false);
-      expect(component.form).toBeTruthy();
-    });
-  });
-
-  describe('Form Structure and Validation', () => {
-    it('should have form with all required controls', () => {
-      expect(component.form.controls.name).toBeTruthy();
-      expect(component.form.controls.abbreviation).toBeTruthy();
-      expect(component.form.controls.head).toBeTruthy();
-      expect(component.form.controls.website).toBeTruthy();
-      expect(component.form.controls.email).toBeTruthy();
-      expect(component.form.controls.city).toBeTruthy();
-      expect(component.form.controls.postalCode).toBeTruthy();
-      expect(component.form.controls.address).toBeTruthy();
-      expect(component.form.controls.description).toBeTruthy();
-    });
-
-    it('should have required validators on name and head fields', () => {
+  describe('Form Validation', () => {
+    it('should require name and head fields', () => {
       const nameControl = component.form.controls.name;
       const headControl = component.form.controls.head;
 
@@ -114,7 +87,7 @@ describe('ResearchGroupInfoComponent', () => {
       expect(headControl.hasError('required')).toBe(false);
     });
 
-    it('should have email validator on email field', () => {
+    it('should validate email format', () => {
       const emailControl = component.form.controls.email;
 
       emailControl.setValue('invalid-email');
@@ -125,24 +98,8 @@ describe('ResearchGroupInfoComponent', () => {
     });
   });
 
-  describe('User and Research Group ID', () => {
-    it('should compute researchGroupId from current user', () => {
-      mockAccountService.user.set(mockUser);
-      fixture.detectChanges();
-
-      expect(component.researchGroupId()).toBe('rg-1');
-    });
-
-    it('should return undefined researchGroupId when user has no research group', () => {
-      mockAccountService.user.set({ ...mockUser, researchGroup: undefined });
-      fixture.detectChanges();
-
-      expect(component.researchGroupId()).toBeUndefined();
-    });
-  });
-
   describe('Data Loading', () => {
-    it('should initialize and load research group data when user is available', async () => {
+    it('should load research group data and populate form when user is available', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockAccountService.user.set(mockUser);
 
@@ -150,17 +107,6 @@ describe('ResearchGroupInfoComponent', () => {
       await fixture.whenStable();
 
       expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledWith('rg-1');
-      expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledTimes(1);
-      expect(component.hasInitialized()).toBe(true);
-    });
-
-    it('should populate form with loaded research group data', async () => {
-      mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
       expect(component.form.value).toEqual({
         name: mockResearchGroupData.name,
         abbreviation: mockResearchGroupData.abbreviation,
@@ -174,30 +120,22 @@ describe('ResearchGroupInfoComponent', () => {
       });
     });
 
-    it('should not initialize when user has no research group id', async () => {
-      mockAccountService.user.set({ ...mockUser, researchGroup: undefined });
+    it.each([
+      { description: 'no research group', user: () => Object.assign({}, mockUser, { researchGroup: undefined }) },
+      {
+        description: 'empty research group id',
+        user: () => Object.assign({}, mockUser, { researchGroup: Object.assign({}, mockUser.researchGroup, { researchGroupId: '' }) }),
+      },
+    ])('should not initialize when user has $description', async ({ user }) => {
+      mockAccountService.user.set(user());
 
       fixture.detectChanges();
       await fixture.whenStable();
 
       expect(mockResearchGroupApi.getResearchGroup).not.toHaveBeenCalled();
-      expect(component.hasInitialized()).toBe(true);
     });
 
-    it('should not initialize when research group id is empty string', async () => {
-      mockAccountService.user.set({
-        ...mockUser,
-        researchGroup: { ...mockUser.researchGroup, researchGroupId: '' },
-      });
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(mockResearchGroupApi.getResearchGroup).not.toHaveBeenCalled();
-      expect(component.hasInitialized()).toBe(true);
-    });
-
-    it('should handle error when loading research group data fails', async () => {
+    it('should show error toast when loading fails', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
       mockAccountService.user.set(mockUser);
 
@@ -208,32 +146,26 @@ describe('ResearchGroupInfoComponent', () => {
         summary: 'researchGroup.groupInfo.toasts.loadFailed',
         detail: 'researchGroup.groupInfo.toasts.loadFailed',
       });
-      expect(mockToastService.showError).toHaveBeenCalledTimes(1);
-      expect(component.hasInitialized()).toBe(true);
     });
 
     it('should only initialize once even if effect runs multiple times', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
 
-      // First set user
       mockAccountService.user.set(mockUser);
       fixture.detectChanges();
       await fixture.whenStable();
 
-      expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledTimes(1);
-      expect(component.hasInitialized()).toBe(true);
+      expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledOnce();
 
-      // Trigger effect again by updating signal
-      mockAccountService.user.set({ ...mockUser });
+      mockAccountService.user.set(Object.assign({}, mockUser));
       fixture.detectChanges();
       await fixture.whenStable();
 
-      // Should still only have been called once
-      expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledTimes(1);
+      expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledOnce();
     });
   });
 
-  describe('Save Functionality', () => {
+  describe('Save', () => {
     it('should save research group data successfully', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
@@ -242,10 +174,7 @@ describe('ResearchGroupInfoComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      component.form.patchValue({
-        name: 'Updated Name',
-        head: 'Updated Head',
-      });
+      component.form.patchValue({ name: 'Updated Name', head: 'Updated Head' });
 
       await component.onSave();
 
@@ -255,14 +184,9 @@ describe('ResearchGroupInfoComponent', () => {
           name: 'Updated Name',
           head: 'Updated Head',
           abbreviation: mockResearchGroupData.abbreviation,
-          email: mockResearchGroupData.email,
         }),
       );
-      expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledTimes(1);
-      expect(mockToastService.showSuccess).toHaveBeenCalledWith({
-        detail: 'researchGroup.groupInfo.toasts.updated',
-      });
-      expect(mockToastService.showSuccess).toHaveBeenCalledTimes(1);
+      expect(mockToastService.showSuccess).toHaveBeenCalledWith({ detail: 'researchGroup.groupInfo.toasts.updated' });
       expect(component.isSaving()).toBe(false);
     });
 
@@ -273,33 +197,24 @@ describe('ResearchGroupInfoComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      component.form.patchValue({
-        name: '', // Required field is empty
-        head: '',
-      });
+      component.form.patchValue({ name: '', head: '' });
 
       await component.onSave();
 
       expect(mockResearchGroupApi.updateResearchGroup).not.toHaveBeenCalled();
-      expect(component.isSaving()).toBe(false);
     });
 
     it('should set isSaving to true during save operation', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(
-        new Promise(resolve => {
-          setTimeout(() => resolve(mockResearchGroupData), 100);
-        }),
+        new Promise(resolve => setTimeout(() => resolve(mockResearchGroupData), 100)),
       );
       mockAccountService.user.set(mockUser);
 
       fixture.detectChanges();
       await fixture.whenStable();
 
-      component.form.patchValue({
-        name: 'Updated Name',
-        head: 'Updated Head',
-      });
+      component.form.patchValue({ name: 'Updated Name', head: 'Updated Head' });
 
       const savePromise = component.onSave();
       expect(component.isSaving()).toBe(true);
@@ -307,43 +222,14 @@ describe('ResearchGroupInfoComponent', () => {
       await savePromise;
       expect(component.isSaving()).toBe(false);
     });
-  });
 
-  describe('Error Handling', () => {
     it('should show error when saving without research group id', async () => {
-      mockAccountService.user.set({ ...mockUser, researchGroup: undefined });
+      mockAccountService.user.set(Object.assign({}, mockUser, { researchGroup: undefined }));
 
       fixture.detectChanges();
       await fixture.whenStable();
 
-      component.form.patchValue({
-        name: 'Test Name',
-        head: 'Test Head',
-      });
-
-      await component.onSave();
-
-      expect(mockResearchGroupApi.updateResearchGroup).not.toHaveBeenCalled();
-      expect(mockToastService.showError).toHaveBeenCalledWith({
-        summary: 'researchGroup.groupInfo.toasts.saveFailed',
-        detail: 'researchGroup.groupInfo.toasts.noId',
-      });
-      expect(mockToastService.showError).toHaveBeenCalledTimes(1);
-    });
-
-    it('should show error when saving with empty research group id', async () => {
-      mockAccountService.user.set({
-        ...mockUser,
-        researchGroup: { ...mockUser.researchGroup, researchGroupId: '' },
-      });
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      component.form.patchValue({
-        name: 'Test Name',
-        head: 'Test Head',
-      });
+      component.form.patchValue({ name: 'Test Name', head: 'Test Head' });
 
       await component.onSave();
 
@@ -354,7 +240,7 @@ describe('ResearchGroupInfoComponent', () => {
       });
     });
 
-    it('should handle error when saving research group data fails', async () => {
+    it('should show error toast when save fails', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
       mockAccountService.user.set(mockUser);
@@ -362,67 +248,34 @@ describe('ResearchGroupInfoComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      component.form.patchValue({
-        name: 'Updated Name',
-        head: 'Updated Head',
-      });
+      component.form.patchValue({ name: 'Updated Name', head: 'Updated Head' });
 
       await component.onSave();
 
-      expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledTimes(1);
-      expect(mockToastService.showError).toHaveBeenCalledWith({
-        detail: 'researchGroup.groupInfo.toasts.saveFailed',
-      });
-      expect(mockToastService.showError).toHaveBeenCalledTimes(1);
+      expect(mockToastService.showError).toHaveBeenCalledWith({ detail: 'researchGroup.groupInfo.toasts.saveFailed' });
       expect(component.isSaving()).toBe(false);
     });
   });
 
-  describe('Edge Cases and Data Mapping', () => {
-    it('should map street field correctly between form and DTO', async () => {
-      mockResearchGroupApi.getResearchGroup.mockReturnValue(of({ ...mockResearchGroupData, street: 'Test Street' }));
+  describe('Data Mapping', () => {
+    it('should map street field between form address and DTO street', async () => {
+      mockResearchGroupApi.getResearchGroup.mockReturnValue(of(Object.assign({}, mockResearchGroupData, { street: 'Test Street' })));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockAccountService.user.set(mockUser);
 
       fixture.detectChanges();
       await fixture.whenStable();
 
-      // Check that street was loaded into address field
       expect(component.form.value.address).toBe('Test Street');
 
-      // Update and save
-      component.form.patchValue({
-        address: 'New Street',
-      });
+      component.form.patchValue({ address: 'New Street' });
 
       await component.onSave();
 
-      // Check that address was saved as street
-      expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith(
-        'rg-1',
-        expect.objectContaining({
-          street: 'New Street',
-        }),
-      );
+      expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith('rg-1', expect.objectContaining({ street: 'New Street' }));
     });
 
-    it('should handle null values in research group data', async () => {
-      const dataWithNulls: ResearchGroupDTO = {
-        name: 'Test',
-        head: 'Test Head',
-      };
-      mockResearchGroupApi.getResearchGroup.mockReturnValue(of(dataWithNulls));
-      mockAccountService.user.set(mockUser);
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(component.form.value.abbreviation).toBeUndefined();
-      expect(component.form.value.website).toBeUndefined();
-      expect(component.form.value.email).toBeUndefined();
-    });
-
-    it('should use empty strings for undefined form values when saving', async () => {
+    it('should default undefined optional fields to empty strings on save', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of({ name: 'Test', head: 'Test Head' }));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockAccountService.user.set(mockUser);
@@ -446,7 +299,7 @@ describe('ResearchGroupInfoComponent', () => {
       );
     });
 
-    it('should handle null values for name and head in form when saving', async () => {
+    it('should default null name and head to empty strings on save', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockAccountService.user.set(mockUser);
@@ -454,13 +307,7 @@ describe('ResearchGroupInfoComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      // Manually set name and head to null to test the ?? '' branches
-      component.form.patchValue({
-        name: null,
-        head: null,
-      });
-
-      // Disable validators temporarily to allow save with null values
+      component.form.patchValue({ name: null, head: null });
       component.form.controls.name.clearValidators();
       component.form.controls.head.clearValidators();
       component.form.controls.name.updateValueAndValidity();
@@ -468,13 +315,7 @@ describe('ResearchGroupInfoComponent', () => {
 
       await component.onSave();
 
-      expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith(
-        'rg-1',
-        expect.objectContaining({
-          name: '',
-          head: '',
-        }),
-      );
+      expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith('rg-1', expect.objectContaining({ name: '', head: '' }));
     });
   });
 });

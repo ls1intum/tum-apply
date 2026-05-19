@@ -8,7 +8,9 @@ export function provideFontAwesomeTesting(): Provider {
     provide: ENVIRONMENT_INITIALIZER,
     multi: true,
     useValue: () => {
-      inject(FaIconLibrary).addIcons(...fontAwesomeIcons, ...Object.values(tumApplyIconPack));
+      const library = inject(FaIconLibrary);
+      const allIcons = fontAwesomeIcons.concat(Object.values(tumApplyIconPack));
+      library.addIcons.apply(library, allIcons);
     },
   };
 }

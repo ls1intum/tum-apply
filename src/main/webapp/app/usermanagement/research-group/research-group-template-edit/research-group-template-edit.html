@@ -1,4 +1,4 @@
-<div class="page-container">
+<div class="page-container flex flex-col">
   <div class="header-container">
     <div class="page-header">
       <div class="flex items-center gap-2">
@@ -10,19 +10,11 @@
         </h1>
       </div>
     </div>
-    <div
-      class="flex items-center gap-2"
-      [class.text-positive-default]="savingState() === 'SAVED'"
-      [class.text-warning-default]="savingState() === 'SAVING'"
-      [class.text-negative-default]="savingState() === 'UNSAVED'"
-    >
-      <fa-icon icon="floppy-disk" />
-      <span [jhiTranslate]="'researchGroup.emailTemplates.' + savingState().toLocaleLowerCase()"></span>
-    </div>
+    <jhi-saving-badge [state]="autoSave.state()" />
   </div>
-  <div class="meta-info">
+  <div class="w-full flex flex-row gap-8 mb-4">
     <jhi-select
-      class="template-type-select"
+      class="w-full max-w-md"
       label="researchGroup.emailTemplates.sendWhen"
       placeholder="researchGroup.emailTemplates.selectSendWhen"
       [items]="selectOptions()"
@@ -34,18 +26,18 @@
   </div>
 
   <p-tabs value="0" class="basic-tabs">
-    <p-tablist class="tab-list">
+    <p-tablist class="mb-4">
       <p-tab value="0" class="basic-tab" jhiTranslate="researchGroup.emailTemplates.english" />
       <p-tab value="1" class="basic-tab" jhiTranslate="researchGroup.emailTemplates.german" />
     </p-tablist>
 
-    <p-tabpanel value="0" class="tab-panel">
+    <p-tabpanel value="0" class="px-4 flex flex-col gap-12">
       <div>
-        <span class="subject-label" jhiTranslate="researchGroup.emailTemplates.subject"></span>
-        <div class="subject-wrapper">
-          <span class="subject-prefix">TUMApply -</span>
+        <span class="block text-text-primary font-medium mb-2" jhiTranslate="researchGroup.emailTemplates.subject"></span>
+        <div class="flex flex-row items-center gap-4 w-full">
+          <span class="whitespace-nowrap">TUMApply -</span>
           <jhi-string-input
-            class="subject-input"
+            class="w-full"
             placeholder="researchGroup.emailTemplates.addSubject"
             [model]="english().subject"
             [errorEnabled]="false"
@@ -55,7 +47,7 @@
       </div>
 
       <div>
-        <span class="message-label" jhiTranslate="researchGroup.emailTemplates.message"></span>
+        <span class="block text-text-primary font-medium mb-2" jhiTranslate="researchGroup.emailTemplates.message"></span>
         <!-- TODO: adapt to jhi-editor when preset input is enabled -->
         <quill-editor
           class="custom-quill-editor"
@@ -67,13 +59,13 @@
       </div>
     </p-tabpanel>
 
-    <p-tabpanel value="1" class="tab-panel">
+    <p-tabpanel value="1" class="px-4 flex flex-col gap-12">
       <div>
-        <span class="subject-label" jhiTranslate="researchGroup.emailTemplates.subject"></span>
-        <div class="subject-wrapper">
-          <span class="subject-prefix">TUMApply -</span>
+        <span class="block text-text-primary font-medium mb-2" jhiTranslate="researchGroup.emailTemplates.subject"></span>
+        <div class="flex flex-row items-center gap-4 w-full">
+          <span class="whitespace-nowrap">TUMApply -</span>
           <jhi-string-input
-            class="subject-input"
+            class="w-full"
             placeholder="researchGroup.emailTemplates.addSubject"
             [model]="german().subject"
             [errorEnabled]="false"
@@ -83,7 +75,7 @@
       </div>
 
       <div>
-        <span class="message-label" jhiTranslate="researchGroup.emailTemplates.message"></span>
+        <span class="block text-text-primary font-medium mb-2" jhiTranslate="researchGroup.emailTemplates.message"></span>
         <!-- TODO: adapt to jhi-editor when preset input is enabled -->
         <quill-editor
           class="custom-quill-editor"

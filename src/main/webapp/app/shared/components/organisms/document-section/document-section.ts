@@ -12,15 +12,10 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { ToastService } from '../../../../service/toast-service';
 import { ApplicationDocumentIdsDTO } from '../../../../generated/model/application-document-ids-dto';
-import { DocumentInformationHolderDTO } from '../../../../generated/model/document-information-holder-dto';
+import { ReferenceRequestDTO } from '../../../../generated/model/reference-request-dto';
 import { ApplicationEvaluationResourceApi } from '../../../../generated/api/application-evaluation-resource-api';
+import type { DocumentHolder } from '../../../models/document-holder';
 import { DocumentDialog } from '../../molecules/document-dialog/document-dialog';
-
-export interface DocumentHolder {
-  label: string;
-  document: DocumentInformationHolderDTO;
-}
-
 @Component({
   selector: 'jhi-document-section',
   imports: [DocumentViewerComponent, SubSection, FontAwesomeModule, ButtonComponent, TranslateDirective, TooltipModule, DocumentDialog],
@@ -29,6 +24,9 @@ export interface DocumentHolder {
 export class DocumentSection {
   idsDTO = input<ApplicationDocumentIdsDTO | undefined>(undefined);
   applicationId = input.required<string | undefined>();
+
+  /** External reference letters uploaded by referees, to be merged into the listed documents. */
+  referenceLetters = input<ReferenceRequestDTO[]>([]);
 
   documents = signal<DocumentHolder[]>([]);
   extraDocuments = signal<DocumentHolder[]>([]);
@@ -53,31 +51,49 @@ export class DocumentSection {
     this.currentLang();
 
     return this.extraDocuments()
-      .map(doc => this.translate.instant(doc.label))
+      .map(doc => this.translate.instant(doc.label, doc.labelParams))
       .join(', ');
   });
 
   idChangeEffect = effect(() => {
     const dto = this.idsDTO();
+    const letters = this.referenceLetters();
 
-    if (!dto) {
+    if (!dto && letters.length === 0) {
       this.documents.set([]);
       this.extraDocuments.set([]);
       this.documentsCount.set(0);
       return;
     }
 
-    const result: { label: string; document: DocumentInformationHolderDTO }[] = [];
+    const result: DocumentHolder[] = [];
 
-    dto.masterDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeMaster', document: d }));
+    dto?.masterDocumentIds?.forEach(d =>
+      result.push({ label: 'evaluation.details.documentTypeMaster', document: d, shouldTranslateLabel: true }),
+    );
 
-    if (dto.cvDocumentId) {
-      result.push({ label: 'evaluation.details.documentTypeCV', document: dto.cvDocumentId });
+    if (dto?.cvDocumentId) {
+      result.push({ label: 'evaluation.details.documentTypeCV', document: dto.cvDocumentId, shouldTranslateLabel: true });
     }
 
-    dto.bachelorDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeBachelor', document: d }));
+    dto?.bachelorDocumentIds?.forEach(d =>
+      result.push({ label: 'evaluation.details.documentTypeBachelor', document: d, shouldTranslateLabel: true }),
+    );
 
-    dto.referenceDocumentIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeReference', document: d }));
+    dto?.referenceDocumentIds?.forEach(d =>
+      result.push({ label: 'evaluation.details.documentTypeReference', document: d, shouldTranslateLabel: true }),
+    );
+
+    letters
+      .filter((letter): letter is ReferenceRequestDTO & { documentId: string } => !!letter.documentId)
+      .forEach(letter => {
+        const refereeName = [letter.title, letter.firstName, letter.lastName].filter(part => !!part).join(' ');
+        result.push({
+          label: 'evaluation.details.documentTypeReferenceLetter',
+          labelParams: { name: refereeName },
+          document: { id: letter.documentId, name: refereeName, size: 0 },
+        });
+      });
 
     this.documentsCount.set(result.length);
 

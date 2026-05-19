@@ -10,6 +10,10 @@ import { DocumentInformationHolderDTO } from 'app/generated/model/document-infor
 import { createToastServiceMock, provideToastServiceMock } from '../../../../../util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from '../../../../../util/translate.mock';
 
+function createDocument(id: string, name?: string, size = 123): DocumentInformationHolderDTO {
+  return { id, name, size };
+}
+
 describe('DocumentSection', () => {
   let fixture: ComponentFixture<DocumentSection>;
   let component: DocumentSection;
@@ -68,10 +72,36 @@ describe('DocumentSection', () => {
       expect(component.extraDocuments().length).toBe(3);
     });
 
-    it('should compute hasDocuments correctly', () => {
-      expect(component.hasDocuments()).toBe(false);
-      component.documents.set([{ label: 'lbl', document: { id: 'd1' } as DocumentInformationHolderDTO }]);
-      expect(component.hasDocuments()).toBe(true);
+    it('should map each DTO entry to a translated document holder with the correct label and order', () => {
+      const master1 = createDocument('m1', 'master-1.pdf');
+      const master2 = createDocument('m2', 'master-2.pdf');
+      const cv = createDocument('cv', 'cv.pdf');
+      const bachelor = createDocument('b1', 'bachelor.pdf');
+      const reference1 = createDocument('r1', 'reference-1.pdf');
+      const reference2 = createDocument('r2', 'reference-2.pdf');
+
+      const dto: ApplicationDocumentIdsDTO = {
+        masterDocumentIds: [master1, master2],
+        cvDocumentId: cv,
+        bachelorDocumentIds: [bachelor],
+        referenceDocumentIds: [reference1, reference2],
+      };
+
+      fixture.componentRef.setInput('idsDTO', dto);
+      fixture.detectChanges();
+
+      expect(component.documentsCount()).toBe(6);
+      expect(component.documents()).toEqual([
+        { label: 'evaluation.details.documentTypeMaster', document: master1, shouldTranslateLabel: true },
+        { label: 'evaluation.details.documentTypeMaster', document: master2, shouldTranslateLabel: true },
+        { label: 'evaluation.details.documentTypeCV', document: cv, shouldTranslateLabel: true },
+      ]);
+      expect(component.extraDocuments()).toEqual([
+        { label: 'evaluation.details.documentTypeBachelor', document: bachelor, shouldTranslateLabel: true },
+        { label: 'evaluation.details.documentTypeReference', document: reference1, shouldTranslateLabel: true },
+        { label: 'evaluation.details.documentTypeReference', document: reference2, shouldTranslateLabel: true },
+      ]);
+      expect(component.allDocuments()).toEqual([...component.documents(), ...component.extraDocuments()]);
     });
 
     it('should compute allDocumentsTooltip using translate.instant', () => {
@@ -129,7 +159,7 @@ describe('DocumentSection', () => {
 
       expect(mockApi.downloadAll).toHaveBeenCalledWith('app-1');
       expect(createObjectSpy).toHaveBeenCalledWith(blob);
-      expect(clickSpy).toHaveBeenCalled();
+      expect(clickSpy).toHaveBeenCalledOnce();
       expect(anchor.download).toBe('documents.zip');
       expect(revokeObjectSpy).toHaveBeenCalledWith('blob:url');
     });

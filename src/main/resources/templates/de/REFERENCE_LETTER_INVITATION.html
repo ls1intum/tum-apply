@@ -1,0 +1,14 @@
+<p>Sehr geehrte/r <#if REFEREE_NAME_TITLE??>${REFEREE_NAME_TITLE} </#if>${REFEREE_FIRST_NAME!} ${REFEREE_LAST_NAME!},</p>
+
+<p><strong>${APPLICANT_FIRST_NAME!} ${APPLICANT_LAST_NAME!}</strong> bewirbt sich auf die Position
+  <strong>${JOB_TITLE!}</strong> bei ${RESEARCH_GROUP_NAME!} und hat Sie als Referenzgeber angegeben.</p>
+
+<p>Über den folgenden Link können Sie Ihr Empfehlungsschreiben als PDF hochladen.
+
+<@ui.ctaButton href=(REFERENCE_LINK!'') label="Empfehlung hochladen" />
+
+<p>Der Link ist gültig bis zum <strong>${REFERENCE_DEADLINE!}</strong>.</p>
+
+<p>Vielen Dank für Ihre Unterstützung.</p>
+
+<p>Mit freundlichen Grüßen<br />Ihr TUMApply Team</p>

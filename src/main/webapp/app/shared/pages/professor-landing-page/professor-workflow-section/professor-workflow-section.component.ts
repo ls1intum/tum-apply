@@ -10,7 +10,6 @@ import { WorkflowStepComponent } from './workflow-step/workflow-step.component';
   standalone: true,
   imports: [WorkflowStepComponent, TranslateModule, TranslateDirective],
   templateUrl: './professor-workflow-section.component.html',
-  styleUrl: './professor-workflow-section.component.scss',
 })
 export class ProfessorWorkflowSectionComponent {
   readonly translationKey = 'professorLandingPage.workflow.steps';

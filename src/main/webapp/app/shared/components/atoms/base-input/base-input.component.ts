@@ -1,4 +1,4 @@
-import { AbstractControl, FormControl } from '@angular/forms';
+import { AbstractControl, FormControl, TouchedChangeEvent } from '@angular/forms';
 import { Directive, Signal, computed, effect, inject, input, output, signal } from '@angular/core';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -25,6 +25,7 @@ export abstract class BaseInputDirective<T> {
   complianceError = input<string | undefined>(undefined);
   warningText = input<string | undefined>(undefined);
   helperTextLeft = input<string | undefined>(undefined);
+  helperTextLeftParams = input<Record<string, unknown>>({});
   helperTextRight = input<string | undefined>(undefined);
   helperTextRightClick = output();
 
@@ -42,7 +43,7 @@ export abstract class BaseInputDirective<T> {
   displayLabel = computed(() => this.maybeTranslate(this.label()));
   displayPlaceholder = computed(() => this.maybeTranslate(this.placeholder()));
   displayTooltipText = computed(() => this.maybeTranslate(this.tooltipText()));
-  displayHelperTextLeft = computed(() => this.maybeTranslate(this.helperTextLeft()));
+  displayHelperTextLeft = computed(() => this.maybeTranslate(this.helperTextLeft(), this.helperTextLeftParams()));
   displayHelperTextRight = computed(() => this.maybeTranslate(this.helperTextRight()));
   displayWarningText = computed(() => this.maybeTranslate(this.warningText()));
 
@@ -87,10 +88,23 @@ export abstract class BaseInputDirective<T> {
 
   constructor() {
     effect(onCleanup => {
-      const sub = this.formControl().statusChanges.subscribe(() => {
+      const ctrl = this.formControl();
+      this.isTouched.set(this.isTouched() || ctrl.touched);
+      const statusSub = ctrl.statusChanges.subscribe(() => {
         this.formValidityVersion.update(v => v + 1);
       });
-      onCleanup(() => sub.unsubscribe());
+      // Clear local touched flag when the bound control is reset to untouched (e.g. via form.reset / markAsUntouched).
+      // Re-syncing on touched=true here would override the autofocus-pristine skip in onBlur, because Angular's
+      // FormControlDirective auto-calls markAsTouched on every native blur.
+      const eventsSub = ctrl.events.subscribe(event => {
+        if (event instanceof TouchedChangeEvent && !event.touched) {
+          this.isTouched.set(false);
+        }
+      });
+      onCleanup(() => {
+        statusSub.unsubscribe();
+        eventsSub.unsubscribe();
+      });
     });
 
     // Sync `disabled` input into the provided control (if there is one).
@@ -125,11 +139,11 @@ export abstract class BaseInputDirective<T> {
     this.isFocused.set(true);
   }
 
-  protected maybeTranslate(value: string | undefined): string {
+  protected maybeTranslate(value: string | undefined, params?: Record<string, unknown>): string {
     this.langChange();
     if (value === undefined || value === '') {
       return value ?? '';
     }
-    return this.shouldTranslate() ? this.translate.instant(value) : value;
+    return this.shouldTranslate() ? this.translate.instant(value, params) : value;
   }
 }

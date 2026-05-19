@@ -13,6 +13,8 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
+import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
+import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
@@ -21,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -94,8 +98,16 @@ public class PDFExportService {
                     job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-"
                 )
                 .addOverviewItem(labels.get("tvlGrade"), job.tvlGrade() != null ? job.tvlGrade().name() : "-")
-                .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
-                .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
+                .addOverviewItem(
+                    labels.get("startDate"),
+                    formatStartDateForOverview(formatDate(job.startDate()), job.startDateByArrangement(), labels)
+                )
+                .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()));
+            if (job.referenceLettersRequired() > 0) {
+                builder.addOverviewItem(labels.get("referenceLettersRequired"), String.valueOf(job.referenceLettersRequired()));
+            }
+            builder
+                .addOverviewItem(labels.get("suitableForDisabled"), formatYesNo(job.suitableForDisabled(), labels))
                 .setOverviewDescriptionTitle(labels.get("jobDetails"))
                 .setOverviewDescription(descriptionForExport);
         }
@@ -105,6 +117,18 @@ public class PDFExportService {
         builder.startInfoSection(labels.get("motivation")).addSectionContent(getValue(app.motivation()));
         builder.startInfoSection(labels.get("skills")).addSectionContent(getValue(app.specialSkills()));
         builder.startInfoSection(labels.get("researchExperience")).addSectionContent(getValue(app.projects()));
+
+        // Recommendation Letters Group (one row per requested referee with their current status)
+        if (app.references() != null && !app.references().isEmpty()) {
+            builder.startSectionGroup(labels.get("references"));
+            builder.startInfoSection(labels.get(""));
+            for (ReferenceRequestDTO reference : app.references()) {
+                builder.addSectionData(
+                    formatRefereeName(reference),
+                    getValue(reference.email()) + " " + formatReferenceStatus(reference.status(), labels)
+                );
+            }
+        }
 
         // Personal Information Group
         builder.startSectionGroup(labels.get("personalInformation"));
@@ -205,8 +229,10 @@ public class PDFExportService {
                 formatContractDuration(job.contractDuration(), labels.get("year"), labels.get("years")),
                 job.fundingType() != null ? getValue(job.fundingType().correctLanguageValue(lang)) : "-",
                 job.tvlGrade() != null ? job.tvlGrade().name() : "-",
-                formatDate(job.startDate()),
-                formatDate(job.endDate())
+                job.referenceLettersRequired(),
+                formatStartDateForOverview(formatDate(job.startDate()), job.startDateByArrangement(), labels),
+                formatDate(job.endDate()),
+                formatYesNo(job.suitableForDisabled(), labels)
             )
         );
 
@@ -271,8 +297,14 @@ public class PDFExportService {
                 formatContractDuration(jobFormDTO.contractDuration(), labels.get("year"), labels.get("years")),
                 jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().correctLanguageValue(lang) : "-",
                 jobFormDTO.tvlGrade() != null ? jobFormDTO.tvlGrade().name() : "-",
-                jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
-                jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
+                jobFormDTO.referenceLettersRequired(),
+                formatStartDateForOverview(
+                    jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
+                    jobFormDTO.startDateByArrangement(),
+                    labels
+                ),
+                jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-",
+                formatYesNo(jobFormDTO.suitableForDisabled(), labels)
             )
         );
 
@@ -399,6 +431,30 @@ public class PDFExportService {
             .addOverviewItem(labels.get("tvlGrade"), getValue(data.tvlGrade()))
             .addOverviewItem(labels.get("startDate"), getValue(data.startDate()))
             .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
+        if (data.referenceLettersRequired() > 0) {
+            builder.addOverviewItem(labels.get("referenceLettersRequired"), String.valueOf(data.referenceLettersRequired()));
+        }
+        builder.addOverviewItem(labels.get("suitableForDisabled"), getValue(data.suitableForDisabled()));
+    }
+
+    /**
+     * Formats a date for PDF rendering. Appends the "Upon agreement" label when the start date is by arrangement.
+     */
+    private String formatStartDateForOverview(String formattedDate, Boolean byArrangement, Map<String, String> labels) {
+        if (Boolean.TRUE.equals(byArrangement)) {
+            return formattedDate + " (" + labels.get("uponAgreement") + ")";
+        }
+        return formattedDate;
+    }
+
+    /**
+     * Resolves the boolean field to the localised "Yes"/"No" label.
+     */
+    private String formatYesNo(Boolean value, Map<String, String> labels) {
+        if (value == null) {
+            return "-";
+        }
+        return value ? labels.get("yes") : labels.get("no");
     }
 
     private void addJobDetailsSection(PDFBuilder builder, Map<String, String> labels, String jobDescription) {
@@ -644,5 +700,22 @@ public class PDFExportService {
         Locale countryLocale = Locale.of("", countryCode);
         Locale displayLanguage = Locale.of(lang);
         return countryLocale.getDisplayCountry(displayLanguage);
+    }
+
+    private String formatRefereeName(ReferenceRequestDTO reference) {
+        String fullName = Stream.of(reference.title(), reference.firstName(), reference.lastName())
+            .filter(this::hasValue)
+            .collect(Collectors.joining(" "));
+        return getValue(fullName);
+    }
+
+    private String formatReferenceStatus(ReferenceRequestStatus status, Map<String, String> labels) {
+        return switch (status) {
+            case null -> "";
+            case ADDED -> labels.getOrDefault("referenceStatusAdded", "(added)");
+            case REQUESTED -> labels.getOrDefault("referenceStatusRequested", "(requested)");
+            case SUBMITTED -> labels.getOrDefault("referenceStatusSubmitted", "(submitted)");
+            case EXPIRED -> labels.getOrDefault("referenceStatusExpired", "(expired)");
+        };
     }
 }

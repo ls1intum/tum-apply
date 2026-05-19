@@ -23,9 +23,11 @@ export interface JobDetailDTO {
     readonly jobId: string;
     readonly lastModifiedAt: string;
     readonly location?: JobDetailDTOLocationEnum;
+    readonly referenceLettersRequired?: number;
     readonly researchArea?: string;
     readonly researchGroup: ResearchGroupSummaryDTO;
     readonly startDate?: string;
+    readonly startDateByArrangement?: boolean;
     readonly state?: JobDetailDTOStateEnum;
     readonly subjectArea: JobDetailDTOSubjectAreaEnum;
     readonly suitableForDisabled?: boolean;
@@ -35,20 +37,22 @@ export interface JobDetailDTO {
     readonly workload?: number;
 }
 
-export type JobDetailDTOApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INTERVIEW';
+export type JobDetailDTOApplicationStateEnum = 'SAVED' | 'SENT' | 'PENDING' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'JOB_CLOSED_DRAFT' | 'INTERVIEW';
 
 export const JobDetailDTOApplicationStateEnum = {
     Saved: 'SAVED' as const,
     Sent: 'SENT' as const,
+    Pending: 'PENDING' as const,
     Accepted: 'ACCEPTED' as const,
     InReview: 'IN_REVIEW' as const,
     Rejected: 'REJECTED' as const,
     Withdrawn: 'WITHDRAWN' as const,
     JobClosed: 'JOB_CLOSED' as const,
+    JobClosedDraft: 'JOB_CLOSED_DRAFT' as const,
     Interview: 'INTERVIEW' as const,
 } as const;
 
-export const JobDetailDTOApplicationStateEnumValues = ['SAVED', 'SENT', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'INTERVIEW'] as const;
+export const JobDetailDTOApplicationStateEnumValues = ['SAVED', 'SENT', 'PENDING', 'ACCEPTED', 'IN_REVIEW', 'REJECTED', 'WITHDRAWN', 'JOB_CLOSED', 'JOB_CLOSED_DRAFT', 'INTERVIEW'] as const;
 
 export type JobDetailDTOFundingTypeEnum = 'FULLY_FUNDED' | 'PARTIALLY_FUNDED' | 'SCHOLARSHIP' | 'SELF_FUNDED' | 'INDUSTRY_SPONSORED' | 'GOVERNMENT_FUNDED' | 'RESEARCH_GRANT';
 

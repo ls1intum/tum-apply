@@ -72,9 +72,6 @@
       "addSubject": "Enter email subject...",
       "addVariable": "Press '$' to add a variable",
       "message": "Message",
-      "saved": "Saved",
-      "saving": "Saving changes",
-      "unsaved": "Changes not saved",
       "messageType": {
         "APPLICATION_ACCEPTED": "Application accepted",
         "APPLICATION_REJECTED_JOB_FILLED": "Application rejected - Job already filled",

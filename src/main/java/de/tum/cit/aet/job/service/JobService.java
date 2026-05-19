@@ -31,10 +31,12 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -190,6 +192,8 @@ public class JobService {
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getImage() != null ? job.getImage().getUrl() : null,
             job.getSuitableForDisabled(),
+            job.getStartDateByArrangement(),
+            job.getReferenceLettersRequired(),
             job.getGenderBiasScore(),
             job.getComplianceIssues()
         );
@@ -251,6 +255,8 @@ public class JobService {
             applicationId,
             applicationState,
             job.getSuitableForDisabled(),
+            job.getStartDateByArrangement(),
+            job.getReferenceLettersRequired(),
             job.getImage() != null ? job.getImage().getImageId() : null
         );
     }
@@ -395,6 +401,8 @@ public class JobService {
         job.setJobDescriptionDE(HtmlSanitizer.sanitize(dto.jobDescriptionDE()));
         job.setState(dto.state());
         job.setSuitableForDisabled(dto.suitableForDisabled());
+        job.setStartDateByArrangement(Boolean.TRUE.equals(dto.startDateByArrangement()));
+        job.setReferenceLettersRequired(Objects.requireNonNullElse(dto.referenceLettersRequired(), 0));
 
         // Capture old image before any modifications
         Image oldImage = job.getImage();
@@ -421,23 +429,31 @@ public class JobService {
     }
 
     private void notifySubjectAreaSubscribers(Job job) {
-        List<User> recipients = applicantRepository
-            .findAllBySubjectAreaSubscription(job.getSubjectArea())
-            .stream()
-            .filter(user -> emailSettingService.canNotify(EmailType.JOB_PUBLISHED_SUBJECT_AREA, user))
-            .toList();
+        Set<User> candidates = applicantRepository.findAllBySubjectAreaSubscription(job.getSubjectArea());
+        if (candidates.isEmpty()) {
+            return;
+        }
 
-        recipients.forEach(user ->
-            sender.sendAsync(
-                Email.builder()
-                    .to(user)
-                    .emailType(EmailType.JOB_PUBLISHED_SUBJECT_AREA)
-                    .content(JobPublicationEmailContextDTO.fromEntities(user, job))
-                    .language(Language.fromCode(user.getSelectedLanguage()))
-                    .sendAlways(true)
-                    .build()
-            )
-        );
+        // 1) Collect candidate user IDs in one pass.
+        // 2) Resolve the enabled subset in a single query.
+        // 3) Fan out the async emails only to that subset.
+        Set<UUID> candidateIds = candidates.stream().map(User::getUserId).collect(Collectors.toSet());
+        Set<UUID> enabledIds = emailSettingService.filterEnabledUserIds(EmailType.JOB_PUBLISHED_SUBJECT_AREA, candidateIds);
+
+        candidates
+            .stream()
+            .filter(user -> enabledIds.contains(user.getUserId()))
+            .forEach(user ->
+                sender.sendAsync(
+                    Email.builder()
+                        .to(user)
+                        .emailType(EmailType.JOB_PUBLISHED_SUBJECT_AREA)
+                        .content(JobPublicationEmailContextDTO.fromEntities(user, job))
+                        .language(Language.fromCode(user.getSelectedLanguage()))
+                        .sendAlways(true)
+                        .build()
+                )
+            );
     }
 
     /**
@@ -447,7 +463,7 @@ public class JobService {
      * @return the job entity if the user can manage it
      */
     private Job assertCanManageJob(UUID jobId) {
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;
     }
@@ -477,15 +493,25 @@ public class JobService {
      * @param jobId the job identifier
      * @param score the combined AI score to persist
      * @param complianceAnalysis the compliance issues detected for the job description
+     * @param lang the language for which existing issues should be replaced
      */
-    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis) {
+    public void updateAiAnalysis(UUID jobId, int score, List<ComplianceIssue> complianceAnalysis, String lang) {
         if (jobId == null) {
             return;
         }
 
-        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+
+        // Keep issues from the other language, add new ones for target language
+        List issuesToSave = job
+            .getComplianceIssues()
+            .stream()
+            .filter(issue -> !Objects.equals(issue.getLanguage(), lang))
+            .collect(Collectors.toCollection(ArrayList::new));
+
+        issuesToSave.addAll(complianceAnalysis);
         job.setGenderBiasScore(score);
-        job.setComplianceIssues(complianceAnalysis);
+        job.setComplianceIssues(issuesToSave);
         jobRepository.save(job);
     }
 }

@@ -31,7 +31,7 @@
     ]"
     [sortableFields]="sortableFields"
   />
-  <div class="body mt-2">
+  <div class="mt-2 flex flex-col items-center gap-3 sm:gap-4 md:gap-6 box-border [&>jhi-application-carousel]:w-full">
     <jhi-application-carousel
       [totalRecords]="totalRecords()"
       [applications]="applications()"
@@ -292,9 +292,35 @@
 
           <p-divider class="block xl:hidden" />
 
-          <div>
+          <div class="flex flex-col gap-8">
+            @if (currentReferenceRequests().length > 0) {
+              <jhi-section titleKey="evaluation.details.referenceLetterStatus" icon="envelope">
+                <ul class="list-disc list-inside marker:text-primary text-sm">
+                  @for (reference of currentReferenceRequests(); track reference.referenceRequestId) {
+                    <li class="py-1">
+                      <span class="font-medium">{{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}</span>
+                      <span class="font-normal text-text-secondary text-sm ml-1"> ({{ reference.email }}) </span>
+                      @if (reference.status === 'SUBMITTED') {
+                        <span class="text-positive-default ml-1" jhiTranslate="evaluation.details.referenceStatus.submitted"
+                          >Submitted</span
+                        >
+                      } @else if (reference.status === 'EXPIRED') {
+                        <span class="text-negative-default ml-1" jhiTranslate="evaluation.details.referenceStatus.expired">Expired</span>
+                      } @else {
+                        <span class="text-text-secondary ml-1" jhiTranslate="evaluation.details.referenceStatus.requested">Requested</span>
+                      }
+                    </li>
+                  }
+                </ul>
+              </jhi-section>
+            }
+
             <jhi-section titleKey="evaluation.details.documentTitle" icon="file-lines">
-              <jhi-document-section [idsDTO]="currentDocumentIds()" [applicationId]="currentApplicationId()" />
+              <jhi-document-section
+                [idsDTO]="currentDocumentIds()"
+                [applicationId]="currentApplicationId()"
+                [referenceLetters]="currentReferenceRequests()"
+              />
             </jhi-section>
           </div>
         </div>

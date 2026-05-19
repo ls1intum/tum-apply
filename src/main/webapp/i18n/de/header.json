@@ -2,8 +2,10 @@
   "header": {
     "login": "Anmelden",
     "professorTitle": "Professor:in",
-    "professor": "Für Professoren",
-    "applicant": "Für Bewerbende",
+    "professor": "Bist du Professor:in?",
+    "professorShort": "Professor:in?",
+    "applicant": "Bist du Bewerber:in?",
+    "applicantShort": "Bewerber:in?",
     "logout": "Abmelden",
     "settings": "Einstellungen",
     "profileMenu": "Profilmenü öffnen",

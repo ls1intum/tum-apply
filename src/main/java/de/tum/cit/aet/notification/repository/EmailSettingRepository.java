@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.domain.EmailSetting;
 import de.tum.cit.aet.usermanagement.domain.User;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -44,6 +45,25 @@ public interface EmailSettingRepository extends TumApplyJpaRepository<EmailSetti
         """
     )
     Set<EmailType> findAvailableEmailTypesForUser(@Param("user") User user);
+
+    /**
+     * Returns the subset of the given user IDs that have an explicit, disabled setting for the given email type.
+     * Users without a stored setting fall back to the default-enabled behaviour and are not in this set.
+     *
+     * @param userIds   the candidate user IDs to check
+     * @param emailType the email type to filter by
+     * @return the IDs of users who have explicitly disabled this email type
+     */
+    @Query(
+        """
+        SELECT es.user.userId
+        FROM EmailSetting es
+        WHERE es.user.userId IN :userIds
+          AND es.emailType = :emailType
+          AND es.enabled = false
+        """
+    )
+    Set<UUID> findUserIdsWithDisabledSetting(@Param("userIds") Collection<UUID> userIds, @Param("emailType") EmailType emailType);
 
     void deleteByUser(User user);
 }

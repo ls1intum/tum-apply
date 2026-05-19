@@ -13,11 +13,13 @@ import lombok.Getter;
 public enum ApplicationState {
     SAVED("SAVED", EnumSet.of(UserRole.APPLICANT)),
     SENT("SENT", EnumSet.of(UserRole.APPLICANT)),
+    PENDING("PENDING", EnumSet.of(UserRole.APPLICANT, UserRole.PROFESSOR, UserRole.EMPLOYEE)),
     ACCEPTED("ACCEPTED", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE)),
     IN_REVIEW("IN_REVIEW", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE)),
     REJECTED("REJECTED", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE)),
     WITHDRAWN("WITHDRAWN", EnumSet.of(UserRole.APPLICANT)),
     JOB_CLOSED("JOB_CLOSED", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE)),
+    JOB_CLOSED_DRAFT("JOB_CLOSED_DRAFT", EnumSet.of(UserRole.APPLICANT)),
     INTERVIEW("INTERVIEW", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE));
 
     private final String value;

@@ -151,11 +151,13 @@ class AiResourceTest extends AbstractResourceTest {
             null,
             null,
             null,
+            0,
             "I don't allow disabled applicants",
             "Ich erlaube keine Bewerber mit Behinderung",
             JobState.DRAFT,
             null,
             true,
+            false,
             null,
             null
         );

@@ -72,9 +72,6 @@
       "addSubject": "Betreff der Email...",
       "addVariable": "Drücke '$', um eine Variable einzufügen",
       "message": "Nachricht",
-      "saved": "Gespeichert",
-      "saving": "Änderungen werden gespeichert",
-      "unsaved": "Änderungen nicht gespeichert",
       "messageType": {
         "APPLICATION_ACCEPTED": "Bewerbung angenommen",
         "APPLICATION_REJECTED_JOB_FILLED": "Bewerbung abgelehnt - Stelle bereits besetzt",

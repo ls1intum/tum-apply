@@ -22,8 +22,10 @@ export interface JobDTO {
     readonly jobDescriptionEN?: string;
     readonly jobId: string;
     readonly location?: JobDTOLocationEnum;
+    readonly referenceLettersRequired?: number;
     readonly researchArea?: string;
     readonly startDate?: string;
+    readonly startDateByArrangement?: boolean;
     readonly state: JobDTOStateEnum;
     readonly subjectArea?: JobDTOSubjectAreaEnum;
     readonly suitableForDisabled?: boolean;

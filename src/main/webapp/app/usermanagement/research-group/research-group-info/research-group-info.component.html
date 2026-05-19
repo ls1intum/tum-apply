@@ -11,6 +11,7 @@
   </div>
   <div class="card">
     <p jhiTranslate="researchGroup.groupInfo.description"></p>
+    <p class="mb-4 text-xs text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
     <div class="card-body">
       <div class="space-y-4">
         <form [formGroup]="form">
@@ -138,7 +139,7 @@
             <span jhiTranslate="researchGroup.groupInfo.fields.sectionOrganization"></span>
           </p-divider>
 
-          <jhi-info-box severity="secondary" message="researchGroup.groupInfo.organizationInfo" [shouldTranslate]="true" />
+          <jhi-info-box severity="info" message="researchGroup.groupInfo.organizationInfo" [shouldTranslate]="true" />
 
           <div class="form-row mt-4">
             <div class="form-field">

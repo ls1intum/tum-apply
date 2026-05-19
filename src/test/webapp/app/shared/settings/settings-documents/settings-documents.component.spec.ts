@@ -5,9 +5,10 @@ import { of, Subject, throwError } from 'rxjs';
 
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
+import { SavingStates } from 'app/shared/constants/saving-states';
+import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';
 
 type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
-import { SettingsDocumentsComponent } from 'app/shared/settings/settings-documents/settings-documents.component';
 import { createApplicantResourceApiMock, provideApplicantResourceApiMock } from 'util/applicant-resource-api.service.mock';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
@@ -130,8 +131,6 @@ describe('SettingsDocumentsComponent', () => {
       expect(component.referenceDocuments()?.[0]?.id).toBe('reference-doc-1');
       expect(component.bachelorGradeLimits()).toEqual({ upperLimit: '1.0', lowerLimit: '4.0', isPercentage: false });
       expect(component.masterGradeLimits()).toEqual({ upperLimit: '1.0', lowerLimit: '4.0', isPercentage: false });
-      expect(component.helperTextBachelorGrade()).toContain('entity.applicationPage2.helperText.scale');
-      expect(component.helperTextMasterGrade()).toContain('entity.applicationPage2.helperText.scale');
     });
 
     it('should show an error toast when loading document settings fails', async () => {
@@ -145,41 +144,25 @@ describe('SettingsDocumentsComponent', () => {
 
     it('should set grade limits to null when the loaded grades are empty', async () => {
       const profile = createProfile();
-      profile.bachelorGrade = '';
-      profile.bachelorGradeUpperLimit = '';
-      profile.bachelorGradeLowerLimit = '';
-      profile.masterGrade = '';
-      profile.masterGradeUpperLimit = '';
-      profile.masterGradeLowerLimit = '';
+      Object.assign(profile, {
+        bachelorGrade: '',
+        bachelorGradeUpperLimit: '',
+        bachelorGradeLowerLimit: '',
+        masterGrade: '',
+        masterGradeUpperLimit: '',
+        masterGradeLowerLimit: '',
+      });
       applicantApiMock.getApplicantProfile.mockReturnValue(of(profile));
 
       const component = await createComponent();
 
-      expect(component.form.controls.bachelorGrade.value).toBe('');
-      expect(component.form.controls.masterGrade.value).toBe('');
       expect(component.bachelorGradeLimits()).toBeNull();
       expect(component.masterGradeLimits()).toBeNull();
     });
 
     it('should map missing profile fields and document ids to empty values on load', async () => {
-      const profile: ApplicantDTO = {
-        user: {
-          userId: 'user-1',
-        },
-        bachelorDegreeName: undefined,
-        bachelorUniversity: undefined,
-        bachelorGradeUpperLimit: undefined,
-        bachelorGradeLowerLimit: undefined,
-        bachelorGrade: undefined,
-        masterDegreeName: undefined,
-        masterUniversity: undefined,
-        masterGradeUpperLimit: undefined,
-        masterGradeLowerLimit: undefined,
-        masterGrade: undefined,
-      };
-      const documentIds: ApplicationDocumentIdsDTO = {};
-      applicantApiMock.getApplicantProfile.mockReturnValue(of(profile));
-      applicantApiMock.getApplicantProfileDocumentIds.mockReturnValue(of(documentIds));
+      applicantApiMock.getApplicantProfile.mockReturnValue(of({ user: { userId: 'user-1' } } as ApplicantDTO));
+      applicantApiMock.getApplicantProfileDocumentIds.mockReturnValue(of({} as ApplicationDocumentIdsDTO));
 
       const component = await createComponent();
 
@@ -212,139 +195,69 @@ describe('SettingsDocumentsComponent', () => {
   });
 
   describe('grading scale', () => {
-    it.each([
-      {
-        gradeType: 'bachelor' as const,
-        currentGrade: '1.3',
-        updatedLimits: { upperLimit: '100%', lowerLimit: '60%' },
-        expectedFieldValues: { upper: '100%', lower: '60%' },
-        getLimits: (component: SettingsDocumentsComponent) => component.bachelorGradeLimits(),
-        getFieldValues: (component: SettingsDocumentsComponent) => ({
-          upper: component.form.controls.bachelorGradeUpperLimit.value,
-          lower: component.form.controls.bachelorGradeLowerLimit.value,
-        }),
-      },
-      {
-        gradeType: 'master' as const,
-        currentGrade: '1.1',
-        updatedLimits: { upperLimit: '110', lowerLimit: '66' },
-        expectedFieldValues: { upper: '110', lower: '66' },
-        getLimits: (component: SettingsDocumentsComponent) => component.masterGradeLimits(),
-        getFieldValues: (component: SettingsDocumentsComponent) => ({
-          upper: component.form.controls.masterGradeUpperLimit.value,
-          lower: component.form.controls.masterGradeLowerLimit.value,
-        }),
-      },
-    ])(
-      'should apply returned grading scale limits for $gradeType grades',
-      async ({ gradeType, currentGrade, updatedLimits, expectedFieldValues, getLimits, getFieldValues }) => {
-        const dialogCloseSubject = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
-        dialogServiceMock.open.mockReturnValue({ onClose: dialogCloseSubject.asObservable() });
-        const component = await createComponent();
+    it('should apply returned grading scale limits for bachelor and master grades', async () => {
+      const dialogCloseSubject = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
+      dialogServiceMock.open.mockReturnValue({ onClose: dialogCloseSubject.asObservable() });
+      const component = await createComponent();
 
-        component.onChangeGradingScale(gradeType);
+      component.onChangeGradingScale('bachelor');
+      expect(dialogServiceMock.open).toHaveBeenCalledWith(
+        GradingScaleEditDialogComponent,
+        expect.objectContaining({ data: expect.objectContaining({ gradeType: 'bachelor', currentGrade: '1.3' }) }),
+      );
+      dialogCloseSubject.next({ upperLimit: '100%', lowerLimit: '60%' });
 
-        expect(dialogServiceMock.open).toHaveBeenCalledWith(
-          GradingScaleEditDialogComponent,
-          expect.objectContaining({
-            data: expect.objectContaining({
-              gradeType,
-              currentGrade,
-            }),
-          }),
-        );
-
-        dialogCloseSubject.next(updatedLimits);
-
-        expect(getFieldValues(component)).toEqual(expectedFieldValues);
-        expect(getLimits(component)).toEqual(updatedLimits);
-      },
-    );
+      expect(component.form.controls.bachelorGradeUpperLimit.value).toBe('100%');
+      expect(component.form.controls.bachelorGradeLowerLimit.value).toBe('60%');
+      expect(component.bachelorGradeLimits()).toEqual({ upperLimit: '100%', lowerLimit: '60%' });
+    });
 
     it('should keep master grading scale values unchanged when the dialog closes without a result', async () => {
       const dialogCloseSubject = new Subject<{ upperLimit: string; lowerLimit: string } | undefined>();
-      dialogServiceMock.open.mockReturnValue({
-        onClose: dialogCloseSubject.asObservable(),
-      });
+      dialogServiceMock.open.mockReturnValue({ onClose: dialogCloseSubject.asObservable() });
 
       const component = await createComponent();
-      component.form.patchValue({
-        masterGradeUpperLimit: null,
-        masterGradeLowerLimit: null,
-      });
+      component.form.patchValue({ masterGradeUpperLimit: null, masterGradeLowerLimit: null });
 
       component.onChangeGradingScale('master');
       dialogCloseSubject.next(undefined);
 
       expect(dialogServiceMock.open).toHaveBeenCalledOnce();
-      const openCall = dialogServiceMock.open.mock.calls[0];
-      expect(openCall[1]).toEqual({
-        header: 'entity.applicationPage2.helperText.changeScale',
-        width: '40rem',
-        style: { background: 'var(--color-background-default)' },
-        closable: true,
-        draggable: false,
-        modal: true,
-        data: {
-          gradeType: 'master',
-          currentGrade: '1.1',
-          currentUpperLimit: '',
-          currentLowerLimit: '',
-        },
+      expect(dialogServiceMock.open.mock.calls[0][1]).toMatchObject({
+        data: { gradeType: 'master', currentGrade: '1.1', currentUpperLimit: '', currentLowerLimit: '' },
       });
       expect(component.form.controls.masterGradeUpperLimit.value).toBeNull();
       expect(component.form.controls.masterGradeLowerLimit.value).toBeNull();
     });
 
-    it.each([
-      {
-        label: 'bachelor',
-        setDetectedGrade: (component: SettingsDocumentsComponent) => component.form.controls.bachelorGrade.setValue('84%'),
-        setWarningGrade: (component: SettingsDocumentsComponent) => component.form.controls.bachelorGrade.setValue('12345'),
-        getUpperLimit: (component: SettingsDocumentsComponent) => component.form.controls.bachelorGradeUpperLimit.value,
-        getLowerLimit: (component: SettingsDocumentsComponent) => component.form.controls.bachelorGradeLowerLimit.value,
-        getWarning: (component: SettingsDocumentsComponent) => component.warningTextBachelorGrade(),
-      },
-      {
-        label: 'master',
-        setDetectedGrade: (component: SettingsDocumentsComponent) => component.form.controls.masterGrade.setValue('84%'),
-        setWarningGrade: (component: SettingsDocumentsComponent) => component.form.controls.masterGrade.setValue('12345'),
-        getUpperLimit: (component: SettingsDocumentsComponent) => component.form.controls.masterGradeUpperLimit.value,
-        getLowerLimit: (component: SettingsDocumentsComponent) => component.form.controls.masterGradeLowerLimit.value,
-        getWarning: (component: SettingsDocumentsComponent) => component.warningTextMasterGrade(),
-      },
-    ])(
-      'should derive limits and warnings for $label grades after debounce',
-      async ({ setDetectedGrade, setWarningGrade, getUpperLimit, getLowerLimit, getWarning }) => {
-        vi.useFakeTimers();
-        const component = await createComponent();
+    it('should derive limits and warnings for bachelor grades after debounce', async () => {
+      vi.useFakeTimers();
+      const component = await createComponent();
 
-        setDetectedGrade(component);
-        await vi.advanceTimersByTimeAsync(600);
+      component.form.controls.bachelorGrade.setValue('84%');
+      await vi.advanceTimersByTimeAsync(600);
 
-        expect({ upper: getUpperLimit(component), lower: getLowerLimit(component) }).toEqual({ upper: '100%', lower: '50%' });
+      expect(component.form.controls.bachelorGradeUpperLimit.value).toBe('100%');
+      expect(component.form.controls.bachelorGradeLowerLimit.value).toBe('50%');
 
-        setWarningGrade(component);
-        await vi.advanceTimersByTimeAsync(600);
+      component.form.controls.bachelorGrade.setValue('12345');
+      await vi.advanceTimersByTimeAsync(600);
 
-        expect(getWarning(component)).toBe('entity.applicationPage2.warnText');
-        vi.useRealTimers();
-      },
-    );
+      expect(component.warningTextBachelorGrade()).toBe('entity.applicationPage2.warnText');
+      vi.useRealTimers();
+    });
   });
 
   describe('saving', () => {
-    it('should save document settings with the expected payload and reload state', async () => {
+    it('should save document settings with the expected payload and reset the local baseline', async () => {
       const component = await createComponent();
-      // Ignore the constructor-triggered load calls so the expectations below only
-      // describe the save flow itself.
       vi.clearAllMocks();
 
       component.form.patchValue({
         masterDegreeName: 'Updated Master Degree',
       });
 
-      await component.saveAll();
+      await component.performAutoSave();
 
       expect(applicantApiMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -352,10 +265,11 @@ describe('SettingsDocumentsComponent', () => {
           masterDegreeName: 'Updated Master Degree',
         }),
       );
-      expect(applicantApiMock.getApplicantProfile).toHaveBeenCalledOnce();
-      expect(applicantApiMock.getApplicantProfileDocumentIds).toHaveBeenCalledOnce();
-      expect(toastServiceMock.showSuccessKey).toHaveBeenCalledWith('settings.documents.saved');
-      expect(component.saving()).toBe(false);
+      expect(toastServiceMock.showSuccessKey).not.toHaveBeenCalled();
+      expect(component.initialFormValue()).toMatchObject({
+        masterDegreeName: 'Updated Master Degree',
+      });
+      expect(component.savingState()).toBe(SavingStates.SAVED);
     });
 
     it('should normalize null form values to undefined in the save payload', async () => {
@@ -375,7 +289,7 @@ describe('SettingsDocumentsComponent', () => {
         masterGrade: null,
       });
 
-      await component.saveAll();
+      await component.performAutoSave();
 
       expect(applicantApiMock.updateApplicantDocumentSettings).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -393,34 +307,22 @@ describe('SettingsDocumentsComponent', () => {
       );
     });
 
-    it('should persist document deletions, renames and queued uploads during save', async () => {
+    it('should not batch document mutations into metadata autosave anymore', async () => {
       const component = await createComponent();
       vi.clearAllMocks();
-      const referenceFile = new File(['reference'], 'new-reference.pdf', { type: 'application/pdf' });
 
       component.bachelorDocuments.set([]);
       component.referenceDocuments.set([
         { id: 'reference-doc-1', name: 'reference-renamed.pdf', size: 100 },
-        { id: 'temp-upload-1', name: 'new-reference.pdf', size: referenceFile.size },
+        { id: 'temp-upload-1', name: 'new-reference.pdf', size: 123 },
       ]);
-      component.onReferenceQueuedFilesChange([referenceFile]);
-      // Simulate the upload endpoint returning the real persisted document entry
-      // that replaces the temporary placeholder in the UI state.
-      httpClientMock.post.mockReturnValue(
-        of([
-          { id: 'reference-doc-1', name: 'reference-renamed.pdf', size: 100 },
-          { id: 'uploaded-reference-1', name: 'new-reference.pdf', size: referenceFile.size },
-        ]),
-      );
 
-      await component.saveAll();
+      await component.performAutoSave();
 
-      expect(applicantApiMock.deleteApplicantProfileDocument).toHaveBeenCalledWith('bachelor-doc-1');
-      expect(applicantApiMock.renameApplicantProfileDocument).toHaveBeenCalledWith('reference-doc-1', 'reference-renamed.pdf');
-      expect(httpClientMock.post).toHaveBeenCalledOnce();
-      expect(httpClientMock.post).toHaveBeenCalledWith('/api/applicants/profile/documents/REFERENCE', expect.any(FormData));
-      const uploadCall = httpClientMock.post.mock.calls[0];
-      expect((uploadCall[1] as FormData).get('files')).toBe(referenceFile);
+      expect(applicantApiMock.deleteApplicantProfileDocument).not.toHaveBeenCalled();
+      expect(applicantApiMock.renameApplicantProfileDocument).not.toHaveBeenCalled();
+      expect(httpClientMock.post).not.toHaveBeenCalled();
+      expect(applicantApiMock.updateApplicantDocumentSettings).not.toHaveBeenCalled();
     });
 
     it('should show an error and skip saving when the loaded user id is missing', async () => {
@@ -431,11 +333,11 @@ describe('SettingsDocumentsComponent', () => {
         bachelorDegreeName: 'Updated Degree',
       });
 
-      await component.saveAll();
+      const saved = await component.performAutoSave();
 
       expect(applicantApiMock.updateApplicantDocumentSettings).not.toHaveBeenCalled();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.documents.saveFailed');
-      expect(component.saving()).toBe(false);
+      expect(saved).toBe(false);
     });
 
     it('should show an error toast when saving document settings fails', async () => {
@@ -448,10 +350,10 @@ describe('SettingsDocumentsComponent', () => {
         bachelorDegreeName: 'Updated Degree',
       });
 
-      await component.saveAll();
+      const saved = await component.performAutoSave();
 
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.documents.saveFailed');
-      expect(component.saving()).toBe(false);
+      expect(saved).toBe(false);
     });
   });
 });

@@ -60,8 +60,13 @@ function getOverviewItemLabel(translate: TranslateService): Record<string, strin
     years: translate.instant('jobDetailPage.units.years'),
     fundingType: `${translate.instant('jobDetailPage.labels.fundingType')}:`,
     tvlGrade: `${translate.instant('jobDetailPage.labels.tvlGrade')}:`,
+    referenceLettersRequired: `${translate.instant('jobDetailPage.labels.referenceLetters')}:`,
     startDate: `${translate.instant('jobDetailPage.labels.startDate')}:`,
     endDate: `${translate.instant('jobDetailPage.labels.applicationEndDate')}:`,
+    suitableForDisabled: `${translate.instant('jobCreationForm.basicInformationSection.positionOptions.suitableForDisabled.label')}:`,
+    uponAgreement: translate.instant('jobCreationForm.basicInformationSection.positionOptions.uponArrangement.label'),
+    yes: translate.instant('pdf.values.yes'),
+    no: translate.instant('pdf.values.no'),
     jobDetails: translate.instant('pdf.sections.jobDetails'),
     lang: translate.getCurrentLang(),
   };
@@ -95,6 +100,11 @@ function getPersonalStatementsLabel(translate: TranslateService): Record<string,
     motivation: translate.instant('entity.applicationDetail.motivation'),
     skills: translate.instant('entity.applicationDetail.skills'),
     researchExperience: translate.instant('entity.applicationDetail.researchExperience'),
+    references: translate.instant('entity.application_detail.reference_letters'),
+    referenceStatusAdded: translate.instant('entity.application_detail.reference_status.added'),
+    referenceStatusRequested: translate.instant('entity.application_detail.reference_status.requested'),
+    referenceStatusSubmitted: translate.instant('entity.application_detail.reference_status.submitted'),
+    referenceStatusExpired: translate.instant('entity.application_detail.reference_status.expired'),
   };
 }
 

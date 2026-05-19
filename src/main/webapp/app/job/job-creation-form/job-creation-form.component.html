@@ -1,5 +1,5 @@
 <jhi-confirm-dialog
-  class="confirm-dialog"
+  class="hidden"
   header="jobCreationForm.confirmDialog.header"
   message="jobCreationForm.confirmDialog.message"
   label="button.publish"
@@ -18,7 +18,7 @@
       @if (stepper.currentStep() === 1) {
         <div class="flex items-center gap-2">
           <jhi-segmented-toggle
-            class="[&_button]:!min-w-[7rem] [&_button]:!whitespace-nowrap"
+            class="[&_button]:!min-w-28 [&_button]:!whitespace-nowrap"
             [value]="aiToggleSignal() ? 'right' : 'left'"
             [leftLabel]="'jobCreationForm.positionDetailsSection.jobDescription.aiToggleOff'"
             [rightLabel]="'jobCreationForm.positionDetailsSection.jobDescription.aiToggleOn'"
@@ -41,12 +41,16 @@
 
   <!-- Step 1: Basic Information -->
   <ng-template #panel1>
-    <div class="panel1-layout lg:!gap-x-6" [class.panel1-layout-with-sidebar]="aiToggleSignal()">
-      <div class="panel1-main w-full min-w-0 transition-[margin-inline] duration-300 ease-in-out lg:mx-auto">
+    <div
+      class="lg:px-[clamp(1rem,3vw,2.5rem)] lg:!gap-x-6"
+      [class]="aiToggleSignal() ? 'lg:grid lg:gap-x-3 lg:pe-0 lg:grid-cols-[minmax(0,1fr)_1px_18rem]' : ''"
+    >
+      <div class="w-full min-w-0 transition-[margin-inline] duration-300 ease-in-out lg:mx-auto lg:pr-2">
         <form [formGroup]="basicInfoForm" class="mx-auto w-full max-w-4xl px-4 sm:px-5 md:px-6 lg:px-8 lg:pr-5 xl:px-10">
           <div class="grid items-start gap-4">
             <div>
               <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
+              <p class="mb-4 text-xs text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
               <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
               <div class="flex flex-col">
                 <div class="flex flex-col lg:flex-row lg:gap-8">
@@ -195,12 +199,12 @@
 
       @if (aiToggleSignal()) {
         <!--AI Assistant sidebar-->
-        <div class="panel1-divider hidden lg:block" aria-hidden="true"></div>
+        <div class="hidden lg:block lg:h-full lg:bg-divider-default" aria-hidden="true"></div>
         <aside
-          class="flex flex-col mx-auto mt-4 w-full max-w-[52rem] overflow-hidden bg-background-default lg:sticky lg:top-0 lg:mx-0 lg:mt-0 lg:w-full lg:max-w-full lg:self-start"
+          class="flex flex-col mx-auto mt-4 w-full max-w-208 overflow-hidden bg-background-default lg:sticky lg:top-0 lg:mx-0 lg:mt-0 lg:w-full lg:max-w-full lg:self-start"
         >
           <div class="flex items-center">
-            <div class="flex flex-1 items-center justify-start min-h-16 gap-3 px-5 py-3 text-text-primary">
+            <div class="flex flex-1 items-center justify-start min-h-12 gap-3 px-5 py-1 text-text-primary">
               <fa-icon class="shrink-0 text-sm text-primary" [icon]="['fas', 'custom-sparkle']" />
               <span class="text-base leading-tight font-bold text-text-primary" jhiTranslate="jobCreationForm.aiSidebar.header"></span>
             </div>
@@ -224,14 +228,18 @@
   <!-- Step 2: Employment Terms -->
   <ng-template #panel2>
     <div class="flex flex-column h-full">
-      <form [formGroup]="positionDetailsForm" class="mx-auto w-full max-w-4xl px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
+      <form [formGroup]="positionDetailsForm" [class]="stepContainerClass">
         <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span> </p-divider>
         <div class="flex flex-col">
           <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
               <jhi-datepicker
+                inputId="applicationDeadline"
                 [selectedDate]="positionDetailsForm.get('applicationDeadline')?.value"
                 (selectedDateChange)="positionDetailsForm.get('applicationDeadline')?.setValue($event)"
+                [maxDate]="applicationDeadlineMaxDate()"
+                [highlightedDate]="applicationDeadlineMaxDate()"
+                [highlightedDateLabel]="'jobCreationForm.positionDetailsSection.selectedStartDate'"
                 [label]="'jobCreationForm.basicInformationSection.applicationDeadline.label'"
                 [placeholder]="'jobCreationForm.basicInformationSection.applicationDeadline.placeholder'"
                 icon="circle-info"
@@ -241,22 +249,6 @@
                 [errorEnabled]="true"
               />
             </div>
-            <div class="flex-1">
-              <jhi-datepicker
-                [selectedDate]="positionDetailsForm.get('startDate')?.value"
-                (selectedDateChange)="positionDetailsForm.get('startDate')?.setValue($event)"
-                [label]="'jobCreationForm.basicInformationSection.startDate.label'"
-                [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
-                icon="circle-info"
-                tooltipText="jobCreationForm.basicInformationSection.startDate.toolTipText"
-                [shouldTranslate]="true"
-                [width]="'100%'"
-                [errorEnabled]="true"
-              />
-            </div>
-          </div>
-
-          <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
               <jhi-number-input
                 label="jobCreationForm.basicInformationSection.workload.label"
@@ -269,6 +261,26 @@
                 [maxFractionDigits]="0"
                 icon="circle-info"
                 tooltipText="jobCreationForm.basicInformationSection.workload.toolTipText"
+              />
+            </div>
+          </div>
+
+          <div class="flex flex-col lg:flex-row lg:gap-8">
+            <div class="flex-1">
+              <jhi-datepicker
+                inputId="startDate"
+                [selectedDate]="positionDetailsForm.get('startDate')?.value"
+                (selectedDateChange)="positionDetailsForm.get('startDate')?.setValue($event)"
+                [minDate]="startDateMinDate()"
+                [highlightedDate]="startDateMinDate()"
+                [highlightedDateLabel]="'jobCreationForm.positionDetailsSection.selectedDeadline'"
+                [label]="'jobCreationForm.basicInformationSection.startDate.label'"
+                [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
+                icon="circle-info"
+                tooltipText="jobCreationForm.basicInformationSection.startDate.toolTipText"
+                [shouldTranslate]="true"
+                [width]="'100%'"
+                [errorEnabled]="true"
               />
             </div>
             <div class="flex-1">
@@ -287,7 +299,7 @@
             </div>
           </div>
 
-          <div class="flex flex-col gap-6 lg:flex-row lg:gap-8">
+          <div class="flex flex-col lg:flex-row lg:gap-8">
             <div class="flex-1">
               <jhi-select
                 [selected]="positionDetailsForm.get('fundingType')?.value"
@@ -299,6 +311,7 @@
                 [filter]="true"
                 [showClear]="true"
                 [dataKey]="'value'"
+                [errorEnabled]="true"
               />
             </div>
             <div class="flex-1">
@@ -325,19 +338,63 @@
                 [filter]="true"
                 [showClear]="true"
                 [dataKey]="'value'"
+                [errorEnabled]="true"
               />
             </div>
           </div>
 
-          <!-- Equal Opportunities Checkbox -->
-          <div class="flex flex-col mt-8">
-            <jhi-checkbox
-              label="jobCreationForm.additionalInformationSection.suitableForDisabled.label"
-              [model]="positionDetailsForm.get('suitableForDisabled')?.value"
-              (modelChange)="positionDetailsForm.get('suitableForDisabled')?.setValue($event)"
-              tooltipText="jobCreationForm.additionalInformationSection.suitableForDisabled.tooltip"
-              [shouldTranslate]="true"
-            />
+          <div class="flex flex-col lg:flex-row lg:gap-8">
+            <div class="flex-1">
+              <jhi-select
+                label="jobCreationForm.basicInformationSection.referenceLettersRequired.label"
+                [selected]="positionDetailsForm.get('referenceLettersRequired')?.value"
+                (selectedChange)="positionDetailsForm.get('referenceLettersRequired')?.setValue($event)"
+                [items]="referenceLettersRequiredOptions"
+                icon="circle-info"
+                tooltipText="jobCreationForm.basicInformationSection.referenceLettersRequired.toolTipText"
+                [width]="'100%'"
+                [dataKey]="'value'"
+              />
+            </div>
+            <div class="flex-1"></div>
+          </div>
+
+          <!-- Position Options card -->
+          <div class="mt-8 rounded-lg border border-border-default bg-background-surface px-4 py-3">
+            <div
+              class="text-xs font-semibold uppercase tracking-wide text-text-secondary mb-3"
+              jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.title"
+            ></div>
+            <div class="flex flex-col gap-3">
+              <div class="flex flex-col">
+                <jhi-checkbox
+                  label="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.label"
+                  tooltipText="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.tooltip"
+                  [model]="positionDetailsForm.get('startDateByArrangement')?.value"
+                  (modelChange)="positionDetailsForm.get('startDateByArrangement')?.setValue($event)"
+                  [shouldTranslate]="true"
+                  [errorEnabled]="false"
+                />
+                <p
+                  class="text-sm text-text-secondary ml-6"
+                  jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.subtitle"
+                ></p>
+              </div>
+              <div class="flex flex-col">
+                <jhi-checkbox
+                  label="jobCreationForm.basicInformationSection.positionOptions.suitableForDisabled.label"
+                  tooltipText="jobCreationForm.basicInformationSection.positionOptions.suitableForDisabled.tooltip"
+                  [model]="positionDetailsForm.get('suitableForDisabled')?.value"
+                  (modelChange)="positionDetailsForm.get('suitableForDisabled')?.setValue($event)"
+                  [shouldTranslate]="true"
+                  [errorEnabled]="false"
+                />
+                <p
+                  class="text-sm text-text-secondary ml-6"
+                  jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.suitableForDisabled.subtitle"
+                ></p>
+              </div>
+            </div>
           </div>
         </div>
       </form>
@@ -399,7 +456,7 @@
   <!-- Step 3: Image Selection/Upload -->
   <ng-template #panel3>
     <div class="flex flex-column h-full">
-      <div class="mx-auto w-full max-w-4xl px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10">
+      <div [class]="stepContainerClass">
         <p class="mb-4" jhiTranslate="jobCreationForm.imageSection.description"></p>
 
         <!-- Default Image Section -->
@@ -498,12 +555,7 @@
 
   <!-- Saving State Panel -->
   <ng-template #savingStatePanel>
-    <div [className]="savingBadgeCalculatedClass()">
-      <fa-icon [icon]="['fas', 'save']" />
-      <span class="font-bold ml-2">
-        {{ 'entity.applicationSteps.status.' + savingState() | translate }}
-      </span>
-    </div>
+    <jhi-saving-badge [state]="autoSave.state()" />
   </ng-template>
 
   <!-- AI Info Dialog -->

@@ -1,7 +1,6 @@
 import { Component, DestroyRef, afterNextRender, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TranslateDirective } from 'app/shared/language';
@@ -31,11 +30,13 @@ interface ExportSection {
 
 /**
  * How often we poll the status endpoint while a task is in progress.
- * Large exports take minutes — a slow cadence keeps the server load low
- * while still surfacing progress updates often enough to reassure the
- * admin that something is happening.
+ * Large exports take many minutes; a slow cadence keeps the server load
+ * low while still refreshing the in-card counters often enough that the
+ * admin sees progress. The live download progress bar inside the card
+ * is driven by chunk-level updates, not by polling, so a longer poll
+ * interval does not make the UI feel frozen.
  */
-const POLL_INTERVAL_MS = 30000;
+const POLL_INTERVAL_MS = 45000;
 
 /**
  * Size of each byte-range chunk the browser requests when downloading a
@@ -63,8 +64,8 @@ const STORAGE_KEY = 'tumapply.adminExports.tasks';
 interface DownloadProgress {
   /** Bytes received so far from the server. */
   loaded: number;
-  /** Total bytes expected, or {@code null} if the server did not set {@code Content-Length}. */
-  total: number | null;
+  /** Total bytes expected, or {@code undefined} if the server did not set {@code Content-Length}. */
+  total: number | undefined;
 }
 
 /**
@@ -87,7 +88,7 @@ interface DownloadProgress {
 @Component({
   selector: 'jhi-admin-exports',
   standalone: true,
-  imports: [CommonModule, TranslateModule, TranslateDirective, ButtonComponent],
+  imports: [CommonModule, TranslateDirective, ButtonComponent],
   templateUrl: './admin-exports.component.html',
 })
 export class AdminExportsComponent {
@@ -178,6 +179,18 @@ export class AdminExportsComponent {
     },
   ];
 
+  /**
+   * Sections that render as a single full-width grid (currently only the
+   * Jobs section, which has multiple buttons).
+   */
+  readonly multiButtonSections = computed<ExportSection[]>(() => this.sections.filter(section => section.buttons.length > 1));
+
+  /**
+   * Sections that own a single button. They are rendered side-by-side as
+   * cards in one row instead of stacking on top of each other.
+   */
+  readonly singleButtonSections = computed<ExportSection[]>(() => this.sections.filter(section => section.buttons.length === 1));
+
   private readonly api = inject(AdminExportResourceApi);
   private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
@@ -229,6 +242,40 @@ export class AdminExportsComponent {
   }
 
   /**
+   * Aggregate build progress across every counter the server reports for
+   * the given task (schools / departments / research groups / jobs /
+   * applications / documents / users / role assignments / applicants /
+   * subscriptions). Returns a number between 0 and 100, or {@code undefined}
+   * when the server has not yet reported any expected counts (e.g. the
+   * task just started). Drives the in-card progress bar so the admin
+   * sees concrete movement during the multi-minute build.
+   */
+  buildProgressPercent(task: AdminExportTaskDTO | undefined): number | undefined {
+    if (task === undefined) return undefined;
+    let exported = 0;
+    let expected = 0;
+    for (const counter of [
+      task.schools,
+      task.departments,
+      task.researchGroups,
+      task.jobs,
+      task.applications,
+      task.documents,
+      task.users,
+      task.userResearchGroupRoles,
+      task.applicants,
+      task.applicantSubjectAreaSubscriptions,
+    ]) {
+      if (counter?.expected !== undefined && counter.expected > 0) {
+        expected += counter.expected;
+        exported += counter.exported ?? 0;
+      }
+    }
+    if (expected === 0) return undefined;
+    return Math.min(100, Math.floor((exported / expected) * 100));
+  }
+
+  /**
    * Returns a human-friendly progress label for an in-flight download, e.g.
    * {@code "42% (12.3 MB / 29.1 MB)"}. Falls back to a byte-count-only label
    * when the server did not set a {@code Content-Length} header, and returns
@@ -237,7 +284,7 @@ export class AdminExportsComponent {
   downloadProgressLabel(type: AdminExportType): string {
     const progress = this.downloadProgress().get(type);
     if (progress === undefined) return '';
-    if (progress.total === null || progress.total === 0) {
+    if (progress.total === undefined || progress.total === 0) {
       return this.formatBytes(progress.loaded);
     }
     const percent = Math.floor((progress.loaded / progress.total) * 100);
@@ -413,37 +460,38 @@ export class AdminExportsComponent {
     const taskId = task.taskId;
     const url = `/api/admin/exports/download/${encodeURIComponent(taskId)}`;
 
-    this.setDownloadProgress(type, 0, null);
+    this.setDownloadProgress(type, 0, undefined);
 
     const chunks: Blob[] = [];
     let nextOffset = 0;
-    let total: number | null = null;
-    let filename: string | null = null;
+    let total: number | undefined = undefined;
+    let filename: string | undefined = undefined;
 
     try {
-      while (total === null || nextOffset < total) {
+      while (total === undefined || nextOffset < total) {
         if (this.downloadGeneration.get(type) !== generation) return;
-        const chunkEndExclusive = total === null ? nextOffset + DOWNLOAD_CHUNK_SIZE : Math.min(nextOffset + DOWNLOAD_CHUNK_SIZE, total);
+        const chunkEndExclusive =
+          total === undefined ? nextOffset + DOWNLOAD_CHUNK_SIZE : Math.min(nextOffset + DOWNLOAD_CHUNK_SIZE, total);
         // HTTP Range header end is inclusive, so we subtract 1.
         const rangeHeader = `bytes=${nextOffset}-${chunkEndExclusive - 1}`;
         const response = await this.fetchChunkWithRetry(url, rangeHeader, type, generation);
         if (this.downloadGeneration.get(type) !== generation) return;
-        const chunk = response.body;
-        if (chunk === null) {
+        const chunk = response.body ?? undefined;
+        if (chunk === undefined) {
           throw new Error('Empty chunk body');
         }
         chunks.push(chunk);
         nextOffset += chunk.size;
 
-        if (total === null) {
+        if (total === undefined) {
           // First chunk — parse the total size from Content-Range
           // ("bytes start-end/total") so we know how many more chunks to
           // request. Fall back to Content-Length when the server did not
           // return a 206 (treating the response as the whole file).
           total =
-            this.parseTotalFromContentRange(response.headers.get('Content-Range')) ??
-            this.parseContentLength(response.headers.get('Content-Length'));
-          filename = this.parseFilename(response.headers.get('Content-Disposition')) ?? null;
+            this.parseTotalFromContentRange(response.headers.get('Content-Range') ?? undefined) ??
+            this.parseContentLength(response.headers.get('Content-Length') ?? undefined);
+          filename = this.parseFilename(response.headers.get('Content-Disposition') ?? undefined);
         }
         this.setDownloadProgress(type, nextOffset, total);
 
@@ -528,26 +576,26 @@ export class AdminExportsComponent {
 
   /**
    * Parses the total file size out of an HTTP {@code Content-Range} header
-   * value like {@code "bytes 0-32767/102400"}. Returns {@code null} for
+   * value like {@code "bytes 0-32767/102400"}. Returns {@code undefined} for
    * malformed or missing headers, or when the server sent an unknown
    * total (indicated by {@code *}).
    */
-  private parseTotalFromContentRange(header: string | null): number | null {
-    if (header === null) return null;
-    const match = /\/(\d+)$/.exec(header);
-    if (match === null) return null;
+  private parseTotalFromContentRange(header: string | undefined): number | undefined {
+    if (header === undefined) return undefined;
+    const match = /\/(\d+)$/.exec(header) ?? undefined;
+    if (match === undefined) return undefined;
     const parsed = parseInt(match[1], 10);
-    return Number.isFinite(parsed) ? parsed : null;
+    return Number.isFinite(parsed) ? parsed : undefined;
   }
 
-  /** Parses a numeric {@code Content-Length} header, or {@code null} when absent/malformed. */
-  private parseContentLength(header: string | null): number | null {
-    if (header === null) return null;
+  /** Parses a numeric {@code Content-Length} header, or {@code undefined} when absent/malformed. */
+  private parseContentLength(header: string | undefined): number | undefined {
+    if (header === undefined) return undefined;
     const parsed = parseInt(header, 10);
-    return Number.isFinite(parsed) ? parsed : null;
+    return Number.isFinite(parsed) ? parsed : undefined;
   }
 
-  private setDownloadProgress(type: AdminExportType, loaded: number, total: number | null): void {
+  private setDownloadProgress(type: AdminExportType, loaded: number, total: number | undefined): void {
     this.downloadProgress.update(prev => {
       const next = new Map(prev);
       next.set(type, { loaded, total });
@@ -605,8 +653,8 @@ export class AdminExportsComponent {
 
   private loadFromStorage(): Map<AdminExportType, string> {
     try {
-      const raw = sessionStorage.getItem(STORAGE_KEY);
-      if (raw === null) return new Map();
+      const raw = sessionStorage.getItem(STORAGE_KEY) ?? undefined;
+      if (raw === undefined) return new Map();
       const parsed = JSON.parse(raw) as Partial<Record<AdminExportType, string>>;
       const result = new Map<AdminExportType, string>();
       for (const key of Object.keys(parsed) as AdminExportType[]) {
@@ -636,8 +684,8 @@ export class AdminExportsComponent {
 
   // ---------------- misc helpers ----------------
 
-  private parseFilename(contentDisposition: string | null | undefined): string | undefined {
-    if (contentDisposition === null || contentDisposition === undefined) return undefined;
+  private parseFilename(contentDisposition: string | undefined): string | undefined {
+    if (contentDisposition === undefined) return undefined;
     return /filename="([^"]+)"/.exec(contentDisposition)?.[1];
   }
 

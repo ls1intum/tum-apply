@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
+import { Component, ElementRef, ViewEncapsulation, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
@@ -43,9 +43,7 @@ export class FilterMultiselect {
   filterSearchPlaceholder = input.required<string>();
   filterOptions = input<string[]>([]);
   shouldTranslateOptions = input<boolean>(false);
-  showSelectedChipsInTrigger = input<boolean>(true);
   selectedValuesInput = input<string[] | undefined>(undefined);
-  inline = input<boolean>(false);
   focusedIndexOptionList = signal<number>(-1);
 
   selectedValues = signal<string[]>([]);
@@ -105,7 +103,7 @@ export class FilterMultiselect {
   selectedOptions = computed(() => this.sortedOptions().filter(opt => opt.selected));
 
   unselectedOptions = computed(() => this.sortedOptions().filter(opt => !opt.selected));
-  showChipsCounterOnly = computed(() => this.showSelectedChipsInTrigger() && this.selectedOptions().length > this.maxVisibleChips);
+  showChipsCounterOnly = computed(() => this.selectedOptions().length > this.maxVisibleChips);
 
   hasSelectedItems = computed(() => this.selectedOptions().length > 0);
   hasUnselectedItems = computed(() => this.unselectedOptions().length > 0);
@@ -114,6 +112,7 @@ export class FilterMultiselect {
   totalCount = computed(() => this.filterOptions().length);
 
   private readonly elementRef = inject(ElementRef);
+  private readonly dropdownRef = viewChild<ElementRef<HTMLElement>>('dropdown');
   private readonly translator = injectTranslator();
   private readonly translateService = this.translator.translateService;
 
@@ -133,7 +132,7 @@ export class FilterMultiselect {
     if (this.isOpen()) {
       this.searchTerm.set('');
       this.calculateDropdownAlignment();
-      this.focusedIndexOptionList.set(0);
+      this.focusedIndexOptionList.set(-1);
     }
   }
 
@@ -250,7 +249,7 @@ export class FilterMultiselect {
 
   private calculateDropdownAlignment(): void {
     setTimeout(() => {
-      const dropdown = this.elementRef.nativeElement.querySelector('.filter-dropdown');
+      const dropdown = this.dropdownRef()?.nativeElement;
       if (dropdown && window.innerWidth <= 768) {
         const rect = dropdown.getBoundingClientRect();
         const viewportWidth = window.innerWidth;

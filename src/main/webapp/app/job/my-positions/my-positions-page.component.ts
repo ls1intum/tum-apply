@@ -42,7 +42,6 @@ import { UserShortDTO } from '../../generated/model/user-short-dto';
     FontAwesomeModule,
   ],
   templateUrl: './my-positions-page.component.html',
-  styleUrl: './my-positions-page.component.scss',
 })
 export class MyPositionsPageComponent {
   loading = signal(true);
@@ -122,8 +121,8 @@ export class MyPositionsPageComponent {
 
   readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
 
-  readonly stateSeverityMap = signal<Record<string, 'info' | 'success' | 'contrast' | 'secondary'>>({
-    DRAFT: 'info',
+  readonly stateSeverityMap = signal<Record<string, 'info' | 'success' | 'contrast' | 'secondary' | 'neutral'>>({
+    DRAFT: 'neutral',
     PUBLISHED: 'secondary',
     CLOSED: 'contrast',
     APPLICANT_FOUND: 'success',

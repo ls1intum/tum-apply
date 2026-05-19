@@ -5,6 +5,8 @@
 node_tmp/
 node_modules/
 npm-debug.log.*
+pnpm-debug.log.*
+.pnpm-store/
 /.awcache/*
 /.cache-loader/*
 
@@ -182,3 +184,6 @@ storage
 openapi-generator-angular21/build/
 openapi-generator-angular21/.gradle/
 out-tsc/
+
+# Keep the custom keycloak passkey extension for local development
+!docker/local-setup/realm-config/providers/custom-passkey-*.jar

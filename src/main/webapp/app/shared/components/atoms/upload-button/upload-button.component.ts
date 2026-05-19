@@ -6,19 +6,24 @@ import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApi } from 'app/generated/api/application-resource-api';
+import { ApplicantResourceApi } from 'app/generated/api/applicant-resource-api';
 import {
   DocumentInformationHolderDTO,
   DocumentInformationHolderDTODocumentTypeEnum,
 } from 'app/generated/model/document-information-holder-dto';
 import { FileSelectEvent } from 'primeng/fileupload';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { DocumentDialog } from 'app/shared/components/molecules/document-dialog/document-dialog';
+import type { DocumentHolder } from 'app/shared/models/document-holder';
+import { createTemporaryDocumentId, isTemporaryDocumentId } from 'app/shared/util/document.util';
 
 import { ButtonComponent } from '../button/button.component';
 
 export type DocumentType = DocumentInformationHolderDTODocumentTypeEnum;
+export type UploadTarget = 'application' | 'applicantProfile';
 
 /**
  * Generic PDF upload control used by applicant document flows.
@@ -32,20 +37,31 @@ export type DocumentType = DocumentInformationHolderDTODocumentTypeEnum;
  */
 @Component({
   selector: 'jhi-upload-button',
-  imports: [FontAwesomeModule, FormsModule, FileUpload, ButtonComponent, TooltipModule, TranslateDirective, ConfirmDialog],
+  imports: [
+    FontAwesomeModule,
+    FormsModule,
+    FileUpload,
+    ButtonComponent,
+    TooltipModule,
+    TranslateModule,
+    TranslateDirective,
+    ConfirmDialog,
+    DocumentDialog,
+  ],
   templateUrl: './upload-button.component.html',
   standalone: true,
 })
 export class UploadButtonComponent {
   readonly maxUploadSizeInMb = 25;
   readonly inputClass =
-    'w-full px-1 py-1 border-b border-dashed outline-none transition-all hover:border-solid focus:border-solid focus:border-primary';
+    'w-full min-w-0 px-1 py-1 border-b border-dashed outline-none transition-all hover:border-solid focus:border-solid focus:border-primary';
   readonly rowClass = 'transition-colors hover:bg-background-surface';
 
   fileUploadComponent = viewChild<FileUpload>(FileUpload);
 
   documentType = input.required<DocumentType>();
   applicationId = input<string | undefined>();
+  uploadTarget = input<UploadTarget>('application');
   documentIds = model<DocumentInformationHolderDTO[] | undefined>();
   valid = output<boolean>();
   queuedFilesChange = output<File[]>();
@@ -66,6 +82,18 @@ export class UploadButtonComponent {
   queuedFilesById = signal<Map<string, File>>(new Map());
   queuedFiles = computed(() => Array.from(this.queuedFilesById().values()));
   compact = input<boolean>(false);
+  previewDialogVisible = signal(false);
+  previewSelectedId = signal<string | undefined>(undefined);
+  previewDocumentHolders = computed<DocumentHolder[]>(() =>
+    (this.documentIds() ?? [])
+      .filter(documentInfo => this.hasPreview(documentInfo))
+      .map(documentInfo => ({
+        label: documentInfo.name ?? '',
+        document: documentInfo,
+        file: this.queuedFilesById().get(documentInfo.id),
+        shouldTranslateLabel: false,
+      })),
+  );
 
   // Duplicate dialog state
   pendingDuplicateFile = signal<File | null>(null);
@@ -87,6 +115,7 @@ export class UploadButtonComponent {
   });
 
   private applicationApi = inject(ApplicationResourceApi);
+  private applicantApi = inject(ApplicantResourceApi);
   private toastService = inject(ToastService);
   private elementRef = inject(ElementRef);
   private translateService = inject(TranslateService);
@@ -150,7 +179,7 @@ export class UploadButtonComponent {
         this.removeQueuedFileFor(existingDoc.id);
       } else {
         try {
-          await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(existingDoc.id));
+          await this.deletePersistedDocument(existingDoc.id);
           const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
           this.documentIds.set(updatedList);
         } catch {
@@ -186,7 +215,7 @@ export class UploadButtonComponent {
     } else {
       for (const doc of existingDocs) {
         try {
-          await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(doc.id));
+          await this.deletePersistedDocument(doc.id);
         } catch {
           this.toastService.showErrorKey('entity.upload.error.replace_failed');
           return;
@@ -205,12 +234,9 @@ export class UploadButtonComponent {
     const files: File[] | undefined = this.selectedFiles();
     if (!files || files.length === 0) return;
 
-    const appId = this.applicationId();
-    if (!appId) return;
-
     this.isUploading.set(true);
     try {
-      const uploadedPromises = files.map(file => firstValueFrom(this.applicationApi.uploadDocuments(appId, this.documentType(), file)));
+      const uploadedPromises = files.map(file => this.uploadDocument(file));
       const uploadResults = await Promise.all(uploadedPromises);
       const allUploadedIds = uploadResults.flat();
       this.documentIds.set(allUploadedIds);
@@ -236,7 +262,7 @@ export class UploadButtonComponent {
     }
 
     try {
-      await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(documentId));
+      await this.deletePersistedDocument(documentId);
       const updatedList = this.documentIds()?.filter(doc => doc.id !== documentId) ?? [];
       this.documentIds.set(updatedList);
     } catch {
@@ -247,6 +273,15 @@ export class UploadButtonComponent {
   onClear(): void {
     this.isUploading.set(false);
     this.resetNativeFileInput();
+  }
+
+  openPreview(documentInfo: DocumentInformationHolderDTO): void {
+    if (!this.hasPreview(documentInfo)) {
+      return;
+    }
+
+    this.previewSelectedId.set(documentInfo.id);
+    this.previewDialogVisible.set(true);
   }
 
   /**
@@ -278,7 +313,7 @@ export class UploadButtonComponent {
     }
 
     try {
-      await firstValueFrom(this.applicationApi.renameDocument(documentId, newName));
+      await this.renamePersistedDocument(documentId, newName);
       const updatedDocs =
         this.documentIds()?.map(doc =>
           doc.id === documentId
@@ -304,6 +339,14 @@ export class UploadButtonComponent {
     return `${parseFloat(size.toFixed(1))} ${sizes[i]}`;
   }
 
+  hasPreview(documentInfo: DocumentInformationHolderDTO): boolean {
+    if (isTemporaryDocumentId(documentInfo.id)) {
+      return this.queuedFilesById().has(documentInfo.id);
+    }
+
+    return true;
+  }
+
   /**
    * Ensures an `applicationId` is available before any upload action proceeds.
    * Returns true when already set, or after a successful `requestAuth()` call.
@@ -311,6 +354,14 @@ export class UploadButtonComponent {
    * the callback rejects (user cancelled / validation failed upstream).
    */
   private async ensureAuthenticated(): Promise<boolean> {
+    // In deferred mode the file pick never reaches this component's upload paths — the parent
+    // owns the upload step and is responsible for whatever auth model that flow needs.
+    if (this.deferUpload()) {
+      return true;
+    }
+    if (this.uploadTarget() === 'applicantProfile') {
+      return true;
+    }
     if (this.applicationId()) {
       return true;
     }
@@ -385,7 +436,7 @@ export class UploadButtonComponent {
     if (this.deferUpload()) {
       const updatedQueuedFiles = new Map(this.queuedFilesById());
       const tempDocumentEntries: DocumentInformationHolderDTO[] = files.map(file => {
-        const id = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const id = createTemporaryDocumentId();
         updatedQueuedFiles.set(id, file);
         return {
           id,
@@ -452,5 +503,36 @@ export class UploadButtonComponent {
 
   private emitQueuedFilesChange(): void {
     this.queuedFilesChange.emit(this.queuedFiles());
+  }
+
+  private uploadDocument(file: File): Promise<DocumentInformationHolderDTO[]> {
+    if (this.uploadTarget() === 'applicantProfile') {
+      return firstValueFrom(this.applicantApi.uploadApplicantProfileDocuments(this.documentType(), file));
+    }
+
+    const appId = this.applicationId();
+    if (appId == null) {
+      return Promise.resolve([]);
+    }
+
+    return firstValueFrom(this.applicationApi.uploadDocuments(appId, this.documentType(), file));
+  }
+
+  private async deletePersistedDocument(documentId: string): Promise<void> {
+    if (this.uploadTarget() === 'applicantProfile') {
+      await firstValueFrom(this.applicantApi.deleteApplicantProfileDocument(documentId));
+      return;
+    }
+
+    await firstValueFrom(this.applicationApi.deleteDocumentFromApplication(documentId));
+  }
+
+  private async renamePersistedDocument(documentId: string, newName: string): Promise<void> {
+    if (this.uploadTarget() === 'applicantProfile') {
+      await firstValueFrom(this.applicantApi.renameApplicantProfileDocument(documentId, newName));
+      return;
+    }
+
+    await firstValueFrom(this.applicationApi.renameDocument(documentId, newName));
   }
 }

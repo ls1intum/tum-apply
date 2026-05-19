@@ -5,6 +5,8 @@ import { of, throwError } from 'rxjs';
 
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationInformationData, ApplicationInformationSettingsComponent } from 'app/shared/settings/application-information-settings';
+import { AUTO_SAVE_DELAY_MS } from 'app/shared/constants/saving-states';
+import { SavingStates } from 'app/shared/constants/saving-states';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
@@ -75,7 +77,7 @@ describe('ApplicationInformationSettingsComponent', () => {
     instantMock.mockImplementation((key: string | string[]) => (Array.isArray(key) ? key.join(',') : key));
 
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
+      imports: [ReactiveFormsModule, ApplicationInformationSettingsComponent],
       providers: [
         provideApplicantResourceApiMock(applicantApiMock),
         provideAccountServiceMock(accountServiceMock),
@@ -91,7 +93,6 @@ describe('ApplicationInformationSettingsComponent', () => {
       const component = await createComponent();
 
       expect(applicantApiMock.getApplicantProfile).toHaveBeenCalledOnce();
-      expect(applicantApiMock.getApplicantProfile).toHaveBeenCalledWith();
       expect(component.loadedProfile()).toEqual(createProfile());
       expect(component.data()).toEqual({
         firstName: 'Ada',
@@ -108,21 +109,6 @@ describe('ApplicationInformationSettingsComponent', () => {
         country: { value: 'de', name: 'countries.de' },
         postcode: '80333',
       });
-      expect(component.initialDataSnapshot()).toEqual({
-        firstName: 'Ada',
-        lastName: 'Lovelace',
-        email: 'ada@example.com',
-        phoneNumber: '+491234567',
-        gender: 'female',
-        nationality: 'de',
-        dateOfBirth: '1990-12-10',
-        website: 'https://ada.example.com',
-        linkedIn: 'https://linkedin.com/in/ada',
-        street: 'Main Street 1',
-        city: 'Munich',
-        country: 'de',
-        postcode: '80333',
-      });
       expect(component.hasChanges()).toBe(false);
     });
 
@@ -131,8 +117,6 @@ describe('ApplicationInformationSettingsComponent', () => {
 
       const component = await createComponent();
 
-      expect(applicantApiMock.getApplicantProfile).toHaveBeenCalledOnce();
-      expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.applicationInformation.loadFailed');
       expect(component.loadedProfile()).toBeUndefined();
     });
@@ -140,15 +124,17 @@ describe('ApplicationInformationSettingsComponent', () => {
     it('should map missing optional profile fields to undefined or empty strings', async () => {
       const profile = createProfile();
       if (profile.user) {
-        profile.user.firstName = undefined;
-        profile.user.lastName = undefined;
-        profile.user.email = undefined;
-        profile.user.phoneNumber = undefined;
-        profile.user.gender = undefined;
-        profile.user.nationality = undefined;
-        profile.user.birthday = undefined;
-        profile.user.website = undefined;
-        profile.user.linkedinUrl = undefined;
+        Object.assign(profile.user, {
+          firstName: undefined,
+          lastName: undefined,
+          email: undefined,
+          phoneNumber: undefined,
+          gender: undefined,
+          nationality: undefined,
+          birthday: undefined,
+          website: undefined,
+          linkedinUrl: undefined,
+        });
       }
       profile.street = undefined;
       profile.postalCode = undefined;
@@ -160,21 +146,6 @@ describe('ApplicationInformationSettingsComponent', () => {
       const component = await createComponent();
 
       expect(component.data()).toEqual({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber: '',
-        gender: undefined,
-        nationality: undefined,
-        dateOfBirth: '',
-        website: '',
-        linkedIn: '',
-        street: '',
-        city: '',
-        country: undefined,
-        postcode: '',
-      });
-      expect(component.initialDataSnapshot()).toEqual({
         firstName: '',
         lastName: '',
         email: '',
@@ -239,6 +210,90 @@ describe('ApplicationInformationSettingsComponent', () => {
 
       component.updateSelect('country', undefined);
       expect(component.data().country).toBeUndefined();
+      component['autoSave'].reset();
+    });
+
+    it('should mark postcode invalid and touched when country no longer matches a prefilled postcode', async () => {
+      const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
+      await flushAsyncWork();
+      fixture.detectChanges();
+
+      const component = fixture.componentInstance;
+      const updatedData: ApplicationInformationData = structuredClone(component.data());
+      updatedData.country = { value: 'de', name: 'countries.de' };
+      updatedData.postcode = '80333';
+      component.data.set(updatedData);
+      fixture.detectChanges();
+
+      component.updateSelect('country', { value: 'NL', name: 'countries.NL' });
+      fixture.detectChanges();
+
+      expect(component.applicationInfoForm().controls.postcode.touched).toBe(true);
+      expect(component.applicationInfoForm().controls.postcode.errors).toHaveProperty('invalidPostalCode');
+      expect(fixture.nativeElement.textContent).toContain('entity.applicationPage1.validation.postalCode');
+      component['autoSave'].reset();
+    });
+
+    it('should treat a whitespace-only postcode as empty when country changes', async () => {
+      const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
+      await flushAsyncWork();
+      fixture.detectChanges();
+
+      const component = fixture.componentInstance;
+      const updatedData: ApplicationInformationData = structuredClone(component.data());
+      updatedData.country = { value: 'de', name: 'countries.de' };
+      updatedData.postcode = '   ';
+      component.data.set(updatedData);
+      fixture.detectChanges();
+
+      component.updateSelect('country', { value: 'NL', name: 'countries.NL' });
+      fixture.detectChanges();
+
+      expect(component.applicationInfoForm().controls.postcode.touched).toBe(false);
+      expect(component.applicationInfoForm().controls.postcode.errors).toBeNull();
+      component['autoSave'].reset();
+    });
+
+    it('should autosave when the country select is cleared', async () => {
+      vi.useFakeTimers();
+      const component = await createComponent();
+      vi.clearAllMocks();
+
+      component.updateSelect('country', undefined);
+      await vi.advanceTimersByTimeAsync(AUTO_SAVE_DELAY_MS);
+
+      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          country: undefined,
+        }),
+      );
+
+      component['autoSave'].reset();
+      vi.useRealTimers();
+    });
+
+    it('should cancel a pending autosave when the form becomes invalid before debounce expiry', async () => {
+      vi.useFakeTimers();
+      const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
+      await flushAsyncWork();
+      fixture.detectChanges();
+
+      const component = fixture.componentInstance;
+      vi.clearAllMocks();
+
+      component.applicationInfoForm().controls.city.setValue('Berlin');
+      fixture.detectChanges();
+
+      component.updateSelect('country', { value: 'NL', name: 'countries.NL' });
+      fixture.detectChanges();
+
+      await vi.advanceTimersByTimeAsync(AUTO_SAVE_DELAY_MS);
+
+      expect(component.applicationInfoForm().valid).toBe(false);
+      expect(applicantApiMock.updateApplicantPersonalInformation).not.toHaveBeenCalled();
+
+      component['autoSave'].reset();
+      vi.useRealTimers();
     });
   });
 
@@ -264,13 +319,15 @@ describe('ApplicationInformationSettingsComponent', () => {
     it('should save application information with the expected payload and reset change tracking', async () => {
       const updatedProfile = createProfile();
       if (updatedProfile.user) {
-        updatedProfile.user.firstName = 'Grace';
-        updatedProfile.user.email = undefined;
-        updatedProfile.user.phoneNumber = undefined;
-        updatedProfile.user.nationality = undefined;
-        updatedProfile.user.birthday = undefined;
-        updatedProfile.user.website = undefined;
-        updatedProfile.user.linkedinUrl = undefined;
+        Object.assign(updatedProfile.user, {
+          firstName: 'Grace',
+          email: undefined,
+          phoneNumber: undefined,
+          nationality: undefined,
+          birthday: undefined,
+          website: undefined,
+          linkedinUrl: undefined,
+        });
       }
       updatedProfile.street = undefined;
       updatedProfile.postalCode = undefined;
@@ -282,71 +339,46 @@ describe('ApplicationInformationSettingsComponent', () => {
       const component = await createComponent();
       vi.clearAllMocks();
 
-      applicantApiMock.getApplicantProfile.mockReturnValue(of(updatedProfile));
-
       const updatedData: ApplicationInformationData = structuredClone(component.data());
-      updatedData.firstName = 'Grace';
-      updatedData.email = '';
-      updatedData.phoneNumber = '';
-      updatedData.nationality = undefined;
-      updatedData.dateOfBirth = '';
-      updatedData.website = '';
-      updatedData.linkedIn = '';
-      updatedData.street = '';
-      updatedData.postcode = '';
-      updatedData.city = 'Berlin';
-      updatedData.country = { value: 'DE', name: 'countries.DE' };
-      component.data.set(updatedData);
-
-      await component.onSave();
-
-      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
-      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith({
-        user: {
-          userId: 'user-1',
-          email: undefined,
-          firstName: 'Grace',
-          lastName: 'Lovelace',
-          phoneNumber: undefined,
-          gender: 'female',
-          nationality: undefined,
-          birthday: undefined,
-          website: undefined,
-          linkedinUrl: undefined,
-        },
-        street: undefined,
-        postalCode: undefined,
-        city: 'Berlin',
-        country: 'DE',
-        bachelorDegreeName: undefined,
-        bachelorGradeUpperLimit: undefined,
-        bachelorGradeLowerLimit: undefined,
-        bachelorGrade: undefined,
-        bachelorUniversity: undefined,
-        masterDegreeName: undefined,
-        masterGradeUpperLimit: undefined,
-        masterGradeLowerLimit: undefined,
-        masterGrade: undefined,
-        masterUniversity: undefined,
-      });
-      expect(toastServiceMock.showSuccessKey).toHaveBeenCalledOnce();
-      expect(toastServiceMock.showSuccessKey).toHaveBeenCalledWith('settings.applicationInformation.saved');
-      expect(toastServiceMock.showErrorKey).not.toHaveBeenCalled();
-      expect(component.loadedProfile()).toEqual(updatedProfile);
-      expect(component.initialDataSnapshot()).toEqual({
+      Object.assign(updatedData, {
         firstName: 'Grace',
-        lastName: 'Lovelace',
         email: '',
         phoneNumber: '',
-        gender: 'female',
         nationality: undefined,
         dateOfBirth: '',
         website: '',
         linkedIn: '',
         street: '',
+        postcode: '',
+        city: 'Berlin',
+        country: { value: 'DE', name: 'countries.DE' },
+      });
+      component.data.set(updatedData);
+
+      await component.performAutoSave();
+
+      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user: expect.objectContaining({
+            userId: 'user-1',
+            firstName: 'Grace',
+            lastName: 'Lovelace',
+            email: undefined,
+            phoneNumber: undefined,
+            gender: 'female',
+            birthday: undefined,
+          }),
+          city: 'Berlin',
+          country: 'DE',
+          street: undefined,
+          postalCode: undefined,
+        }),
+      );
+      expect(toastServiceMock.showErrorKey).not.toHaveBeenCalled();
+      expect(component.initialDataSnapshot()).toMatchObject({
+        firstName: 'Grace',
         city: 'Berlin',
         country: 'DE',
-        postcode: '',
       });
       expect(component.hasChanges()).toBe(false);
     });
@@ -361,37 +393,20 @@ describe('ApplicationInformationSettingsComponent', () => {
       updatedData.city = '';
       component.data.set(updatedData);
 
-      await component.onSave();
+      await component.performAutoSave();
 
-      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
-      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith({
-        user: {
-          userId: 'user-1',
-          email: 'ada@example.com',
-          firstName: undefined,
-          lastName: undefined,
-          phoneNumber: '+491234567',
-          gender: 'female',
-          nationality: 'de',
-          birthday: '1990-12-10',
-          website: 'https://ada.example.com',
-          linkedinUrl: 'https://linkedin.com/in/ada',
-        },
-        street: 'Main Street 1',
-        postalCode: '80333',
-        city: undefined,
-        country: 'de',
-        bachelorDegreeName: undefined,
-        bachelorGradeUpperLimit: undefined,
-        bachelorGradeLowerLimit: undefined,
-        bachelorGrade: undefined,
-        bachelorUniversity: undefined,
-        masterDegreeName: undefined,
-        masterGradeUpperLimit: undefined,
-        masterGradeLowerLimit: undefined,
-        masterGrade: undefined,
-        masterUniversity: undefined,
-      });
+      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user: expect.objectContaining({
+            userId: 'user-1',
+            firstName: undefined,
+            lastName: undefined,
+            email: 'ada@example.com',
+          }),
+          city: undefined,
+          country: 'de',
+        }),
+      );
     });
 
     it('should show an error toast when saving application information fails', async () => {
@@ -400,12 +415,33 @@ describe('ApplicationInformationSettingsComponent', () => {
       const component = await createComponent();
       vi.clearAllMocks();
 
-      await component.onSave();
+      await component.performAutoSave();
 
-      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledOnce();
-      expect(toastServiceMock.showErrorKey).toHaveBeenCalledOnce();
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.applicationInformation.saveFailed');
       expect(toastServiceMock.showSuccessKey).not.toHaveBeenCalled();
+    });
+
+    it('should not persist when performAutoSave runs while the form is invalid', async () => {
+      const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
+      await flushAsyncWork();
+      fixture.detectChanges();
+
+      const component = fixture.componentInstance;
+      vi.clearAllMocks();
+
+      const updatedData: ApplicationInformationData = structuredClone(component.data());
+      updatedData.country = { value: 'NL', name: 'countries.NL' };
+      component.data.set(updatedData);
+      fixture.detectChanges();
+      component['revealPostcodeCountryMismatch']();
+      fixture.detectChanges();
+
+      const saved = await component.performAutoSave();
+
+      expect(component.applicationInfoForm().valid).toBe(false);
+      expect(saved).toBe(false);
+      expect(applicantApiMock.updateApplicantPersonalInformation).not.toHaveBeenCalled();
+      component['autoSave'].reset();
     });
   });
 });

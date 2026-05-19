@@ -65,7 +65,6 @@ const CAROUSEL_SIZE = 7;
     TooltipModule,
   ],
   templateUrl: './application-detail.component.html',
-  styleUrl: './application-detail.component.scss',
 })
 export class ApplicationDetailComponent {
   readonly interviewRating = signal<number | undefined>(undefined);
@@ -80,6 +79,7 @@ export class ApplicationDetailComponent {
 
   currentApplication = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
   currentDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
+  currentReferenceRequests = computed(() => this.currentApplication()?.applicationDetailDTO.references ?? []);
   sortBy = signal<string>('appliedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
@@ -107,6 +107,7 @@ export class ApplicationDetailComponent {
       return false;
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
+
     return (
       state !== ApplicationDetailDTOApplicationStateEnum.Accepted &&
       state !== ApplicationDetailDTOApplicationStateEnum.Rejected &&

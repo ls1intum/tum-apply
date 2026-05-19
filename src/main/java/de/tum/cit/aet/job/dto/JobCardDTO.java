@@ -24,6 +24,7 @@ public record JobCardDTO(
     String relativeTimeEnglish,
     String relativeTimeGerman,
     Integer contractDuration,
+    Integer referenceLettersRequired,
     String imageUrl // Job banner image URL (e.g., "/images/jobs/abc.jpg")
 ) {
     public JobCardDTO(
@@ -39,6 +40,7 @@ public record JobCardDTO(
         LocalDate startDate,
         LocalDate endDate,
         Integer contractDuration,
+        Integer referenceLettersRequired,
         String imageUrl
     ) {
         this(
@@ -55,6 +57,7 @@ public record JobCardDTO(
             UiTextFormatter.getTimeLeftLabelEnglish(endDate),
             UiTextFormatter.getTimeLeftLabelGerman(endDate),
             contractDuration,
+            referenceLettersRequired,
             imageUrl
         );
     }

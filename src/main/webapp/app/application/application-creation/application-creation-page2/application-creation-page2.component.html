@@ -1,6 +1,7 @@
 @if (data()) {
-  <form [formGroup]="page2Form" class="flex flex-col gap-3">
+  <form [formGroup]="page2Form">
     <p jhiTranslate="entity.applicationPage2.description"></p>
+    <p class="mb-4 text-xs text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
     <jhi-degree-document-section
       [applicationId]="applicationIdForDocuments()"
       [required]="true"
@@ -10,7 +11,8 @@
       [bachelorDegreeNameControl]="page2Form.controls.bachelorDegreeName"
       [bachelorDegreeUniversityControl]="page2Form.controls.bachelorDegreeUniversity"
       [bachelorGradeControl]="page2Form.controls.bachelorGrade"
-      [bachelorGradeHelperText]="helperTextBachelorGrade()"
+      [bachelorGradeHelperText]="helperTextBachelorGradeKey()"
+      [bachelorGradeHelperTextParams]="helperTextBachelorGradeParams()"
       [bachelorGradeWarningText]="warningTextBachelorGrade()"
       (bachelorChangeScale)="onChangeGradingScale('bachelor')"
       (bachelorDocumentIdsChange)="documentIdsBachelorTranscript.set($event)"
@@ -18,7 +20,8 @@
       [masterDegreeNameControl]="page2Form.controls.masterDegreeName"
       [masterDegreeUniversityControl]="page2Form.controls.masterDegreeUniversity"
       [masterGradeControl]="page2Form.controls.masterGrade"
-      [masterGradeHelperText]="helperTextMasterGrade()"
+      [masterGradeHelperText]="helperTextMasterGradeKey()"
+      [masterGradeHelperTextParams]="helperTextMasterGradeParams()"
       [masterGradeWarningText]="warningTextMasterGrade()"
       (masterChangeScale)="onChangeGradingScale('master')"
       (masterDocumentIdsChange)="documentIdsMasterTranscript.set($event)"

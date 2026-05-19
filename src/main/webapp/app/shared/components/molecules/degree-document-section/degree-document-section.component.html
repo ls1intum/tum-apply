@@ -13,6 +13,7 @@
         <jhi-upload-button
           [documentType]="DocumentInformationHolderDTODocumentTypeEnum.BachelorTranscript"
           [applicationId]="currentApplicationId"
+          [uploadTarget]="uploadTarget()"
           [(documentIds)]="bachelorDocumentIds"
           [deferUpload]="deferUpload()"
           (queuedFilesChange)="bachelorQueuedFilesChange.emit($event)"
@@ -30,6 +31,7 @@
         <jhi-upload-button
           [documentType]="DocumentInformationHolderDTODocumentTypeEnum.MasterTranscript"
           [applicationId]="currentApplicationId"
+          [uploadTarget]="uploadTarget()"
           [(documentIds)]="masterDocumentIds"
           [deferUpload]="deferUpload()"
           (queuedFilesChange)="masterQueuedFilesChange.emit($event)"
@@ -63,6 +65,7 @@
         icon="circle-info"
         [tooltipText]="bachelorGradeTooltipKey"
         [helperTextLeft]="bachelorGradeHelperText()"
+        [helperTextLeftParams]="bachelorGradeHelperTextParams()"
         helperTextRight="entity.applicationPage2.helperText.changeScale"
         (helperTextRightClick)="bachelorChangeScale.emit()"
         [warningText]="bachelorGradeWarningText()"
@@ -81,6 +84,7 @@
         icon="circle-info"
         [tooltipText]="masterGradeTooltipKey"
         [helperTextLeft]="masterGradeHelperText()"
+        [helperTextLeftParams]="masterGradeHelperTextParams()"
         helperTextRight="entity.applicationPage2.helperText.changeScale"
         (helperTextRightClick)="masterChangeScale.emit()"
         [warningText]="masterGradeWarningText()"

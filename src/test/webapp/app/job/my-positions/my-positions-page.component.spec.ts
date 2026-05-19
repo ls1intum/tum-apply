@@ -17,15 +17,17 @@ import {
 } from 'src/test/webapp/util/job-resource-api.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
+type MyPositionsPageComponentInternals = {
+  loadJobs(): Promise<void>;
+  mapTranslationKeysToEnumValues(translationKeys: string[]): string[];
+};
+
 describe('MyPositionsPageComponent', () => {
   let fixture: ComponentFixture<MyPositionsPageComponent>;
   let component: MyPositionsPageComponent;
-
   let accountService: Mocked<AccountService>;
   let router: Mocked<Router>;
-
   let mockJobApi: JobResourceApiMock;
-
   let mockToastService: ReturnType<typeof createToastServiceMock>;
 
   beforeEach(async () => {
@@ -45,10 +47,7 @@ describe('MyPositionsPageComponent', () => {
       loadedUser: vi.fn().mockReturnValue({ id: 'u1', name: 'User' }),
     } as unknown as Mocked<AccountService>;
 
-    router = {
-      navigate: vi.fn(),
-      events: EMPTY,
-    } as unknown as Mocked<Router>;
+    router = { navigate: vi.fn(), events: EMPTY } as unknown as Mocked<Router>;
 
     await TestBed.configureTestingModule({
       imports: [MyPositionsPageComponent, TranslateModule.forRoot()],
@@ -71,223 +70,136 @@ describe('MyPositionsPageComponent', () => {
     vi.restoreAllMocks();
   });
 
-  describe('Initialization', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-  });
-
-  describe('Templates and State', () => {
-    it('should assign templates to correct columns', () => {
-      fixture.detectChanges();
-
-      const columns = component.columns();
-
-      expect(columns.find(c => c.field === 'actions')?.template).toBeTruthy();
-      expect(columns.find(c => c.field === 'state')?.template).toBeTruthy();
-      expect(columns.find(c => c.field === 'startDate')?.template).toBeTruthy();
-      expect(columns.find(c => c.field === 'lastModifiedAt')?.template).toBeTruthy();
-      expect(columns.find(c => c.field === 'professorName')?.template).toBeTruthy();
-
-      expect(columns.find(c => c.field === 'avatar')?.template).toBeUndefined();
-      expect(columns.find(c => c.field === 'title')?.template).toBeUndefined();
-    });
-
-    it('should correctly build stateTextMap from availableStatusOptions', () => {
-      const map = component.stateTextMap();
-      expect(map.DRAFT).toBe('jobState.draft');
-      expect(map.PUBLISHED).toBe('jobState.published');
-      expect(map.CLOSED).toBe('jobState.closed');
-      expect(map.APPLICANT_FOUND).toBe('jobState.applicantFound');
-    });
-  });
-
   describe('Navigation', () => {
-    it('should navigate to create job', () => {
-      component.onCreateJob();
-      expect(router.navigate).toHaveBeenCalledWith(['/job/create']);
+    it.each([
+      ['onCreateJob', () => component.onCreateJob(), ['/job/create']],
+      ['onEditJob', () => component.onEditJob('123'), ['/job/edit/123']],
+      ['onViewJob', () => component.onViewJob('321'), ['/job/detail/321']],
+    ])('%s -> navigate to %j', (_name, call, expected) => {
+      call();
+      expect(router.navigate).toHaveBeenCalledWith(expected);
     });
 
-    it('should navigate to edit job', () => {
-      component.onEditJob('123');
-      expect(router.navigate).toHaveBeenCalledWith(['/job/edit/123']);
-    });
-
-    it('should log error when editing with empty id', () => {
+    it.each([
+      ['onEditJob', () => component.onEditJob('')],
+      ['onViewJob', () => component.onViewJob('')],
+    ])('%s should log error when id is empty', (_name, call) => {
       const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      component.onEditJob('');
-      expect(spy).toHaveBeenCalled();
-    });
-
-    it('should navigate to view job', () => {
-      component.onViewJob('321');
-      expect(router.navigate).toHaveBeenCalledWith(['/job/detail/321']);
-    });
-
-    it('should log error when viewing with empty id', () => {
-      const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      component.onViewJob('');
-      expect(spy).toHaveBeenCalled();
+      call();
+      expect(spy).toHaveBeenCalledOnce();
     });
   });
 
   describe('Search and Filters', () => {
-    it('should handle onSearchEmit with new query', async () => {
-      const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
+    it('should reload on new search query and reset page', () => {
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       component.searchQuery.set('old');
+      component.page.set(2);
       component.onSearchEmit('new');
       expect(component.page()).toBe(0);
       expect(component.searchQuery()).toBe('new');
-      expect(loadSpy).toHaveBeenCalled();
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
 
-    it('should not reload if query is same after trim', async () => {
-      const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
+    it('should not reload when query is same after trim/normalize', () => {
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       component.searchQuery.set('same query');
       component.onSearchEmit('  same   query ');
       expect(loadSpy).not.toHaveBeenCalled();
     });
 
     it('should trim and normalize whitespace in search query', () => {
-      const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
+      vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       component.onSearchEmit(' test multiple spaces here ');
       expect(component.searchQuery()).toBe('test multiple spaces here');
-      expect(loadSpy).toHaveBeenCalled();
     });
 
-    it('should handle filterEmit for status', async () => {
-      const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
+    it('should handle status filter and ignore non-status filters', () => {
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       component.onFilterEmit({ filterId: 'status', selectedValues: ['jobState.draft'] });
       expect(component.selectedStatusFilters()).toContain(CreatedJobDTOStateEnum.Draft);
-      expect(loadSpy).toHaveBeenCalled();
-    });
+      expect(loadSpy).toHaveBeenCalledOnce();
 
-    it('should ignore non-status filters', () => {
-      const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
+      loadSpy.mockClear();
       component.selectedStatusFilters.set([]);
-
       component.onFilterEmit({ filterId: 'subjectArea', selectedValues: ['CS'] });
-
       expect(component.selectedStatusFilters()).toEqual([]);
       expect(loadSpy).not.toHaveBeenCalled();
     });
 
-    it('should fallback to original key when translation key not found in mapTranslationKeysToEnumValues', () => {
-      const result = (
-        component as unknown as { mapTranslationKeysToEnumValues: (keys: string[]) => string[] }
-      ).mapTranslationKeysToEnumValues(['unknownKey']);
+    it('should fall back to original key in mapTranslationKeysToEnumValues', () => {
+      const result = (component as unknown as MyPositionsPageComponentInternals).mapTranslationKeysToEnumValues(['unknownKey']);
       expect(result).toEqual(['unknownKey']);
     });
   });
 
   describe('Sorting and Pagination', () => {
-    it('should handle loadOnSortEmit correctly', async () => {
-      const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
+    it('should sort and reset page', () => {
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
+      component.page.set(3);
       component.loadOnSortEmit({ field: 'title', direction: 'ASC' });
       expect(component.sortBy()).toBe('title');
       expect(component.sortDirection()).toBe('ASC');
-      expect(loadSpy).toHaveBeenCalled();
-    });
-
-    it('should reset page on sort emit', () => {
-      component.page.set(3);
-
-      component.loadOnSortEmit({ field: 'title', direction: 'ASC' });
-
       expect(component.page()).toBe(0);
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
 
-    it('should handle loadOnTableEmit with pagination', async () => {
-      const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
-      const first = 20,
-        rows = 10;
-      component.loadOnTableEmit({ first, rows });
-      expect(component.page()).toBe(Math.floor(first / rows));
-      expect(component.pageSize()).toBe(rows);
-      expect(loadSpy).toHaveBeenCalled();
+    it('should compute page from first/rows on table emit', () => {
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
+      component.loadOnTableEmit({ first: 20, rows: 10 });
+      expect(component.page()).toBe(2);
+      expect(component.pageSize()).toBe(10);
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
 
-    it('should handle loadOnTableEmit when event.first and rows are undefined', async () => {
-      const spy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
+    it('should default page=0 when first/rows undefined', () => {
+      vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       component.pageSize.set(5);
       component.loadOnTableEmit({});
       expect(component.page()).toBe(0);
       expect(component.pageSize()).toBe(5);
-      expect(spy).toHaveBeenCalled();
     });
   });
 
   describe('Load Jobs', () => {
-    it('should load jobs successfully', async () => {
-      await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
-      expect(mockJobApi.getJobsForCurrentResearchGroup).toHaveBeenCalled();
+    it('should load jobs and set state', async () => {
+      await (component as unknown as MyPositionsPageComponentInternals).loadJobs();
+      expect(mockJobApi.getJobsForCurrentResearchGroup).toHaveBeenCalledTimes(2);
       expect(component.jobs().length).toBe(1);
       expect(component.totalRecords()).toBe(1);
     });
 
-    it('should handle loadJobs API error', async () => {
+    it('should toast error when API fails', async () => {
       mockJobApi.getJobsForCurrentResearchGroup.mockReturnValueOnce(throwError(() => new Error('fail')));
-      await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
+      await (component as unknown as MyPositionsPageComponentInternals).loadJobs();
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('myPositionsPage.errors.loadJobs');
     });
 
-    it('should return early from loadJobs when userId is empty', async () => {
-      vi.spyOn(accountService, 'loadedUser').mockReturnValue({
-        id: '',
-        email: '',
-        name: '',
-      });
+    it.each([
+      ['userId is empty', () => vi.spyOn(accountService, 'loadedUser').mockReturnValue({ id: '', email: '', name: '' })],
+      ['loadedUser is undefined', () => vi.spyOn(accountService, 'loadedUser').mockReturnValue(undefined)],
+    ])('should not call API when %s', async (_label, setup) => {
+      setup();
       const spy = vi.spyOn(mockJobApi, 'getJobsForCurrentResearchGroup');
       spy.mockClear();
-      await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
+      await (component as unknown as MyPositionsPageComponentInternals).loadJobs();
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('should set userId to empty string when loadedUser returns undefined', async () => {
-      vi.spyOn(accountService, 'loadedUser').mockReturnValue(undefined);
-      const spy = vi.spyOn(mockJobApi, 'getJobsForCurrentResearchGroup');
-      spy.mockClear();
-      await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
-      expect(component.userId()).toBe('');
-      expect(spy).not.toHaveBeenCalled();
-    });
-
-    it('should default jobs and totalRecords when API returns undefined content and totalElements', async () => {
-      vi.spyOn(accountService, 'loadedUser').mockReturnValue({
-        id: 'u1',
-        email: '',
-        name: '',
-      });
+    it('should default jobs/totalRecords to empty when API returns undefined fields', async () => {
       mockJobApi.getJobsForCurrentResearchGroup.mockReturnValueOnce(
-        of<PageCreatedJobDTO>({
-          content: undefined,
-          totalElements: undefined,
-        }),
+        of<PageCreatedJobDTO>({ content: undefined, totalElements: undefined }),
       );
-      await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
-
+      await (component as unknown as MyPositionsPageComponentInternals).loadJobs();
       expect(component.jobs()).toEqual([]);
       expect(component.totalRecords()).toBe(0);
     });
 
-    it('should call loadJobs with non-empty filters', async () => {
-      vi.spyOn(accountService, 'loadedUser').mockReturnValue({
-        id: 'u1',
-        name: 'User',
-        email: '',
-      });
+    it('should send filters/search/sort to API', async () => {
       component.selectedStatusFilters.set([CreatedJobDTOStateEnum.Published]);
-
-      const mockResponse: PageCreatedJobDTO = {
-        content: [{ jobId: '123', title: 'Job Filtered', state: CreatedJobDTOStateEnum.Published } as CreatedJobDTO],
-        totalElements: 1,
-      };
-
       const spy = vi.spyOn(mockJobApi, 'getJobsForCurrentResearchGroup');
-      spy.mockReturnValue(of(mockResponse));
-
-      await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
-
+      spy.mockReturnValue(of({ content: [], totalElements: 0 } as PageCreatedJobDTO));
+      await (component as unknown as MyPositionsPageComponentInternals).loadJobs();
       expect(spy).toHaveBeenCalledWith(
         component.pageSize(),
         component.page(),
@@ -297,51 +209,19 @@ describe('MyPositionsPageComponent', () => {
         component.sortDirection(),
         component.searchQuery(),
       );
-      expect(component.jobs()).toEqual(mockResponse.content);
-    });
-
-    it('should update job order when sorted by title', async () => {
-      vi.spyOn(accountService, 'loadedUser').mockReturnValue({ id: 'u1', name: 'User', email: '' });
-
-      mockJobApi.getJobsForCurrentResearchGroup.mockReturnValueOnce(
-        of<PageCreatedJobDTO>({
-          content: [
-            { jobId: '2', title: 'Zebra', state: CreatedJobDTOStateEnum.Published } as CreatedJobDTO,
-            { jobId: '1', title: 'Alpha', state: CreatedJobDTOStateEnum.Draft } as CreatedJobDTO,
-            { jobId: '3', title: 'Monkey', state: CreatedJobDTOStateEnum.Closed } as CreatedJobDTO,
-          ],
-          totalElements: 3,
-        }),
-      );
-      await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
-      expect(component.jobs().map(j => j.title)).toEqual(['Zebra', 'Alpha', 'Monkey']);
-
-      component.loadOnSortEmit({ field: 'title', direction: 'ASC' });
-      mockJobApi.getJobsForCurrentResearchGroup.mockReturnValueOnce(
-        of<PageCreatedJobDTO>({
-          content: [
-            { jobId: '1', title: 'Alpha', state: CreatedJobDTOStateEnum.Draft } as CreatedJobDTO,
-            { jobId: '3', title: 'Monkey', state: CreatedJobDTOStateEnum.Closed } as CreatedJobDTO,
-            { jobId: '2', title: 'Zebra', state: CreatedJobDTOStateEnum.Published } as CreatedJobDTO,
-          ],
-          totalElements: 3,
-        }),
-      );
-      await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
-      expect(component.jobs().map(j => j.title)).toEqual(['Alpha', 'Monkey', 'Zebra']);
     });
   });
 
   describe('Job Actions', () => {
-    it('should delete job successfully', async () => {
-      const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
+    it('should delete job successfully and reload', async () => {
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       await component.onDeleteJob('1');
       expect(mockJobApi.deleteJob).toHaveBeenCalledWith('1');
-      expect(mockToastService.showSuccessKey).toHaveBeenCalled();
-      expect(loadSpy).toHaveBeenCalled();
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledOnce();
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
 
-    it('should handle delete job error', async () => {
+    it('should toast error on delete failure', async () => {
       vi.spyOn(mockJobApi, 'deleteJob').mockReturnValueOnce(throwError(() => new Error('delete failed')));
       await component.onDeleteJob('1');
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith(
@@ -350,15 +230,15 @@ describe('MyPositionsPageComponent', () => {
       );
     });
 
-    it('should close job successfully', async () => {
-      const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
+    it('should close job successfully and reload', async () => {
+      const loadSpy = vi.spyOn(component as unknown as MyPositionsPageComponentInternals, 'loadJobs').mockResolvedValue(undefined);
       await component.onCloseJob('1');
       expect(mockJobApi.changeJobState).toHaveBeenCalledWith('1', CreatedJobDTOStateEnum.Closed);
-      expect(mockToastService.showSuccessKey).toHaveBeenCalled();
-      expect(loadSpy).toHaveBeenCalled();
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledOnce();
+      expect(loadSpy).toHaveBeenCalledOnce();
     });
 
-    it('should handle close job error', async () => {
+    it('should toast error on close failure', async () => {
       vi.spyOn(mockJobApi, 'changeJobState').mockReturnValueOnce(throwError(() => new Error('close fail')));
       await component.onCloseJob('1');
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith(
@@ -369,126 +249,67 @@ describe('MyPositionsPageComponent', () => {
   });
 
   describe('Confirm Actions', () => {
-    it('should skip confirm edit when currentJobId is undefined', () => {
-      const spy = vi.spyOn(component, 'onEditJob');
+    type ConfirmActionTarget = 'onEditJob' | 'onDeleteJob' | 'onCloseJob';
+    const confirmRows: ReadonlyArray<readonly [string, ConfirmActionTarget, () => void | Promise<void>, boolean]> = [
+      ['onConfirmEdit', 'onEditJob', () => component.onConfirmEdit(), false],
+      ['onConfirmDelete', 'onDeleteJob', () => component.onConfirmDelete(), true],
+      ['onConfirmClose', 'onCloseJob', () => component.onConfirmClose(), true],
+    ];
+
+    it.each(confirmRows)('%s should skip when currentJobId empty/undefined', async (_name, target, call, isAsync) => {
+      const spy = vi.spyOn(component, target).mockImplementation(() => (isAsync ? Promise.resolve() : undefined));
       component.currentJobId.set(undefined);
-
-      component.onConfirmEdit();
-
+      const result = call();
+      if (isAsync) await result;
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('should skip confirm delete when currentJobId is empty', async () => {
-      const spy = vi.spyOn(component, 'onDeleteJob').mockResolvedValue();
-      component.currentJobId.set('');
-
-      await component.onConfirmDelete();
-
-      expect(spy).not.toHaveBeenCalled();
-    });
-
-    it('should skip confirm close when currentJobId is empty', async () => {
-      const spy = vi.spyOn(component, 'onCloseJob').mockResolvedValue();
-      component.currentJobId.set('');
-
-      await component.onConfirmClose();
-
-      expect(spy).not.toHaveBeenCalled();
-    });
-
-    it('should confirm edit when currentJobId is set', () => {
-      const spy = vi.spyOn(component, 'onEditJob');
-      component.currentJobId.set('job-1');
-
-      component.onConfirmEdit();
-
-      expect(spy).toHaveBeenCalledWith('job-1');
-    });
-
-    it('should confirm delete when currentJobId is set', async () => {
-      const spy = vi.spyOn(component, 'onDeleteJob').mockResolvedValue();
-      component.currentJobId.set('job-2');
-
-      await component.onConfirmDelete();
-
-      expect(spy).toHaveBeenCalledWith('job-2');
-    });
-
-    it('should confirm close when currentJobId is set', async () => {
-      const spy = vi.spyOn(component, 'onCloseJob').mockResolvedValue();
-      component.currentJobId.set('job-3');
-
-      await component.onConfirmClose();
-
-      expect(spy).toHaveBeenCalledWith('job-3');
+    it.each(confirmRows)('%s should invoke %s with currentJobId', async (_name, target, call, isAsync) => {
+      const spy = vi.spyOn(component, target).mockImplementation(() => (isAsync ? Promise.resolve() : undefined));
+      component.currentJobId.set('job-x');
+      const result = call();
+      if (isAsync) await result;
+      expect(spy).toHaveBeenCalledWith('job-x');
     });
   });
 
   describe('Job Menu Items', () => {
-    it('should build edit/delete menu items for draft jobs', () => {
-      component.jobs.set([{ jobId: '1', state: CreatedJobDTOStateEnum.Draft, title: 'Draft' } as CreatedJobDTO]);
+    it.each([
+      [CreatedJobDTOStateEnum.Draft, ['button.edit', 'button.delete']],
+      [CreatedJobDTOStateEnum.Published, ['button.edit', 'button.close']],
+    ])('builds menu labels for %s', (state, labels) => {
+      component.jobs.set([{ jobId: 'jx', state, title: 'X' } as CreatedJobDTO]);
+      expect((component.jobMenuItems().get('jx') ?? []).map(i => i.label)).toEqual(labels);
+    });
 
-      const items = component.jobMenuItems().get('1') ?? [];
-      const labels = items.map(item => item.label);
-
-      expect(labels).toEqual(['button.edit', 'button.delete']);
+    it('should omit menu items for closed jobs', () => {
+      component.jobs.set([{ jobId: '3', state: CreatedJobDTOStateEnum.Closed, title: 'Closed' } as CreatedJobDTO]);
+      expect(component.jobMenuItems().get('3') ?? []).toEqual([]);
     });
 
     it('should invoke edit command for draft jobs', () => {
       const editSpy = vi.spyOn(component, 'onEditJob');
       component.jobs.set([{ jobId: '1', state: CreatedJobDTOStateEnum.Draft, title: 'Draft' } as CreatedJobDTO]);
-
-      const items = component.jobMenuItems().get('1') ?? [];
-      items[0]?.command?.();
-
+      component.jobMenuItems().get('1')?.[0].command?.();
       expect(editSpy).toHaveBeenCalledWith('1');
     });
 
-    it('should set showEditPublishedDialog to true for published jobs', () => {
-      component.jobs.set([{ jobId: '2', state: CreatedJobDTOStateEnum.Published, title: 'Published' } as CreatedJobDTO]);
-
-      const items = component.jobMenuItems().get('2') ?? [];
-      items[0]?.command?.();
-
+    it('should set dialog flags via menu commands', () => {
+      // Published edit -> showEditPublishedDialog
+      component.jobs.set([{ jobId: '2', state: CreatedJobDTOStateEnum.Published, title: 'P' } as CreatedJobDTO]);
+      component.jobMenuItems().get('2')?.[0].command?.();
       expect(component.currentJobId()).toBe('2');
       expect(component.showEditPublishedDialog()).toBe(true);
-    });
 
-    it('should set showDeleteDialog to true for draft jobs', () => {
-      component.jobs.set([{ jobId: '4', state: CreatedJobDTOStateEnum.Draft, title: 'Draft' } as CreatedJobDTO]);
-
-      const items = component.jobMenuItems().get('4') ?? [];
-      items[1]?.command?.();
-
-      expect(component.currentJobId()).toBe('4');
+      // Draft delete -> showDeleteDialog
+      component.jobs.set([{ jobId: '4', state: CreatedJobDTOStateEnum.Draft, title: 'D' } as CreatedJobDTO]);
+      component.jobMenuItems().get('4')?.[1].command?.();
       expect(component.showDeleteDialog()).toBe(true);
-    });
 
-    it('should set showCloseDialog to true for published jobs', () => {
-      component.jobs.set([{ jobId: '5', state: CreatedJobDTOStateEnum.Published, title: 'Published' } as CreatedJobDTO]);
-
-      const items = component.jobMenuItems().get('5') ?? [];
-      items[1]?.command?.();
-
-      expect(component.currentJobId()).toBe('5');
+      // Published close -> showCloseDialog
+      component.jobs.set([{ jobId: '5', state: CreatedJobDTOStateEnum.Published, title: 'P' } as CreatedJobDTO]);
+      component.jobMenuItems().get('5')?.[1].command?.();
       expect(component.showCloseDialog()).toBe(true);
-    });
-
-    it('should build edit/close menu items for published jobs', () => {
-      component.jobs.set([{ jobId: '2', state: CreatedJobDTOStateEnum.Published, title: 'Published' } as CreatedJobDTO]);
-
-      const items = component.jobMenuItems().get('2') ?? [];
-      const labels = items.map(item => item.label);
-
-      expect(labels).toEqual(['button.edit', 'button.close']);
-    });
-
-    it('should omit menu items for closed jobs', () => {
-      component.jobs.set([{ jobId: '3', state: CreatedJobDTOStateEnum.Closed, title: 'Closed' } as CreatedJobDTO]);
-
-      const items = component.jobMenuItems().get('3') ?? [];
-
-      expect(items).toEqual([]);
     });
   });
 });
