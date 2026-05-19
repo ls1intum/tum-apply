@@ -14,14 +14,14 @@
 
       <div class="bg-background-surface border border-border-default rounded-lg p-6">
         <!-- Manual Toggle -->
-        <div class="flex items-center justify-between">
+        <div class="flex items-start justify-between">
           <div>
             <div class="font-medium text-text-primary" jhiTranslate="systemSettings.ai.toggle.label">Enable AI Features</div>
             <div class="text-sm text-text-secondary mt-1" jhiTranslate="systemSettings.ai.toggle.description">
               When disabled, all AI-powered features are turned off system-wide.
             </div>
           </div>
-          <jhi-toggle-switch [model]="!manuallyDisabled()" [disabled]="isUpdating()" (modelChange)="onAiToggleChanged($event)" />
+          <jhi-toggle-switch class="shrink-0 mt-2.5" [model]="!manuallyDisabled()" [disabled]="isUpdating()" (modelChange)="onAiToggleChanged($event)" />
         </div>
 
         <!-- Circuit Breaker Status -->

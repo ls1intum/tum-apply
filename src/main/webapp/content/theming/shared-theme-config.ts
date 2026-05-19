@@ -391,9 +391,8 @@ export const sharedComponentConfig = {
   },
   toggleswitch: {
     root: {
-      width: '2.875rem',
-      height: '1.5rem',
-      borderRadius: '{border-radius-pill}',
+      width: '3.3rem',
+      height: '1.85rem',
       focusRing: {
         width: '0',
         color: 'transparent',
@@ -402,20 +401,15 @@ export const sharedComponentConfig = {
       },
     },
     handle: {
-      size: '1.0rem',
-      borderRadius: '{border-radius-pill}',
-      background: '{base.white}',
-      hoverBackground: '{base.white}',
-      checkedBackground: '{base.white}',
-      checkedHoverBackground: '{base.white}',
+      size: '1.375rem',
     },
     colorScheme: {
       dark: {
         handle: {
-          background: '{base.white}',
-          hoverBackground: '{base.white}',
-          checkedBackground: '{base.white}',
-          checkedHoverBackground: '{base.white}',
+          background: '{surface.900}',
+          hoverBackground: '{surface.900}',
+          checkedBackground: '{surface.900}',
+          checkedHoverBackground: '{surface.900}',
         },
       },
     },

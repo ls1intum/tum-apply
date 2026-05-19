@@ -4,4 +4,13 @@
   [disabled]="disabled()"
   [class]="toggleClass()"
   [ngModelOptions]="{ standalone: true }"
-></p-toggleSwitch>
+>
+  <ng-template #handle let-checked="checked">
+    <fa-icon
+      class="jhi-toggle-switch__icon text-[0.84rem] leading-none [&>svg]:stroke-current [&>svg]:stroke-[0.8]"
+      [class.text-positive-strong]="checked"
+      [class.text-negative-strong]="!checked"
+      [icon]="checked ? enabledIcon : disabledIcon"
+    />
+  </ng-template>
+</p-toggleSwitch>

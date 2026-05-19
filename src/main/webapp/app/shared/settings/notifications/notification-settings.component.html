@@ -13,7 +13,7 @@
                 <p class="mt-3 text-md text-text-secondary" [jhiTranslate]="group.descriptionKey"></p>
               </div>
 
-              <jhi-toggle-switch class="shrink-0" [(model)]="group.enabled" (modelChange)="onToggleChanged(group)" />
+              <jhi-toggle-switch class="shrink-0 mt-2.5" [(model)]="group.enabled" (modelChange)="onToggleChanged(group)" />
             </div>
           </section>
         }
@@ -32,7 +32,7 @@
               </div>
 
               <jhi-toggle-switch
-                class="shrink-0"
+                class="shrink-0 mt-2.5"
                 [model]="subjectAreaNotificationsEnabled()"
                 (modelChange)="onSubjectAreaToggleChanged($event)"
               />
