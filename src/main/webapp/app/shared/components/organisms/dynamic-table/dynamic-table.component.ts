@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, inject, input, output } from '@angular/core';
+import { Component, TemplateRef, afterNextRender, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -23,7 +23,7 @@ export const DEFAULT_ROWS_PER_PAGE_OPTIONS: readonly number[] = [10, 20, 30, 40,
   imports: [CommonModule, TableModule, ButtonModule, TranslateDirective, ProgressSpinnerComponent],
   templateUrl: './dynamic-table.component.html',
 })
-export class DynamicTableComponent implements OnInit {
+export class DynamicTableComponent {
   loading = input<boolean>(false);
 
   columns = input<DynamicTableColumn[]>([]);
@@ -43,13 +43,15 @@ export class DynamicTableComponent implements OnInit {
 
   private readonly localStorageService = inject(LocalStorageService);
 
-  ngOnInit(): void {
-    const key = this.storageKey();
-    if (key === undefined) return;
-    const stored = this.localStorageService.loadPageSize(key, this.rows(), this.rowsPerPageOptions());
-    if (stored !== this.rows()) {
-      this.rowsHydrated.emit(stored);
-    }
+  constructor() {
+    afterNextRender(() => {
+      const key = this.storageKey();
+      if (key === undefined) return;
+      const stored = this.localStorageService.loadPageSize(key, this.rows(), this.rowsPerPageOptions());
+      if (stored !== this.rows()) {
+        this.rowsHydrated.emit(stored);
+      }
+    });
   }
 
   emitLazy(event: TableLazyLoadEvent): void {

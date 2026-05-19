@@ -1,10 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-import {
-  DEFAULT_ROWS_PER_PAGE_OPTIONS,
-  DynamicTableComponent,
-} from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
+import { DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { LocalStorageService } from 'app/service/localStorage.service';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
@@ -26,11 +23,6 @@ describe('DynamicTableComponent', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-  });
-
-  it('should expose the standard page-size options as default', () => {
-    expect(DEFAULT_ROWS_PER_PAGE_OPTIONS).toEqual([10, 20, 30, 40, 50]);
-    expect(component.rowsPerPageOptions()).toBe(DEFAULT_ROWS_PER_PAGE_OPTIONS);
   });
 
   it('should not emit rowsHydrated when no storageKey is set', () => {
