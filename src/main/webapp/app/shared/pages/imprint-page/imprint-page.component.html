@@ -1,26 +1,14 @@
 <div class="page-container">
-  <div class="max-w-[75rem] mr-auto">
+  <div class="max-w-[75rem] mx-auto">
     <h1 class="text-[2rem] font-bold" jhiTranslate="imprint.headline"></h1>
 
-    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="imprint.publisher.headline"></h2>
-    <span class="block text-base text-justify whitespace-pre-line leading-8" jhiTranslate="imprint.publisher.contact"></span>
+    @for (section of sections; track section.titleKey) {
+      <section class="mt-8">
+        <h2 class="text-2xl font-semibold mb-4" [jhiTranslate]="section.titleKey"></h2>
 
-    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="imprint.authorized.headline"></h2>
-    <span class="block text-base text-justify whitespace-pre-line" jhiTranslate="imprint.authorized.text"></span>
-
-    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="imprint.vat.headline"></h2>
-    <span class="block text-base text-justify whitespace-pre-line" jhiTranslate="imprint.vat.text"></span>
-
-    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="imprint.responsibility.headline"></h2>
-    <span class="block text-base text-justify whitespace-pre-line leading-8" jhiTranslate="imprint.responsibility.text"></span>
-
-    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="imprint.tou.headline"></h2>
-    <span class="block text-base text-justify whitespace-pre-line" jhiTranslate="imprint.tou.text"></span>
-
-    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="imprint.liability.headline"></h2>
-    <span class="block text-base text-justify whitespace-pre-line" jhiTranslate="imprint.liability.text"></span>
-
-    <h2 class="text-2xl font-semibold mt-8 mb-4" jhiTranslate="imprint.links.headline"></h2>
-    <span class="block text-base text-justify whitespace-pre-line" jhiTranslate="imprint.links.text"></span>
+        <span class="block text-base text-justify whitespace-pre-line" [class]="section.extraClasses" [jhiTranslate]="section.contentKey">
+        </span>
+      </section>
+    }
   </div>
 </div>
