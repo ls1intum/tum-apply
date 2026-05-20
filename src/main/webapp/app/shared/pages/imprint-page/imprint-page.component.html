@@ -1,9 +1,11 @@
 <div class="page-container">
   <div class="max-w-[75rem] mx-auto">
-    <h1 class="text-[2rem] font-bold" jhiTranslate="imprint.headline"></h1>
+    <div class="page-header mb-4">
+      <h1 class="text-4xl font-bold" jhiTranslate="imprint.headline"></h1>
+    </div>
 
     @for (section of sections; track section.titleKey) {
-      <section class="mt-8">
+      <section class="mb-8">
         <h2 class="text-2xl font-semibold mb-4" [jhiTranslate]="section.titleKey"></h2>
 
         <span class="block text-base text-justify whitespace-pre-line" [class]="section.extraClasses" [jhiTranslate]="section.contentKey">
