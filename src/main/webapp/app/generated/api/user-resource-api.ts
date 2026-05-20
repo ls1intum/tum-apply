@@ -38,10 +38,10 @@ export class UserResourceApi {
     /**
      * 
      * 
-     * @param pageSize
-     * @param pageNumber
-     * @param searchQuery
-     * @param researchGroupId
+     * @param pageSize 
+     * @param pageNumber 
+     * @param searchQuery 
+     * @param researchGroupId 
      */
     getAvailableUsersForResearchGroup(pageSize?: number, pageNumber?: number, searchQuery?: string, researchGroupId?: string): Observable<PageResponseDTOKeycloakUserDTO> {
         const queryParams = new URLSearchParams();
