@@ -110,7 +110,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should reset page and update search query on new search', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue(true);
 
     component.searchQuery.set('Old query');
     component.page.set(5);
@@ -124,7 +124,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should not reload jobs if search query is the same after trimming', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue(true);
 
     component.searchQuery.set('Same query');
     component.onSearchEmit('   Same   query   ');
@@ -157,7 +157,7 @@ describe('JobCardListComponent', () => {
       expected: ['Prof. X'],
     },
   ])('should handle filter changes for $filterId', ({ filterId, values, selector, expected }) => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue(true);
     component.onFilterEmit({ filterId, selectedValues: values });
     fixture.detectChanges();
     expect(component[selector]()).toEqual(expected);
@@ -165,7 +165,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should handle sort emit correctly', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue(true);
 
     component.onSortEmit({ field: 'title', direction: 'ASC' });
     fixture.detectChanges();
@@ -176,7 +176,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should handle table lazy load correctly', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue(true);
 
     component.loadOnTableEmit({ first: 16, rows: 8 });
     fixture.detectChanges();
@@ -205,7 +205,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should ignore unknown filterId in onFilterEmit', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue(true);
 
     component.onFilterEmit({ filterId: 'unknown', selectedValues: ['x'] });
 
@@ -213,7 +213,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should clear search when only whitespace is entered', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue(true);
 
     component.searchQuery.set('Existing');
     component.onSearchEmit('   ');
@@ -224,7 +224,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should update sort when called twice with different values', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue(true);
 
     component.onSortEmit({ field: 'title', direction: 'ASC' });
     fixture.detectChanges();
@@ -237,7 +237,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should calculate page correctly when rows are missing in lazy load', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue(true);
 
     component.loadOnTableEmit({ first: 16, rows: undefined });
     fixture.detectChanges();
@@ -317,7 +317,7 @@ describe('JobCardListComponent', () => {
   });
 
   it('should compute page 0 when first is undefined but rows is defined (lazy load)', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
+    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue(true);
     component.page.set(5);
     component.loadOnTableEmit({ rows: 20 });
     fixture.detectChanges();

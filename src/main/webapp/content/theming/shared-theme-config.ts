@@ -391,8 +391,8 @@ export const sharedComponentConfig = {
   },
   toggleswitch: {
     root: {
-      width: '2rem',
-      height: '1rem',
+      width: '3.3rem',
+      height: '1.85rem',
       focusRing: {
         width: '0',
         color: 'transparent',
@@ -401,7 +401,17 @@ export const sharedComponentConfig = {
       },
     },
     handle: {
-      size: '0.6rem',
+      size: '1.375rem',
+    },
+    colorScheme: {
+      dark: {
+        handle: {
+          background: '{surface.900}',
+          hoverBackground: '{surface.900}',
+          checkedBackground: '{surface.900}',
+          checkedHoverBackground: '{surface.900}',
+        },
+      },
     },
   },
   popover: {
