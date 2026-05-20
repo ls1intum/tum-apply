@@ -3370,7 +3370,6 @@ components:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
         contractDuration: {type: integer, format: int32}
-        contractExtendable: {type: boolean}
         endDate: {type: string, format: date}
         fundingType:
           type: string
@@ -3423,7 +3422,6 @@ components:
           enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         contractDuration: {type: integer, format: int32}
-        contractExtendable: {type: boolean}
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
         fundingType:
@@ -3497,7 +3495,6 @@ components:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
         contractDuration: {type: integer, format: int32}
-        contractExtendable: {type: boolean}
         endDate: {type: string, format: date}
         fundingType:
           type: string

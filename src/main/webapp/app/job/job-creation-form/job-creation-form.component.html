@@ -50,7 +50,7 @@
           <div class="grid items-start gap-4">
             <div>
               <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
-              <p class="mb-4 text-sm text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
+              <p class="mb-4 text-xs text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
               <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
               <div class="flex flex-col">
                 <div class="flex flex-col lg:flex-row lg:gap-8">
@@ -378,20 +378,6 @@
                 <p
                   class="text-sm text-text-secondary ml-6"
                   jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.uponArrangement.subtitle"
-                ></p>
-              </div>
-              <div class="flex flex-col">
-                <jhi-checkbox
-                  label="jobCreationForm.basicInformationSection.positionOptions.extendable.label"
-                  tooltipText="jobCreationForm.basicInformationSection.positionOptions.extendable.tooltip"
-                  [model]="positionDetailsForm.get('contractExtendable')?.value"
-                  (modelChange)="positionDetailsForm.get('contractExtendable')?.setValue($event)"
-                  [shouldTranslate]="true"
-                  [errorEnabled]="false"
-                />
-                <p
-                  class="text-sm text-text-secondary ml-6"
-                  jhiTranslate="jobCreationForm.basicInformationSection.positionOptions.extendable.subtitle"
                 ></p>
               </div>
               <div class="flex flex-col">
