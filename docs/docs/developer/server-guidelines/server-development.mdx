@@ -161,6 +161,19 @@ public void processInterview(UUID processId) {
 
 ---
 
+## Applicant Profile vs. Application Snapshot
+
+Applicant profile data and application data must be treated as **independent records**.
+
+- The **applicant profile** is mutable and stores reusable data for future applications
+- An **application** stores a snapshot of applicant data and documents for that specific submission
+- Synchronization happens on **submission**, when the current application/profile state is persisted as the submitted record and relevant applicant profile data is updated for future reuse
+- After submission, the application must remain an **immutable historical record**
+
+This rule prevents later profile edits from silently changing already submitted applications and preserves a stable audit trail for review, export, and decision workflows.
+
+---
+
 ## REST Controller Best Practices
 
 Controllers should be **stateless and thin** — delegate business logic to services.
