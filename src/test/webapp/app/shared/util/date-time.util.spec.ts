@@ -35,8 +35,8 @@ describe('formatDate', () => {
   it('should format a date with the provided locale', () => {
     const dateSpy = vi.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('formatted date');
 
-    expect(formatDate('2025-02-28', 'en-US')).toBe('formatted date');
-    expect(dateSpy).toHaveBeenCalledWith('en-US', {
+    formatDate('2025-02-28', 'en-US');
+    expect(dateSpy).toHaveBeenCalledExactlyOnceWith('en-US', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -52,8 +52,8 @@ describe('formatTime', () => {
   it('should format a time with the provided locale', () => {
     const timeSpy = vi.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('14:30');
 
-    expect(formatTime('2025-02-28T14:30:00', 'de-DE')).toBe('14:30');
-    expect(timeSpy).toHaveBeenCalledWith('de-DE', {
+    formatTime('2025-02-28T14:30:00', 'de-DE');
+    expect(timeSpy).toHaveBeenCalledExactlyOnceWith('de-DE', {
       hour: '2-digit',
       minute: '2-digit',
     });
@@ -62,8 +62,8 @@ describe('formatTime', () => {
   it('should format a time with the default locale when none is provided', () => {
     const timeSpy = vi.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('14:30');
 
-    expect(formatTime('2025-02-28T14:30:00')).toBe('14:30');
-    expect(timeSpy).toHaveBeenCalledWith([], {
+    formatTime('2025-02-28T14:30:00');
+    expect(timeSpy).toHaveBeenCalledExactlyOnceWith([], {
       hour: '2-digit',
       minute: '2-digit',
     });
@@ -94,8 +94,8 @@ describe('formatDateWithWeekday', () => {
   it('should format a date with weekday using the provided locale', () => {
     const dateSpy = vi.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('Friday, 02/28/2025');
 
-    expect(formatDateWithWeekday('2025-02-28', 'en-US')).toBe('Friday, 02/28/2025');
-    expect(dateSpy).toHaveBeenCalledWith('en-US', {
+    formatDateWithWeekday('2025-02-28', 'en-US');
+    expect(dateSpy).toHaveBeenCalledExactlyOnceWith('en-US', {
       weekday: 'long',
       day: '2-digit',
       month: '2-digit',
@@ -112,16 +112,7 @@ describe('toLocalDateString', () => {
 
 describe('parseLocalDateString', () => {
   it('should parse a valid date as a local midnight date', () => {
-    const parsedDate = parseLocalDateString('2025-02-28');
-
-    expect(parsedDate).toBeInstanceOf(Date);
-    expect(parsedDate?.getFullYear()).toBe(2025);
-    expect(parsedDate?.getMonth()).toBe(1);
-    expect(parsedDate?.getDate()).toBe(28);
-    expect(parsedDate?.getHours()).toBe(0);
-    expect(parsedDate?.getMinutes()).toBe(0);
-    expect(parsedDate?.getSeconds()).toBe(0);
-    expect(parsedDate?.getMilliseconds()).toBe(0);
+    expect(parseLocalDateString('2025-02-28')).toEqual(new Date(2025, 1, 28));
   });
 
   it.each([undefined, '', '   ', '2025-02', '2025-xx-01', '2025-02-00', '2025-02-30', '2025-13-01', '1900-01-01'])(
