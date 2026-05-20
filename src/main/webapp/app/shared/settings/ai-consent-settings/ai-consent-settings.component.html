@@ -5,7 +5,7 @@
         <h2 class="font-medium text-text-primary text-lg" jhiTranslate="settings.aiFeatures.header"></h2>
         <p class="mt-3 text-md text-text-secondary" jhiTranslate="settings.aiFeatures.description"></p>
       </div>
-      <jhi-toggle-switch class="shrink-0 mt-2.5" [model]="aiFeaturesEnabled()" (modelChange)="onToggleChanged($event)" />
+      <jhi-toggle-switch class="shrink-0" [model]="aiFeaturesEnabled()" (modelChange)="onToggleChanged($event)" />
     </div>
     <div class="mt-3">
       <jhi-button

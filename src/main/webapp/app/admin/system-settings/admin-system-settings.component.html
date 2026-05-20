@@ -14,7 +14,7 @@
 
       <div class="bg-background-surface border border-border-default rounded-lg p-6">
         <!-- Manual Toggle -->
-        <div class="flex items-start justify-between">
+        <div class="flex items-center justify-between">
           <div>
             <div class="font-medium text-text-primary" jhiTranslate="systemSettings.ai.toggle.label">Enable AI Features</div>
             <div class="text-sm text-text-secondary mt-1" jhiTranslate="systemSettings.ai.toggle.description">
@@ -22,7 +22,6 @@
             </div>
           </div>
           <jhi-toggle-switch
-            class="shrink-0 mt-2.5"
             [model]="!manuallyDisabled()"
             [disabled]="isUpdating()"
             (modelChange)="onAiToggleChanged($event)"
