@@ -122,6 +122,8 @@ describe('FilterMultiselect', () => {
       filterId: 'custom-filter-id',
       selectedValues: ['Option B'],
     });
+
+    expect(filterChangeSpy).toHaveBeenCalledTimes(3);
   });
 
   it('should handle search input change', () => {
@@ -237,7 +239,7 @@ describe('FilterMultiselect', () => {
     expect(comp.isOpen()).toBe(false);
   });
 
-  it('should close the dropdown when focus moves to nothing (relatedTarget is null)', () => {
+  it('should close the dropdown when focus moves to nothing', () => {
     const fx = createFilterMultiselectFixture();
     const comp = fx.componentInstance;
     comp.isOpen.set(true);
@@ -277,7 +279,7 @@ describe('FilterMultiselect', () => {
     comp.onTriggerKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' })); // -> index 1
     fx.detectChanges();
 
-    expect(scrollSpies[0]).toHaveBeenCalledWith({ block: 'nearest', inline: 'nearest' });
-    expect(scrollSpies[1]).toHaveBeenCalledWith({ block: 'nearest', inline: 'nearest' });
+    expect(scrollSpies[0]).toHaveBeenCalledExactlyOnceWith({ block: 'nearest', inline: 'nearest' });
+    expect(scrollSpies[1]).toHaveBeenCalledExactlyOnceWith({ block: 'nearest', inline: 'nearest' });
   });
 });
