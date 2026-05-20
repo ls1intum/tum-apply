@@ -19,9 +19,9 @@ import { ResearchGroupDTO } from '../model/research-group-dto';
 import { AddMembersToResearchGroupDTO } from '../model/add-members-to-research-group-dto';
 import { EmployeeResearchGroupRequestDTO } from '../model/employee-research-group-request-dto';
 import { ResearchGroupRequestDTO } from '../model/research-group-request-dto';
-import { UserShortDTO } from '../model/user-short-dto';
 import { PageResponseDTOResearchGroupDTO } from '../model/page-response-dto-research-group-dto';
 import { PageResponseDTOUserShortDTO } from '../model/page-response-dto-user-short-dto';
+import { UserShortDTO } from '../model/user-short-dto';
 import { PageResponseDTOResearchGroupAdminDTO } from '../model/page-response-dto-research-group-admin-dto';
 import { ResearchGroupLargeDTO } from '../model/research-group-large-dto';
 
@@ -93,10 +93,10 @@ export class ResearchGroupResourceApi {
     }
 
     /**
-     *
-     *
-     * @param pageSize
-     * @param pageNumber
+     * 
+     * 
+     * @param pageSize 
+     * @param pageNumber 
      */
     getAllResearchGroups(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOResearchGroupDTO> {
         const queryParams = new URLSearchParams();

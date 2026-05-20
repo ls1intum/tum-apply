@@ -15,8 +15,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PageResponseDTOKeycloakUserDTO } from '../model/page-response-dto-keycloak-user-dto';
 import { UserShortDTO } from '../model/user-short-dto';
+import { PageResponseDTOKeycloakUserDTO } from '../model/page-response-dto-keycloak-user-dto';
 import { UpdateAvatarDTO } from '../model/update-avatar-dto';
 import { UpdatePasswordDTO } from '../model/update-password-dto';
 import { UpdateUserNameDTO } from '../model/update-user-name-dto';
@@ -27,8 +27,8 @@ export class UserResourceApi {
     private readonly basePath = '';
 
     /**
-     *
-     *
+     * 
+     * 
      */
     getAiConsent(): Observable<boolean> {
         const url = `${this.basePath}/api/users/ai-consent`;
@@ -36,8 +36,8 @@ export class UserResourceApi {
     }
 
     /**
-     *
-     *
+     * 
+     * 
      */
     getAllProfessors(): Observable<Array<UserShortDTO>> {
         const url = `${this.basePath}/api/users/professors`;
