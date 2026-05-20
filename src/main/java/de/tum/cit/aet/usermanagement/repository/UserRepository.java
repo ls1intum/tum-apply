@@ -193,46 +193,55 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     Page<UUID> findInactiveNonAdminUserIdsForRetention(@Param("cutoff") LocalDateTime cutoff, Pageable pageable);
 
     /**
-     * Returns lower-cased university IDs that are already assigned to any research group.
+     * Returns lower-cased university IDs that are already assigned to the given research group.
+     * When {@code researchGroupId} is {@code null}, returns an empty list so no users are excluded.
      *
-     * @param universityIds lower-cased university IDs to check
-     * @return subset of IDs that belong to users with a non-null research group
+     * @param universityIds   lower-cased university IDs to check
+     * @param researchGroupId target research group, or {@code null} to skip the filter
+     * @return subset of IDs that hold PROFESSOR/EMPLOYEE in the target group
      */
     @Query(
         """
             SELECT LOWER(u.universityId)
             FROM User u
-            WHERE EXISTS (
+            WHERE :researchGroupId IS NOT NULL
+              AND EXISTS (
                 SELECT 1 FROM UserResearchGroupRole r
                 WHERE r.user = u
-                  AND r.researchGroup IS NOT NULL
+                  AND r.researchGroup.researchGroupId = :researchGroupId
                   AND (r.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
                        OR r.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
-            )
-            AND u.universityId IS NOT NULL
-            AND LOWER(u.universityId) IN :universityIds
+              )
+              AND u.universityId IS NOT NULL
+              AND LOWER(u.universityId) IN :universityIds
         """
     )
-    List<String> findAssignedUniversityIdsIn(@Param("universityIds") List<String> universityIds);
+    List<String> findAssignedUniversityIdsIn(
+        @Param("universityIds") List<String> universityIds,
+        @Param("researchGroupId") UUID researchGroupId
+    );
 
     /**
      * Searches for users available to be added to a research group, including non-TUM users.
-     * Excludes users already assigned to a research group and users with an ADMIN role.
+     * Excludes users with an ADMIN role. When {@code researchGroupId} is provided, also excludes
+     * users already holding PROFESSOR/EMPLOYEE in that specific group; when {@code null}, applies
+     * no group-membership filter (used by admin flows that have no target group yet).
      *
-     * @param searchQuery optional search query to filter by name or email
+     * @param searchQuery     optional search query to filter by name or email
+     * @param researchGroupId target research group, or {@code null} to skip the per-group filter
      * @return list of users matching the criteria
      */
     @Query(
         """
             SELECT u FROM User u
             LEFT JOIN u.researchGroupRoles rgr ON rgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
-            WHERE NOT EXISTS (
+            WHERE (:researchGroupId IS NULL OR NOT EXISTS (
                 SELECT 1 FROM UserResearchGroupRole r
                 WHERE r.user = u
-                  AND r.researchGroup IS NOT NULL
+                  AND r.researchGroup.researchGroupId = :researchGroupId
                   AND (r.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
                        OR r.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
-            )
+            ))
             AND rgr.id IS NULL
             AND (:searchQuery IS NULL OR
                  LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
@@ -240,28 +249,34 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
             )
         """
     )
-    List<User> searchAvailableUsersForResearchGroup(@Param("searchQuery") String searchQuery);
+    List<User> searchAvailableUsersForResearchGroup(
+        @Param("searchQuery") String searchQuery,
+        @Param("researchGroupId") UUID researchGroupId
+    );
 
     /**
-     * Returns user IDs that are already assigned to any research group.
+     * Returns user IDs that are already assigned to the given research group.
+     * When {@code researchGroupId} is {@code null}, returns an empty list so no users are excluded.
      *
-     * @param userIds user IDs to check
-     * @return subset of IDs that belong to users with a non-null research group
+     * @param userIds         user IDs to check
+     * @param researchGroupId target research group, or {@code null} to skip the filter
+     * @return subset of IDs that hold PROFESSOR/EMPLOYEE in the target group
      */
     @Query(
         """
             SELECT u.userId FROM User u
-            WHERE EXISTS (
+            WHERE :researchGroupId IS NOT NULL
+              AND EXISTS (
                 SELECT 1 FROM UserResearchGroupRole r
                 WHERE r.user = u
-                  AND r.researchGroup IS NOT NULL
+                  AND r.researchGroup.researchGroupId = :researchGroupId
                   AND (r.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
                        OR r.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
-            )
-            AND u.userId IN :userIds
+              )
+              AND u.userId IN :userIds
         """
     )
-    List<UUID> findAssignedUserIdsIn(@Param("userIds") List<UUID> userIds);
+    List<UUID> findAssignedUserIdsIn(@Param("userIds") List<UUID> userIds, @Param("researchGroupId") UUID researchGroupId);
 
     @Query(
         """

@@ -279,7 +279,8 @@ public class UserResourceTest extends AbstractResourceTest {
                 "ab12cde"
             );
 
-            when(keycloakUserService.getAvailableUsersForResearchGroup(eq("alice"), any())).thenReturn(
+            UUID targetGroupId = UUID.randomUUID();
+            when(keycloakUserService.getAvailableUsersForResearchGroup(eq("alice"), any(), eq(targetGroupId))).thenReturn(
                 new PagedResult<>(List.of(keycloakUser), 1L)
             );
 
@@ -287,7 +288,16 @@ public class UserResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_ADMIN"))
                 .getAndRead(
                     API_BASE_PATH + "/available-for-research-group",
-                    Map.of("pageNumber", "0", "pageSize", "10", "searchQuery", "alice"),
+                    Map.of(
+                        "pageNumber",
+                        "0",
+                        "pageSize",
+                        "10",
+                        "searchQuery",
+                        "alice",
+                        "researchGroupId",
+                        targetGroupId.toString()
+                    ),
                     new TypeReference<PageResponseDTO<KeycloakUserDTO>>() {},
                     200
                 );
@@ -295,7 +305,7 @@ public class UserResourceTest extends AbstractResourceTest {
             assertThat(result.getTotalElements()).isEqualTo(1L);
             assertThat(result.getContent()).hasSize(1);
             assertThat(result.getContent()).extracting(KeycloakUserDTO::universityId).containsExactly("ab12cde");
-            verify(keycloakUserService, times(1)).getAvailableUsersForResearchGroup(eq("alice"), any());
+            verify(keycloakUserService, times(1)).getAvailableUsersForResearchGroup(eq("alice"), any(), eq(targetGroupId));
         }
 
         @Test
