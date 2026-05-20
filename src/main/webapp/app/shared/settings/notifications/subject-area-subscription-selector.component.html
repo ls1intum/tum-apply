@@ -1,13 +1,13 @@
 <div class="flex flex-col gap-3">
   <div>
     <jhi-filter-multiselect
-      class="[&_.p-chip-label]:!max-w-none"
       filterId="subject-areas"
       filterLabel="settings.notifications.applicant.subjectAreas.placeholder"
       filterSearchPlaceholder="settings.notifications.applicant.subjectAreas.filterPlaceholder"
       [filterOptions]="filterOptions()"
       [selectedValuesInput]="selectedValues()"
       [shouldTranslateOptions]="true"
+      [showChipsInTrigger]="false"
       (filterChange)="onFilterChange($event)"
     />
   </div>
