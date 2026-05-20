@@ -22,6 +22,7 @@ import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { AdminCreatedJobDTO, AdminCreatedJobDTOStateEnum } from '../../generated/model/admin-created-job-dto';
 import { JobResourceApi } from '../../generated/api/job-resource-api';
 import { ResearchGroupResourceApi } from '../../generated/api/research-group-resource-api';
+import { UserResourceApi } from '../../generated/api/user-resource-api';
 
 const TRANSLATION_KEY = 'allPositionsPage';
 
@@ -242,6 +243,7 @@ export class AllPositionsPageComponent implements OnInit {
 
   private jobApi = inject(JobResourceApi);
   private researchGroupApi = inject(ResearchGroupResourceApi);
+  private userApi = inject(UserResourceApi);
   private router = inject(Router);
   private toastService = inject(ToastService);
 
@@ -407,7 +409,7 @@ export class AllPositionsPageComponent implements OnInit {
 
   private async loadProfessorOptions(): Promise<void> {
     try {
-      const list = await firstValueFrom(this.researchGroupApi.getAllProfessors());
+      const list = await firstValueFrom(this.userApi.getAllProfessors());
       const options = list
         .map(u => ({
           id: u.userId ?? '',

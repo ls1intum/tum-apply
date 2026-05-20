@@ -20,13 +20,24 @@ import { UserShortDTO } from '../model/user-short-dto';
 const BASE_PATH = '';
 
 /**
- * 
- * 
+ *
+ *
  * Creates a reactive HTTP resource that automatically refetches when signals change.
  */
 export function getAiConsentResource(): HttpResourceRef<boolean | undefined> {
     return httpResource<boolean>(() => {
         return `${BASE_PATH}/api/users/ai-consent`;
+    });
+}
+
+/**
+ *
+ *
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getAllProfessorsResource(): HttpResourceRef<Array<UserShortDTO> | undefined> {
+    return httpResource<Array<UserShortDTO>>(() => {
+        return `${BASE_PATH}/api/users/professors`;
     });
 }
 

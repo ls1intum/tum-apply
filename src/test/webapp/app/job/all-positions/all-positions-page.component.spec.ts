@@ -7,6 +7,7 @@ import { AllPositionsPageComponent } from 'app/job/all-positions/all-positions-p
 import { AdminCreatedJobDTO, AdminCreatedJobDTOStateEnum } from 'app/generated/model/admin-created-job-dto';
 import { PageAdminCreatedJobDTO } from 'app/generated/model/page-admin-created-job-dto';
 import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
+import { UserResourceApi } from 'app/generated/api/user-resource-api';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import {
@@ -18,6 +19,7 @@ import {
   createResearchGroupResourceApiMock,
   ResearchGroupResourceApiMock,
 } from 'src/test/webapp/util/research-group-resource-api.service.mock';
+import { createUserResourceApiMock, UserResourceApiMock } from 'src/test/webapp/util/user-resource-api.service.mock';
 import { createRouterMock, provideRouterMock, RouterMock } from 'src/test/webapp/util/router.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
@@ -28,6 +30,7 @@ describe('AllPositionsPageComponent', () => {
   let router: RouterMock;
   let mockJobApi: JobResourceApiMock;
   let mockRgApi: ResearchGroupResourceApiMock;
+  let mockUserApi: UserResourceApiMock;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
 
   beforeEach(async () => {
@@ -56,7 +59,9 @@ describe('AllPositionsPageComponent', () => {
         totalElements: 1,
       }),
     );
-    mockRgApi.getAllProfessors.mockReturnValue(of([{ userId: 'p1', firstName: 'Prof', lastName: 'One' }]));
+
+    mockUserApi = createUserResourceApiMock();
+    mockUserApi.getAllProfessors.mockReturnValue(of([{ userId: 'p1', firstName: 'Prof', lastName: 'One' }]));
 
     mockToastService = createToastServiceMock();
 
@@ -67,6 +72,7 @@ describe('AllPositionsPageComponent', () => {
       providers: [
         provideJobResourceApiMock(mockJobApi),
         { provide: ResearchGroupResourceApi, useValue: mockRgApi },
+        { provide: UserResourceApi, useValue: mockUserApi },
         provideRouterMock(router),
         provideToastServiceMock(mockToastService),
         provideFontAwesomeTesting(),
@@ -85,17 +91,13 @@ describe('AllPositionsPageComponent', () => {
   });
 
   describe('Initialization', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
     it('should load research-group options on init via getResearchGroupsForAdmin', async () => {
       expect(mockRgApi.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
       expect(component.researchGroupOptions()).toEqual([{ id: 'r1', name: 'RG 1' }]);
     });
 
     it('should load professor options on init using firstName + lastName', async () => {
-      expect(mockRgApi.getAllProfessors).toHaveBeenCalledOnce();
+      expect(mockUserApi.getAllProfessors).toHaveBeenCalledOnce();
       expect(component.professorOptions()).toEqual([{ id: 'p1', name: 'Prof One' }]);
     });
 
@@ -110,7 +112,7 @@ describe('AllPositionsPageComponent', () => {
           totalElements: 3,
         }),
       );
-      mockRgApi.getAllProfessors.mockReturnValueOnce(of([]));
+      mockUserApi.getAllProfessors.mockReturnValueOnce(of([]));
 
       const newFixture = TestBed.createComponent(AllPositionsPageComponent);
       newFixture.detectChanges();
@@ -120,7 +122,7 @@ describe('AllPositionsPageComponent', () => {
     });
 
     it('should drop professor entries with missing id or name', async () => {
-      mockRgApi.getAllProfessors.mockReturnValueOnce(
+      mockUserApi.getAllProfessors.mockReturnValueOnce(
         of([
           { userId: 'p1', firstName: 'Prof', lastName: 'One' },
           { userId: '', firstName: 'No', lastName: 'Id' },
@@ -138,7 +140,7 @@ describe('AllPositionsPageComponent', () => {
 
     it('should toast loadFilters error when getResearchGroupsForAdmin fails', async () => {
       mockRgApi.getResearchGroupsForAdmin.mockReturnValueOnce(throwError(() => new Error('fail')));
-      mockRgApi.getAllProfessors.mockReturnValueOnce(of([]));
+      mockUserApi.getAllProfessors.mockReturnValueOnce(of([]));
 
       const newFixture = TestBed.createComponent(AllPositionsPageComponent);
       newFixture.detectChanges();
@@ -149,7 +151,7 @@ describe('AllPositionsPageComponent', () => {
 
     it('should toast loadFilters error when getAllProfessors fails', async () => {
       mockRgApi.getResearchGroupsForAdmin.mockReturnValueOnce(of({ content: [], totalElements: 0 }));
-      mockRgApi.getAllProfessors.mockReturnValueOnce(throwError(() => new Error('fail')));
+      mockUserApi.getAllProfessors.mockReturnValueOnce(throwError(() => new Error('fail')));
 
       const newFixture = TestBed.createComponent(AllPositionsPageComponent);
       newFixture.detectChanges();

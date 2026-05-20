@@ -25,17 +25,6 @@ import { ResearchGroupLargeDTO } from '../model/research-group-large-dto';
 const BASE_PATH = '';
 
 /**
- * 
- * 
- * Creates a reactive HTTP resource that automatically refetches when signals change.
- */
-export function getAllProfessorsResource(): HttpResourceRef<Array<UserShortDTO> | undefined> {
-    return httpResource<Array<UserShortDTO>>(() => {
-        return `${BASE_PATH}/api/research-groups/professors/all`;
-    });
-}
-
-/**
  * Query parameters for getAllResearchGroups
  */
 export interface GetAllResearchGroupsParams {

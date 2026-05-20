@@ -93,19 +93,10 @@ export class ResearchGroupResourceApi {
     }
 
     /**
-     * 
-     * 
-     */
-    getAllProfessors(): Observable<Array<UserShortDTO>> {
-        const url = `${this.basePath}/api/research-groups/professors/all`;
-        return this.http.get<Array<UserShortDTO>>(url);
-    }
-
-    /**
-     * 
-     * 
-     * @param pageSize 
-     * @param pageNumber 
+     *
+     *
+     * @param pageSize
+     * @param pageNumber
      */
     getAllResearchGroups(pageSize?: number, pageNumber?: number): Observable<PageResponseDTOResearchGroupDTO> {
         const queryParams = new URLSearchParams();

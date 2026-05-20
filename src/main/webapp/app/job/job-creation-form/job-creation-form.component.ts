@@ -1474,7 +1474,7 @@ export class JobCreationFormComponent {
     try {
       const isAdmin = this.accountService.userAuthorities?.includes(UserShortDTORolesEnum.Admin) ?? false;
       const response = isAdmin
-        ? await firstValueFrom(this.researchGroupApi.getAllProfessors())
+        ? await firstValueFrom(this.userApi.getAllProfessors())
         : await firstValueFrom(this.researchGroupApi.getResearchGroupProfessors());
       const options = response
         .filter(member => member.roles?.includes(UserShortDTORolesEnum.Professor) && member.userId)

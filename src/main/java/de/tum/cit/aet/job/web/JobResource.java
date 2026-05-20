@@ -189,8 +189,7 @@ public class JobResource {
     }
 
     /**
-     * {@code GET /api/jobs/all} : Returns a paginated list of all jobs across every research group.
-     * Admin-only.
+     * Returns a paginated list of all jobs across every research group.
      *
      * @param pageDTO     pagination parameters including page number and size
      * @param adminFilter DTO containing all optionally filterable fields (states,

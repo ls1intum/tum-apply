@@ -79,18 +79,6 @@ public class ResearchGroupResource {
     }
 
     /**
-     * Returns every professor in the system, for admin filter dropdowns.
-     *
-     * @return list of professors
-     */
-    @Admin
-    @GetMapping("/professors/all")
-    public ResponseEntity<List<UserShortDTO>> getAllProfessors() {
-        log.info("GET /api/research-groups/professors/all");
-        return ResponseEntity.ok(researchGroupService.getAllProfessors());
-    }
-
-    /**
      * Returns paginated members of the research group by the id.
      *
      * @param researchGroupId the ID of the research group

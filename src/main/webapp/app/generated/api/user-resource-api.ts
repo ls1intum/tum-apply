@@ -27,12 +27,21 @@ export class UserResourceApi {
     private readonly basePath = '';
 
     /**
-     * 
-     * 
+     *
+     *
      */
     getAiConsent(): Observable<boolean> {
         const url = `${this.basePath}/api/users/ai-consent`;
         return this.http.get<boolean>(url);
+    }
+
+    /**
+     *
+     *
+     */
+    getAllProfessors(): Observable<Array<UserShortDTO>> {
+        const url = `${this.basePath}/api/users/professors`;
+        return this.http.get<Array<UserShortDTO>>(url);
     }
 
     /**

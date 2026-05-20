@@ -2400,18 +2400,6 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/UserShortDTO'}
-  /api/research-groups/professors/all:
-    get:
-      tags: [research-group-resource]
-      operationId: getAllProfessors
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/UserShortDTO'}
   /api/research-groups/{id}:
     get:
       tags: [research-group-resource]
@@ -2811,6 +2799,18 @@ paths:
         required: true
       responses:
         '200': {description: OK}
+  /api/users/professors:
+    get:
+      tags: [user-resource]
+      operationId: getAllProfessors
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/UserShortDTO'}
 components:
   schemas:
     AcceptDTO:
