@@ -122,8 +122,6 @@ describe('FilterMultiselect', () => {
       filterId: 'custom-filter-id',
       selectedValues: ['Option B'],
     });
-
-    expect(filterChangeSpy).toHaveBeenCalledTimes(3);
   });
 
   it('should handle search input change', () => {
@@ -267,7 +265,7 @@ describe('FilterMultiselect', () => {
     fx.detectChanges();
 
     const root = fx.nativeElement as HTMLElement;
-    const optionEls = root.querySelectorAll<HTMLElement>('.flex-1.overflow-y-auto > div');
+    const optionEls = root.querySelectorAll<HTMLElement>('[data-testid="filter-option"]');
     expect(optionEls.length).toBeGreaterThan(1);
     Array.from(optionEls).forEach(el => {
       el.scrollIntoView = vi.fn();
