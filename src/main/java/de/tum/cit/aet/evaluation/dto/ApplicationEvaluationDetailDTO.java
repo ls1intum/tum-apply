@@ -15,7 +15,8 @@ public record ApplicationEvaluationDetailDTO(
     ProfessorDTO professor,
     UUID jobId,
     LocalDateTime appliedAt,
-    Double averageRating
+    Double averageRating,
+    Integer ratingCount
 ) {
     /**
      * Creates an {@link ApplicationEvaluationDetailDTO} from the given
@@ -32,17 +33,25 @@ public record ApplicationEvaluationDetailDTO(
             ProfessorDTO.fromEntity(job.getSupervisingProfessor()),
             job.getJobId(),
             application.getAppliedAt(),
-            null // averageRating will be set separately via withAverageRating
+            null,
+            null
         );
     }
 
     /**
-     * Creates a new ApplicationEvaluationDetailDTO with the average rating set.
+     * Creates a new DTO with the given rating summary applied.
      *
-     * @param averageRating the average rating to set
-     * @return a new DTO with the average rating
+     * @param summary the aggregated rating summary
+     * @return a new DTO carrying the summary's average and count
      */
-    public ApplicationEvaluationDetailDTO withAverageRating(Double averageRating) {
-        return new ApplicationEvaluationDetailDTO(this.applicationDetailDTO, this.professor, this.jobId, this.appliedAt, averageRating);
+    public ApplicationEvaluationDetailDTO withRatingSummary(RatingSummary summary) {
+        return new ApplicationEvaluationDetailDTO(
+            this.applicationDetailDTO,
+            this.professor,
+            this.jobId,
+            this.appliedAt,
+            summary.average(),
+            summary.count()
+        );
     }
 }
