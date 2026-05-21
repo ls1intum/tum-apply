@@ -1,4 +1,4 @@
-import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -193,6 +193,23 @@ export class MyPositionsPageComponent {
   private translate = inject(TranslateService);
 
   private readonly translationKey: string = 'myPositionsPage';
+
+  // Skip the very first read so the initial render — which already triggers
+  // loadJobs() via the table's lazy-load event — doesn't double-fetch.
+  private lastSeenActiveGroupId: string | null | undefined = null;
+  private readonly activeGroupRefreshEffect = effect(() => {
+    const activeId = this.accountService.activeResearchGroupId();
+    if (this.lastSeenActiveGroupId === null) {
+      this.lastSeenActiveGroupId = activeId;
+      return;
+    }
+    if (activeId === this.lastSeenActiveGroupId) {
+      return;
+    }
+    this.lastSeenActiveGroupId = activeId;
+    this.page.set(0);
+    void this.loadJobs();
+  });
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
