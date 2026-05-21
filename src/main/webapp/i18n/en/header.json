@@ -12,6 +12,11 @@
     "universityName": "Technical University of Munich",
     "lightMode": "Light Theme",
     "darkMode": "Dark Theme",
-    "systemMode": "System Theme"
+    "systemMode": "System Theme",
+    "menu": "Menu",
+    "menuToggle": "Open menu",
+    "sidebarToggle": "Open navigation",
+    "language": "Language",
+    "theme": "Theme"
   }
 }

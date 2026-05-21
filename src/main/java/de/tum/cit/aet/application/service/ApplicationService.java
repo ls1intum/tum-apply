@@ -375,7 +375,6 @@ public class ApplicationService {
         return applicationRepository.findApplicationsByApplicant(userId, pageable);
     }
 
-    /**
      * Returns a paginated list of applications across every research group for admin views.
      * Supports optional filters for state, research group, supervising professor, and job,
      * plus a search string matching applicant full name or job title.
@@ -421,6 +420,16 @@ public class ApplicationService {
      */
     private static <T> List<T> nullIfEmpty(List<T> list) {
         return (list == null || list.isEmpty()) ? null : list;
+    }
+
+    /**
+     * Retrieves all applications submitted by the given applicant user.
+     *
+     * @param applicantUserId the user id of the applicant
+     * @return list of applications belonging to the applicant
+     */
+    public List<Application> findAllByApplicantUserId(UUID applicantUserId) {
+        return applicationRepository.findAllByApplicantId(applicantUserId);
     }
 
     /**
