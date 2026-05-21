@@ -213,22 +213,7 @@ class UserAdminResourceTest extends AbstractResourceTest {
         @Test
         void shouldRejectProfessor() {
             User target = UserTestData.savedUser(userRepository);
-            UpdateUserDTO dto = new UpdateUserDTO(
-                "Blocked",
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            );
+            UpdateUserDTO dto = new UpdateUserDTO("Blocked", null, null, null, null, null, null, null, null, null, null, null, null, null);
 
             api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -236,22 +221,7 @@ class UserAdminResourceTest extends AbstractResourceTest {
         }
 
         private UpdateUserDTO roleUpdate(UserRole role, UUID researchGroupId) {
-            return new UpdateUserDTO(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                role,
-                researchGroupId
-            );
+            return new UpdateUserDTO(null, null, null, null, null, null, null, null, null, null, null, null, role, researchGroupId);
         }
     }
 }
