@@ -4,8 +4,8 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DocumentInformationHolderDTO } from 'app/generated/model/document-information-holder-dto';
 import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
+import type { DocumentHolder } from 'app/shared/models/document-holder';
 
-import { DocumentHolder } from '../../organisms/document-section/document-section';
 import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
@@ -18,23 +18,36 @@ export class DocumentDialog {
   documentHolders = input<DocumentHolder[]>([]);
   isOpen = model<boolean>(false);
 
-  readonly selectedId = signal<string | undefined>(undefined);
+  readonly selectedId = model<string | undefined>(undefined);
   readonly checkedIds = signal<Set<string>>(new Set());
 
   _initSelection = effect(() => {
     const list = this.documentHolders();
-    if (list.length && this.selectedId() === undefined) {
+    const currentSelectedId = this.selectedId();
+
+    if (list.length === 0) {
+      if (currentSelectedId !== undefined) {
+        this.selectedId.set(undefined);
+      }
+      return;
+    }
+
+    const selectionStillExists = currentSelectedId !== undefined && list.some(holder => holder.document.id === currentSelectedId);
+    if (!selectionStillExists) {
       this.selectedId.set(list[0].document.id);
     }
   });
 
-  selectedDocument = computed<DocumentInformationHolderDTO | undefined>(() => {
+  selectedHolder = computed<DocumentHolder | undefined>(() => {
     const id = this.selectedId();
     if (id === undefined) {
       return undefined;
     }
-    return this.documentHolders().find(d => d.document.id === id)?.document ?? undefined;
+    return this.documentHolders().find(d => d.document.id === id) ?? undefined;
   });
+
+  selectedDocument = computed<DocumentInformationHolderDTO | undefined>(() => this.selectedHolder()?.document);
+  selectedFile = computed<File | undefined>(() => this.selectedHolder()?.file);
 
   isSelected: (documentId: string) => Signal<boolean> = (documentId: string) => computed(() => this.selectedDocument()?.id === documentId);
 

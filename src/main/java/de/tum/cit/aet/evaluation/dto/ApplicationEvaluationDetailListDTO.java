@@ -37,15 +37,15 @@ public record ApplicationEvaluationDetailListDTO(
      * Creates an {@link ApplicationEvaluationDetailListDTO} from a collection of
      * {@link Application} entities.
      *
-     * @param applications     the collection of {@link Application} entities to
-     *                         convert
-     * @param totalRecords     the total number of matching records in the dataset
-     * @param currentIndex     the index of the current application in the full
-     *                         dataset (optional, may be {@code null})
-     * @param windowIndex      the index of the current application within the
-     *                         returned window (optional, may be {@code null})
-     * @param ratingCalculator a function to calculate the average rating for each
-     *                         application (optional)
+     * @param applications      the collection of {@link Application} entities to
+     *                          convert
+     * @param totalRecords      the total number of matching records in the dataset
+     * @param currentIndex      the index of the current application in the full
+     *                          dataset (optional, may be {@code null})
+     * @param windowIndex       the index of the current application within the
+     *                          returned window (optional, may be {@code null})
+     * @param ratingCalculator  a function that produces the {@link RatingSummary}
+     *                          for each application (optional)
      * @return a new {@link ApplicationEvaluationDetailListDTO} containing the
      *         converted details and metadata
      */
@@ -54,7 +54,7 @@ public record ApplicationEvaluationDetailListDTO(
         long totalRecords,
         Integer currentIndex,
         Integer windowIndex,
-        Function<Application, Double> ratingCalculator
+        Function<Application, RatingSummary> ratingCalculator
     ) {
         return new ApplicationEvaluationDetailListDTO(
             applications
@@ -62,7 +62,7 @@ public record ApplicationEvaluationDetailListDTO(
                 .map(app -> {
                     ApplicationEvaluationDetailDTO dto = ApplicationEvaluationDetailDTO.fromApplication(app);
                     if (ratingCalculator != null) {
-                        return dto.withAverageRating(ratingCalculator.apply(app));
+                        return dto.withRatingSummary(ratingCalculator.apply(app));
                     }
                     return dto;
                 })

@@ -33,7 +33,6 @@ public record JobDetailDTO(
     ApplicationState applicationState,
     Boolean suitableForDisabled,
     Boolean startDateByArrangement,
-    Boolean contractExtendable,
     Integer referenceLettersRequired,
     UUID imageId // Job banner image ID for PDF export
 ) {}
