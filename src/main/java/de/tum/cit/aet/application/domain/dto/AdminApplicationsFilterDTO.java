@@ -1,5 +1,6 @@
 package de.tum.cit.aet.application.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ import java.util.UUID;
  * @param supervisingProfessorIds optional filter for one or more supervising-professor user ids
  * @param jobIds                  optional filter for one or more job ids
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record AdminApplicationsFilterDTO(
     List<String> states,
     List<UUID> researchGroupIds,

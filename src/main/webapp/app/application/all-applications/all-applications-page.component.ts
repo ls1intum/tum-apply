@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -55,7 +55,7 @@ const TRANSLATION_KEY = 'allApplicationsPage';
   ],
   templateUrl: './all-applications-page.component.html',
 })
-export class AllApplicationsPageComponent implements OnInit {
+export class AllApplicationsPageComponent {
   loading = signal(true);
   applications = signal<AdminApplicationOverviewDTO[]>([]);
   totalRecords = signal<number>(0);
@@ -175,11 +175,7 @@ export class AllApplicationsPageComponent implements OnInit {
   private router = inject(Router);
   private toastService = inject(ToastService);
 
-  /**
-   * Loads filter dropdown sources on init. The first applications page load is
-   * triggered by the table's lazy-load event when the template renders.
-   */
-  ngOnInit(): void {
+  constructor() {
     void Promise.all([this.loadResearchGroupOptions(), this.loadProfessorOptions()]);
   }
 
