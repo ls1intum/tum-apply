@@ -12,6 +12,7 @@ import { User } from 'app/core/auth/account.service';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
+import { MobileSidebarService } from 'app/service/mobile-sidebar.service';
 import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
 import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { AuthFacadeServiceMock, createAuthFacadeServiceMock, provideAuthFacadeServiceMock } from 'util/auth-facade.service.mock';
@@ -341,16 +342,20 @@ describe('HeaderComponent', () => {
     });
   });
 
-  describe('mobile drawer', () => {
-    it('should start with the mobile drawer closed', () => {
-      expect(component.mobileMenuOpen()).toBe(false);
-    });
-
-    it('should close the mobile drawer on NavigationStart', () => {
+  describe('mobile drawers close on NavigationStart', () => {
+    it('should close the anonymous burger menu when navigation starts', () => {
       component.mobileMenuOpen.set(true);
       router.events.next(new NavigationStart(1, '/jobs'));
 
       expect(component.mobileMenuOpen()).toBe(false);
+    });
+
+    it('should close the logged-in mobile sidebar when navigation starts', () => {
+      const mobileSidebar = TestBed.inject(MobileSidebarService);
+      mobileSidebar.open.set(true);
+      router.events.next(new NavigationStart(1, '/settings'));
+
+      expect(mobileSidebar.open()).toBe(false);
     });
   });
 });

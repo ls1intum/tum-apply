@@ -1,4 +1,4 @@
-import { Component, DestroyRef, effect, inject, input, model } from '@angular/core';
+import { Component, effect, input, model } from '@angular/core';
 import { DrawerModule } from 'primeng/drawer';
 
 export type DrawerPosition = 'left' | 'right' | 'top' | 'bottom' | 'full';
@@ -37,27 +37,24 @@ export class DrawerComponent {
   readonly motionOptions = { duration: 150 } as const;
   readonly maskStyle = { 'animation-duration': '100ms' } as const;
 
-  private readonly destroyRef = inject(DestroyRef);
   private outsideClickHandler?: (event: MouseEvent) => void;
   private outsideClickAttachTimeout?: ReturnType<typeof setTimeout>;
 
-  constructor() {
-    // PrimeNG's tap-outside dismiss relies on the modal mask, so when callers turn the mask
-    // off (to avoid the navigation freeze) we recreate the behaviour ourselves: while the
-    // drawer is open we listen for document clicks landing outside any .p-drawer panel and
-    // close. The listener is attached on the next task so the click that opened the drawer
-    // doesn't immediately close it again; it runs on the bubble phase so a follow-up click
-    // on the trigger button settles to closed (trigger handler runs first as a no-op, then
-    // the document listener closes).
-    effect(() => {
-      if (this.open() && this.dismissible() && !this.modal()) {
-        this.bindOutsideClickListener();
-      } else {
-        this.unbindOutsideClickListener();
-      }
-    });
-    this.destroyRef.onDestroy(() => this.unbindOutsideClickListener());
-  }
+  /**
+   * PrimeNG's tap-outside dismiss relies on the modal mask, so when callers turn the mask
+   * off (to avoid the navigation freeze) we recreate the behaviour ourselves: while the
+   * drawer is open we listen for document clicks landing outside any .p-drawer panel and
+   * close. The listener is attached on the next task so the click that opened the drawer
+   * doesn't immediately close it again; it runs on the bubble phase so a follow-up click
+   * on the trigger button settles to closed (trigger handler runs first as a no-op, then
+   * the document listener closes). Cleanup runs when the effect re-runs and on destroy.
+   */
+  private readonly outsideClickEffect = effect(onCleanup => {
+    if (this.open() && this.dismissible() && !this.modal()) {
+      this.bindOutsideClickListener();
+      onCleanup(() => this.unbindOutsideClickListener());
+    }
+  });
 
   /**
    * Closes the drawer if it is open. Call this before navigating or triggering any action
@@ -78,8 +75,8 @@ export class DrawerComponent {
     this.outsideClickAttachTimeout = setTimeout(() => {
       this.outsideClickAttachTimeout = undefined;
       const handler = (event: MouseEvent): void => {
-        const target = event.target as Element | null;
-        if (!target || !target.closest('.p-drawer')) {
+        const target = event.target;
+        if (!(target instanceof Element) || !target.closest('.p-drawer')) {
           this.open.set(false);
         }
       };
