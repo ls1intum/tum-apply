@@ -36,7 +36,7 @@
   />
   <div class="header-container">
     <div class="page-header">
-      <h1 jhiTranslate="researchGroup.adminView.title" class="h1-text"></h1>
+      <h1 jhiTranslate="researchGroup.adminView.title"></h1>
     </div>
     <jhi-button
       [label]="'researchGroup.adminView.createButton'"
@@ -46,7 +46,7 @@
       [shouldTranslate]="true"
     />
   </div>
-  <div class="body">
+  <div>
     <jhi-search-filter-sort-bar
       [searchText]="'researchGroup.adminView.searchFilterSortBar.searchText' | translate"
       [totalRecords]="totalRecords()"
@@ -59,7 +59,7 @@
       [sortableFields]="sortableFields"
     />
 
-    <div class="table-wrapper">
+    <div>
       <jhi-dynamic-table
         [columns]="columns()"
         [data]="researchGroups()"
