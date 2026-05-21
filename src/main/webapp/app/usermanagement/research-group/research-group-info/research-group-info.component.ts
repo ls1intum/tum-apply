@@ -60,10 +60,6 @@ export class ResearchGroupInfoComponent {
     void this.init();
   });
 
-  private initTracked = false;
-  private lastInitializedRgId: string | undefined;
-  private latestInitRequestId = 0;
-
   // State signals
   isSaving = signal<boolean>(false);
   hasInitialized = signal<boolean>(false);
@@ -85,6 +81,10 @@ export class ResearchGroupInfoComponent {
     address: new FormControl(''),
     description: new FormControl(''),
   });
+
+  private initTracked = false;
+  private lastInitializedRgId: string | undefined;
+  private latestInitRequestId = 0;
 
   // Services
   private accountService = inject(AccountService);
