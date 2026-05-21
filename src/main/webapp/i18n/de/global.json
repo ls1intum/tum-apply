@@ -509,9 +509,9 @@
       },
       "toastMessages": {
         "deleteSuccess": "Bewerbung gelöscht.",
-        "deleteFailed": "Bewerbung konnte nicht gelöscht werden: {{ detail }}",
+        "deleteFailed": "Bewerbung konnte nicht gelöscht werden: {detail}",
         "withdrawSuccess": "Bewerbung zurückgezogen.",
-        "withdrawFailed": "Bewerbung konnte nicht zurückgezogen werden: {{ detail }}"
+        "withdrawFailed": "Bewerbung konnte nicht zurückgezogen werden: {detail}"
       }
     },
     "applicationDetail": {

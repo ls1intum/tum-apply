@@ -509,9 +509,9 @@
       },
       "toastMessages": {
         "deleteSuccess": "Application deleted.",
-        "deleteFailed": "Could not delete application: {{ detail }}",
+        "deleteFailed": "Could not delete application: {detail}",
         "withdrawSuccess": "Application withdrawn.",
-        "withdrawFailed": "Could not withdraw application: {{ detail }}"
+        "withdrawFailed": "Could not withdraw application: {detail}"
       }
     },
     "applicationDetail": {
