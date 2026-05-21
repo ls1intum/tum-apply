@@ -892,7 +892,6 @@ export class JobCreationFormComponent {
       issue.text !== undefined &&
       issue.text !== '' &&
       issue.category !== undefined &&
-      issue.category !== '' &&
       (issue.language === undefined || issue.language === '' || issue.language === lang)
         ? [{ text: issue.text, category: issue.category }]
         : [],

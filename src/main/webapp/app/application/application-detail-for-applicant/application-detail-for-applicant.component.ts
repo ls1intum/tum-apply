@@ -186,7 +186,7 @@ export default class ApplicationDetailForApplicantComponent {
     this.currentLang();
     const applicant = this.application()?.applicant;
     const grade = applicant?.bachelorGrade;
-    if (grade === undefined || grade === '') return '-';
+    if (applicant === undefined || grade === undefined || grade === '') return '-';
 
     const limits = { upperLimit: applicant.bachelorGradeUpperLimit, lowerLimit: applicant.bachelorGradeLowerLimit };
     if (limits.upperLimit === undefined || limits.upperLimit === '' || limits.lowerLimit === undefined || limits.lowerLimit === '')
@@ -207,7 +207,7 @@ export default class ApplicationDetailForApplicantComponent {
     this.currentLang();
     const applicant = this.application()?.applicant;
     const grade = applicant?.masterGrade;
-    if (grade === undefined || grade === '') return '-';
+    if (applicant === undefined || grade === undefined || grade === '') return '-';
 
     const limits = { upperLimit: applicant.masterGradeUpperLimit, lowerLimit: applicant.masterGradeLowerLimit };
     if (limits.upperLimit === undefined || limits.upperLimit === '' || limits.lowerLimit === undefined || limits.lowerLimit === '')
