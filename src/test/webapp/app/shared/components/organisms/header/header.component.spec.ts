@@ -1,7 +1,7 @@
 import { WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { NavigationEnd } from '@angular/router';
+import { NavigationEnd, NavigationStart } from '@angular/router';
 
 import { TranslateService } from '@ngx-translate/core';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -346,9 +346,9 @@ describe('HeaderComponent', () => {
       expect(component.mobileMenuOpen()).toBe(false);
     });
 
-    it('should close the mobile drawer on NavigationEnd', () => {
+    it('should close the mobile drawer on NavigationStart', () => {
       component.mobileMenuOpen.set(true);
-      router.events.next(new NavigationEnd(1, '/jobs', '/jobs'));
+      router.events.next(new NavigationStart(1, '/jobs'));
 
       expect(component.mobileMenuOpen()).toBe(false);
     });

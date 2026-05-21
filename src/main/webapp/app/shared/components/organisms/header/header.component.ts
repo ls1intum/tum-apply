@@ -13,7 +13,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
 import { TranslateService } from '@ngx-translate/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, map } from 'rxjs';
@@ -23,6 +23,7 @@ import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 import { KeycloakRealmKind } from 'app/core/auth/keycloak-authentication.utils';
 import { ThemeService } from 'app/service/theme.service';
+import { MobileSidebarService } from 'app/service/mobile-sidebar.service';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -30,7 +31,7 @@ import { SelectOption } from '../../atoms/select/select.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { JhiMenuItem, MenuComponent } from '../../atoms/menu/menu.component';
 import { UserAvatarComponent } from '../../atoms/user-avatar/user-avatar.component';
-import { RightDrawerComponent } from '../../molecules/right-drawer/right-drawer.component';
+import { DrawerComponent } from '../../molecules/drawer/drawer.component';
 
 @Component({
   selector: 'jhi-header',
@@ -40,7 +41,7 @@ import { RightDrawerComponent } from '../../molecules/right-drawer/right-drawer.
     ButtonComponent,
     FontAwesomeModule,
     DynamicDialogModule,
-    RightDrawerComponent,
+    DrawerComponent,
     TranslateDirective,
     MenuComponent,
     UserAvatarComponent,
@@ -82,6 +83,10 @@ export class HeaderComponent {
   mobileMenuLabel = computed(() => {
     this.langChange();
     return this.translateService.instant('header.menuToggle');
+  });
+  sidebarToggleLabel = computed(() => {
+    this.langChange();
+    return this.translateService.instant('header.sidebarToggle');
   });
   themeOptions: SelectOption[] = [
     { name: 'Light', value: 'light' },
@@ -127,6 +132,9 @@ export class HeaderComponent {
   isProfileMenuOpen = signal(false);
   mobileMenuOpen = signal(false);
 
+  private readonly mobileSidebarService = inject(MobileSidebarService);
+  readonly mobileSidebarOpen = this.mobileSidebarService.open;
+
   profileMenuItems = computed<JhiMenuItem[]>(() => {
     this.currentLanguage();
     if (!this.user()) {
@@ -164,7 +172,19 @@ export class HeaderComponent {
       this.setupBannerObserver();
     });
 
-    // Re-setup on navigation
+    // Close the mobile drawers the moment navigation starts so the modal mask animates away
+    // in parallel with the new route loading instead of waiting for it to finish.
+    this.router.events
+      .pipe(
+        filter(e => e instanceof NavigationStart),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.mobileMenuOpen.set(false);
+        this.mobileSidebarService.close();
+      });
+
+    // Re-setup the banner observer once the destination page has actually rendered.
     this.router.events
       .pipe(
         filter(e => e instanceof NavigationEnd),
@@ -172,8 +192,6 @@ export class HeaderComponent {
       )
       .subscribe(() => {
         this.observer?.disconnect();
-        // Close the mobile drawer when the user navigates away.
-        this.mobileMenuOpen.set(false);
         // Give the banner component time to render
         setTimeout(() => {
           this.setupBannerObserver();
@@ -269,6 +287,10 @@ export class HeaderComponent {
 
   toggleProfileMenu(event: Event): void {
     this.profileMenu()?.toggle(event);
+  }
+
+  openMobileSidebar(): void {
+    this.mobileSidebarService.open.set(true);
   }
 
   /**

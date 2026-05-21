@@ -11,7 +11,7 @@ import TranslateDirective from '../../../language/translate.directive';
 import { Filter, FilterChange, FilterMultiselect } from '../../atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortDirection, SortOption, Sorting } from '../../atoms/sorting/sorting';
 import { ButtonComponent } from '../../atoms/button/button.component';
-import { RightDrawerComponent } from '../right-drawer/right-drawer.component';
+import { DrawerComponent } from '../drawer/drawer.component';
 
 @Component({
   selector: 'jhi-search-filter-sort-bar',
@@ -25,7 +25,7 @@ import { RightDrawerComponent } from '../right-drawer/right-drawer.component';
     FilterMultiselect,
     Sorting,
     ButtonComponent,
-    RightDrawerComponent,
+    DrawerComponent,
   ],
   templateUrl: './search-filter-sort-bar.html',
   styleUrl: './search-filter-sort-bar.scss',

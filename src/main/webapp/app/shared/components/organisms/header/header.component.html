@@ -4,30 +4,69 @@
   [class.border-transparent]="!showBorder()"
   [class.shadow-sm]="showBorder()"
 >
-  <a
-    href="/"
-    (click)="onLogoClick($event)"
-    class="flex items-center gap-2 text-primary-default text-base font-bold cursor-pointer flex-shrink-0"
-  >
-    <img alt="TUMApply Logo" class="h-6" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
-    <span class="hidden sm:inline">TUMApply</span>
-    @if (isProfessorPage()) {
-      <span class="hidden sm:inline text-secondary-default font-light" jhiTranslate="header.professorTitle"></span>
+  <div class="flex items-center gap-2 flex-shrink-0">
+    @if (user()) {
+      <!-- Mobile-only trigger that opens the navigation sidebar (which is hidden on small viewports). -->
+      <button
+        type="button"
+        class="md:hidden inline-flex items-center justify-center w-9 h-9 -ml-1 rounded-md text-text-primary hover:bg-primary-hover-outlined transition-colors"
+        (click)="openMobileSidebar()"
+        [attr.aria-label]="sidebarToggleLabel()"
+        aria-haspopup="dialog"
+        [attr.aria-expanded]="mobileSidebarOpen()"
+      >
+        <fa-icon icon="bars" class="text-lg" />
+      </button>
     }
-  </a>
+    <a
+      href="/"
+      (click)="onLogoClick($event)"
+      class="flex items-center gap-2 text-primary-default text-base font-bold cursor-pointer"
+    >
+      <img alt="TUMApply Logo" class="h-6" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
+      <span class="hidden sm:inline">TUMApply</span>
+      @if (isProfessorPage()) {
+        <span class="hidden sm:inline text-secondary-default font-light" jhiTranslate="header.professorTitle"></span>
+      }
+    </a>
+  </div>
 
-  <!-- Desktop action cluster: shown from md (≥ 768px) upwards. -->
-  <div class="hidden md:flex items-center gap-1 flex-shrink-0">
-    <ng-container *ngTemplateOutlet="languageSwitcher; context: { vertical: false }" />
-    <ng-container *ngTemplateOutlet="themeToggle" />
-
-    @if (user() === undefined) {
+  @if (user(); as currentUser) {
+    <!-- Logged in: keep the existing avatar + collapsible menu on every viewport; hide name on small screens. -->
+    <div class="flex items-center gap-1 flex-shrink-0 relative">
+      <ng-container *ngTemplateOutlet="languageSwitcher; context: { vertical: false }" />
+      <ng-container *ngTemplateOutlet="themeToggle" />
+      <button
+        class="flex items-center gap-2 px-2 rounded-md cursor-pointer bg-transparent transition-colors duration-200 hover:bg-primary-hover-outlined"
+        type="button"
+        (click)="toggleProfileMenu($event)"
+        [attr.aria-label]="profileMenuAriaLabel()"
+        [attr.aria-expanded]="isProfileMenuOpen()"
+        aria-haspopup="menu"
+      >
+        <jhi-user-avatar [fullName]="currentUser.name" [avatarUrl]="currentUser.avatar" />
+        <span class="hidden md:inline font-medium">{{ currentUser.name }}</span>
+        <fa-icon
+          class="text-xs text-text-default transition-transform duration-300"
+          [class.rotate-180]="isProfileMenuOpen()"
+          icon="chevron-down"
+        />
+      </button>
+      <div class="absolute right-0 top-full mt-1 z-30">
+        <jhi-menu #profileMenu [items]="profileMenuItems()" [shouldTranslate]="true" (visibleChange)="isProfileMenuOpen.set($event)" />
+      </div>
+    </div>
+  } @else {
+    <!-- Desktop action cluster for anonymous visitors: shown from md (≥ 768px) upwards. -->
+    <div class="hidden md:flex items-center gap-1 flex-shrink-0">
+      <ng-container *ngTemplateOutlet="languageSwitcher; context: { vertical: false }" />
+      <ng-container *ngTemplateOutlet="themeToggle" />
       <ng-container *ngTemplateOutlet="portalSwitch; context: { vertical: false }" />
       <div class="h-4 mx-0.5 w-px bg-primary-default self-center"></div>
       <jhi-button
         [class]="headerButtonClass"
         (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
-        [label]="isProfessorPage() ? 'auth.passkey.buttons.professorPasskey' : 'auth.passkey.buttons.passkey'"
+        label="auth.passkey.buttons.passkey"
         icon="key"
         severity="primary"
         variant="text"
@@ -40,70 +79,43 @@
         variant="text"
         classStyling="font-bold"
       />
-    } @else {
-      <button
-        class="flex items-center gap-2 px-2 rounded-md cursor-pointer bg-transparent transition-colors duration-200 hover:bg-primary-hover-outlined"
-        type="button"
-        (click)="toggleProfileMenu($event)"
-        [attr.aria-label]="profileMenuAriaLabel()"
-        [attr.aria-expanded]="isProfileMenuOpen()"
-        aria-haspopup="menu"
-      >
-        <jhi-user-avatar [fullName]="user()?.name" [avatarUrl]="user()?.avatar" />
-        <span class="font-medium">{{ user()?.name }}</span>
-        <fa-icon
-          class="text-xs text-text-default transition-transform duration-300"
-          [class.rotate-180]="isProfileMenuOpen()"
-          icon="chevron-down"
-        />
-      </button>
-      <div class="absolute right-0 top-full mt-1 z-30">
-        <jhi-menu #profileMenu [items]="profileMenuItems()" [shouldTranslate]="true" (visibleChange)="isProfileMenuOpen.set($event)" />
-      </div>
-    }
-  </div>
+    </div>
 
-  <!-- Mobile burger trigger: shown below md. -->
-  <button
-    type="button"
-    class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-md text-text-primary hover:bg-primary-hover-outlined transition-colors"
-    (click)="mobileMenuOpen.set(true)"
-    [attr.aria-label]="mobileMenuLabel()"
-    aria-haspopup="dialog"
-    [attr.aria-expanded]="mobileMenuOpen()"
-  >
-    <fa-icon icon="bars" class="text-lg" />
-  </button>
+    <!-- Mobile burger trigger for anonymous visitors: shown below md. -->
+    <button
+      type="button"
+      class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-md text-text-primary hover:bg-primary-hover-outlined transition-colors"
+      (click)="mobileMenuOpen.set(true)"
+      [attr.aria-label]="mobileMenuLabel()"
+      aria-haspopup="dialog"
+      [attr.aria-expanded]="mobileMenuOpen()"
+    >
+      <fa-icon icon="bars" class="text-lg" />
+    </button>
+  }
 </header>
 
-<!-- Mobile navigation drawer: contains the same actions stacked vertically. -->
-<jhi-right-drawer [(open)]="mobileMenuOpen">
-  <span drawer-header class="text-base font-semibold text-text-primary" jhiTranslate="header.menu"></span>
+<!-- Mobile navigation drawer: only rendered for anonymous visitors; logged-in users keep the profile dropdown. -->
+@if (user() === undefined) {
+  <jhi-drawer [(open)]="mobileMenuOpen" [modal]="false">
+    <span drawer-header class="text-base font-semibold text-text-primary" jhiTranslate="header.menu"></span>
 
-  <div class="flex flex-col gap-4 pt-2">
-    @if (user(); as currentUser) {
-      <div class="flex items-center gap-3 p-2 rounded-md bg-background-surface">
-        <jhi-user-avatar [fullName]="currentUser.name" [avatarUrl]="currentUser.avatar" />
-        <span class="font-medium text-text-primary truncate">{{ currentUser.name }}</span>
+    <div class="flex flex-col gap-4 pt-2">
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-text-secondary" jhiTranslate="header.language"></span>
+        <ng-container *ngTemplateOutlet="languageSwitcher; context: { vertical: true }" />
       </div>
-    }
 
-    <div class="flex items-center justify-between">
-      <span class="text-sm text-text-secondary" jhiTranslate="header.language"></span>
-      <ng-container *ngTemplateOutlet="languageSwitcher; context: { vertical: true }" />
-    </div>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-text-secondary" jhiTranslate="header.theme"></span>
+        <ng-container *ngTemplateOutlet="themeToggle" />
+      </div>
 
-    <div class="flex items-center justify-between">
-      <span class="text-sm text-text-secondary" jhiTranslate="header.theme"></span>
-      <ng-container *ngTemplateOutlet="themeToggle" />
-    </div>
-
-    @if (user() === undefined) {
       <div class="border-t border-border-default pt-3 flex flex-col gap-2">
         <ng-container *ngTemplateOutlet="portalSwitch; context: { vertical: true }" />
         <jhi-button
           (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
-          [label]="isProfessorPage() ? 'auth.passkey.buttons.professorPasskey' : 'auth.passkey.buttons.passkey'"
+          label="auth.passkey.buttons.passkey"
           icon="key"
           severity="primary"
           variant="outlined"
@@ -111,21 +123,9 @@
         />
         <jhi-button (click)="login()" label="header.login" severity="primary" [fullWidth]="true" classStyling="font-bold" />
       </div>
-    } @else {
-      <div class="border-t border-border-default pt-3 flex flex-col gap-2">
-        <jhi-button
-          (click)="navigateToSettings()"
-          label="header.settings"
-          icon="gear"
-          severity="primary"
-          variant="outlined"
-          [fullWidth]="true"
-        />
-        <jhi-button (click)="logout()" label="header.logout" icon="right-from-bracket" severity="danger" [fullWidth]="true" />
-      </div>
-    }
-  </div>
-</jhi-right-drawer>
+    </div>
+  </jhi-drawer>
+}
 
 <!-- Shared snippets reused in both the desktop header and the mobile drawer. -->
 <ng-template #languageSwitcher let-vertical="vertical">

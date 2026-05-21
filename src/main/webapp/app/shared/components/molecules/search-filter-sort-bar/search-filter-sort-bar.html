@@ -58,7 +58,7 @@
     </div>
   </div>
 
-  <jhi-right-drawer [(open)]="isMobileSidebarOpen" [showCloseIcon]="false" panelClass="w-[90vw] max-w-xs">
+  <jhi-drawer [(open)]="isMobileSidebarOpen" [showCloseIcon]="false" panelClass="w-[90vw] max-w-xs">
     <div drawer-header class="flex h-full flex-1 items-center justify-between font-semibold">
       <span jhiTranslate="entity.filters.sortingAndFilter"></span>
       <jhi-button [icon]="'times'" [size]="'sm'" [variant]="'text'" (click)="closeMobileSidebar()" />
@@ -105,7 +105,7 @@
       }
       <jhi-button type="button" [fullWidth]="true" color="primary" (click)="closeMobileSidebar()" label="entity.filters.show" />
     </div>
-  </jhi-right-drawer>
+  </jhi-drawer>
   <div class="flex flex-row justify-between pt-1 w-full">
     <!-- Left Side: Count and Reset -->
     <div class="flex flex-row gap-2">
