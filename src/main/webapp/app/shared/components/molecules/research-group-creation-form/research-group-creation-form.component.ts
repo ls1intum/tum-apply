@@ -346,7 +346,7 @@ export class ResearchGroupCreationFormComponent {
     } catch (error) {
       // Type-safe error handling
       if (error instanceof HttpErrorResponse) {
-        const errorMessage = error.error?.message ?? '';
+        const errorMessage: string = ((error.error as { message?: unknown } | undefined)?.message as string | undefined) ?? '';
 
         // Check if the error is about a duplicate research group name
         if (errorMessage.includes('already exists') || error.status === 409) {

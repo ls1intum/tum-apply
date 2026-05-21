@@ -399,7 +399,7 @@ export class SlotCreationFormComponent {
   }
 
   private formatTimeRange(start: string | undefined, end: string | undefined): string {
-    if (!start || !end) return '';
+    if (start === undefined || start === '' || end === undefined || end === '') return '';
     const s = new Date(start);
     const e = new Date(end);
 

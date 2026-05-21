@@ -132,7 +132,7 @@ export default class ApplicationCreationReferencesComponent {
    * @param reference the referee entry to remove
    */
   async onRemove(reference: ReferenceRequestDTO): Promise<void> {
-    if (!reference.referenceRequestId) return;
+    if (reference.referenceRequestId === undefined || reference.referenceRequestId === '') return;
     this.loading.set(true);
     try {
       await firstValueFrom(this.referenceApi.remove(this.applicationId(), reference.referenceRequestId));

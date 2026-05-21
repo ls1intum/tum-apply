@@ -49,7 +49,8 @@ export abstract class BaseInputDirective<T> {
 
   inputState = computed(() => {
     this.formValidityVersion();
-    if (this.complianceError()) return 'invalid';
+    const compliance = this.complianceError();
+    if (compliance !== undefined && compliance !== '') return 'invalid';
     if (!this.isTouched()) return 'untouched';
     if (this.formControl().invalid) return 'invalid';
     return 'valid';
@@ -62,7 +63,7 @@ export abstract class BaseInputDirective<T> {
 
     // compliance error in job creation form title
     const compliance = this.complianceError();
-    if (compliance) return compliance;
+    if (compliance !== undefined && compliance !== '') return compliance;
     const ctrl = this.formControl();
     const errors = ctrl.errors;
     if (!errors) return null;

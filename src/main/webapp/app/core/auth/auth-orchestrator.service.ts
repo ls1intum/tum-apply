@@ -114,7 +114,7 @@ export class AuthOrchestratorService {
       this.setIfPresent(prefill.firstName, value => this.firstName.set(value));
       this.setIfPresent(prefill.lastName, value => this.lastName.set(value));
     }
-    if (opts?.redirectUri) this.redirectUri.set(opts.redirectUri);
+    if (opts?.redirectUri !== undefined && opts.redirectUri !== '') this.redirectUri.set(opts.redirectUri);
 
     // choose sensible starting substates
     if (this.mode() === 'login') {
@@ -139,7 +139,7 @@ export class AuthOrchestratorService {
 
     try {
       this.onSuccessCb?.();
-      if (targetUrl) {
+      if (targetUrl !== null && targetUrl !== '') {
         const path = targetUrl.startsWith(window.location.origin) ? targetUrl.slice(window.location.origin.length) : targetUrl;
         void this.router.navigateByUrl(path);
       }

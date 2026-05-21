@@ -21,10 +21,10 @@ export class AuthInterceptor implements HttpInterceptor {
   private authFacade = inject(AuthFacadeService);
   private keycloakService = inject(KeycloakAuthenticationService);
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const token = this.keycloakService.getToken();
 
-    if (token?.length) {
+    if (token !== undefined && token !== '') {
       request = request.clone({
         setHeaders: { Authorization: `Bearer ${token}` },
       });

@@ -24,7 +24,10 @@ export class DepartmentEditDialogComponent {
 
   // Edit mode
   departmentId = signal<string | undefined>(undefined);
-  isEditMode = computed(() => !!this.departmentId());
+  isEditMode = computed(() => {
+    const id = this.departmentId();
+    return id !== undefined && id !== '';
+  });
 
   schoolOptions = computed<SelectOption[]>(() =>
     this.schools().map(school => ({
@@ -37,7 +40,7 @@ export class DepartmentEditDialogComponent {
 
   selectedSchoolOption = computed(() => {
     const schoolId = this.selectedSchoolId();
-    if (!schoolId) return undefined;
+    if (schoolId === undefined || schoolId === '') return undefined;
     return this.schoolOptions().find(opt => opt.value === schoolId);
   });
 
@@ -55,8 +58,8 @@ export class DepartmentEditDialogComponent {
   private readonly toastService = inject(ToastService);
 
   constructor() {
-    const data = this.config.data;
-    if (data?.department) {
+    const data = this.config.data as { department?: { departmentId?: string; name?: string; school?: { schoolId?: string } } } | undefined;
+    if (data?.department !== undefined) {
       this.departmentId.set(data.department.departmentId);
       this.form.patchValue({
         name: data.department.name,
@@ -96,7 +99,7 @@ export class DepartmentEditDialogComponent {
 
     try {
       const departmentId = this.departmentId();
-      if (this.isEditMode() && departmentId) {
+      if (this.isEditMode() && departmentId !== undefined && departmentId !== '') {
         await firstValueFrom(this.departmentApi.updateDepartment(departmentId, dto));
         this.toastService.showSuccessKey(`${this.translationKey}.success.updated`);
       } else {

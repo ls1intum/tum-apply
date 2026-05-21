@@ -132,7 +132,7 @@ export class ResearchGroupMembersComponent {
     const id = this.routeId();
     this.researchGroupId.set(id);
     this.researchGroupName.set(undefined);
-    if (id) {
+    if (id !== undefined && id !== '') {
       void this.loadResearchGroupName(id);
     }
     void this.loadMembers();
@@ -168,9 +168,10 @@ export class ResearchGroupMembersComponent {
   async loadMembers(): Promise<void> {
     try {
       const id = this.researchGroupId();
-      const members = id
-        ? await firstValueFrom(this.researchGroupApi.getResearchGroupMembersById(id, this.pageSize(), this.pageNumber()))
-        : await firstValueFrom(this.researchGroupApi.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
+      const members =
+        id !== undefined && id !== ''
+          ? await firstValueFrom(this.researchGroupApi.getResearchGroupMembersById(id, this.pageSize(), this.pageNumber()))
+          : await firstValueFrom(this.researchGroupApi.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
 
       this.members.set(members.content ?? []);
       this.total.set(members.totalElements ?? 0);
@@ -199,7 +200,7 @@ export class ResearchGroupMembersComponent {
   /** Internal methods */
 
   private formatRoles(roles?: string[]): string {
-    if (!roles?.length) {
+    if (roles === undefined || roles.length === 0) {
       return this.translate.instant(`${this.translationKey}.noRole`);
     }
 

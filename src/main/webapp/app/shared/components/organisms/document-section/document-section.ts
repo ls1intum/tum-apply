@@ -43,7 +43,7 @@ export class DocumentSection {
   toastService = inject(ToastService);
   translate = inject(TranslateService);
 
-  currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
+  currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.getCurrentLang() });
 
   hasDocuments = computed(() => this.documents().length > 0);
 
@@ -85,9 +85,11 @@ export class DocumentSection {
     );
 
     letters
-      .filter((letter): letter is ReferenceRequestDTO & { documentId: string } => !!letter.documentId)
+      .filter(
+        (letter): letter is ReferenceRequestDTO & { documentId: string } => letter.documentId !== undefined && letter.documentId !== '',
+      )
       .forEach(letter => {
-        const refereeName = [letter.title, letter.firstName, letter.lastName].filter(part => !!part).join(' ');
+        const refereeName = [letter.title, letter.firstName, letter.lastName].filter(part => part !== undefined && part !== '').join(' ');
         result.push({
           label: 'evaluation.details.documentTypeReferenceLetter',
           labelParams: { name: refereeName },

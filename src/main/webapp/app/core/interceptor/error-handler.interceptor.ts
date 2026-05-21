@@ -8,11 +8,11 @@ import { EventManager, EventWithContent } from 'app/core/util/event-manager.serv
 export class ErrorHandlerInterceptor implements HttpInterceptor {
   private readonly eventManager = inject(EventManager);
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       tap({
         error: (err: HttpErrorResponse) => {
-          if (!(err.status === 401 && (err.message === '' || err.url?.includes('api/account')))) {
+          if (!(err.status === 401 && (err.message === '' || err.url?.includes('api/account') === true))) {
             this.eventManager.broadcast(new EventWithContent('tumApplyApp.httpError', err));
           }
         },
