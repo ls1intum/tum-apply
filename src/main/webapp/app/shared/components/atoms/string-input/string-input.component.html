@@ -1,4 +1,4 @@
-<div class="input-container">
+<div>
   <div class="label-top label-input-wrapper">
     @if (label(); as label) {
       <label class="custom-label" [for]="inputId()">
@@ -28,7 +28,6 @@
           [required]="required()"
           [style]="{ width: width() }"
           autocomplete="off"
-          class="custom-input"
           pInputText
         />
       } @else {
@@ -44,7 +43,6 @@
           [disabled]="disabled()"
           [style]="{ width: width() }"
           autocomplete="off"
-          class="custom-input"
           pInputText
         />
       }

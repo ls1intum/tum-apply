@@ -66,7 +66,7 @@
 <jhi-dialog [visible]="showAddModal()" (visibleChange)="showAddModal.set($event)" header="interview.interviewees.addTitle" width="30rem">
   <!-- Dynamic Table or Empty State -->
   @if (tableData().length > 0) {
-    <div class="table-wrapper">
+    <div>
       <jhi-dynamic-table
         [columns]="columns()"
         [data]="tableData()"

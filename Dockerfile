@@ -39,6 +39,11 @@ RUN \
 # so far just using the .dockerignore to define what isn't necessary here
 COPY . .
 
+# Branch name passed in from CI. The repo is checked out in detached HEAD during the workflow,
+# so the gradle-git-properties plugin would otherwise record git.branch=HEAD.
+ARG GIT_BRANCH=""
+ENV GIT_BRANCH=$GIT_BRANCH
+
 RUN \
   # Mount global cache for Gradle (project cache in /opt/tum-apply/.gradle doesn't seem to be populated)
   --mount=type=cache,target=/root/.gradle/caches \
