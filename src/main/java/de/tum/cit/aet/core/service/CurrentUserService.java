@@ -160,18 +160,13 @@ public class CurrentUserService {
     }
 
     /**
-     * Resolves the active research group for the current request. The active group is
-     * picked in this order:
-     * <ol>
-     *   <li>The {@code X-Active-Research-Group-Id} header parsed by
-     *       {@link ActiveResearchGroupHeaderFilter} — but only if the current user
-     *       has a PROFESSOR/EMPLOYEE membership in that group. If the header points
-     *       to a group the user is not a member of, throws {@link AccessDeniedException}.</li>
-     *   <li>Otherwise the first PROFESSOR/EMPLOYEE membership the user holds.</li>
-     * </ol>
-     *
-     * <p>Cached for the duration of the request; subsequent calls do not re-read the
-     * header or re-validate.
+     * Resolves the active research group for the current request. The active group is picked
+     * first from the {@code X-Active-Research-Group-Id} header parsed by
+     * {@link ActiveResearchGroupHeaderFilter} when the current user holds a PROFESSOR or
+     * EMPLOYEE membership in that group; if the header points to a group the user is not a
+     * member of, an {@link AccessDeniedException} is thrown. Without a valid header, falls back
+     * to the first PROFESSOR/EMPLOYEE membership the user holds. The result is cached for the
+     * duration of the request and subsequent calls do not re-read the header or re-validate.
      *
      * @return the resolved active research group id, never null
      * @throws AccessDeniedException if the user is not a member of any research group
