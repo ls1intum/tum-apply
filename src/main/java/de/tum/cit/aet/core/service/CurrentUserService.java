@@ -225,6 +225,18 @@ public class CurrentUserService {
         return researchGroupRepository.findById(activeId).orElseThrow(() -> new AccessDeniedException("Active research group not found"));
     }
 
+    /**
+     * Returns the active research group entity if the current user holds either PROFESSOR or
+     * EMPLOYEE role in it. Used by endpoints that accept both roles (e.g. email templates).
+     *
+     * @return the active research group
+     * @throws AccessDeniedException if the user has no membership in the active group
+     */
+    public ResearchGroup getResearchGroupIfMember() {
+        UUID activeId = getResearchGroupIdIfMember();
+        return researchGroupRepository.findById(activeId).orElseThrow(() -> new AccessDeniedException("Active research group not found"));
+    }
+
     private UUID readActiveResearchGroupIdHeader() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null) {
