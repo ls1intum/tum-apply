@@ -45,6 +45,18 @@ public class InternalCommentService {
     }
 
     /**
+     * Retrieves the raw {@link InternalComment} entities for the specified application,
+     * ordered by creation date ascending. Intended for callers that need the
+     * full domain entity (e.g. data export) rather than a DTO.
+     *
+     * @param applicationId the UUID of the application
+     * @return a list of {@link InternalComment} entities
+     */
+    public List<InternalComment> findAllByApplicationIdOrdered(UUID applicationId) {
+        return internalCommentRepository.findAllByApplicationApplicationIdOrderByCreatedAtAsc(applicationId);
+    }
+
+    /**
      * Creates and persists a new internal comment for the specified application.
      *
      * @param applicationId the UUID of the application

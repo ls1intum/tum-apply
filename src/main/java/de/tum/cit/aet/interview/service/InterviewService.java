@@ -1187,6 +1187,17 @@ public class InterviewService {
     }
 
     /**
+     * Retrieves all {@link Interviewee} entities for the given applicant user,
+     * eagerly fetching the related interview process and job.
+     *
+     * @param userId the applicant's user id
+     * @return list of interviewees with details loaded
+     */
+    public List<Interviewee> findIntervieweesByApplicantUserId(UUID userId) {
+        return intervieweeRepository.findByApplicantUserIdWithDetails(userId);
+    }
+
+    /**
      * Returns the interview rating recorded for the given application, if any.
      *
      * @param applicationId the ID of the application
