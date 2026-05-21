@@ -86,43 +86,41 @@ export abstract class BaseInputDirective<T> {
     return `Invalid: ${key}`;
   });
 
-  constructor() {
-    effect(onCleanup => {
-      const ctrl = this.formControl();
-      this.isTouched.set(this.isTouched() || ctrl.touched);
-      const statusSub = ctrl.statusChanges.subscribe(() => {
-        this.formValidityVersion.update(v => v + 1);
-      });
-      // Clear local touched flag when the bound control is reset to untouched (e.g. via form.reset / markAsUntouched).
-      // Re-syncing on touched=true here would override the autofocus-pristine skip in onBlur, because Angular's
-      // FormControlDirective auto-calls markAsTouched on every native blur.
-      const eventsSub = ctrl.events.subscribe(event => {
-        if (event instanceof TouchedChangeEvent && !event.touched) {
-          this.isTouched.set(false);
-        }
-      });
-      onCleanup(() => {
-        statusSub.unsubscribe();
-        eventsSub.unsubscribe();
-      });
+  private controlSubscriptionsEffect = effect(onCleanup => {
+    const ctrl = this.formControl();
+    this.isTouched.set(this.isTouched() || ctrl.touched);
+    const statusSub = ctrl.statusChanges.subscribe(() => {
+      this.formValidityVersion.update(v => v + 1);
     });
-
-    // Sync `disabled` input into the provided control (if there is one).
-    effect(() => {
-      const ctrl = this.control();
-      const disabled = this.disabled();
-      if (ctrl) {
-        try {
-          if (disabled) {
-            // avoid emitting events when toggling programmatically during setup
-            ctrl.disable({ emitEvent: false });
-          } else {
-            ctrl.enable({ emitEvent: false });
-          }
-        } catch {}
+    // Clear local touched flag when the bound control is reset to untouched (e.g. via form.reset / markAsUntouched).
+    // Re-syncing on touched=true here would override the autofocus-pristine skip in onBlur, because Angular's
+    // FormControlDirective auto-calls markAsTouched on every native blur.
+    const eventsSub = ctrl.events.subscribe(event => {
+      if (event instanceof TouchedChangeEvent && !event.touched) {
+        this.isTouched.set(false);
       }
     });
-  }
+    onCleanup(() => {
+      statusSub.unsubscribe();
+      eventsSub.unsubscribe();
+    });
+  });
+
+  // Sync `disabled` input into the provided control (if there is one).
+  private syncDisabledEffect = effect(() => {
+    const ctrl = this.control();
+    const disabled = this.disabled();
+    if (ctrl) {
+      try {
+        if (disabled) {
+          // avoid emitting events when toggling programmatically during setup
+          ctrl.disable({ emitEvent: false });
+        } else {
+          ctrl.enable({ emitEvent: false });
+        }
+      } catch {}
+    }
+  });
 
   onBlur(): void {
     // When autofocus is enabled, skip marking as touched while the control is
