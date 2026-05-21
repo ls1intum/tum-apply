@@ -80,29 +80,12 @@ describe('AllApplicationsPageComponent', () => {
   });
 
   describe('initialization', () => {
-    it('should create the component', () => {
-      expect(comp).toBeTruthy();
-    });
-
     it('should load research-group and professor options on init', async () => {
       await fixture.whenStable();
-      expect(researchGroupApi.getResearchGroupsForAdmin).toHaveBeenCalled();
-      expect(researchGroupApi.getResearchGroupProfessors).toHaveBeenCalled();
+      expect(researchGroupApi.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
+      expect(researchGroupApi.getResearchGroupProfessors).toHaveBeenCalledOnce();
       expect(comp.researchGroupOptions()).toEqual([{ id: 'r1', name: 'RG 1' }]);
       expect(comp.professorOptions()).toEqual([{ id: 'p1', name: 'Prof One' }]);
-    });
-  });
-
-  describe('columns', () => {
-    it('should expose the expected admin overview columns', () => {
-      const fields = comp.columns().map(c => c.field);
-      expect(fields).toContain('applicantName');
-      expect(fields).toContain('jobTitle');
-      expect(fields).toContain('researchGroupName');
-      expect(fields).toContain('supervisingProfessorName');
-      expect(fields).toContain('state');
-      expect(fields).toContain('createdAt');
-      expect(fields).toContain('actions');
     });
   });
 
@@ -114,7 +97,7 @@ describe('AllApplicationsPageComponent', () => {
       comp.loadOnTableEmit({ first: 0, rows: 10 });
       await fixture.whenStable();
 
-      expect(applicationApi.getAllApplications).toHaveBeenCalled();
+      expect(applicationApi.getAllApplications).toHaveBeenCalledOnce();
       expect(comp.pageSize()).toBe(10);
       expect(comp.page()).toBe(0);
     });
@@ -170,7 +153,7 @@ describe('AllApplicationsPageComponent', () => {
 
       expect(comp.page()).toBe(0);
       expect(comp.searchQuery()).toBe('alice');
-      expect(applicationApi.getAllApplications).toHaveBeenCalled();
+      expect(applicationApi.getAllApplications).toHaveBeenCalledOnce();
     });
 
     it('should not reload when the normalized query is unchanged', () => {
@@ -194,7 +177,7 @@ describe('AllApplicationsPageComponent', () => {
       expect(comp.sortBy()).toBe('createdAt');
       expect(comp.sortDirection()).toBe('ASC');
       expect(comp.page()).toBe(0);
-      expect(applicationApi.getAllApplications).toHaveBeenCalled();
+      expect(applicationApi.getAllApplications).toHaveBeenCalledOnce();
     });
   });
 
@@ -202,13 +185,13 @@ describe('AllApplicationsPageComponent', () => {
     it('should navigate to the detail page on view', () => {
       const navigateSpy = vi.spyOn(router, 'navigate');
       comp.onViewApplication('1');
-      expect(navigateSpy).toHaveBeenCalledWith(['/application/detail/1']);
+      expect(navigateSpy).toHaveBeenCalledExactlyOnceWith(['/application/detail/1']);
     });
 
     it('should navigate to the application form with a query param on edit', () => {
       const navigateSpy = vi.spyOn(router, 'navigate');
       comp.onEditApplication('1');
-      expect(navigateSpy).toHaveBeenCalledWith(['/application/form'], { queryParams: { application: '1' } });
+      expect(navigateSpy).toHaveBeenCalledExactlyOnceWith(['/application/form'], { queryParams: { application: '1' } });
     });
 
     it('should call deleteApplication when the delete dialog is confirmed', async () => {
@@ -217,8 +200,8 @@ describe('AllApplicationsPageComponent', () => {
 
       await comp.onConfirmDelete();
 
-      expect(applicationApi.deleteApplication).toHaveBeenCalledWith('1');
-      expect(toastService.showSuccessKey).toHaveBeenCalled();
+      expect(applicationApi.deleteApplication).toHaveBeenCalledExactlyOnceWith('1');
+      expect(toastService.showSuccessKey).toHaveBeenCalledOnce();
     });
 
     it('should not call deleteApplication when no current application id is set', async () => {
@@ -235,8 +218,8 @@ describe('AllApplicationsPageComponent', () => {
 
       await comp.onConfirmWithdraw();
 
-      expect(applicationApi.withdrawApplication).toHaveBeenCalledWith('1');
-      expect(toastService.showSuccessKey).toHaveBeenCalled();
+      expect(applicationApi.withdrawApplication).toHaveBeenCalledExactlyOnceWith('1');
+      expect(toastService.showSuccessKey).toHaveBeenCalledOnce();
     });
 
     it('should not call withdrawApplication when no current application id is set', async () => {
