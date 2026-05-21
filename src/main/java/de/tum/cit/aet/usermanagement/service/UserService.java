@@ -225,6 +225,30 @@ public class UserService {
     }
 
     /**
+     * Finds a user by id with their research-group roles eager-fetched, used by
+     * request-scoped callers (e.g. CurrentUserService) that need the full role graph.
+     *
+     * @param userId the user id
+     * @return the user with roles loaded, if present
+     */
+    public Optional<User> findWithRolesByUserId(UUID userId) {
+        return userRepository.findWithResearchGroupRolesByUserId(userId);
+    }
+
+    /**
+     * Sets {@code aiConsentedAt} to now on first AI usage. No-op when already recorded.
+     *
+     * @param user the managed user entity
+     */
+    public void markAiConsentIfMissing(User user) {
+        if (user.getAiConsentedAt() != null) {
+            return;
+        }
+        user.setAiConsentedAt(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
+    /**
      * Factory for a new {@link User} with normalized values.
      *
      * @param userId    the persistent user identifier (Keycloak UUID)
