@@ -51,9 +51,7 @@ describe('AllApplicationsPageComponent', () => {
     );
 
     researchGroupApi = createResearchGroupResourceApiMock();
-    researchGroupApi.getResearchGroupsForAdmin.mockReturnValue(
-      of({ content: [{ id: 'r1', researchGroup: 'RG 1' }], totalElements: 1 }),
-    );
+    researchGroupApi.getResearchGroupsForAdmin.mockReturnValue(of({ content: [{ id: 'r1', researchGroup: 'RG 1' }], totalElements: 1 }));
     researchGroupApi.getResearchGroupProfessors.mockReturnValue(of([{ userId: 'p1', firstName: 'Prof', lastName: 'One' }]));
 
     toastService = createToastServiceMock();
