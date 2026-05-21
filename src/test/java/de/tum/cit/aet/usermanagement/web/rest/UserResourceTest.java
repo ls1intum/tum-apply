@@ -288,16 +288,7 @@ public class UserResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_ADMIN"))
                 .getAndRead(
                     API_BASE_PATH + "/available-for-research-group",
-                    Map.of(
-                        "pageNumber",
-                        "0",
-                        "pageSize",
-                        "10",
-                        "searchQuery",
-                        "alice",
-                        "researchGroupId",
-                        targetGroupId.toString()
-                    ),
+                    Map.of("pageNumber", "0", "pageSize", "10", "searchQuery", "alice", "researchGroupId", targetGroupId.toString()),
                     new TypeReference<PageResponseDTO<KeycloakUserDTO>>() {},
                     200
                 );

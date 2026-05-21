@@ -160,11 +160,7 @@ public class UserResource {
         @RequestParam(required = false) String searchQuery,
         @RequestParam(required = false) UUID researchGroupId
     ) {
-        log.info(
-            "GET /api/users/available-for-research-group - searchQuery={}, researchGroupId={}",
-            searchQuery,
-            researchGroupId
-        );
+        log.info("GET /api/users/available-for-research-group - searchQuery={}, researchGroupId={}", searchQuery, researchGroupId);
         PagedResult<KeycloakUserDTO> usersPage = keycloakUserService.getAvailableUsersForResearchGroup(
             searchQuery,
             pageDTO,
