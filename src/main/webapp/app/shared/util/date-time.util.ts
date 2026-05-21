@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
  * Returns 'de-DE' for German, 'en-US' otherwise.
  */
 export function getLocale(translateService: TranslateService): string {
-  return translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
+  return translateService.getCurrentLang() === 'de' ? 'de-DE' : 'en-US';
 }
 
 /**
