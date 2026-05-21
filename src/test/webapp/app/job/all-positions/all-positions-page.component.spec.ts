@@ -398,36 +398,15 @@ describe('AllPositionsPageComponent', () => {
   });
 
   describe('Job menu items', () => {
-    it('should build edit/delete menu items for draft jobs', () => {
-      component.jobs.set([{ jobId: '1', state: AdminCreatedJobDTOStateEnum.Draft, title: 'Draft' } as AdminCreatedJobDTO]);
+    it.each([
+      [AdminCreatedJobDTOStateEnum.Draft, ['button.edit', 'button.delete']],
+      [AdminCreatedJobDTOStateEnum.Published, ['button.edit', 'button.delete', 'button.close']],
+      [AdminCreatedJobDTOStateEnum.Closed, ['button.edit', 'button.delete', 'button.reopen']],
+      [AdminCreatedJobDTOStateEnum.ApplicantFound, ['button.edit', 'button.delete', 'button.reopen']],
+    ] as const)('should build menu items for %s jobs', (state, expectedLabels) => {
+      component.jobs.set([{ jobId: '1', state, title: 'T' } as AdminCreatedJobDTO]);
       const items = component.jobMenuItems().get('1') ?? [];
-      expect(items.map(i => i.label)).toEqual(['button.edit', 'button.delete']);
-    });
-
-    it('should build edit/delete/close menu items for published jobs', () => {
-      component.jobs.set([{ jobId: '2', state: AdminCreatedJobDTOStateEnum.Published, title: 'Pub' } as AdminCreatedJobDTO]);
-      const items = component.jobMenuItems().get('2') ?? [];
-      expect(items.map(i => i.label)).toEqual(['button.edit', 'button.delete', 'button.close']);
-    });
-
-    it('should build edit/delete/reopen menu items for closed jobs', () => {
-      component.jobs.set([{ jobId: '3', state: AdminCreatedJobDTOStateEnum.Closed, title: 'Closed' } as AdminCreatedJobDTO]);
-      expect(
-        component
-          .jobMenuItems()
-          .get('3')
-          ?.map(i => i.label),
-      ).toEqual(['button.edit', 'button.delete', 'button.reopen']);
-    });
-
-    it('should build edit/delete/reopen menu items for applicant-found jobs', () => {
-      component.jobs.set([{ jobId: '4', state: AdminCreatedJobDTOStateEnum.ApplicantFound, title: 'Found' } as AdminCreatedJobDTO]);
-      expect(
-        component
-          .jobMenuItems()
-          .get('4')
-          ?.map(i => i.label),
-      ).toEqual(['button.edit', 'button.delete', 'button.reopen']);
+      expect(items.map(i => i.label)).toEqual(expectedLabels);
     });
 
     it('should invoke edit command directly for draft jobs', () => {
