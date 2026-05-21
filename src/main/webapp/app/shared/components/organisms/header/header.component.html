@@ -1,121 +1,37 @@
 <header
-  class="flex items-center justify-between gap-1 sm:gap-0 px-0 sm:px-6 sticky top-0 z-20 overflow-x-auto h-12 border-b transition-colors duration-300"
+  class="flex items-center justify-between gap-2 px-3 sm:px-6 sticky top-0 z-20 h-12 border-b transition-colors duration-300"
   [class.border-border-default]="showBorder()"
   [class.border-transparent]="!showBorder()"
   [class.shadow-sm]="showBorder()"
 >
-  <a
-    href="/"
-    (click)="onLogoClick($event)"
-    class="flex items-center gap-2 text-primary-default text-base font-bold cursor-pointer flex-shrink-0"
-  >
-    <img alt="TUMApply Logo" class="h-6" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
-    <span class="hidden sm:inline">TUMApply</span>
-    @if (isProfessorPage()) {
-      <span class="hidden sm:inline text-secondary-default font-light" jhiTranslate="header.professorTitle"></span>
+  <div class="flex items-center gap-2 flex-shrink-0">
+    @if (user()) {
+      <!-- Mobile-only trigger that opens the navigation sidebar (which is hidden on small viewports). -->
+      <button
+        type="button"
+        class="md:hidden inline-flex items-center justify-center w-9 h-9 -ml-1 rounded-md text-text-primary hover:bg-primary-hover-outlined transition-colors"
+        (click)="openMobileSidebar()"
+        [attr.aria-label]="sidebarToggleLabel()"
+        aria-haspopup="dialog"
+        [attr.aria-expanded]="mobileSidebarOpen()"
+      >
+        <fa-icon icon="bars" class="text-lg" />
+      </button>
     }
-  </a>
-
-  <div class="flex items-center gap-1 flex-shrink-0">
-    <div class="flex items-center gap-1 sm:mr-2">
-      @for (language of languages; track language; let isLast = $last) {
-        <button
-          type="button"
-          (click)="toggleLanguage(language)"
-          class="text-primary-default cursor-pointer hover:underline"
-          [class.font-bold]="currentLanguage() === language"
-        >
-          {{ language.toUpperCase() }}
-        </button>
-        @if (!isLast) {
-          <span class="text-primary-default">|</span>
-        }
-      }
-    </div>
-
-    <div class="relative -mx-1">
-      <jhi-button
-        class="[&_.p-button]:w-8 [&_.p-button]:h-8 [&_.p-button]:rounded-md"
-        (click)="toggleTheme()"
-        [icon]="themeIcon()"
-        [tooltip]="themeTooltip()"
-        variant="text"
-        severity="primary"
-      />
-    </div>
-
-    @if (user() === undefined) {
+    <a href="/" (click)="onLogoClick($event)" class="flex items-center gap-2 text-primary-default text-base font-bold cursor-pointer">
+      <img alt="TUMApply Logo" class="h-6" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
+      <span class="hidden sm:inline">TUMApply</span>
       @if (isProfessorPage()) {
-        <span class="hidden sm:inline-flex">
-          <jhi-button
-            [class]="headerButtonClass"
-            (click)="redirectToApplicantLandingPage()"
-            label="header.applicant"
-            severity="primary"
-            variant="text"
-          />
-        </span>
-        <span class="inline-flex sm:hidden">
-          <jhi-button
-            [class]="headerButtonClass"
-            (click)="redirectToApplicantLandingPage()"
-            label="header.applicantShort"
-            severity="primary"
-            variant="text"
-          />
-        </span>
-      } @else {
-        <span class="hidden sm:inline-flex">
-          <jhi-button
-            [class]="headerButtonClass"
-            (click)="redirectToProfessorLandingPage()"
-            label="header.professor"
-            severity="primary"
-            variant="text"
-          />
-        </span>
-        <span class="inline-flex sm:hidden">
-          <jhi-button
-            [class]="headerButtonClass"
-            (click)="redirectToProfessorLandingPage()"
-            label="header.professorShort"
-            severity="primary"
-            variant="text"
-          />
-        </span>
+        <span class="hidden sm:inline text-secondary-default font-light" jhiTranslate="header.professorTitle"></span>
       }
+    </a>
+  </div>
 
-      <div class="h-4 mx-0.5 w-px bg-primary-default self-center"></div>
-
-      <span class="hidden sm:inline-flex">
-        <jhi-button
-          [class]="headerButtonClass"
-          (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
-          label="auth.passkey.buttons.passkey"
-          icon="key"
-          severity="primary"
-          variant="text"
-        />
-      </span>
-      <span class="inline-flex sm:hidden">
-        <jhi-button
-          [class]="headerButtonClass"
-          (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
-          label="auth.passkey.buttons.passkeyShort"
-          severity="primary"
-          variant="text"
-        />
-      </span>
-
-      <jhi-button
-        [class]="headerButtonClass"
-        (click)="login()"
-        label="header.login"
-        severity="primary"
-        variant="text"
-        classStyling="font-bold"
-      />
-    } @else {
+  @if (user(); as currentUser) {
+    <!-- Logged in: keep the existing avatar + collapsible menu on every viewport; hide name on small screens. -->
+    <div class="flex items-center gap-1 flex-shrink-0 relative">
+      <ng-container *ngTemplateOutlet="languageSwitcher; context: { vertical: false }" />
+      <ng-container *ngTemplateOutlet="themeToggle" />
       @if (hasMultipleMemberships()) {
         <div class="relative">
           <button
@@ -143,8 +59,8 @@
         [attr.aria-expanded]="isProfileMenuOpen()"
         aria-haspopup="menu"
       >
-        <jhi-user-avatar [fullName]="user()?.name" [avatarUrl]="user()?.avatar" />
-        <span class="hidden sm:inline font-medium">{{ user()?.name }}</span>
+        <jhi-user-avatar [fullName]="currentUser.name" [avatarUrl]="currentUser.avatar" />
+        <span class="hidden md:inline font-medium">{{ currentUser.name }}</span>
         <fa-icon
           class="text-xs text-text-default transition-transform duration-300"
           [class.rotate-180]="isProfileMenuOpen()"
@@ -154,6 +70,128 @@
       <div class="absolute right-0 top-full mt-1 z-30">
         <jhi-menu #profileMenu [items]="profileMenuItems()" [shouldTranslate]="true" (visibleChange)="isProfileMenuOpen.set($event)" />
       </div>
+    </div>
+  } @else {
+    <!-- Desktop action cluster for anonymous visitors: shown from md (≥ 768px) upwards. -->
+    <div class="hidden md:flex items-center gap-1 flex-shrink-0">
+      <ng-container *ngTemplateOutlet="languageSwitcher; context: { vertical: false }" />
+      <ng-container *ngTemplateOutlet="themeToggle" />
+      <ng-container *ngTemplateOutlet="portalSwitch; context: { vertical: false }" />
+      <div class="h-4 mx-0.5 w-px bg-primary-default self-center"></div>
+      <jhi-button
+        [class]="headerButtonClass"
+        (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
+        label="auth.passkey.buttons.passkey"
+        icon="key"
+        severity="primary"
+        variant="text"
+      />
+      <jhi-button
+        [class]="headerButtonClass"
+        (click)="login()"
+        label="header.login"
+        severity="primary"
+        variant="text"
+        classStyling="font-bold"
+      />
+    </div>
+
+    <!-- Mobile burger trigger for anonymous visitors: shown below md. -->
+    <button
+      type="button"
+      class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-md text-text-primary hover:bg-primary-hover-outlined transition-colors"
+      (click)="mobileMenuOpen.set(true)"
+      [attr.aria-label]="mobileMenuLabel()"
+      aria-haspopup="dialog"
+      [attr.aria-expanded]="mobileMenuOpen()"
+    >
+      <fa-icon icon="bars" class="text-lg" />
+    </button>
+  }
+</header>
+
+<!-- Mobile navigation drawer: only rendered for anonymous visitors; logged-in users keep the profile dropdown. -->
+@if (user() === undefined) {
+  <jhi-drawer [(open)]="mobileMenuOpen" [modal]="false">
+    <span drawer-header class="text-base font-semibold text-text-primary" jhiTranslate="header.menu"></span>
+
+    <div class="flex flex-col gap-4 pt-2">
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-text-secondary" jhiTranslate="header.language"></span>
+        <ng-container *ngTemplateOutlet="languageSwitcher; context: { vertical: true }" />
+      </div>
+
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-text-secondary" jhiTranslate="header.theme"></span>
+        <ng-container *ngTemplateOutlet="themeToggle" />
+      </div>
+
+      <div class="border-t border-border-default pt-3 flex flex-col gap-2">
+        <ng-container *ngTemplateOutlet="portalSwitch; context: { vertical: true }" />
+        <jhi-button
+          (click)="isProfessorPage() ? onProfessorPasskeyLogin() : onApplicantPasskeyLogin()"
+          label="auth.passkey.buttons.passkey"
+          icon="key"
+          severity="primary"
+          variant="outlined"
+          [fullWidth]="true"
+        />
+        <jhi-button (click)="login()" label="header.login" severity="primary" [fullWidth]="true" classStyling="font-bold" />
+      </div>
+    </div>
+  </jhi-drawer>
+}
+
+<!-- Shared snippets reused in both the desktop header and the mobile drawer. -->
+<ng-template #languageSwitcher let-vertical="vertical">
+  <div [class]="vertical ? 'flex items-center gap-1' : 'flex items-center gap-1 mr-2'">
+    @for (language of languages; track language; let isLast = $last) {
+      <button
+        type="button"
+        (click)="toggleLanguage(language)"
+        class="text-primary-default cursor-pointer hover:underline"
+        [class.font-bold]="currentLanguage() === language"
+      >
+        {{ language.toUpperCase() }}
+      </button>
+      @if (!isLast) {
+        <span class="text-primary-default">|</span>
+      }
     }
   </div>
-</header>
+</ng-template>
+
+<ng-template #themeToggle>
+  <div class="relative -mx-1">
+    <jhi-button
+      class="[&_.p-button]:w-8 [&_.p-button]:h-8 [&_.p-button]:rounded-md"
+      (click)="toggleTheme()"
+      [icon]="themeIcon()"
+      [tooltip]="themeTooltip()"
+      variant="text"
+      severity="primary"
+    />
+  </div>
+</ng-template>
+
+<ng-template #portalSwitch let-vertical="vertical">
+  @if (isProfessorPage()) {
+    <jhi-button
+      [class]="vertical ? '' : headerButtonClass"
+      (click)="redirectToApplicantLandingPage()"
+      label="header.applicant"
+      severity="primary"
+      [variant]="vertical ? 'outlined' : 'text'"
+      [fullWidth]="vertical"
+    />
+  } @else {
+    <jhi-button
+      [class]="vertical ? '' : headerButtonClass"
+      (click)="redirectToProfessorLandingPage()"
+      label="header.professor"
+      severity="primary"
+      [variant]="vertical ? 'outlined' : 'text'"
+      [fullWidth]="vertical"
+    />
+  }
+</ng-template>
