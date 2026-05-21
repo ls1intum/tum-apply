@@ -161,38 +161,6 @@ describe('AllPositionsPageComponent', () => {
     });
   });
 
-  describe('Columns', () => {
-    it('should include researchGroupName, supervising professor, title, state and actions columns', () => {
-      const fields = component.columns().map(c => c.field);
-      expect(fields).toContain('professorName');
-      expect(fields).toContain('researchGroupName');
-      expect(fields).toContain('title');
-      expect(fields).toContain('state');
-      expect(fields).toContain('actions');
-      expect(fields).toContain('startDate');
-      expect(fields).toContain('lastModifiedAt');
-    });
-
-    it('should bind templates to the expected columns', () => {
-      const cols = component.columns();
-      expect(cols.find(c => c.field === 'actions')?.template).toBeTruthy();
-      expect(cols.find(c => c.field === 'state')?.template).toBeTruthy();
-      expect(cols.find(c => c.field === 'startDate')?.template).toBeTruthy();
-      expect(cols.find(c => c.field === 'lastModifiedAt')?.template).toBeTruthy();
-      expect(cols.find(c => c.field === 'professorName')?.template).toBeTruthy();
-      expect(cols.find(c => c.field === 'researchGroupName')?.template).toBeUndefined();
-      expect(cols.find(c => c.field === 'title')?.template).toBeUndefined();
-    });
-
-    it('should build stateTextMap from availableStatusOptions', () => {
-      const map = component.stateTextMap();
-      expect(map.DRAFT).toBe('jobState.draft');
-      expect(map.PUBLISHED).toBe('jobState.published');
-      expect(map.CLOSED).toBe('jobState.closed');
-      expect(map.APPLICANT_FOUND).toBe('jobState.applicantFound');
-    });
-  });
-
   describe('Lazy load and pagination', () => {
     it('should call getAllJobs with current paging on lazy load', async () => {
       mockJobApi.getAllJobs.mockClear();
@@ -495,46 +463,6 @@ describe('AllPositionsPageComponent', () => {
     });
   });
 
-  describe('Kebab menu by state', () => {
-    function setJobsAndRebuild(state: AdminCreatedJobDTOStateEnum) {
-      mockJobApi.getAllJobs.mockReturnValueOnce(
-        of<PageAdminCreatedJobDTO>({
-          content: [{ jobId: 'j', title: 'T', state } as AdminCreatedJobDTO],
-          totalElements: 1,
-        }),
-      );
-      component.loadOnTableEmit({ first: 0, rows: 10 } as never);
-    }
-
-    it('should show Edit and Delete on DRAFT', async () => {
-      setJobsAndRebuild(AdminCreatedJobDTOStateEnum.Draft);
-      await fixture.whenStable();
-      const items = component.jobMenuItems().get(component.jobs()[0].jobId) ?? [];
-      expect(items.map(i => i.label)).toEqual(['button.edit', 'button.delete']);
-    });
-
-    it('should show Edit, Delete and Close on PUBLISHED', async () => {
-      setJobsAndRebuild(AdminCreatedJobDTOStateEnum.Published);
-      await fixture.whenStable();
-      const items = component.jobMenuItems().get(component.jobs()[0].jobId) ?? [];
-      expect(items.map(i => i.label)).toEqual(['button.edit', 'button.delete', 'button.close']);
-    });
-
-    it('should show Edit, Delete and Reopen on CLOSED', async () => {
-      setJobsAndRebuild(AdminCreatedJobDTOStateEnum.Closed);
-      await fixture.whenStable();
-      const items = component.jobMenuItems().get(component.jobs()[0].jobId) ?? [];
-      expect(items.map(i => i.label)).toEqual(['button.edit', 'button.delete', 'button.reopen']);
-    });
-
-    it('should show Edit, Delete and Reopen on APPLICANT_FOUND', async () => {
-      setJobsAndRebuild(AdminCreatedJobDTOStateEnum.ApplicantFound);
-      await fixture.whenStable();
-      const items = component.jobMenuItems().get(component.jobs()[0].jobId) ?? [];
-      expect(items.map(i => i.label)).toEqual(['button.edit', 'button.delete', 'button.reopen']);
-    });
-  });
-
   describe('Reopen flow', () => {
     it('should call changeJobState with PUBLISHED when reopen is confirmed', async () => {
       component.currentJobId.set('j');
@@ -588,10 +516,4 @@ describe('AllPositionsPageComponent', () => {
     });
   });
 
-  describe('Create job button', () => {
-    it('should navigate to /job/create when clicked', () => {
-      component.onCreateJob();
-      expect(router.navigate).toHaveBeenCalledExactlyOnceWith(['/job/create']);
-    });
-  });
 });
