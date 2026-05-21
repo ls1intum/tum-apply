@@ -200,7 +200,7 @@ describe('ManageUserFormComponent', () => {
       expect(dto.email).toBe('carol@example.com');
       expect(dto.password).toBe('StrongPass1');
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/manage-users', 'new-user-1']);
-      expect(mockToastService.showSuccess).toHaveBeenCalled();
+      expect(mockToastService.showSuccess).toHaveBeenCalledOnce();
     });
 
     it('should call importUser in import mode and navigate to the new user page', async () => {
@@ -213,7 +213,7 @@ describe('ManageUserFormComponent', () => {
 
       expect(mockUserAdminApi.importUser).toHaveBeenCalledWith({ keycloakUserId: 'kc-id-123' });
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/manage-users', 'new-user-2']);
-      expect(mockToastService.showSuccess).toHaveBeenCalled();
+      expect(mockToastService.showSuccess).toHaveBeenCalledOnce();
     });
 
     it('should call updateUser in edit mode and stay on the page', async () => {
@@ -230,7 +230,7 @@ describe('ManageUserFormComponent', () => {
       expect(dto.firstName).toBe('Alicia');
       expect(mockRouter.navigate).not.toHaveBeenCalled();
       expect(component.loadedUser()?.firstName).toBe('Alicia');
-      expect(mockToastService.showSuccess).toHaveBeenCalled();
+      expect(mockToastService.showSuccess).toHaveBeenCalledOnce();
     });
 
     it('should mark form as touched and skip the API call when invalid', async () => {
@@ -257,7 +257,7 @@ describe('ManageUserFormComponent', () => {
 
       await component.onSubmit();
 
-      expect(mockToastService.showError).toHaveBeenCalled();
+      expect(mockToastService.showError).toHaveBeenCalledOnce();
       expect(mockRouter.navigate).not.toHaveBeenCalled();
     });
 
@@ -270,7 +270,7 @@ describe('ManageUserFormComponent', () => {
 
       await component.onSubmit();
 
-      expect(mockToastService.showError).toHaveBeenCalled();
+      expect(mockToastService.showError).toHaveBeenCalledOnce();
       expect(mockRouter.navigate).not.toHaveBeenCalled();
     });
 
@@ -283,7 +283,7 @@ describe('ManageUserFormComponent', () => {
 
       await component.onSubmit();
 
-      expect(mockToastService.showError).toHaveBeenCalled();
+      expect(mockToastService.showError).toHaveBeenCalledOnce();
     });
   });
 
@@ -314,7 +314,7 @@ describe('ManageUserFormComponent', () => {
 
       expect(mockUserAdminApi.deleteUser).toHaveBeenCalledWith('user-1');
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/manage-users']);
-      expect(mockToastService.showSuccess).toHaveBeenCalled();
+      expect(mockToastService.showSuccess).toHaveBeenCalledOnce();
     });
 
     it('should toast error when delete fails', async () => {
@@ -326,7 +326,7 @@ describe('ManageUserFormComponent', () => {
 
       await component.onConfirmDelete();
 
-      expect(mockToastService.showError).toHaveBeenCalled();
+      expect(mockToastService.showError).toHaveBeenCalledOnce();
       expect(mockRouter.navigate).not.toHaveBeenCalledWith(['/manage-users']);
     });
 

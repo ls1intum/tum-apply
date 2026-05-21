@@ -4,7 +4,6 @@ import { of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ManageUsersPageComponent } from 'app/usermanagement/manage-users/manage-users-page.component';
-import { AccountService } from 'app/core/auth/account.service';
 import { AdminUserOverviewDTO } from 'app/generated/model/admin-user-overview-dto';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 
@@ -13,6 +12,7 @@ import { provideTranslateMock, createTranslateServiceMock } from 'util/translate
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
 import { provideActivatedRouteMock, createActivatedRouteMock } from 'util/activated-route.mock';
+import { provideAccountServiceMock, createAccountServiceMock, AccountServiceMock } from 'util/account.service.mock';
 import {
   createUserAdminResourceApiMock,
   provideUserAdminResourceApiMock,
@@ -31,7 +31,7 @@ describe('ManageUsersPageComponent', () => {
   let mockResearchGroupApi: ResearchGroupResourceApiMock;
   let mockToastService: ToastServiceMock;
   let mockRouter: RouterMock;
-  let mockAccountService: { loadedUser: ReturnType<typeof vi.fn> };
+  let mockAccountService: AccountServiceMock;
 
   const userAlice: AdminUserOverviewDTO = {
     userId: 'user-1',
@@ -71,9 +71,8 @@ describe('ManageUsersPageComponent', () => {
 
     mockToastService = createToastServiceMock();
     mockRouter = createRouterMock();
-    mockAccountService = {
-      loadedUser: vi.fn().mockReturnValue({ id: 'admin-id', name: 'Bob Burton' }),
-    };
+    mockAccountService = createAccountServiceMock();
+    mockAccountService.user.set({ id: 'admin-id', name: 'Bob Burton', email: 'bob@example.com', authorities: [] });
 
     await TestBed.configureTestingModule({
       imports: [ManageUsersPageComponent],
@@ -85,7 +84,7 @@ describe('ManageUsersPageComponent', () => {
         provideFontAwesomeTesting(),
         provideRouterMock(mockRouter),
         provideActivatedRouteMock(createActivatedRouteMock()),
-        { provide: AccountService, useValue: mockAccountService },
+        provideAccountServiceMock(mockAccountService),
       ],
     }).compileComponents();
 
@@ -280,7 +279,7 @@ describe('ManageUsersPageComponent', () => {
       await component.onConfirmDelete();
 
       expect(mockUserAdminApi.deleteUser).toHaveBeenCalledWith('user-1');
-      expect(mockToastService.showSuccess).toHaveBeenCalled();
+      expect(mockToastService.showSuccess).toHaveBeenCalledOnce();
       expect(component.currentUserToDelete()).toBeUndefined();
     });
 
@@ -300,7 +299,7 @@ describe('ManageUsersPageComponent', () => {
 
       await component.onConfirmDelete();
 
-      expect(mockToastService.showError).toHaveBeenCalled();
+      expect(mockToastService.showError).toHaveBeenCalledOnce();
       expect(component.currentUserToDelete()).toBeUndefined();
     });
   });
