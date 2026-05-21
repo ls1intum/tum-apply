@@ -1,7 +1,9 @@
 package de.tum.cit.aet.usermanagement.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Request body for admin user edits. All fields optional. `email`, `password`,
@@ -20,5 +22,7 @@ public record UpdateUserDTO(
     String linkedinUrl,
     String selectedLanguage,
     Boolean aiFeaturesEnabled,
-    String avatar
+    String avatar,
+    UserRole primaryRole,
+    UUID researchGroupId
 ) {}

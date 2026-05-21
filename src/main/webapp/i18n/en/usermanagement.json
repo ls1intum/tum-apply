@@ -36,6 +36,7 @@
       "importTitle": "Import User from Keycloak",
       "identitySection": "Identity",
       "profileSection": "Profile",
+      "roleSection": "Role",
       "statusSection": "Status",
       "fields": {
         "firstName": "First Name",
@@ -52,6 +53,8 @@
         "website": "Website",
         "linkedinUrl": "LinkedIn",
         "selectedLanguage": "Language",
+        "primaryRole": "Role",
+        "researchGroup": "Research Group",
         "avatar": "Avatar URL",
         "createdAt": "Created",
         "lastActivityAt": "Last Activity",

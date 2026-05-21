@@ -16,9 +16,15 @@ import {
   provideUserAdminResourceApiMock,
   UserAdminResourceApiMock,
 } from 'util/user-admin-resource-api.service.mock';
+import {
+  createResearchGroupResourceApiMock,
+  provideResearchGroupResourceApiMock,
+  ResearchGroupResourceApiMock,
+} from 'util/research-group-resource-api.service.mock';
 
 describe('ManageUserFormComponent', () => {
   let mockUserAdminApi: UserAdminResourceApiMock;
+  let mockResearchGroupApi: ResearchGroupResourceApiMock;
   let mockToastService: ToastServiceMock;
   let mockRouter: RouterMock;
 
@@ -49,6 +55,17 @@ describe('ManageUserFormComponent', () => {
     mockUserAdminApi.updateUser.mockReturnValue(of({ userId: 'user-1', firstName: 'Alicia' } as AdminUserDetailDTO));
     mockUserAdminApi.deleteUser.mockReturnValue(of(undefined));
 
+    mockResearchGroupApi = createResearchGroupResourceApiMock();
+    mockResearchGroupApi.getResearchGroupsForAdmin.mockReturnValue(
+      of({
+        content: [
+          { id: 'rg-1', researchGroup: 'AI Lab' },
+          { id: 'rg-2', researchGroup: 'ML Lab' },
+        ],
+        totalElements: 2,
+      }),
+    );
+
     mockToastService = createToastServiceMock();
     mockRouter = createRouterMock();
 
@@ -56,6 +73,7 @@ describe('ManageUserFormComponent', () => {
       imports: [ManageUserFormComponent],
       providers: [
         provideUserAdminResourceApiMock(mockUserAdminApi),
+        provideResearchGroupResourceApiMock(mockResearchGroupApi),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(createTranslateServiceMock()),
         provideFontAwesomeTesting(),
@@ -112,6 +130,8 @@ describe('ManageUserFormComponent', () => {
       TestBed.resetTestingModule();
       mockUserAdminApi = createUserAdminResourceApiMock();
       mockUserAdminApi.getUser.mockReturnValue(throwError(() => new Error('not found')));
+      mockResearchGroupApi = createResearchGroupResourceApiMock();
+      mockResearchGroupApi.getResearchGroupsForAdmin.mockReturnValue(of({ content: [], totalElements: 0 }));
       mockToastService = createToastServiceMock();
       mockRouter = createRouterMock();
 
@@ -119,6 +139,7 @@ describe('ManageUserFormComponent', () => {
         imports: [ManageUserFormComponent],
         providers: [
           provideUserAdminResourceApiMock(mockUserAdminApi),
+          provideResearchGroupResourceApiMock(mockResearchGroupApi),
           provideToastServiceMock(mockToastService),
           provideTranslateMock(createTranslateServiceMock()),
           provideFontAwesomeTesting(),

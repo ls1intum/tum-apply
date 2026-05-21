@@ -1,10 +1,12 @@
 package de.tum.cit.aet.usermanagement.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Request body for admin user creation. Required fields are sent to Keycloak;
@@ -23,5 +25,7 @@ public record CreateUserDTO(
     LocalDate birthday,
     String website,
     String linkedinUrl,
-    String selectedLanguage
+    String selectedLanguage,
+    UserRole primaryRole,
+    UUID researchGroupId
 ) {}

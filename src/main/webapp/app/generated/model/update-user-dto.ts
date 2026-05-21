@@ -19,7 +19,21 @@ export interface UpdateUserDTO {
     readonly linkedinUrl?: string;
     readonly nationality?: string;
     readonly phoneNumber?: string;
+    readonly primaryRole?: UpdateUserDTOPrimaryRoleEnum;
+    readonly researchGroupId?: string;
     readonly selectedLanguage?: string;
     readonly universityId?: string;
     readonly website?: string;
 }
+
+export type UpdateUserDTOPrimaryRoleEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN' | 'EMPLOYEE';
+
+export const UpdateUserDTOPrimaryRoleEnum = {
+    Applicant: 'APPLICANT' as const,
+    Professor: 'PROFESSOR' as const,
+    Admin: 'ADMIN' as const,
+    Employee: 'EMPLOYEE' as const,
+} as const;
+
+export const UpdateUserDTOPrimaryRoleEnumValues = ['APPLICANT', 'PROFESSOR', 'ADMIN', 'EMPLOYEE'] as const;
+

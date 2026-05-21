@@ -4,11 +4,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
 import { firstValueFrom } from 'rxjs';
+import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { UserAdminResourceApi } from 'app/generated/api/user-admin-resource-api';
 import { AdminUserDetailDTO } from 'app/generated/model/admin-user-detail-dto';
-import { CreateUserDTO } from 'app/generated/model/create-user-dto';
+import { CreateUserDTO, CreateUserDTOPrimaryRoleEnum, CreateUserDTOPrimaryRoleEnumValues } from 'app/generated/model/create-user-dto';
 import { ImportUserDTO } from 'app/generated/model/import-user-dto';
-import { UpdateUserDTO } from 'app/generated/model/update-user-dto';
+import { ResearchGroupAdminDTO } from 'app/generated/model/research-group-admin-dto';
+import { UpdateUserDTO, UpdateUserDTOPrimaryRoleEnum } from 'app/generated/model/update-user-dto';
 import { ToastService } from 'app/service/toast-service';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -27,6 +29,13 @@ const TRANSLATION_KEY = 'manageUsersPage';
 type FormMode = 'create' | 'edit' | 'import';
 
 const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+const GROUP_BOUND_ROLES: ReadonlySet<CreateUserDTOPrimaryRoleEnum> = new Set<CreateUserDTOPrimaryRoleEnum>(['EMPLOYEE', 'PROFESSOR']);
+
+interface ResearchGroupOption {
+  id: string;
+  name: string;
+}
 
 /**
  * Admin form for creating, importing, editing, and deleting a user.
@@ -66,12 +75,33 @@ export class ManageUserFormComponent {
     { value: 'en', name: 'languages.en' },
     { value: 'de', name: 'languages.de' },
   ];
+  readonly roleOptions: SelectOption[] = CreateUserDTOPrimaryRoleEnumValues.map(role => ({
+    value: role,
+    name: `${TRANSLATION_KEY}.roles.${role}`,
+  }));
 
   // ------- Selected select-option signals -------
   readonly selectedGender = signal<SelectOption | undefined>(undefined);
   readonly selectedNationality = signal<SelectOption | undefined>(undefined);
   readonly selectedLanguage = signal<SelectOption | undefined>(undefined);
+  readonly selectedRole = signal<SelectOption | undefined>(undefined);
+  readonly selectedResearchGroup = signal<SelectOption | undefined>(undefined);
   readonly birthday = signal<string>('');
+
+  // ------- Research group options -------
+  readonly researchGroupOptions = signal<ResearchGroupOption[]>([]);
+  readonly researchGroupSelectOptions = computed<SelectOption[]>(() =>
+    this.researchGroupOptions().map(group => ({ value: group.id, name: group.name })),
+  );
+
+  /** True when the chosen role needs a research group attached. */
+  readonly requiresResearchGroup = computed<boolean>(() => {
+    const role = this.selectedRole()?.value as CreateUserDTOPrimaryRoleEnum | undefined;
+    return role !== undefined && GROUP_BOUND_ROLES.has(role);
+  });
+
+  /** True when the role/group selection prevents the submit button from enabling. */
+  readonly roleSelectionInvalid = computed<boolean>(() => this.requiresResearchGroup() && this.selectedResearchGroup() === undefined);
 
   // ------- Date bounds -------
   readonly minBirthday = new Date(1900, 0, 1);
@@ -123,6 +153,7 @@ export class ManageUserFormComponent {
   private readonly toastService = inject(ToastService);
   private readonly translate = inject(TranslateService);
   private readonly userAdminApi = inject(UserAdminResourceApi);
+  private readonly researchGroupApi = inject(ResearchGroupResourceApi);
 
   // Effect that sets mode from route params + loads user when in edit.
   private readonly modeEffect = effect(() => {
@@ -145,11 +176,15 @@ export class ManageUserFormComponent {
     }
   });
 
+  constructor() {
+    void this.loadResearchGroups();
+  }
+
   /**
    * Submit the form for the current mode. Routes to the matching API call.
    */
   async onSubmit(): Promise<void> {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.roleSelectionInvalid()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -217,6 +252,19 @@ export class ManageUserFormComponent {
     this.selectedLanguage.set(option);
   }
 
+  updateRole(option: SelectOption | undefined): void {
+    this.selectedRole.set(option);
+    // Drop the research group when the new role does not allow one.
+    const role = option?.value as CreateUserDTOPrimaryRoleEnum | undefined;
+    if (role === undefined || !GROUP_BOUND_ROLES.has(role)) {
+      this.selectedResearchGroup.set(undefined);
+    }
+  }
+
+  updateResearchGroup(option: SelectOption | undefined): void {
+    this.selectedResearchGroup.set(option);
+  }
+
   updateBirthday(value: string | undefined): void {
     this.birthday.set(value ?? '');
   }
@@ -278,9 +326,32 @@ export class ManageUserFormComponent {
       this.selectedGender.set(this.findOption(this.genderOptions, user.gender));
       this.selectedNationality.set(this.findOption(this.nationalityOptionsBase, user.nationality));
       this.selectedLanguage.set(this.findOption(this.languageOptions, user.selectedLanguage));
+      this.selectedRole.set(this.findOption(this.roleOptions, user.primaryRole));
+      this.selectedResearchGroup.set(this.findOption(this.researchGroupSelectOptions(), user.researchGroupId));
       this.birthday.set(user.birthday ?? '');
     } catch {
       this.toastService.showErrorKey(`${TRANSLATION_KEY}.errors.loadUser`);
+    }
+  }
+
+  private async loadResearchGroups(): Promise<void> {
+    try {
+      const page = await firstValueFrom(this.researchGroupApi.getResearchGroupsForAdmin(1000, 0));
+      const options: ResearchGroupOption[] = (page.content ?? [])
+        .filter(
+          (group: ResearchGroupAdminDTO): group is ResearchGroupAdminDTO & { id: string; researchGroup: string } =>
+            Boolean(group.id) && Boolean(group.researchGroup),
+        )
+        .map(group => ({ id: group.id, name: group.researchGroup }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      this.researchGroupOptions.set(options);
+      // Reapply the selection now that the option list exists.
+      const loaded = this.loadedUser();
+      if (loaded?.researchGroupId !== undefined) {
+        this.selectedResearchGroup.set(this.findOption(this.researchGroupSelectOptions(), loaded.researchGroupId));
+      }
+    } catch {
+      this.toastService.showErrorKey(`${TRANSLATION_KEY}.errors.loadFilters`);
     }
   }
 
@@ -299,6 +370,8 @@ export class ManageUserFormComponent {
       nationality: this.selectOptionValue(this.selectedNationality()),
       selectedLanguage: this.selectOptionValue(this.selectedLanguage()),
       birthday: this.emptyToUndefined(this.birthday()),
+      primaryRole: this.selectedRole()?.value as CreateUserDTOPrimaryRoleEnum | undefined,
+      researchGroupId: this.requiresResearchGroup() ? this.selectOptionValue(this.selectedResearchGroup()) : undefined,
     };
 
     try {
@@ -340,6 +413,13 @@ export class ManageUserFormComponent {
       return;
     }
     const value = this.form.getRawValue();
+    const loadedRole = this.loadedUser()?.primaryRole;
+    const selectedRole = this.selectedRole()?.value as UpdateUserDTOPrimaryRoleEnum | undefined;
+    const loadedGroupId = this.loadedUser()?.researchGroupId;
+    const selectedGroupId = this.selectOptionValue(this.selectedResearchGroup());
+    const roleChanged = selectedRole !== loadedRole;
+    const groupChanged = (selectedGroupId ?? undefined) !== (loadedGroupId ?? undefined);
+    const sendRole = roleChanged || groupChanged;
     const dto: UpdateUserDTO = {
       firstName: value.firstName,
       lastName: value.lastName,
@@ -351,6 +431,8 @@ export class ManageUserFormComponent {
       nationality: this.selectOptionValue(this.selectedNationality()),
       selectedLanguage: this.selectOptionValue(this.selectedLanguage()),
       birthday: this.emptyToUndefined(this.birthday()),
+      primaryRole: sendRole ? selectedRole : undefined,
+      researchGroupId: sendRole && this.requiresResearchGroup() ? selectedGroupId : undefined,
     };
 
     try {

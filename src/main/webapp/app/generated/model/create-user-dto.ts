@@ -19,7 +19,21 @@ export interface CreateUserDTO {
     readonly nationality?: string;
     readonly password: string;
     readonly phoneNumber?: string;
+    readonly primaryRole?: CreateUserDTOPrimaryRoleEnum;
+    readonly researchGroupId?: string;
     readonly selectedLanguage?: string;
     readonly universityId?: string;
     readonly website?: string;
 }
+
+export type CreateUserDTOPrimaryRoleEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN' | 'EMPLOYEE';
+
+export const CreateUserDTOPrimaryRoleEnum = {
+    Applicant: 'APPLICANT' as const,
+    Professor: 'PROFESSOR' as const,
+    Admin: 'ADMIN' as const,
+    Employee: 'EMPLOYEE' as const,
+} as const;
+
+export const CreateUserDTOPrimaryRoleEnumValues = ['APPLICANT', 'PROFESSOR', 'ADMIN', 'EMPLOYEE'] as const;
+

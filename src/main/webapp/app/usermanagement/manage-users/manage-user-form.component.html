@@ -206,6 +206,39 @@
         <div class="form-field"></div>
       </div>
 
+      <p-divider layout="horizontal">
+        <span [jhiTranslate]="translationKey + '.form.roleSection'"></span>
+      </p-divider>
+
+      <div class="form-row">
+        <div class="form-field">
+          <jhi-select
+            width="100%"
+            [label]="translationKey + '.form.fields.primaryRole'"
+            [items]="roleOptions"
+            [selected]="selectedRole()"
+            (selectedChange)="updateRole($event)"
+            [showClear]="true"
+            [translateItems]="true"
+          />
+        </div>
+        <div class="form-field">
+          @if (requiresResearchGroup()) {
+            <jhi-select
+              width="100%"
+              [label]="translationKey + '.form.fields.researchGroup'"
+              [items]="researchGroupSelectOptions()"
+              [selected]="selectedResearchGroup()"
+              (selectedChange)="updateResearchGroup($event)"
+              [filter]="true"
+              [showClear]="true"
+              [dataKey]="'value'"
+              [required]="true"
+            />
+          }
+        </div>
+      </div>
+
       @if (mode() === 'edit' && loadedUser(); as user) {
         <p-divider layout="horizontal">
           <span [jhiTranslate]="translationKey + '.form.statusSection'"></span>
@@ -249,7 +282,7 @@
         [label]="submitLabel()"
         icon="check"
         severity="primary"
-        [disabled]="isSubmitting() || form.invalid"
+        [disabled]="isSubmitting() || form.invalid || roleSelectionInvalid()"
         [shouldTranslate]="true"
       />
     </div>

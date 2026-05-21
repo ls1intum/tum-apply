@@ -3,20 +3,25 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.InvalidParameterException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.retention.UserRetentionService;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.AdminUserDetailDTO;
 import de.tum.cit.aet.usermanagement.dto.AdminUserOverviewDTO;
 import de.tum.cit.aet.usermanagement.dto.CreateUserDTO;
 import de.tum.cit.aet.usermanagement.dto.ImportUserDTO;
 import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.UpdateUserDTO;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Orchestrates Keycloak and local-DB user management for admins.
@@ -35,6 +41,8 @@ import org.springframework.stereotype.Service;
 public class UserAdminService {
 
     private final UserRepository userRepository;
+    private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+    private final ResearchGroupRepository researchGroupRepository;
     private final KeycloakUserService keycloakUserService;
     private final UserService userService;
     private final UserRetentionService userRetentionService;
@@ -119,13 +127,19 @@ public class UserAdminService {
      * @param dto the create-user payload
      * @return the new user's UUID
      */
+    @Transactional
     public UUID create(CreateUserDTO dto) {
+        validateRoleAndGroup(dto.primaryRole(), dto.researchGroupId());
         // 1) Keycloak first — failure aborts before any DB write.
         UUID userId = keycloakUserService.createUserWithPassword(dto.email(), dto.firstName(), dto.lastName(), dto.password());
         // 2) Local DB upsert (creates user + assigns APPLICANT role if missing).
         userService.upsertUser(userId.toString(), dto.email(), dto.firstName(), dto.lastName());
         // 3) Apply DB-only optional fields.
         applyOptionalCreateFields(userId, dto);
+        // 4) Apply primary role assignment when supplied.
+        if (dto.primaryRole() != null) {
+            applyPrimaryRole(userId, dto.primaryRole(), dto.researchGroupId());
+        }
         return userId;
     }
 
@@ -152,7 +166,12 @@ public class UserAdminService {
      * @param dto    the update payload (any null field is left untouched)
      * @throws EntityNotFoundException if no user exists with the given ID
      */
+    @Transactional
     public void update(UUID userId, UpdateUserDTO dto) {
+        validateRoleAndGroup(dto.primaryRole(), dto.researchGroupId());
+        if (dto.primaryRole() != null && userId.equals(currentUserService.getUserId())) {
+            throw new OperationNotAllowedException("Admins cannot change their own role.");
+        }
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         if (dto.firstName() != null) {
             user.setFirstName(dto.firstName());
@@ -191,6 +210,9 @@ public class UserAdminService {
             user.setAvatar(dto.avatar());
         }
         userRepository.save(user);
+        if (dto.primaryRole() != null) {
+            applyPrimaryRole(userId, dto.primaryRole(), dto.researchGroupId());
+        }
     }
 
     /**
@@ -254,6 +276,55 @@ public class UserAdminService {
         if (changed) {
             userRepository.save(user);
         }
+    }
+
+    /**
+     * Validates that the role/group combination is consistent: EMPLOYEE and PROFESSOR
+     * require a research group; APPLICANT and ADMIN must be supplied without one.
+     *
+     * @param role            the requested primary role (may be null)
+     * @param researchGroupId the requested research group (may be null)
+     */
+    private void validateRoleAndGroup(UserRole role, UUID researchGroupId) {
+        if (role == null) {
+            return;
+        }
+        boolean groupBound = role == UserRole.EMPLOYEE || role == UserRole.PROFESSOR;
+        if (groupBound && researchGroupId == null) {
+            throw new InvalidParameterException("Role " + role + " requires a researchGroupId.");
+        }
+        if (!groupBound && researchGroupId != null) {
+            throw new InvalidParameterException("Role " + role + " must not be assigned to a research group.");
+        }
+    }
+
+    /**
+     * Replaces all existing role mappings of a user with a single mapping that matches
+     * the requested role. EMPLOYEE/PROFESSOR roles are attached to the supplied research
+     * group; APPLICANT and ADMIN are attached to no group. The user's primary research
+     * group on the {@link User} entity is kept in sync with the new mapping.
+     *
+     * @param userId          the user being updated
+     * @param role            the new primary role
+     * @param researchGroupId the research group for EMPLOYEE/PROFESSOR, otherwise null
+     */
+    private void applyPrimaryRole(UUID userId, UserRole role, UUID researchGroupId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+        ResearchGroup group = researchGroupId == null ? null : researchGroupRepository.findByIdElseThrow(researchGroupId);
+
+        // 1) Drop existing role mappings — admin-driven role swap is a hard replace.
+        userResearchGroupRoleRepository.deleteByUserId(userId);
+
+        // 2) Create the new role mapping.
+        UserResearchGroupRole mapping = new UserResearchGroupRole();
+        mapping.setUser(user);
+        mapping.setRole(role);
+        mapping.setResearchGroup(group);
+        userResearchGroupRoleRepository.save(mapping);
+
+        // 3) Keep the primary research-group reference on the user aligned with the new role.
+        user.setResearchGroup(group);
+        userRepository.save(user);
     }
 
     /**
