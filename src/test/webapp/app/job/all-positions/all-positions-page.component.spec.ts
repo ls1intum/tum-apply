@@ -494,5 +494,4 @@ describe('AllPositionsPageComponent', () => {
       expect(component.deleteDialogMessageKey()).toBe('allPositionsPage.confirmDialog.deleteMessageNonDraft');
     });
   });
-
 });
