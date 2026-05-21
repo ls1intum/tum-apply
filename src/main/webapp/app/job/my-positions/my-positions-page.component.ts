@@ -196,10 +196,12 @@ export class MyPositionsPageComponent {
 
   // Skip the very first read so the initial render — which already triggers
   // loadJobs() via the table's lazy-load event — doesn't double-fetch.
-  private lastSeenActiveGroupId: string | null | undefined = null;
+  private hasSeenActiveGroup = false;
+  private lastSeenActiveGroupId: string | undefined;
   private readonly activeGroupRefreshEffect = effect(() => {
     const activeId = this.accountService.activeResearchGroupId();
-    if (this.lastSeenActiveGroupId === null) {
+    if (!this.hasSeenActiveGroup) {
+      this.hasSeenActiveGroup = true;
       this.lastSeenActiveGroupId = activeId;
       return;
     }

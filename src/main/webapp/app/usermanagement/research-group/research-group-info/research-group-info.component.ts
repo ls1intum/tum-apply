@@ -51,16 +51,17 @@ export class ResearchGroupInfoComponent {
     if (!currentUser) {
       return;
     }
-    if (rgId === this.lastInitializedRgId) {
+    if (this.initTracked && rgId === this.lastInitializedRgId) {
       return;
     }
+    this.initTracked = true;
     this.lastInitializedRgId = rgId;
     this.hasInitialized.set(false);
     void this.init();
   });
 
-  // Sentinel that intentionally never matches the first signal read.
-  private lastInitializedRgId: string | undefined | null = null;
+  private initTracked = false;
+  private lastInitializedRgId: string | undefined;
   private latestInitRequestId = 0;
 
   // State signals
