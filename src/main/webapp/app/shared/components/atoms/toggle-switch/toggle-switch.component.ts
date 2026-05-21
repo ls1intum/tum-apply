@@ -37,14 +37,18 @@ export class ToggleSwitchComponent {
   readonly toggleClass = computed(() =>
     [
       'jhi-toggle-switch',
+      '[--jhi-toggle-handle-width:1.55rem]',
       '[&_.p-toggleswitch-slider]:border-negative-strong',
       '[&_.p-toggleswitch-slider]:bg-negative-strong',
       '[&_.p-toggleswitch-slider]:transition-colors',
       '[&_.p-toggleswitch-handle]:flex',
       '[&_.p-toggleswitch-handle]:items-center',
       '[&_.p-toggleswitch-handle]:justify-center',
+      '[&_.p-toggleswitch-handle]:w-[var(--jhi-toggle-handle-width)]',
+      '[&_.p-toggleswitch-handle]:rounded-full',
       '[&.p-toggleswitch-checked_.p-toggleswitch-slider]:border-positive-strong',
       '[&.p-toggleswitch-checked_.p-toggleswitch-slider]:bg-positive-strong',
+      '[&.p-toggleswitch-checked_.p-toggleswitch-handle]:[inset-inline-start:calc(var(--p-toggleswitch-width)-var(--jhi-toggle-handle-width)-var(--p-toggleswitch-gap))]',
       '[&.p-disabled_.p-toggleswitch-slider]:!bg-background-disabled',
       '[&.p-disabled_.p-toggleswitch-slider]:!border-border-default',
       this.classStyling(),
