@@ -331,7 +331,7 @@ export class AllApplicationsPageComponent {
 
   private async loadProfessorOptions(): Promise<void> {
     try {
-      const list = await firstValueFrom(this.researchGroupApi.getResearchGroupProfessors());
+      const list = await firstValueFrom(this.researchGroupApi.getAllProfessorsForAdmin());
       this.professorOptions.set(
         list
           .map(u => ({

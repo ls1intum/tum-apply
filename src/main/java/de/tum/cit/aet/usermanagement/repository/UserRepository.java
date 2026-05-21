@@ -249,4 +249,23 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         """
     )
     List<UUID> findInactiveNonAdminUserIdsForWarning(@Param("warningDate") LocalDateTime warningDate);
+
+    /**
+     * Finds every user holding a PROFESSOR role in any research group, with roles eagerly loaded.
+     *
+     * @return distinct list of users with at least one PROFESSOR role, ordered by first then last name
+     */
+    @Query(
+        """
+            SELECT DISTINCT u FROM User u
+            LEFT JOIN FETCH u.researchGroupRoles
+            WHERE EXISTS (
+                SELECT 1 FROM UserResearchGroupRole urgr
+                WHERE urgr.user = u
+                  AND urgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+            )
+            ORDER BY u.firstName, u.lastName
+        """
+    )
+    List<User> findAllProfessors();
 }

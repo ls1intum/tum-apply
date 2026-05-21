@@ -2294,6 +2294,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/admin/professors:
+    get:
+      tags: [research-group-resource]
+      operationId: getAllProfessorsForAdmin
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/UserShortDTO'}
   /api/research-groups/detail/{researchGroupId}:
     get:
       tags: [research-group-resource]

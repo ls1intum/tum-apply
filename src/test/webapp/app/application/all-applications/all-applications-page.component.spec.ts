@@ -52,7 +52,7 @@ describe('AllApplicationsPageComponent', () => {
 
     researchGroupApi = createResearchGroupResourceApiMock();
     researchGroupApi.getResearchGroupsForAdmin.mockReturnValue(of({ content: [{ id: 'r1', researchGroup: 'RG 1' }], totalElements: 1 }));
-    researchGroupApi.getResearchGroupProfessors.mockReturnValue(of([{ userId: 'p1', firstName: 'Prof', lastName: 'One' }]));
+    researchGroupApi.getAllProfessorsForAdmin.mockReturnValue(of([{ userId: 'p1', firstName: 'Prof', lastName: 'One' }]));
 
     toastService = createToastServiceMock();
 
@@ -83,7 +83,7 @@ describe('AllApplicationsPageComponent', () => {
     it('should load research-group and professor options on init', async () => {
       await fixture.whenStable();
       expect(researchGroupApi.getResearchGroupsForAdmin).toHaveBeenCalledOnce();
-      expect(researchGroupApi.getResearchGroupProfessors).toHaveBeenCalledOnce();
+      expect(researchGroupApi.getAllProfessorsForAdmin).toHaveBeenCalledOnce();
       expect(comp.researchGroupOptions()).toEqual([{ id: 'r1', name: 'RG 1' }]);
       expect(comp.professorOptions()).toEqual([{ id: 'p1', name: 'Prof One' }]);
     });
