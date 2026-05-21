@@ -7,7 +7,6 @@
         <span jhiTranslate="researchGroup.groupInfoHeader"></span>
       </h1>
     </div>
-    <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" [disabled]="!form.valid || isSaving()" (click)="onSave()" />
   </div>
   <div class="card">
     <p jhiTranslate="researchGroup.groupInfo.description"></p>
@@ -163,4 +162,9 @@
       </div>
     </div>
   </div>
+
+  <ng-template #savingBadgeTemplate>
+    <jhi-saving-badge [state]="savingState()" />
+  </ng-template>
+  <jhi-sticky-footer-shell [statusTemplate]="savingBadgeTemplate" />
 </div>
