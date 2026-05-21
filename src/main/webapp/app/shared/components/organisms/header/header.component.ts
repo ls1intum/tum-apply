@@ -132,7 +132,7 @@ export class HeaderComponent {
   isProfileMenuOpen = signal(false);
   mobileMenuOpen = signal(false);
 
-  private readonly mobileSidebarService = inject(MobileSidebarService);
+  readonly mobileSidebarService = inject(MobileSidebarService);
   readonly mobileSidebarOpen = this.mobileSidebarService.open;
 
   profileMenuItems = computed<JhiMenuItem[]>(() => {

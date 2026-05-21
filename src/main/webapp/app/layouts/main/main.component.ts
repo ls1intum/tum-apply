@@ -38,7 +38,7 @@ export default class MainComponent {
   });
   readonly localStorageService = inject(LocalStorageService);
   readonly isSidebarCollapsed = this.localStorageService.sidebarCollapsed;
-  private readonly mobileSidebarService = inject(MobileSidebarService);
+  readonly mobileSidebarService = inject(MobileSidebarService);
   readonly mobileSidebarOpen = this.mobileSidebarService.open;
   private readonly router = inject(Router);
   private readonly renderer: Renderer2;
