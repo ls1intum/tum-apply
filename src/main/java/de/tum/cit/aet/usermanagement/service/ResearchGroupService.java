@@ -637,17 +637,15 @@ public class ResearchGroupService {
     }
 
     /**
-     * Adds multiple members to a research group.
-     * <p>
-     * Verifies that the current user is an admin or a member of the target research group
-     * before proceeding. For each provided Keycloak user, this method ensures they exist in
-     * the local database. If a user does not exist locally, they are created. The user is then
-     * assigned to the specified research group. An email notification is sent only if the user
-     * is newly created or if their research group assignment has changed.
+     * Adds multiple members to a research group. Verifies that the current user is an admin or a
+     * member of the target research group before proceeding. For each provided Keycloak user,
+     * ensures a matching local user exists (creating one if necessary) and assigns them to the
+     * target group; an email notification is sent only when the user was newly created or their
+     * research-group assignment changed.
      *
-     * @param keycloakUsers   A list of {@link KeycloakUserDTO} representing the users to be added.
-     * @param researchGroupId The ID of the research group to which the members will be added.
-     *                        If null, the current user's group is used (if they are a professor).
+     * @param keycloakUsers   list of {@link KeycloakUserDTO} representing the users to add
+     * @param researchGroupId target research group; when null the current user's group is used
+     *                        (only valid for a professor)
      * @throws AccessDeniedException if the current user is not a member of the target group
      */
     @Transactional
