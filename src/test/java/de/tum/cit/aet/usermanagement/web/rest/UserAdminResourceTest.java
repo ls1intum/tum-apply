@@ -1,13 +1,19 @@
 package de.tum.cit.aet.usermanagement.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 
 import de.tum.cit.aet.AbstractResourceTest;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.AdminUserOverviewDTO;
+import de.tum.cit.aet.usermanagement.dto.UpdateUserDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.usermanagement.service.UserService;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.PageResponse;
@@ -36,6 +42,9 @@ class UserAdminResourceTest extends AbstractResourceTest {
     ResearchGroupRepository researchGroupRepository;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     DatabaseCleaner databaseCleaner;
 
     @Autowired
@@ -48,6 +57,7 @@ class UserAdminResourceTest extends AbstractResourceTest {
     @BeforeEach
     void setup() {
         databaseCleaner.clean();
+        reset(userService);
         api.withoutPostProcessors();
 
         researchGroup = ResearchGroupTestData.savedAll(
@@ -141,6 +151,107 @@ class UserAdminResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .postAndRead("/api/admin/users", payload, Void.class, 403);
+        }
+    }
+
+    @Nested
+    class UpdateUser {
+
+        @Test
+        void shouldUpdateProfileFieldsWithoutRoleChange() {
+            User target = UserTestData.savedUser(userRepository);
+            UpdateUserDTO dto = new UpdateUserDTO(
+                "Renamed",
+                null,
+                null,
+                "+49 89 0000",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
+
+            api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .putAndRead("/api/admin/users/" + target.getUserId(), dto, Void.class, 200);
+
+            User reloaded = userRepository.findById(target.getUserId()).orElseThrow();
+            assertThat(reloaded.getFirstName()).isEqualTo("Renamed");
+            assertThat(reloaded.getPhoneNumber()).isEqualTo("+49 89 0000");
+            verify(userService, never()).setPrimaryRole(target.getUserId(), null, null);
+        }
+
+        @Test
+        void shouldDelegateRoleAssignmentToUserService() {
+            User target = UserTestData.savedUser(userRepository);
+            UpdateUserDTO dto = roleUpdate(UserRole.PROFESSOR, researchGroup.getResearchGroupId());
+
+            api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .putAndRead("/api/admin/users/" + target.getUserId(), dto, Void.class, 200);
+
+            verify(userService).setPrimaryRole(target.getUserId(), UserRole.PROFESSOR, researchGroup.getResearchGroupId());
+        }
+
+        @Test
+        void shouldRejectAdminChangingOwnRole() {
+            UpdateUserDTO dto = roleUpdate(UserRole.APPLICANT, null);
+
+            api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .putAndRead("/api/admin/users/" + adminUser.getUserId(), dto, Void.class, 400);
+
+            verify(userService, never()).setPrimaryRole(adminUser.getUserId(), UserRole.APPLICANT, null);
+        }
+
+        @Test
+        void shouldRejectProfessor() {
+            User target = UserTestData.savedUser(userRepository);
+            UpdateUserDTO dto = new UpdateUserDTO(
+                "Blocked",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
+
+            api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead("/api/admin/users/" + target.getUserId(), dto, Void.class, 403);
+        }
+
+        private UpdateUserDTO roleUpdate(UserRole role, UUID researchGroupId) {
+            return new UpdateUserDTO(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                role,
+                researchGroupId
+            );
         }
     }
 }
