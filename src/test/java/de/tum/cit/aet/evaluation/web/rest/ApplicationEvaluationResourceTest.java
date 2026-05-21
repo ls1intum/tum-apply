@@ -13,9 +13,16 @@ import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.evaluation.dto.AcceptDTO;
+import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
 import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
 import de.tum.cit.aet.evaluation.dto.RejectDTO;
+import de.tum.cit.aet.evaluation.repository.RatingRepository;
+import de.tum.cit.aet.interview.domain.InterviewProcess;
+import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
+import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
+import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -73,6 +80,15 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     @Autowired
     DocumentRepository documentRepository;
+
+    @Autowired
+    RatingRepository ratingRepository;
+
+    @Autowired
+    InterviewProcessRepository interviewProcessRepository;
+
+    @Autowired
+    IntervieweeRepository intervieweeRepository;
 
     @Autowired
     MvcTestClient api;
@@ -225,6 +241,74 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
             assertThat(dto.applications().get(1).name()).isEqualTo(
                 applicant.getUser().getFirstName() + " " + applicant.getUser().getLastName()
             );
+        }
+    }
+
+    @Nested
+    class RatingSummary {
+
+        @Test
+        void shouldReturnEmptyRatingSummaryWhenNoRatingsExist() {
+            ApplicationEvaluationDetailDTO target = fetchDetail(sentApp.getApplicationId());
+
+            assertThat(target.averageRating()).isNull();
+            assertThat(target.ratingCount()).isEqualTo(0);
+        }
+
+        @Test
+        void shouldIncludeProfessorRatingsInAverageAndCount() {
+            RatingTestData.saved(ratingRepository, sentApp, professor, 2);
+
+            ApplicationEvaluationDetailDTO target = fetchDetail(sentApp.getApplicationId());
+
+            assertThat(target.averageRating()).isEqualTo(2.0);
+            assertThat(target.ratingCount()).isEqualTo(1);
+        }
+
+        @Test
+        void shouldIncludeInterviewRatingEvenWithoutProfessorRatings() {
+            saveInterviewRating(sentApp, AssessmentRating.EXCELLENT);
+
+            ApplicationEvaluationDetailDTO target = fetchDetail(sentApp.getApplicationId());
+
+            assertThat(target.averageRating()).isEqualTo(2.0);
+            assertThat(target.ratingCount()).isEqualTo(1);
+        }
+
+        @Test
+        void shouldAverageProfessorAndInterviewRatingsTogether() {
+            RatingTestData.saved(ratingRepository, sentApp, professor, 2);
+            saveInterviewRating(sentApp, AssessmentRating.POOR);
+
+            ApplicationEvaluationDetailDTO target = fetchDetail(sentApp.getApplicationId());
+
+            assertThat(target.averageRating()).isEqualTo(0.0);
+            assertThat(target.ratingCount()).isEqualTo(2);
+        }
+
+        private ApplicationEvaluationDetailDTO fetchDetail(UUID applicationId) {
+            ApplicationEvaluationDetailListDTO details = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(
+                    "/api/evaluation/application-details",
+                    Map.of("offset", "0", "limit", "10"),
+                    ApplicationEvaluationDetailListDTO.class,
+                    200
+                );
+
+            return details
+                .applications()
+                .stream()
+                .filter(application -> application.applicationDetailDTO().applicationId().equals(applicationId))
+                .findFirst()
+                .orElseThrow();
+        }
+
+        private void saveInterviewRating(Application application, AssessmentRating rating) {
+            InterviewProcess process = InterviewTestData.savedProcess(interviewProcessRepository, application.getJob());
+            Interviewee interviewee = InterviewTestData.newInterviewee(application, process);
+            interviewee.setRating(rating);
+            intervieweeRepository.save(interviewee);
         }
     }
 
