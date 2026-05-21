@@ -28,6 +28,12 @@ gitProperties {
   // resource source dir, so it ends up on the runtime classpath for Gradle and IntelliJ alike
   // (without duplicating src/main/resources, which would break processResources on Gradle 9+).
   gitPropertiesResourceDir.set(layout.buildDirectory.dir('generated/resources/git-properties'))
+  // In CI/Docker the checkout is in detached HEAD, so `git symbolic-ref --short HEAD` resolves
+  // to the literal "HEAD". Honour an explicit override when the workflow passes one in.
+  def overrideBranch = System.getenv('GIT_BRANCH')
+  if (overrideBranch) {
+    branch = overrideBranch
+  }
 }
 
 tasks.named('processResources') {
