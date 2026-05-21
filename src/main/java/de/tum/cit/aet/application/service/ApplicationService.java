@@ -375,6 +375,16 @@ public class ApplicationService {
     }
 
     /**
+     * Retrieves all applications submitted by the given applicant user.
+     *
+     * @param applicantUserId the user id of the applicant
+     * @return list of applications belonging to the applicant
+     */
+    public List<Application> findAllByApplicantUserId(UUID applicantUserId) {
+        return applicationRepository.findAllByApplicantId(applicantUserId);
+    }
+
+    /**
      * Retrieves all CV documents attached to the given application.
      *
      * @param application the application to retrieve CVs for
