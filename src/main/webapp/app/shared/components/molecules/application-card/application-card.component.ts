@@ -66,6 +66,15 @@ export class ApplicationCardComponent {
   });
 
   /**
+   * Number of ratings contributing to the average (professor ratings + interview rating).
+   * Returns undefined when no rating exists so the count is hidden.
+   */
+  readonly ratingCount = computed<number | undefined>(() => {
+    const count = this.application()?.ratingCount;
+    return count !== undefined && count > 0 ? count : undefined;
+  });
+
+  /**
    * Dynamic font size for applicant name based on length
    */
   readonly nameFontSize = computed<string>(() => {
