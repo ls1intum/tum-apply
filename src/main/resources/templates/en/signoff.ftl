@@ -5,7 +5,7 @@
 
 <#-- Research group sign-off, uses the RESEARCH_GROUP_NAME template variable -->
 <#macro researchGroup>
-    <p>Best regards,<br />The ${RESEARCH_GROUP_NAME!} Team</p>
+    <p>Best regards,<br />Your ${RESEARCH_GROUP_NAME!} Team</p>
 </#macro>
 
 <#-- TUMApply system sign-off, used for emails to external recipients -->

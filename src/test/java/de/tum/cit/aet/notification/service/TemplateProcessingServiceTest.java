@@ -73,17 +73,17 @@ class TemplateProcessingServiceTest {
         }
 
         @Test
-        void renderTemplate_appendsSystemSignoff_inEnglish() {
+        void appendsSystemSignoffInEnglish() {
             Application application = sampleApplication("Bob", "Smith");
 
             String rendered = service.renderTemplate(Language.ENGLISH, "<p>Hi</p>", application, SignoffType.SYSTEM);
 
             assertThat(rendered).contains("Your TUMApply Team");
-            assertThat(rendered).doesNotContain("The RG Team");
+            assertThat(rendered).doesNotContain("Your RG Team");
         }
 
         @Test
-        void renderTemplate_appendsResearchGroupSignoff_inGerman_withGroupNameSubstituted() {
+        void appendsResearchGroupSignoffInGermanWithGroupNameSubstituted() {
             Application application = sampleApplication("Alice", "Smith");
 
             String rendered = service.renderTemplate(Language.GERMAN, "<p>Hallo</p>", application, SignoffType.RESEARCH_GROUP);
@@ -93,7 +93,7 @@ class TemplateProcessingServiceTest {
         }
 
         @Test
-        void renderTemplate_appendsSystemFormalSignoff_inGerman() {
+        void appendsSystemFormalSignoffInGerman() {
             Application application = sampleApplication("Alice", "Smith");
 
             String rendered = service.renderTemplate(Language.GERMAN, "<p>Hallo</p>", application, SignoffType.SYSTEM_FORMAL);
@@ -102,13 +102,13 @@ class TemplateProcessingServiceTest {
         }
 
         @Test
-        void renderTemplate_appendsNoSignoff_whenSignoffIsNone() {
+        void appendsNoSignoffWhenSignoffIsNone() {
             Application application = sampleApplication("Alice", "Smith");
 
             String rendered = service.renderTemplate(Language.ENGLISH, "<p>Hi</p>", application, SignoffType.NONE);
 
             assertThat(rendered).doesNotContain("Your TUMApply Team");
-            assertThat(rendered).doesNotContain("The RG Team");
+            assertThat(rendered).doesNotContain("Your RG Team");
         }
     }
 
