@@ -37,7 +37,10 @@ public class UserShortDTO {
         this.avatar = user.getAvatar();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
-        this.roles = user.getResearchGroupRoles().stream().map(UserResearchGroupRole::getRole).toList();
+        // Distinct so a user holding the same role in multiple groups (e.g. EMPLOYEE in two
+        // research groups) renders as "Employee", not "Employee, Employee". Different roles
+        // (e.g. PROFESSOR + EMPLOYEE across groups) are still preserved.
+        this.roles = user.getResearchGroupRoles().stream().map(UserResearchGroupRole::getRole).distinct().toList();
         this.memberships = user
             .getResearchGroupRoles()
             .stream()

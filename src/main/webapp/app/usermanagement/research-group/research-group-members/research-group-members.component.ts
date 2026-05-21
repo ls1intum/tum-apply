@@ -127,6 +127,9 @@ export class ResearchGroupMembersComponent {
 
   private readonly routeIdEffect = effect(() => {
     const id = this.routeId();
+    // Track the active group too so switching groups in the header re-runs the load
+    // even when the route itself doesn't change.
+    this.accountService.activeResearchGroupId();
     this.researchGroupId.set(id);
     this.researchGroupName.set(undefined);
     if (id) {
