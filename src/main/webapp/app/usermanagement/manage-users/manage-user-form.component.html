@@ -13,7 +13,7 @@
 
   <div class="header-container flex items-center justify-between gap-4 mb-6">
     <div class="flex items-center gap-3">
-      <jhi-button icon="arrow-left" severity="secondary" variant="text" tooltip="manageUsersPage.form.buttons.back" (click)="onBack()" />
+      <jhi-back-button />
       <h1 [jhiTranslate]="title()" class="h1-text"></h1>
     </div>
     @if (mode() === 'edit') {

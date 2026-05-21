@@ -1,5 +1,5 @@
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
@@ -31,6 +31,22 @@ interface ResearchGroupOption {
   name: string;
 }
 
+interface UserRow {
+  userId?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  avatar?: string;
+  universityId?: string;
+  primaryRole?: AdminUserOverviewDTOPrimaryRoleEnum;
+  researchGroupId?: string;
+  researchGroupName?: string;
+  lastActivityAt?: string;
+  fullName: string;
+  roleLabelKey: string;
+  isSelf: boolean;
+}
+
 /**
  * Admin-only page that lists all users (with role + research-group filters,
  * search, sort and pagination) and lets admins create, import, view, or
@@ -43,7 +59,6 @@ interface ResearchGroupOption {
     ConfirmDialog,
     DynamicTableComponent,
     LocalizedDatePipe,
-    RouterModule,
     SearchFilterSortBar,
     TranslateDirective,
     TranslateModule,
@@ -64,7 +79,7 @@ export class ManageUsersPageComponent {
   sortDirection = signal<SortDirection>('DESC');
 
   // ------- Filter state -------
-  readonly availableRoleOptions: AdminUserOverviewDTOPrimaryRoleEnum[] = [...AdminUserOverviewDTOPrimaryRoleEnumValues];
+  readonly availableRoleOptions: readonly AdminUserOverviewDTOPrimaryRoleEnum[] = AdminUserOverviewDTOPrimaryRoleEnumValues;
 
   /** Translation key per role enum, used by the filter-multiselect (translated). */
   readonly roleLabelMap: Record<AdminUserOverviewDTOPrimaryRoleEnum, string> = {
@@ -90,7 +105,7 @@ export class ManageUsersPageComponent {
 
   // ------- Delete dialog state -------
   showDeleteDialog = signal<boolean>(false);
-  currentUserToDelete = signal<AdminUserOverviewDTO | undefined>(undefined);
+  currentUserToDelete = signal<UserRow | undefined>(undefined);
 
   // ------- Computed configs -------
   readonly columns = computed<DynamicTableColumn[]>(() => {
@@ -135,6 +150,25 @@ export class ManageUsersPageComponent {
 
   readonly currentUserId = computed<string>(() => this.accountService.loadedUser()?.id ?? '');
 
+  readonly userRows = computed<UserRow[]>(() => {
+    const currentId = this.currentUserId();
+    return this.users().map(user => ({
+      userId: user.userId,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      avatar: user.avatar,
+      universityId: user.universityId,
+      primaryRole: user.primaryRole,
+      researchGroupId: user.researchGroupId,
+      researchGroupName: user.researchGroupName,
+      lastActivityAt: user.lastActivityAt,
+      fullName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
+      roleLabelKey: user.primaryRole ? this.roleLabelMap[user.primaryRole] : '',
+      isSelf: user.userId === currentId,
+    }));
+  });
+
   /** Translation key for the page block; exposed for use in the template. */
   readonly translationKey = TRANSLATION_KEY;
 
@@ -148,27 +182,6 @@ export class ManageUsersPageComponent {
 
   constructor() {
     void this.loadResearchGroups();
-  }
-
-  /**
-   * Compute a display name for the user-template cell.
-   *
-   * @param row the AdminUserOverviewDTO row
-   * @returns the trimmed `firstName lastName`, or empty string when both are blank
-   */
-  fullName(row: AdminUserOverviewDTO): string {
-    return `${row.firstName ?? ''} ${row.lastName ?? ''}`.trim();
-  }
-
-  /**
-   * Translation key for a row's role.
-   *
-   * @param row the AdminUserOverviewDTO row
-   * @returns a translation key under `manageUsersPage.roles`, or empty when unset
-   */
-  roleLabelKey(row: AdminUserOverviewDTO): string {
-    const role = row.primaryRole;
-    return role ? this.roleLabelMap[role] : '';
   }
 
   async loadPage(event: TableLazyLoadEvent): Promise<void> {
@@ -220,7 +233,7 @@ export class ManageUsersPageComponent {
     }
   }
 
-  onRequestDelete(row: AdminUserOverviewDTO): void {
+  onRequestDelete(row: UserRow): void {
     if (row.userId === this.currentUserId()) {
       this.toastService.showErrorKey(`${TRANSLATION_KEY}.errors.selfDelete`);
       return;
@@ -250,10 +263,6 @@ export class ManageUsersPageComponent {
     } finally {
       this.currentUserToDelete.set(undefined);
     }
-  }
-
-  isSelf(row: AdminUserOverviewDTO): boolean {
-    return row.userId === this.currentUserId();
   }
 
   private async loadUsers(): Promise<void> {

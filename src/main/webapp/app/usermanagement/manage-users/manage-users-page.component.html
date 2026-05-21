@@ -50,7 +50,7 @@
     <div class="table-wrapper">
       <jhi-dynamic-table
         [columns]="columns()"
-        [data]="users()"
+        [data]="userRows()"
         [totalRecords]="totalRecords()"
         [page]="page()"
         [rows]="pageSize()"
@@ -61,14 +61,14 @@
 
     <ng-template #userTemplate let-row>
       <div class="flex items-center gap-3">
-        <jhi-user-avatar [fullName]="fullName(row)" [avatarUrl]="row.avatar" size="sm" />
-        <span class="text-sm font-medium text-text">{{ fullName(row) }}</span>
+        <jhi-user-avatar [fullName]="row.fullName" [avatarUrl]="row.avatar" size="sm" />
+        <span class="text-sm font-medium text-text">{{ row.fullName }}</span>
       </div>
     </ng-template>
 
     <ng-template #roleTemplate let-row>
       @if (row.primaryRole) {
-        <span [jhiTranslate]="roleLabelKey(row)"></span>
+        <span [jhiTranslate]="row.roleLabelKey"></span>
       }
     </ng-template>
 
@@ -84,7 +84,7 @@
           icon="trash"
           severity="danger"
           variant="text"
-          [disabled]="isSelf(row)"
+          [disabled]="row.isSelf"
           (click)="onRequestDelete(row)"
         />
       </div>

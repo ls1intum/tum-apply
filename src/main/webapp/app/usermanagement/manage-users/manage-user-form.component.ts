@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
@@ -10,6 +10,7 @@ import { CreateUserDTO } from 'app/generated/model/create-user-dto';
 import { ImportUserDTO } from 'app/generated/model/import-user-dto';
 import { UpdateUserDTO } from 'app/generated/model/update-user-dto';
 import { ToastService } from 'app/service/toast-service';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
@@ -37,13 +38,13 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 @Component({
   selector: 'jhi-manage-user-form',
   imports: [
+    BackButtonComponent,
     ButtonComponent,
     ConfirmDialog,
     DatePickerComponent,
     DividerModule,
     LocalizedDatePipe,
     ReactiveFormsModule,
-    RouterModule,
     SelectComponent,
     StringInputComponent,
     TranslateDirective,
@@ -202,11 +203,6 @@ export class ManageUserFormComponent {
         }),
       });
     }
-  }
-
-  /** Navigate back to the list page. */
-  onBack(): void {
-    void this.router.navigate(['/manage-users']);
   }
 
   updateGender(option: SelectOption | undefined): void {

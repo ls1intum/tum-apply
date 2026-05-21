@@ -1,19 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ManageUsersPageComponent } from 'app/usermanagement/manage-users/manage-users-page.component';
 import { AccountService } from 'app/core/auth/account.service';
-import { UserAdminResourceApi } from 'app/generated/api/user-admin-resource-api';
-import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resource-api';
 import { AdminUserOverviewDTO } from 'app/generated/model/admin-user-overview-dto';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideTranslateMock, createTranslateServiceMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
+import { provideActivatedRouteMock, createActivatedRouteMock } from 'util/activated-route.mock';
 import {
   createUserAdminResourceApiMock,
   provideUserAdminResourceApiMock,
@@ -31,7 +30,7 @@ describe('ManageUsersPageComponent', () => {
   let mockUserAdminApi: UserAdminResourceApiMock;
   let mockResearchGroupApi: ResearchGroupResourceApiMock;
   let mockToastService: ToastServiceMock;
-  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
+  let mockRouter: RouterMock;
   let mockAccountService: { loadedUser: ReturnType<typeof vi.fn> };
 
   const userAlice: AdminUserOverviewDTO = {
@@ -71,7 +70,7 @@ describe('ManageUsersPageComponent', () => {
     mockResearchGroupApi.getResearchGroupsForAdmin.mockReturnValue(of(defaultResearchGroupPage));
 
     mockToastService = createToastServiceMock();
-    mockRouter = { navigate: vi.fn().mockResolvedValue(true) };
+    mockRouter = createRouterMock();
     mockAccountService = {
       loadedUser: vi.fn().mockReturnValue({ id: 'admin-id', name: 'Bob Burton' }),
     };
@@ -84,7 +83,8 @@ describe('ManageUsersPageComponent', () => {
         provideToastServiceMock(mockToastService),
         provideTranslateMock(createTranslateServiceMock()),
         provideFontAwesomeTesting(),
-        { provide: Router, useValue: mockRouter },
+        provideRouterMock(mockRouter),
+        provideActivatedRouteMock(createActivatedRouteMock()),
         { provide: AccountService, useValue: mockAccountService },
       ],
     }).compileComponents();
@@ -98,10 +98,6 @@ describe('ManageUsersPageComponent', () => {
   });
 
   describe('Initialization', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
     it('should load research group options on init', async () => {
       await Promise.resolve();
       await Promise.resolve();
@@ -192,7 +188,6 @@ describe('ManageUsersPageComponent', () => {
     });
 
     it('should map research-group names to ids on filter change', async () => {
-      // Wait for research group load to complete first.
       await Promise.resolve();
       await Promise.resolve();
       mockUserAdminApi.getAllUsers.mockClear();
@@ -255,29 +250,32 @@ describe('ManageUsersPageComponent', () => {
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/manage-users/create'], { queryParams: { mode: 'import' } });
     });
 
-    it('should request delete and open dialog for non-self row', () => {
-      component.onRequestDelete(userAlice);
+    it('should request delete and open dialog for non-self row', async () => {
+      await component.loadPage({ first: 0, rows: 10 } as TableLazyLoadEvent);
+      const aliceRow = component.userRows().find(row => row.userId === 'user-1')!;
 
-      expect(component.currentUserToDelete()).toBe(userAlice);
+      component.onRequestDelete(aliceRow);
+
+      expect(component.currentUserToDelete()).toBe(aliceRow);
       expect(component.showDeleteDialog()).toBe(true);
       expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
     });
 
-    it('should disable delete on the current admin own row by toasting and skipping the dialog', () => {
-      component.onRequestDelete(userBob);
+    it('should disable delete on the current admin own row by toasting and skipping the dialog', async () => {
+      await component.loadPage({ first: 0, rows: 10 } as TableLazyLoadEvent);
+      const bobRow = component.userRows().find(row => row.userId === 'admin-id')!;
+
+      component.onRequestDelete(bobRow);
 
       expect(component.currentUserToDelete()).toBeUndefined();
       expect(component.showDeleteDialog()).toBe(false);
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('manageUsersPage.errors.selfDelete');
     });
 
-    it('should treat the current admin row as self', () => {
-      expect(component.isSelf(userBob)).toBe(true);
-      expect(component.isSelf(userAlice)).toBe(false);
-    });
-
     it('should call deleteUser on confirmed delete', async () => {
-      component.currentUserToDelete.set(userAlice);
+      await component.loadPage({ first: 0, rows: 10 } as TableLazyLoadEvent);
+      const aliceRow = component.userRows().find(row => row.userId === 'user-1')!;
+      component.currentUserToDelete.set(aliceRow);
 
       await component.onConfirmDelete();
 
@@ -295,8 +293,10 @@ describe('ManageUsersPageComponent', () => {
     });
 
     it('should toast error when delete fails', async () => {
+      await component.loadPage({ first: 0, rows: 10 } as TableLazyLoadEvent);
+      const aliceRow = component.userRows().find(row => row.userId === 'user-1')!;
       mockUserAdminApi.deleteUser.mockReturnValueOnce(throwError(() => new Error('forbidden')));
-      component.currentUserToDelete.set(userAlice);
+      component.currentUserToDelete.set(aliceRow);
 
       await component.onConfirmDelete();
 
@@ -319,15 +319,20 @@ describe('ManageUsersPageComponent', () => {
     });
   });
 
-  describe('Display helpers', () => {
-    it('should compute fullName from first and last name', () => {
-      expect(component.fullName(userAlice)).toBe('Alice Anderson');
-      expect(component.fullName({ userId: 'x' } as AdminUserOverviewDTO)).toBe('');
-    });
+  describe('Row enrichment', () => {
+    it('should compute fullName, roleLabelKey, and isSelf for each loaded row', async () => {
+      await component.loadPage({ first: 0, rows: 10 } as TableLazyLoadEvent);
+      const rows = component.userRows();
 
-    it('should map the row role to the matching translation key', () => {
-      expect(component.roleLabelKey(userAlice)).toBe('manageUsersPage.roles.PROFESSOR');
-      expect(component.roleLabelKey({ userId: 'x' } as AdminUserOverviewDTO)).toBe('');
+      const alice = rows.find(row => row.userId === 'user-1')!;
+      expect(alice.fullName).toBe('Alice Anderson');
+      expect(alice.roleLabelKey).toBe('manageUsersPage.roles.PROFESSOR');
+      expect(alice.isSelf).toBe(false);
+
+      const bob = rows.find(row => row.userId === 'admin-id')!;
+      expect(bob.fullName).toBe('Bob Burton');
+      expect(bob.roleLabelKey).toBe('manageUsersPage.roles.ADMIN');
+      expect(bob.isSelf).toBe(true);
     });
   });
 });

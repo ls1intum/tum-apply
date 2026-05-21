@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Orchestrates Keycloak and local-DB user management for admins.
@@ -120,7 +119,6 @@ public class UserAdminService {
      * @param dto the create-user payload
      * @return the new user's UUID
      */
-    @Transactional
     public UUID create(CreateUserDTO dto) {
         // 1) Keycloak first — failure aborts before any DB write.
         UUID userId = keycloakUserService.createUserWithPassword(dto.email(), dto.firstName(), dto.lastName(), dto.password());
@@ -138,7 +136,6 @@ public class UserAdminService {
      * @return the imported user's UUID
      * @throws EntityNotFoundException if no Keycloak user exists with the given ID
      */
-    @Transactional
     public UUID importFromKeycloak(ImportUserDTO dto) {
         KeycloakUserDTO kcUser = keycloakUserService
             .findKeycloakUserById(dto.keycloakUserId())
@@ -155,7 +152,6 @@ public class UserAdminService {
      * @param dto    the update payload (any null field is left untouched)
      * @throws EntityNotFoundException if no user exists with the given ID
      */
-    @Transactional
     public void update(UUID userId, UpdateUserDTO dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         if (dto.firstName() != null) {
@@ -204,7 +200,6 @@ public class UserAdminService {
      * @param userId the user ID to delete
      * @throws OperationNotAllowedException if the caller targets their own account
      */
-    @Transactional
     public void delete(UUID userId) {
         UUID currentUserId = currentUserService.getUserId();
         if (userId.equals(currentUserId)) {

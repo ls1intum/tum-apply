@@ -1,39 +1,26 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ManageUserFormComponent } from 'app/usermanagement/manage-users/manage-user-form.component';
-import { UserAdminResourceApi } from 'app/generated/api/user-admin-resource-api';
 import { AdminUserDetailDTO } from 'app/generated/model/admin-user-detail-dto';
 
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideTranslateMock, createTranslateServiceMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
+import { provideActivatedRouteMock, createActivatedRouteMock } from 'util/activated-route.mock';
+import { provideLocationMock } from 'util/location.mock';
 import {
   createUserAdminResourceApiMock,
   provideUserAdminResourceApiMock,
   UserAdminResourceApiMock,
 } from 'util/user-admin-resource-api.service.mock';
 
-/**
- * Build a snapshot-only ActivatedRoute mock for a given set of route params and
- * query params. The component only reads `snapshot.paramMap.get` and
- * `snapshot.queryParamMap.get`, so a minimal stub is enough.
- */
-function makeRoute(params: Record<string, string> = {}, query: Record<string, string> = {}): unknown {
-  return {
-    snapshot: {
-      paramMap: { get: (key: string) => params[key] ?? null },
-      queryParamMap: { get: (key: string) => query[key] ?? null },
-    },
-  };
-}
-
 describe('ManageUserFormComponent', () => {
   let mockUserAdminApi: UserAdminResourceApiMock;
   let mockToastService: ToastServiceMock;
-  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
+  let mockRouter: RouterMock;
 
   const loadedUser: AdminUserDetailDTO = {
     userId: 'user-1',
@@ -50,10 +37,6 @@ describe('ManageUserFormComponent', () => {
     birthday: '1990-01-01',
   };
 
-  /**
-   * Configure the TestBed with the requested route params/query params and
-   * return the resulting fixture + component.
-   */
   async function setupComponent(
     params: Record<string, string> = {},
     query: Record<string, string> = {},
@@ -63,11 +46,11 @@ describe('ManageUserFormComponent', () => {
     mockUserAdminApi.getUser.mockReturnValue(of(loadedUser));
     mockUserAdminApi.createUser.mockReturnValue(of({ userId: 'new-user-1' } as AdminUserDetailDTO));
     mockUserAdminApi.importUser.mockReturnValue(of({ userId: 'new-user-2' } as AdminUserDetailDTO));
-    mockUserAdminApi.updateUser.mockReturnValue(of({ ...loadedUser, firstName: 'Alicia' }));
+    mockUserAdminApi.updateUser.mockReturnValue(of({ userId: 'user-1', firstName: 'Alicia' } as AdminUserDetailDTO));
     mockUserAdminApi.deleteUser.mockReturnValue(of(undefined));
 
     mockToastService = createToastServiceMock();
-    mockRouter = { navigate: vi.fn().mockResolvedValue(true) };
+    mockRouter = createRouterMock();
 
     await TestBed.configureTestingModule({
       imports: [ManageUserFormComponent],
@@ -76,15 +59,14 @@ describe('ManageUserFormComponent', () => {
         provideToastServiceMock(mockToastService),
         provideTranslateMock(createTranslateServiceMock()),
         provideFontAwesomeTesting(),
-        { provide: Router, useValue: mockRouter },
-        { provide: ActivatedRoute, useValue: makeRoute(params, query) },
+        provideRouterMock(mockRouter),
+        provideActivatedRouteMock(createActivatedRouteMock(params, query)),
+        provideLocationMock(),
       ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ManageUserFormComponent);
-    // Run the constructor `effect` so mode + validators get applied.
     fixture.detectChanges();
-    // Flush any pending microtasks for getUser in edit mode.
     await Promise.resolve();
     await Promise.resolve();
     return fixture;
@@ -120,7 +102,6 @@ describe('ManageUserFormComponent', () => {
       expect(component.loadedUser()).toEqual(loadedUser);
       expect(component.form.controls.firstName.value).toBe('Alice');
       expect(component.form.controls.lastName.value).toBe('Anderson');
-      // Email control is disabled in edit mode but its raw value is the loaded email.
       expect(component.form.getRawValue().email).toBe('alice@example.com');
       expect(component.form.controls.email.disabled).toBe(true);
       expect(component.title()).toBe('manageUsersPage.form.editTitle');
@@ -132,7 +113,7 @@ describe('ManageUserFormComponent', () => {
       mockUserAdminApi = createUserAdminResourceApiMock();
       mockUserAdminApi.getUser.mockReturnValue(throwError(() => new Error('not found')));
       mockToastService = createToastServiceMock();
-      mockRouter = { navigate: vi.fn().mockResolvedValue(true) };
+      mockRouter = createRouterMock();
 
       await TestBed.configureTestingModule({
         imports: [ManageUserFormComponent],
@@ -141,8 +122,9 @@ describe('ManageUserFormComponent', () => {
           provideToastServiceMock(mockToastService),
           provideTranslateMock(createTranslateServiceMock()),
           provideFontAwesomeTesting(),
-          { provide: Router, useValue: mockRouter },
-          { provide: ActivatedRoute, useValue: makeRoute({ userId: 'user-1' }) },
+          provideRouterMock(mockRouter),
+          provideActivatedRouteMock(createActivatedRouteMock({ userId: 'user-1' })),
+          provideLocationMock(),
         ],
       }).compileComponents();
 
@@ -166,7 +148,6 @@ describe('ManageUserFormComponent', () => {
       expect(form.controls.email.hasError('required')).toBe(true);
       expect(form.controls.password.hasError('required')).toBe(true);
 
-      // Password complexity: must have lowercase, uppercase, digit, length >= 8.
       form.controls.password.setValue('short1A');
       expect(form.controls.password.hasError('pattern')).toBe(true);
       form.controls.password.setValue('LongEnough1');
@@ -190,7 +171,6 @@ describe('ManageUserFormComponent', () => {
       const fixture = await setupComponent({ userId: 'user-1' });
       const form = fixture.componentInstance.form;
 
-      // Identity fields still required in edit mode.
       form.patchValue({ firstName: '', lastName: '', password: '', keycloakUserId: '' });
       expect(form.controls.firstName.hasError('required')).toBe(true);
       expect(form.controls.lastName.hasError('required')).toBe(true);
@@ -213,7 +193,7 @@ describe('ManageUserFormComponent', () => {
 
       await component.onSubmit();
 
-      expect(mockUserAdminApi.createUser).toHaveBeenCalledTimes(1);
+      expect(mockUserAdminApi.createUser).toHaveBeenCalledOnce();
       const dto = mockUserAdminApi.createUser.mock.calls[0][0];
       expect(dto.firstName).toBe('Carol');
       expect(dto.lastName).toBe('Carter');
@@ -244,7 +224,7 @@ describe('ManageUserFormComponent', () => {
 
       await component.onSubmit();
 
-      expect(mockUserAdminApi.updateUser).toHaveBeenCalledTimes(1);
+      expect(mockUserAdminApi.updateUser).toHaveBeenCalledOnce();
       const [calledUserId, dto] = mockUserAdminApi.updateUser.mock.calls[0];
       expect(calledUserId).toBe('user-1');
       expect(dto.firstName).toBe('Alicia');
@@ -257,7 +237,6 @@ describe('ManageUserFormComponent', () => {
       const fixture = await setupComponent();
       const component = fixture.componentInstance;
 
-      // Empty form is invalid in create mode.
       await component.onSubmit();
 
       expect(mockUserAdminApi.createUser).not.toHaveBeenCalled();
@@ -343,7 +322,6 @@ describe('ManageUserFormComponent', () => {
       const component = fixture.componentInstance;
 
       mockUserAdminApi.deleteUser.mockReturnValueOnce(throwError(() => new Error('forbidden')));
-      // Stop the success path navigation from the earlier setup.
       mockRouter.navigate.mockClear();
 
       await component.onConfirmDelete();
@@ -359,14 +337,6 @@ describe('ManageUserFormComponent', () => {
       await component.onConfirmDelete();
 
       expect(mockUserAdminApi.deleteUser).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Navigation', () => {
-    it('should navigate back to the list', async () => {
-      const fixture = await setupComponent();
-      fixture.componentInstance.onBack();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/manage-users']);
     });
   });
 
