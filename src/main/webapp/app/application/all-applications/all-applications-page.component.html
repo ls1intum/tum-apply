@@ -1,7 +1,7 @@
 <jhi-confirm-dialog
   label="button.delete"
-  header="allApplicationsPage.confirmDialog.deleteHeader"
-  message="allApplicationsPage.confirmDialog.deleteMessage"
+  header="entity.allApplicationsPage.confirmDialog.deleteHeader"
+  message="entity.allApplicationsPage.confirmDialog.deleteMessage"
   severity="danger"
   confirmIcon="trash"
   [showOpenButton]="false"
@@ -12,8 +12,8 @@
 
 <jhi-confirm-dialog
   label="button.withdraw"
-  header="allApplicationsPage.confirmDialog.withdrawHeader"
-  message="allApplicationsPage.confirmDialog.withdrawMessage"
+  header="entity.allApplicationsPage.confirmDialog.withdrawHeader"
+  message="entity.allApplicationsPage.confirmDialog.withdrawMessage"
   severity="danger"
   confirmIcon="withdraw"
   [showOpenButton]="false"
@@ -26,14 +26,14 @@
   <div class="header-container">
     <div class="page-header">
       <h1>
-        <span jhiTranslate="allApplicationsPage.header.title"></span>
+        <span jhiTranslate="entity.allApplicationsPage.header.title"></span>
       </h1>
     </div>
   </div>
   <div class="my-positions-container">
     <div class="body">
       <jhi-search-filter-sort-bar
-        [searchText]="'allApplicationsPage.searchFilterSortBar.searchText' | translate"
+        [searchText]="'entity.allApplicationsPage.searchFilterSortBar.searchText' | translate"
         [totalRecords]="totalRecords()"
         [singleEntity]="'application' | translate"
         [multipleEntities]="'applications' | translate"
@@ -43,22 +43,22 @@
         [filters]="[
           {
             filterId: 'status',
-            filterLabel: 'allApplicationsPage.filters.statusLabel',
-            filterSearchPlaceholder: 'allApplicationsPage.searchFilterSortBar.filterOptions.stateSearchPlaceholder',
+            filterLabel: 'entity.allApplicationsPage.filters.statusLabel',
+            filterSearchPlaceholder: 'entity.allApplicationsPage.searchFilterSortBar.filterOptions.stateSearchPlaceholder',
             filterOptions: availableStatusLabels(),
             shouldTranslateOptions: true,
           },
           {
             filterId: 'researchGroup',
-            filterLabel: 'allApplicationsPage.filters.researchGroupLabel',
-            filterSearchPlaceholder: 'allApplicationsPage.searchFilterSortBar.filterOptions.researchGroupSearchPlaceholder',
+            filterLabel: 'entity.allApplicationsPage.filters.researchGroupLabel',
+            filterSearchPlaceholder: 'entity.allApplicationsPage.searchFilterSortBar.filterOptions.researchGroupSearchPlaceholder',
             filterOptions: researchGroupOptionLabels(),
             shouldTranslateOptions: false,
           },
           {
             filterId: 'professor',
-            filterLabel: 'allApplicationsPage.filters.professorLabel',
-            filterSearchPlaceholder: 'allApplicationsPage.searchFilterSortBar.filterOptions.professorSearchPlaceholder',
+            filterLabel: 'entity.allApplicationsPage.filters.professorLabel',
+            filterSearchPlaceholder: 'entity.allApplicationsPage.searchFilterSortBar.filterOptions.professorSearchPlaceholder',
             filterOptions: professorOptionLabels(),
             shouldTranslateOptions: false,
           },

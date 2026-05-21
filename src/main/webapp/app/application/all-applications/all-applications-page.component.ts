@@ -26,7 +26,7 @@ import { ResearchGroupResourceApi } from '../../generated/api/research-group-res
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 
 // nosemgrep: javascript.security.hard-coded-password
-const TRANSLATION_KEY = 'allApplicationsPage';
+const TRANSLATION_KEY = 'entity.allApplicationsPage';
 
 /**
  * Admin-only page listing every application across all applicants and research groups.
@@ -67,7 +67,7 @@ export class AllApplicationsPageComponent {
   sortDirection = signal<SortDirection>('DESC');
 
   readonly sortableFields: SortOption[] = [
-    { displayName: 'allApplicationsPage.tableColumn.created', fieldName: 'createdAt', type: 'TEXT' },
+    { displayName: 'entity.allApplicationsPage.tableColumn.created', fieldName: 'createdAt', type: 'TEXT' },
   ];
 
   readonly availableStatusOptions: { key: string; label: string }[] = [
@@ -111,12 +111,12 @@ export class AllApplicationsPageComponent {
     const jobTpl = this.jobTemplate();
     const createdAtTpl = this.createdAtTemplate();
     return [
-      { field: 'applicantName', header: 'allApplicationsPage.tableColumn.applicant', width: '14rem', template: applicantTpl },
-      { field: 'jobTitle', header: 'allApplicationsPage.tableColumn.job', width: '20rem', template: jobTpl },
-      { field: 'researchGroupName', header: 'allApplicationsPage.tableColumn.researchGroup', width: '12rem' },
-      { field: 'supervisingProfessorName', header: 'allApplicationsPage.tableColumn.supervisingProfessor', width: '14rem' },
-      { field: 'state', header: 'allApplicationsPage.tableColumn.status', width: '10rem', template: stateTpl },
-      { field: 'createdAt', header: 'allApplicationsPage.tableColumn.created', width: '10rem', template: createdAtTpl },
+      { field: 'applicantName', header: 'entity.allApplicationsPage.tableColumn.applicant', width: '14rem', template: applicantTpl },
+      { field: 'jobTitle', header: 'entity.allApplicationsPage.tableColumn.job', width: '20rem', template: jobTpl },
+      { field: 'researchGroupName', header: 'entity.allApplicationsPage.tableColumn.researchGroup', width: '12rem' },
+      { field: 'supervisingProfessorName', header: 'entity.allApplicationsPage.tableColumn.supervisingProfessor', width: '14rem' },
+      { field: 'state', header: 'entity.allApplicationsPage.tableColumn.status', width: '10rem', template: stateTpl },
+      { field: 'createdAt', header: 'entity.allApplicationsPage.tableColumn.created', width: '10rem', template: createdAtTpl },
       { field: 'actions', header: '', width: '7rem', template: actionTpl },
     ];
   });
