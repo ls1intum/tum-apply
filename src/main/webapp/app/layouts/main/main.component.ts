@@ -5,6 +5,8 @@ import dayjs from 'dayjs/esm';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 import { LocalStorageService } from 'app/service/localStorage.service';
+import { MobileSidebarService } from 'app/service/mobile-sidebar.service';
+import { DrawerComponent } from 'app/shared/components/molecules/drawer/drawer.component';
 import { PasskeyRegistrationPromptComponent } from 'app/shared/components/molecules/passkey-registration-prompt/passkey-registration-prompt.component';
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
@@ -19,7 +21,15 @@ import PageRibbonComponent from '../profiles/page-ribbon.component';
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
   providers: [AppPageTitleStrategy],
-  imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent, PasskeyRegistrationPromptComponent],
+  imports: [
+    HeaderComponent,
+    RouterOutlet,
+    SidebarComponent,
+    FooterComponent,
+    PageRibbonComponent,
+    PasskeyRegistrationPromptComponent,
+    DrawerComponent,
+  ],
 })
 export default class MainComponent {
   readonly accountService = inject(AccountService);
@@ -28,6 +38,8 @@ export default class MainComponent {
   });
   readonly localStorageService = inject(LocalStorageService);
   readonly isSidebarCollapsed = this.localStorageService.sidebarCollapsed;
+  readonly mobileSidebarService = inject(MobileSidebarService);
+  readonly mobileSidebarOpen = this.mobileSidebarService.open;
   private readonly router = inject(Router);
   private readonly renderer: Renderer2;
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
@@ -65,5 +77,9 @@ export default class MainComponent {
 
   toggleSidebar(): void {
     this.localStorageService.toggle();
+  }
+
+  closeMobileSidebar(): void {
+    this.mobileSidebarService.close();
   }
 }

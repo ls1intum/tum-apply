@@ -10,6 +10,7 @@ import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ToastService } from 'app/service/toast-service';
 import { AiFeatureStatusService } from 'app/service/ai-feature-status.service';
 import { AiConsentModalComponent } from 'app/shared/settings/ai-consent-settings/ai-consent-modal/ai-consent-modal.component';
+import { isTemporaryDocumentId } from 'app/shared/util/document.util';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { InfoIconComponent } from '../../atoms/info-icon/info-icon.component';
@@ -72,7 +73,7 @@ export class AiExtractionBoxComponent {
    * @return true when there are no documents to extract from
    */
   disabled = computed(() => {
-    const hasPersistedDocs = this.documentIds().some(d => d.id && !d.id.startsWith('temp-'));
+    const hasPersistedDocs = this.documentIds().some(d => !isTemporaryDocumentId(d.id));
     const hasQueuedFiles = this.queuedFiles().length > 0;
     return !hasPersistedDocs && !hasQueuedFiles;
   });
@@ -136,7 +137,7 @@ export class AiExtractionBoxComponent {
 
     const persistedDocIds = this.documentIds()
       .map(d => d.id)
-      .filter(id => id && !id.startsWith('temp-'));
+      .filter(id => id && !isTemporaryDocumentId(id));
     const queued = this.queuedFiles();
 
     if (persistedDocIds.length === 0 && queued.length === 0) return;

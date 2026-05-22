@@ -11,7 +11,7 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
-import de.tum.cit.aet.reference.dto.ReferenceLetterContextDTO;
+import de.tum.cit.aet.reference.dto.ReferenceLetterUploadContextDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
@@ -127,7 +127,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
         void shouldReturnPrefilledContextForKnownToken() {
             savedRequestedEntry("known-token");
 
-            ReferenceLetterContextDTO context = api.getAndRead(
+            ReferenceLetterUploadContextDTO context = api.getAndRead(
                 String.format(CONTEXT_URL, "known-token"),
                 null,
                 new TypeReference<>() {},
