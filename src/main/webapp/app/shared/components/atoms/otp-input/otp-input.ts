@@ -53,12 +53,8 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     { initialValue: null },
   );
 
-  readonly resendLabelKey = computed(() =>
-    this.onCooldown() ? 'auth.common.otp.resendCooldown' : 'auth.common.otp.resend',
-  );
-  readonly resendLabelParams = computed<Record<string, unknown>>(() =>
-    this.onCooldown() ? { seconds: this.cooldownSeconds() } : {},
-  );
+  readonly resendLabelKey = computed(() => (this.onCooldown() ? 'auth.common.otp.resendCooldown' : 'auth.common.otp.resend'));
+  readonly resendLabelParams = computed<Record<string, unknown>>(() => (this.onCooldown() ? { seconds: this.cooldownSeconds() } : {}));
 
   private readonly registrationOverride = signal<boolean | null>(null);
   private readonly isRegistration = computed(() => {

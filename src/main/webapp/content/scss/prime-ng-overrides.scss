@@ -18,18 +18,25 @@ p-step[data-p-active='true'] .p-step-title {
 /* -------------------------------
    Custom Global Styles for Login
 ---------------------------------- */
-.login-header-button .p-button-text.p-button-info {
-  color: white !important;
+.login-header-button .p-button-text.p-button-info,
+.registration-header-button .p-button-text {
+  color: var(--p-text-primary) !important;
   transition: all 0.3s ease;
 }
 
-.registration-header-button .p-button-text {
+.tum-apply-dark-mode .login-header-button .p-button-text.p-button-info,
+.tum-apply-dark-mode .registration-header-button .p-button-text {
   color: white !important;
-  transition: all 0.3s ease;
 }
 
 .login-header-button .p-button-text.p-button-info:hover,
 .registration-header-button .p-button-text:hover {
+  filter: drop-shadow(0 0 0.075rem var(--p-text-primary));
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.tum-apply-dark-mode .login-header-button .p-button-text.p-button-info:hover,
+.tum-apply-dark-mode .registration-header-button .p-button-text:hover {
   filter: drop-shadow(0 0 0.075rem white);
   background: rgba(255, 255, 255, 0.05);
 }
