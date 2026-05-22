@@ -74,6 +74,9 @@
       <div class="flex-1 overflow-y-auto">
         @if (hasVisibleItems()) {
           @for (option of visibleOptions(); track option.value; let i = $index) {
+            @if (i === unselectedStartIndex()) {
+              <p-divider />
+            }
             <div
               #optionRow
               data-testid="filter-option"

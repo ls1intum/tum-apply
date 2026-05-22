@@ -96,13 +96,23 @@ export class FilterMultiselect {
     const selected = this.selectedValues();
     const search = this.searchTerm().toLowerCase().trim();
 
-    const withLiveSelection = snapshot.map(opt => ({ ...opt, selected: selected.includes(opt.value) }));
+    const withLiveSelection: RenderedOption[] = snapshot.map(opt => ({
+      value: opt.value,
+      label: opt.label,
+      selected: selected.includes(opt.value),
+    }));
 
     if (!search) {
       return withLiveSelection;
     }
 
     return withLiveSelection.filter(opt => opt.label.toLowerCase().includes(search));
+  });
+
+  unselectedStartIndex = computed(() => {
+    const options = this.visibleOptions();
+    const firstUnselected = options.findIndex(opt => !opt.selected);
+    return firstUnselected > 0 ? firstUnselected : -1;
   });
 
   selectedOptions = computed<RenderedOption[]>(() => {
