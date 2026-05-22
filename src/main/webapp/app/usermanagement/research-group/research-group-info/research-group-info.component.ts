@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { AccountService } from 'app/core/auth/account.service';
@@ -13,31 +13,23 @@ import { ResearchGroupResourceApi } from 'app/generated/api/research-group-resou
 import { DepartmentResourceApi } from 'app/generated/api/department-resource-api';
 import { DividerModule } from 'primeng/divider';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
-
-export interface ResearchGroupFormData {
-  name: string;
-  abbreviation: string;
-  head: string;
-  school: string;
-  website: string;
-  email: string;
-  city: string;
-  postalCode: string;
-  address: string;
-  description: string;
-}
+import { SavingBadgeComponent } from 'app/shared/components/atoms/saving-badge/saving-badge.component';
+import { StickyFooterShellComponent } from 'app/shared/components/molecules/sticky-footer-shell/sticky-footer-shell.component';
+import { AutoSaveController } from 'app/shared/util/auto-save-controller';
+import { SavingState } from 'app/shared/constants/saving-states';
 
 @Component({
   selector: 'jhi-research-group-info',
   imports: [
     StringInputComponent,
-    ButtonComponent,
     EditorComponent,
     TranslateModule,
     TranslateDirective,
     ReactiveFormsModule,
     DividerModule,
     InfoBoxComponent,
+    SavingBadgeComponent,
+    StickyFooterShellComponent,
   ],
   templateUrl: './research-group-info.component.html',
 })
@@ -51,13 +43,13 @@ export class ResearchGroupInfoComponent {
   });
 
   // State signals
-  isSaving = signal<boolean>(false);
   hasInitialized = signal<boolean>(false);
   departmentName = signal<string | null>(null);
   schoolName = signal<string | null>(null);
 
   // Computed properties
   researchGroupId = computed(() => this.currentUser()?.researchGroup?.researchGroupId);
+  savingState = computed<SavingState>(() => this.autoSave.state());
 
   // Reactive forms
   form = new FormGroup({
@@ -72,6 +64,8 @@ export class ResearchGroupInfoComponent {
     description: new FormControl(''),
   });
 
+  readonly autoSave = new AutoSaveController({ save: () => this.performAutoSave() });
+
   // Services
   private accountService = inject(AccountService);
   private researchGroupApi = inject(ResearchGroupResourceApi);
@@ -82,27 +76,30 @@ export class ResearchGroupInfoComponent {
   private readonly translationKey = 'researchGroup.groupInfo';
 
   private currentUser = this.accountService.loadedUser;
-  /**
-   * Saves the research group data to the API.
-   */
-  // TODO: Avoid saving everything every time the form is saved. Only save the fields that have changed.
-  async onSave(): Promise<void> {
-    if (!this.form.valid) {
-      return;
-    }
 
+  // 1) Whenever the form mutates after the initial load, debounce-save it.
+  // 2) Mutations triggered by `populateFormData` are gated by `hasInitialized`,
+  //    so loading the data does not trigger a write back to the server.
+  private readonly autoSaveOnFormChange = this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+    if (this.hasInitialized() && this.form.valid) {
+      this.autoSave.notifyChanged();
+    }
+  });
+
+  /**
+   * Persists the current form values to the API. Invoked by the
+   * {@link AutoSaveController} once the debounce timer fires.
+   *
+   * @returns true on success, false if no research group is bound or the
+   *   request fails
+   */
+  private async performAutoSave(): Promise<boolean> {
     const researchGroupId = this.researchGroupId();
     if (researchGroupId == null || researchGroupId.trim() === '') {
-      this.toastService.showError({
-        summary: this.translate.instant(`${this.translationKey}.toasts.saveFailed`),
-        detail: this.translate.instant(`${this.translationKey}.toasts.noId`),
-      });
-      return;
+      return false;
     }
 
     try {
-      this.isSaving.set(true);
-
       const formValue = this.form.value;
       const updateData: ResearchGroupDTO = {
         name: formValue.name ?? '',
@@ -117,16 +114,12 @@ export class ResearchGroupInfoComponent {
       };
 
       await firstValueFrom(this.researchGroupApi.updateResearchGroup(researchGroupId, updateData));
-
-      this.toastService.showSuccess({
-        detail: this.translate.instant(`${this.translationKey}.toasts.updated`),
-      });
+      return true;
     } catch {
       this.toastService.showError({
         detail: this.translate.instant(`${this.translationKey}.toasts.saveFailed`),
       });
-    } finally {
-      this.isSaving.set(false);
+      return false;
     }
   }
 
