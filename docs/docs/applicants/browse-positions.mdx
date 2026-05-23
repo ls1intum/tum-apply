@@ -3,6 +3,7 @@ sidebar_label: Browse Positions
 ---
 
 import Image, {ImageSize} from "../../src/components/Image/Image";
+import VideoEmbed from "../../src/components/VideoEmbed/VideoEmbed";
 import findPositionsImg from './images/browse-jobs/find-positions.png';
 import jobDetailImg1 from './images/browse-jobs/job-detail-applicant-1.png';
 import jobDetailImg2 from './images/browse-jobs/job-detail-applicant-2.png';
@@ -17,18 +18,11 @@ The **Find Positions** page enables doctoral applicants to explore available opp
 
 This is the **primary entry point** for discovering doctorate opportunities.
 
-<iframe
-  width="900"
-  height="520"
+<VideoEmbed
   src="https://live.rbg.tum.de/w/artemisintro/74604"
   title="Browsing positions in TUMApply"
-  frameBorder="0"
-  allowFullScreen
-></iframe>
-
-<div style={{textAlign: 'center'}}>
-  <em>Browsing available positions and redirecting to notifications</em>
-</div>
+  caption="Browsing available positions and redirecting to notifications"
+/>
 
 - Displays available positions as organized **job cards** in a responsive grid layout
 - Shows essential information at a glance: title, field of studies, location, supervisor, workload, and start date
@@ -36,10 +30,7 @@ This is the **primary entry point** for discovering doctorate opportunities.
 - Includes **pagination controls** for browsing through extensive position listings
 - Direct access to detailed information and application submission
 
-<Image src={findPositionsImg} alt="Find Positions Page" size={ImageSize.large}/>
-<div style={{textAlign: 'center'}}>
-  <em>Find Positions Page</em>
-</div>
+<Image src={findPositionsImg} alt="Find Positions Page" size={ImageSize.large} caption="Find Positions Page"/>
 
 **Position Card Information:**
 - **Banner Image**: Visual header with the research group or default image
@@ -74,10 +65,7 @@ Used for **in-depth evaluation** of individual positions before applying.
 - Provides **direct application access** and easy navigation back to position browsing
 
 <Image src={jobDetailImg1} alt="Job Detail Page View 1" size={ImageSize.large}/>
-<Image src={jobDetailImg2} alt="Job Detail Page View 2" size={ImageSize.large}/>
-<div style={{textAlign: 'center'}}>
-  <em>Job Detail Page</em>
-</div>
+<Image src={jobDetailImg2} alt="Job Detail Page View 2" size={ImageSize.large} caption="Job Detail Page"/>
 
 **Detailed Information Sections:**
 - **Position Overview** (sidebar card): Field of studies, research area, workload, contract duration, funding type, start date, and application deadline

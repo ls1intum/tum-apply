@@ -3,6 +3,7 @@ sidebar_label: Settings
 ---
 
 import Image, {ImageSize} from "../../src/components/Image/Image";
+import VideoEmbed from "../../src/components/VideoEmbed/VideoEmbed";
 import settingsGeneralTabImg from './images/settings/settings-general.png';
 import settingsProfilePictureCropDialogImg from './images/settings/settings-profile-picture-dialog.png';
 import settingsNotificationsSubjectAreasImg from './images/settings/settings-notifications.png';
@@ -26,27 +27,17 @@ For applicants, the available tabs are:
 
 The **General** tab contains your account-level preferences and profile options.
 
-<Image src={settingsGeneralTabImg} alt="General settings tab for applicants" size={ImageSize.large} />
-<div style={{textAlign: 'center'}}>
-  <em>General settings tab for applicants</em>
-</div>
+<Image src={settingsGeneralTabImg} alt="General settings tab for applicants" size={ImageSize.large} caption="General settings tab for applicants" />
 
 ### Profile Picture
 
 You can personalize your account by adding a profile picture.
 
-<iframe
-  width="900"
-  height="520"
+<VideoEmbed
   src="https://live.rbg.tum.de/w/artemisintro/74606"
   title="Changing the profile picture in TUMApply"
-  frameBorder="0"
-  allowFullScreen
-></iframe>
-
-<div style={{textAlign: 'center'}}>
-  <em>Uploading, cropping, and updating the profile picture</em>
-</div>
+  caption="Uploading, cropping, and updating the profile picture"
+/>
 
 - Click your profile picture area or the edit icon to upload a new image
 - Supported file types are **JPEG**, **JPG**, and **PNG**
@@ -54,10 +45,7 @@ You can personalize your account by adding a profile picture.
 - After selecting a file, you can crop it before saving
 - You can remove your current picture again at any time
 
-<Image src={settingsProfilePictureCropDialogImg} alt="Profile picture crop dialog" size={ImageSize.medium} />
-<div style={{textAlign: 'center'}}>
-  <em>Uploading and cropping a profile picture</em>
-</div>
+<Image src={settingsProfilePictureCropDialogImg} alt="Profile picture crop dialog" size={ImageSize.medium} caption="Uploading and cropping a profile picture" />
 
 Your profile picture is then used anywhere TUMApply shows your user avatar.
 
@@ -84,27 +72,17 @@ Applicants can manage email notifications for:
 
 You can also subscribe to emails about newly published job postings in selected subject areas.
 
-<iframe
-  width="900"
-  height="520"
+<VideoEmbed
   src="https://live.rbg.tum.de/w/artemisintro/74605"
   title="Managing subject area notifications in TUMApply"
-  frameBorder="0"
-  allowFullScreen
-></iframe>
-
-<div style={{textAlign: 'center'}}>
-  <em>Managing subject area subscriptions for job posting notifications</em>
-</div>
+  caption="Managing subject area subscriptions for job posting notifications"
+/>
 
 - Enable the subject area notification toggle
 - Add one or more subject areas to your selection
 - Remove subject areas again whenever your interests change
 
-<Image src={settingsNotificationsSubjectAreasImg} alt="Notification settings with subject area subscriptions" size={ImageSize.large} />
-<div style={{textAlign: 'center'}}>
-  <em>Subject area notification preferences</em>
-</div>
+<Image src={settingsNotificationsSubjectAreasImg} alt="Notification settings with subject area subscriptions" size={ImageSize.large} caption="Subject area notification preferences" />
 
 This is useful if you want to monitor new openings without checking the job overview manually every day.
 
@@ -121,10 +99,7 @@ This includes:
 - Your stored **CV**
 
 <Image src={settingsApplicationInformationImg1} alt="Application information settings overview" size={ImageSize.large} />
-<Image src={settingsApplicationInformationImg2} alt="Application information settings details" size={ImageSize.large} />
-<div style={{textAlign: 'center'}}>
-  <em>Reusable application information for future applications</em>
-</div>
+<Image src={settingsApplicationInformationImg2} alt="Application information settings details" size={ImageSize.large} caption="Reusable application information for future applications" />
 
 Changes are saved automatically and are intended to prefill future application forms, which reduces repeated data entry.
 
@@ -149,10 +124,7 @@ This includes:
 - Additional supporting documents such as references
 
 <Image src={settingsQualificationsImg1} alt="Qualifications settings overview" size={ImageSize.large} />
-<Image src={settingsQualificationsImg2} alt="Qualifications settings details" size={ImageSize.large} />
-<div style={{textAlign: 'center'}}>
-  <em>Stored qualifications and supporting documents</em>
-</div>
+<Image src={settingsQualificationsImg2} alt="Qualifications settings details" size={ImageSize.large} caption="Stored qualifications and supporting documents" />
 
 Like the **Application Information** tab, this data is meant to support future applications by keeping your qualifications ready in advance.
 
