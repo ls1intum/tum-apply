@@ -16,29 +16,27 @@ p-step[data-p-active='true'] .p-step-title {
 }
 
 /* -------------------------------
-   Custom Global Styles for Login
+   Auth modal icon buttons
 ---------------------------------- */
-.login-header-button .p-button-text.p-button-info,
-.registration-header-button .p-button-text {
-  color: var(--p-text-primary) !important;
-  transition: all 0.3s ease;
+@mixin auth-modal-icon-color($color) {
+  .p-button,
+  button.p-button,
+  fa-icon,
+  svg {
+    color: $color !important;
+    fill: currentColor !important;
+  }
 }
 
-.tum-apply-dark-mode .login-header-button .p-button-text.p-button-info,
-.tum-apply-dark-mode .registration-header-button .p-button-text {
-  color: white !important;
-}
+.login-header-button,
+.registration-header-button {
+  @include auth-modal-icon-color(var(--p-text-on-primary));
 
-.login-header-button .p-button-text.p-button-info:hover,
-.registration-header-button .p-button-text:hover {
-  filter: drop-shadow(0 0 0.075rem var(--p-text-primary));
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.tum-apply-dark-mode .login-header-button .p-button-text.p-button-info:hover,
-.tum-apply-dark-mode .registration-header-button .p-button-text:hover {
-  filter: drop-shadow(0 0 0.075rem white);
-  background: rgba(255, 255, 255, 0.05);
+  .p-button:hover,
+  button.p-button:hover {
+    filter: drop-shadow(0 0 0.075rem var(--p-text-on-primary));
+    background: rgba(255, 255, 255, 0.08);
+  }
 }
 
 /* -------------------------------
