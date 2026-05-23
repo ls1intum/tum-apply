@@ -24,7 +24,6 @@ overrides:
   semver: 7.7.4
   tough-cookie: 6.0.1
   undici: 7.24.6
-  vite: 8.0.5
   webpack: 5.105.4
   webpack-dev-middleware: 7.4.5
   webpack-dev-server: 5.2.2
