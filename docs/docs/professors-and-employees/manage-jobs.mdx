@@ -3,6 +3,7 @@ sidebar_label: Manage Jobs
 ---
 
 import Image, {ImageSize} from "../../src/components/Image/Image";
+import VideoEmbed from "../../src/components/VideoEmbed/VideoEmbed";
 
 import myPositionsImg from './images/manage-jobs/my-positions.png';
 import jobProfessor1 from './images/manage-jobs/job-detail-professor-1.png';
@@ -23,10 +24,7 @@ This is the **central command center** for all position management activities.
 - Shows **visual status indicators** with color-coded badges for instant assessment of position states
 - Includes **search, filtering (by Status), and sort** capabilities to easily find specific positions
 
-<Image src={myPositionsImg} alt="My Positions Dashboard" size={ImageSize.large}/>
-<div style={{textAlign: 'center'}}>
-  <em>My Positions Dashboard</em>
-</div>
+<Image src={myPositionsImg} alt="My Positions Dashboard" size={ImageSize.large} caption="My Positions Dashboard"/>
 
 **Comprehensive Status System:**
 - 🟢 **Published**: Live positions actively accepting applications from qualified candidates
@@ -52,10 +50,7 @@ Used for **comprehensive position review** with full management capabilities and
 - Includes **administrative context** and editing access not available in the applicant view
 
 <Image src={jobProfessor1} alt="Job Details Page Professor 1" size={ImageSize.large}/>
-<Image src={jobProfessor2} alt="Job Details Page Professor 2" size={ImageSize.large}/>
-<div style={{textAlign: 'center'}}>
-  <em>Job Detail Page</em>
-</div>
+<Image src={jobProfessor2} alt="Job Details Page Professor 2" size={ImageSize.large} caption="Job Detail Page"/>
 
 **Enhanced Management Features:**
 - **Status Display**: Current position state with timestamp information
@@ -111,14 +106,11 @@ This document outlines key steps for managing positions via the position managem
 - Choose **"Close"** to shut a published position and reject pending applications
 
 **Video**:
-<iframe
+<VideoEmbed
   src="https://live.rbg.tum.de/w/artemisintro/61932?video_only=1&t=0"
   title="My Positions Dashboard Overview"
-  allowFullScreen="1"
-  frameBorder="0"
-  width="600"
-  height="350">
-</iframe>
+  caption="Navigating the My Positions dashboard"
+/>
 
 
 ### 🔍 Step 2: Viewing Job Details
@@ -138,14 +130,11 @@ This document outlines key steps for managing positions via the position managem
 - Direct access to editing functionality for draft positions
 
 **Video**:
-<iframe
+<VideoEmbed
   src="https://live.rbg.tum.de/w/artemisintro/61933?video_only=1&t=0"
   title="Viewing Job Details"
-  allowFullScreen="1"
-  frameBorder="0"
-  width="600"
-  height="350">
-</iframe>
+  caption="Reviewing detailed position information and management actions"
+/>
 
 
 ### ✏️ Step 3: Editing and Updating Existing Positions
@@ -163,14 +152,11 @@ This document outlines key steps for managing positions via the position managem
 - Either publish immediately using the **"Publish"** button or leave the form and the position will be saved as a draft for later completion
 
 **Video**:
-<iframe
+<VideoEmbed
   src="https://live.rbg.tum.de/w/artemisintro/61936?video_only=1&t=0"
   title="Editing and Updating Positions"
-  allowFullScreen="1"
-  frameBorder="0"
-  width="600"
-  height="350">
-</iframe>
+  caption="Editing an existing position through the multi-step form"
+/>
 
 
 ### 🔒 Step 4: Closing and Deleting Positions
