@@ -102,15 +102,15 @@ export class ProgressStepperComponent {
     }, 0);
   }
 
-  private findScrollableAncestor(element: HTMLElement | null): HTMLElement | null {
-    let current = element?.parentElement ?? null;
+  private findScrollableAncestor(element: HTMLElement): HTMLElement | undefined {
+    let current: HTMLElement | undefined = element.parentElement ?? undefined;
     while (current) {
       const { overflowY } = getComputedStyle(current);
       if ((overflowY === 'auto' || overflowY === 'scroll') && current.scrollHeight > current.clientHeight) {
         return current;
       }
-      current = current.parentElement;
+      current = current.parentElement ?? undefined;
     }
-    return null;
+    return undefined;
   }
 }

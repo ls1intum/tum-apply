@@ -167,7 +167,7 @@ describe('ProgressStepperComponent', () => {
         Object.defineProperty(scrollable, 'scrollHeight', { configurable: true, value: 1000 });
         Object.defineProperty(scrollable, 'clientHeight', { configurable: true, value: 400 });
         const scrollSpy = vi.fn();
-        scrollable.scrollTo = scrollSpy as unknown as Element['scrollTo'];
+        Object.defineProperty(scrollable, 'scrollTo', { configurable: true, value: scrollSpy });
         stepperHost.parentElement?.insertBefore(scrollable, stepperHost);
         scrollable.appendChild(stepperHost);
 
