@@ -15,6 +15,7 @@ export interface AuthOrchestratorServiceMock {
   isBusy: WritableSignal<boolean>;
   error: WritableSignal<string | null>;
   cooldownSeconds: WritableSignal<number>;
+  startOtpRefreshCooldown: ReturnType<typeof vi.fn>;
   isOtpAttemptCooldown: WritableSignal<boolean>;
   otpAttemptCooldownSeconds: WritableSignal<number>;
   recordFailedOtpAttempt: ReturnType<typeof vi.fn>;
@@ -61,6 +62,7 @@ export function createAuthOrchestratorServiceMock(): AuthOrchestratorServiceMock
     isBusy,
     error,
     cooldownSeconds,
+    startOtpRefreshCooldown: vi.fn(),
     isOtpAttemptCooldown,
     otpAttemptCooldownSeconds,
     recordFailedOtpAttempt: vi.fn(),

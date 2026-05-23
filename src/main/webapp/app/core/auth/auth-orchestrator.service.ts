@@ -260,5 +260,6 @@ export class AuthOrchestratorService {
     this.error.set(null);
     this.cooldownUntil.set(null);
     this.redirectUri.set(null);
+    this.resetOtpAttempts();
   }
 }
