@@ -9,6 +9,7 @@ export class ButtonStubComponent {
   icon = input<string>();
   severity = input<string>();
   label = input<string>();
+  ariaLabel = input<string>();
   disabled = input<boolean>();
   type = input<string>();
   size = input<string>();

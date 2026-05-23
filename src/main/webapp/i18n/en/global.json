@@ -1,7 +1,6 @@
 {
   "global": {
     "title": "TUMApply",
-    "browsehappy": "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/?locale=en\">upgrade your browser</a> to improve your experience.",
     "routes": {
       "landingPage": {
         "applicant": "TUMApply - Applicant Portal",
@@ -53,74 +52,11 @@
         "download": "TUMApply - Data Export Download"
       }
     },
-    "menu": {
-      "home": "Home",
-      "colorTheme": "Change Color Theme",
-      "entities": {
-        "main": "Entities",
-        "adminAuthority": "Authority"
-      },
-      "account": {
-        "main": "Account",
-        "settings": "Settings",
-        "password": "Password",
-        "sessions": "Sessions",
-        "login": "Sign in",
-        "logout": "Sign out",
-        "register": "Register"
-      },
-      "admin": {
-        "main": "Administration",
-        "userManagement": "User management",
-        "tracker": "User tracker",
-        "metrics": "Metrics",
-        "health": "Health",
-        "configuration": "Configuration",
-        "logs": "Logs",
-        "apidocs": "API",
-        "database": "Database"
-      },
-      "language": "Language"
-    },
-    "messages": {
-      "info": {
-        "authenticated": {
-          "prefix": "If you want to ",
-          "link": "sign in",
-          "suffix": ", you can try the default accounts:<br/>- Administrator (login=\"admin\" and password=\"admin\") <br/>- User (login=\"user\" and password=\"user\")."
-        },
-        "register": {
-          "noaccount": "You don't have an account yet?",
-          "link": "Register a new account"
-        }
-      },
-      "error": {
-        "dontmatch": "The password and its confirmation do not match!"
-      },
-      "validate": {
-        "newpassword": {
-          "required": "Your password is required.",
-          "minlength": "Your password is required to be at least 4 characters.",
-          "maxlength": "Your password cannot be longer than 50 characters.",
-          "strength": "Password strength:"
-        },
-        "confirmpassword": {
-          "required": "Your confirmation password is required.",
-          "minlength": "Your confirmation password is required to be at least 4 characters.",
-          "maxlength": "Your confirmation password cannot be longer than 50 characters."
-        },
-        "email": {
-          "required": "Your email is required.",
-          "invalid": "Your email is invalid.",
-          "minlength": "Your email is required to be at least 5 characters.",
-          "maxlength": "Your email cannot be longer than 50 characters."
-        }
-      }
-    },
     "stepper": {
       "progress": "Step {current} of {total}"
     },
     "input": {
+      "requiredHint": "(Fields marked with * are required.)",
       "error": {
         "required": "This field is required.",
         "minLength": "This field is required to be at least {min} characters.",
@@ -134,25 +70,16 @@
       }
     },
     "editor": {
-      "header": {
-        "heading": "Heading",
-        "subheading": "Subheading",
-        "normal": "Normal"
-      },
       "align": {
         "center": "center",
         "right": "right",
         "justify": "justify"
       }
     },
-    "field": {
-      "id": "ID"
-    },
     "ribbon": {
       "dev": "Development",
       "test": "Development"
     },
-    "item-count": "Showing {first} - {second} of {total} items.",
     "dataExport": {
       "downloadSuccess": "Download successful!",
       "downloadSuccessMessage": "Your data export has been downloaded successfully.",
@@ -215,19 +142,6 @@
     "delete": {
       "title": "Confirm delete operation"
     },
-    "validation": {
-      "required": "This field is required.",
-      "minlength": "This field is required to be at least {min} characters.",
-      "maxlength": "This field cannot be longer than {max} characters.",
-      "min": "This field should be at least {min}.",
-      "max": "This field cannot be more than {max}.",
-      "minbytes": "This field should be at least {min} bytes.",
-      "maxbytes": "This field cannot be more than {max} bytes.",
-      "pattern": "This field should follow pattern for {pattern}.",
-      "number": "This field should be a number.",
-      "datetimelocal": "This field should be a date and time.",
-      "patternLogin": "This field can only contain letters, digits and e-mail addresses."
-    },
     "filters": {
       "filter": "Filter",
       "sortingAndFilter": "Sorting & Filter",
@@ -273,6 +187,10 @@
         "CV": "CV",
         "CUSTOM": "Custom"
       },
+      "aria": {
+        "removeFile": "Remove file",
+        "selectFileToUpload": "Select file to upload"
+      },
       "tooltip": {
         "to_upload": "Still needs to be uploaded",
         "already_uploaded": "Already uploaded",
@@ -301,15 +219,15 @@
         },
         "upload_failed": {
           "summary": "Upload Failed",
-          "detail": "Failed to upload document. Please try again."
+          "detail": "Check your connection and try again. Contact us if it keeps failing."
         },
         "delete_failed": {
           "summary": "Delete Failed",
-          "detail": "Failed to delete document. Please try again."
+          "detail": "Please try again. Contact us if it keeps failing."
         },
         "rename_failed": {
           "summary": "Rename Failed",
-          "detail": "Failed to rename document. Please try again."
+          "detail": "Please try again. Contact us if it keeps failing."
         }
       }
     },
@@ -334,6 +252,7 @@
       "personal_documents": "Personal Documents",
       "reference_letters": "Recommendation Letters Requests",
       "reference_status": {
+        "added": "(added)",
         "requested": "(requested)",
         "submitted": "(submitted)",
         "expired": "(expired)"
@@ -365,7 +284,7 @@
       "loading": "Extracting...",
       "aiExtractionFailed": {
         "summary": "Extraction Failed",
-        "detail": "Could not extract the data. Please try again."
+        "detail": "Make sure the file is a clear, readable PDF, or fill the fields in manually."
       }
     },
     "applicationPage1": {
@@ -563,64 +482,64 @@
           "detail": "Thank you for your application."
         },
         "invalidJobId": {
-          "summary": "Error",
-          "detail": "This is not a valid jobId."
+          "summary": "Invalid job link",
+          "detail": "The link may be broken or the position removed. Try browsing available positions."
         },
         "invalidApplicationId": {
-          "summary": "Error",
-          "detail": "This is not a valid applicationId."
+          "summary": "Invalid application link",
+          "detail": "Open the application from your applications overview instead."
         },
         "errorApplicationId": {
-          "summary": "Error",
-          "detail": "There is an error with the applicationId."
+          "summary": "Could not open application",
+          "detail": "Reload the page, or open it from your applications overview."
         },
         "invalidPageLink": {
-          "summary": "Error",
-          "detail": "This is not a valid application page link."
+          "summary": "Invalid application page link",
+          "detail": "Open the application from your applications overview."
         },
         "saveFailedWithStatus": {
-          "summary": "Submission failed",
-          "detail": "Failed to submit application: {status}"
+          "summary": "Could not submit application",
+          "detail": "Submission failed ({status}). Please try again or contact us."
         },
         "fetchApplicationFailed": {
-          "summary": "Application not loaded",
-          "detail": "The application could not be loaded. Please try again, or contact us if the problem persists."
+          "summary": "Could not load application",
+          "detail": "Reload the page, or contact us if it keeps failing."
         },
         "fetchDocumentIdsFailed": {
-          "summary": "Error",
-          "detail": "Failed to fetch document IDs for this application. Please try again, or contact us if the problem persists."
+          "summary": "Documents not loaded",
+          "detail": "Reload the page, or contact us if it keeps failing."
         },
         "notEditable": {
-          "summary": "Error",
-          "detail": "This application cannot be edited as it has already been submitted or is in a non-draft state."
+          "summary": "Application no longer editable",
+          "detail": "It has already been submitted. You can still view it from your overview."
         },
         "authRequired": {
-          "summary": "Error",
-          "detail": "Cannot submit application: User authentication required."
+          "summary": "Sign in to submit",
+          "detail": "Please sign in and try again."
         },
         "saveFailed": {
-          "summary": "Error",
-          "detail": "Failed to save application. Please try again, or contact us if the problem persists."
+          "summary": "Could not save application",
+          "detail": "Check your connection and try again, or contact us."
         },
         "loadFailed": {
-          "summary": "Error",
-          "detail": "Failed to load application. Please try again, or contact us if the problem persists."
+          "summary": "Could not load application",
+          "detail": "Reload the page, or contact us if it keeps failing."
         },
         "initLoadFailed": {
-          "summary": "Error",
-          "detail": "Failed to load application. Please try again, or contact us if the problem persists."
+          "summary": "Could not load application",
+          "detail": "Reload the page, or contact us if it keeps failing."
         },
         "missingJobIdUnauthenticated": {
-          "summary": "Error",
-          "detail": "Job ID must be provided when not authenticated."
+          "summary": "Sign in or open via a job link",
+          "detail": "Sign in, or open this page from a job link."
         },
         "applicationDeleted": {
           "summary": "Application deleted",
           "detail": "The application was deleted successfully."
         },
         "errorDeletingApplication": {
-          "summary": "Delete failed",
-          "detail": "The application could not be deleted. Please try again, or contact us if the problem persists."
+          "summary": "Could not delete application",
+          "detail": "Please try again. Contact us if it keeps failing."
         },
         "applicationWithdrawn": {
           "summary": "Application withdrawn",
@@ -628,31 +547,31 @@
         },
         "errorWithdrawingApplication": {
           "summary": "Withdrawal failed",
-          "detail": "The application could not be withdrawn. Please try again, or contact us if the problem persists."
+          "detail": "Please try again. Contact us if it keeps failing."
         },
         "jobIdNotAvailable": {
-          "summary": "Error",
-          "detail": "Job ID is not available for this application."
+          "summary": "Job reference missing",
+          "detail": "Open it from your applications overview, or contact us."
         },
         "invalidEmail": {
-          "summary": "Error",
-          "detail": "Please provide a valid email address."
+          "summary": "Email required",
+          "detail": "Please enter a valid email address before continuing."
         },
         "invalidFirstName": {
-          "summary": "Error",
-          "detail": "Please provide a valid first name."
+          "summary": "First name required",
+          "detail": "Please enter a valid first name before continuing."
         },
         "invalidLastName": {
-          "summary": "Error",
-          "detail": "Please provide a valid last name."
+          "summary": "Last name required",
+          "detail": "Please enter a valid last name before continuing."
         },
         "migrationFailed": {
-          "summary": "Error",
-          "detail": "Failed to save local draft. Try again, reload the page or check your connection."
+          "summary": "Could not save draft",
+          "detail": "Please try again, reload the page, or check your connection."
         },
         "otpVerificationFailed": {
-          "summary": "Error",
-          "detail": "Email verification failed. Please try again."
+          "summary": "Email verification failed",
+          "detail": "Your code may be expired or incorrect. Request a new code and try again."
         }
       },
       "applicationOverview": {
@@ -663,7 +582,7 @@
           },
           "error": {
             "summary": "Delete failed",
-            "detail": "The draft could not be deleted. Please try again."
+            "detail": "Please try again. Contact us if it keeps failing."
           }
         },
         "withdraw": {
@@ -680,17 +599,8 @@
     }
   },
   "error": {
-    "internalServerError": "Internal server error",
     "server.not.reachable": "Server not reachable",
     "url.not.found": "Not found",
-    "NotNull": "Field {fieldName} cannot be empty!",
-    "Size": "Field {fieldName} does not meet min/max size requirements!",
-    "userexists": "Login name already used!",
-    "emailexists": "Email is already in use!",
-    "idexists": "A new {entityName} cannot already have an ID",
-    "idnull": "Invalid ID",
-    "idinvalid": "Invalid ID",
-    "idnotfound": "ID cannot be found",
     "file": {
       "could.not.extract": "Could not extract file",
       "not.image": "File was expected to be an image but was found to be \"{fileType}\""
@@ -732,7 +642,7 @@
     },
     "uploadFailed": {
       "summary": "Upload failed",
-      "detail": "We could not save your letter. Please try again."
+      "detail": "Please try again, or contact us using the support email."
     }
   },
   "imageUpload": {
@@ -755,7 +665,7 @@
       },
       "uploadFailed": {
         "summary": "Upload Failed",
-        "detail": "Failed to upload image. Please try again"
+        "detail": "Check your connection and try again, or contact us."
       }
     }
   }
