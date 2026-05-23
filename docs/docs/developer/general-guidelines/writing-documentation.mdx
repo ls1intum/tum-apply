@@ -96,27 +96,25 @@ import loginForm from '../images/login/login-form.png';
 
 ## 5. Embed Videos with the VideoEmbed Component
 
-For screen recordings and other embedded videos, use the custom `<VideoEmbed>` component instead of writing an `<iframe>` by hand. This keeps dimensions, borders, and captions consistent across the docs and produces semantically correct `<figure>` / `<figcaption>` markup.
+For screen recordings and other embedded videos, use the custom `<VideoEmbed>` component instead of writing an `<iframe>` by hand. The component renders a responsive iframe (capped at 900px wide, with a 900/520 aspect ratio) inside a semantically correct `<figure>` / `<figcaption>` so the video scales gracefully on narrow viewports.
 
 ```tsx
 import VideoEmbed from "../../src/components/VideoEmbed/VideoEmbed";
 
 <VideoEmbed
-  src="https://live.rbg.tum.de/w/artemisintro/74607"
+  src="https://live.rbg.tum.de/w/artemisintro/74607?video_only=1&t=0"
   title="Applying for a position in TUMApply"
   caption="Complete application flow from creating an application to submission"
 />
 ```
 
-**Defaults:**
+**Props:**
 
-| Prop | Default | Notes |
+| Prop | Required | Notes |
 |---|---|---|
-| `width` | `900` | Standard width for docs videos |
-| `height` | `520` | Standard height (~16:9 at 900px) |
-| `caption` | _(none)_ | Optional; rendered as `<figcaption>` below the video |
-
-Override `width` / `height` only when a specific recording needs it — sticking to the defaults keeps the docs visually consistent.
+| `src` | Yes | Embed URL. For `live.rbg.tum.de` videos, append `?video_only=1&t=0` to hide page chrome. |
+| `title` | Yes | Accessible title for the iframe. |
+| `caption` | No | Rendered as `<figcaption>` below the video. |
 
 ---
 
