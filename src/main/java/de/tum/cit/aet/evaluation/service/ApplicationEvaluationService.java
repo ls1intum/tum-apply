@@ -275,7 +275,8 @@ public class ApplicationEvaluationService {
             totalRecords,
             (int) idx,
             windowIndex,
-            this::calculateAverageRating
+            this::calculateAverageRating,
+            this::calculateRatingCount
         );
     }
 
@@ -308,7 +309,8 @@ public class ApplicationEvaluationService {
             totalRecords,
             null,
             null,
-            this::calculateAverageRating
+            this::calculateAverageRating,
+            this::calculateRatingCount
         );
     }
 
@@ -492,5 +494,16 @@ public class ApplicationEvaluationService {
         OptionalDouble avg = ratings.stream().map(Rating::getRating).filter(Objects::nonNull).mapToInt(Integer::intValue).average();
 
         return avg.isPresent() ? avg.getAsDouble() : null;
+    }
+
+    /**
+     * Calculates the number of ratings submitted for the given application.
+     *
+     * @param application the application for which to count the ratings
+     * @return the number of non-null ratings
+     */
+    private Integer calculateRatingCount(Application application) {
+        Set<Rating> ratings = ratingRepository.findByApplicationApplicationId(application.getApplicationId());
+        return (int) ratings.stream().map(Rating::getRating).filter(Objects::nonNull).count();
     }
 }

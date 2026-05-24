@@ -10,9 +10,12 @@
       }
     </div>
     @if (showValue()) {
-      <span [class]="'text-text-primary ' + (size() === 'small' ? 'text-sm' : size() === 'large' ? 'text-xl' : 'text-base')">{{
-        formattedRating()
-      }}</span>
+      <span [class]="'text-text-primary ' + (size() === 'small' ? 'text-sm' : size() === 'large' ? 'text-xl' : 'text-base')">
+        {{ formattedRating() }}
+        @if (count() !== undefined) {
+          <span class="text-text-secondary">({{ count() }})</span>
+        }
+      </span>
     }
   } @else {
     <span class="text-sm text-text-disabled italic" jhiTranslate="evaluation.noRatingsYet"></span>

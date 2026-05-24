@@ -34,6 +34,11 @@ export class StarRatingComponent {
   showValue = input<boolean>(true);
 
   /**
+   * Optional count of ratings to display in parentheses, e.g. "4.2 (3)"
+   */
+  count = input<number | undefined>(undefined);
+
+  /**
    * Calculates filled/half state for each star only when rating or maxStars changes.
    */
   starStates = computed(() => {
