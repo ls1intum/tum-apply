@@ -7,10 +7,11 @@ import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.notification.constants.SignoffType;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
 import de.tum.cit.aet.notification.dto.DataExportEmailContextDTO;
 import de.tum.cit.aet.notification.dto.JobPublicationEmailContextDTO;
-import de.tum.cit.aet.notification.dto.ReferenceLetterInvitationContextDTO;
+import de.tum.cit.aet.notification.dto.ReferenceLetterContextDTO;
 import de.tum.cit.aet.notification.dto.ResearchGroupEmailContextDTO;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -67,6 +68,8 @@ public class TemplateProcessingService {
 
     /**
      * Renders the HTML email body using FreeMarker and applies layout formatting.
+     * No sign-off is appended; use {@link #renderTemplate(Language, String, Object, SignoffType)}
+     * to have the layout auto-attach a sign-off.
      *
      * @param language the email language
      * @param bodyHtml the raw template body (FreeMarker source)
@@ -75,6 +78,26 @@ public class TemplateProcessingService {
      * @throws TemplateProcessingException if template parsing or rendering fails
      */
     public String renderTemplate(@NonNull Language language, @NonNull String bodyHtml, @NonNull Object content) {
+        return renderTemplate(language, bodyHtml, content, SignoffType.NONE);
+    }
+
+    /**
+     * Renders the HTML email body using FreeMarker and applies layout formatting,
+     * with the layout auto-appending the requested sign-off variant.
+     *
+     * @param language the email language
+     * @param bodyHtml the raw template body (FreeMarker source)
+     * @param content  the domain object (e.g. Application, Job) for variable binding
+     * @param signoff  which sign-off the layout should append after the body
+     * @return the fully rendered HTML email body
+     * @throws TemplateProcessingException if template parsing or rendering fails
+     */
+    public String renderTemplate(
+        @NonNull Language language,
+        @NonNull String bodyHtml,
+        @NonNull Object content,
+        @NonNull SignoffType signoff
+    ) {
         try {
             Map<String, Object> dataModel = createDataModel(content);
             addMetaData(language, dataModel);
@@ -82,7 +105,7 @@ public class TemplateProcessingService {
             Template inlineTemplate = new Template("inline", new StringReader(asHtmlTemplate(bodyHtml)), freemarkerConfig);
 
             String htmlBody = render(inlineTemplate, dataModel);
-            return renderLayout(language, htmlBody, false);
+            return renderLayout(language, htmlBody, false, signoff, dataModel);
         } catch (IOException ex) {
             throw new TemplateProcessingException("Failed to process inline FreeMarker template for language: " + language, ex);
         }
@@ -93,31 +116,50 @@ public class TemplateProcessingService {
     }
 
     /**
-     * Wraps raw HTML content in the base layout template.
+     * Wraps raw HTML content in the base layout template, without appending a sign-off.
      *
      * @param language the language for metadata injection
      * @param html     the raw HTML to wrap
-     * @return the wrapped and optionally sanitized HTML
+     * @return the wrapped and sanitized HTML
      */
     public String renderRawTemplate(@NonNull Language language, String html) {
-        return renderLayout(language, html, true);
+        return renderRawTemplate(language, html, SignoffType.NONE);
     }
 
     /**
-     * Renders HTML inside the base layout template, with optional sanitization.
+     * Wraps raw HTML content in the base layout template and asks the layout to append
+     * the requested sign-off variant.
      *
-     * @param language the email language
-     * @param html     the raw body HTML
-     * @param sanitize whether to sanitize the HTML
+     * @param language the language for metadata injection
+     * @param html     the raw HTML to wrap
+     * @param signoff  which sign-off the layout should append after the body
+     * @return the wrapped and sanitized HTML
+     */
+    public String renderRawTemplate(@NonNull Language language, String html, @NonNull SignoffType signoff) {
+        return renderLayout(language, html, true, signoff, null);
+    }
+
+    /**
+     * Renders HTML inside the base layout template, with optional sanitization,
+     * and asks the layout to render the given sign-off after the body.
+     *
+     * @param language       the email language
+     * @param html           the raw body HTML
+     * @param sanitize       whether to sanitize the HTML
+     * @param signoff        the sign-off variant to append (NONE for no sign-off)
+     * @param dataModelSeed  optional data model produced by the inline render (carries
+     *                       template variables like {@code RESEARCH_GROUP_NAME} that the
+     *                       sign-off macro may reference); may be {@code null}
      * @return fully rendered HTML including layout
      * @throws TemplateProcessingException if layout template rendering fails
      */
-    private String renderLayout(Language language, String html, boolean sanitize) {
+    private String renderLayout(Language language, String html, boolean sanitize, SignoffType signoff, Map<String, Object> dataModelSeed) {
         try {
             Template layout = freemarkerConfig.getTemplate(BASE_RAW_TEMPLATE);
 
-            Map<String, Object> model = new HashMap<>();
+            Map<String, Object> model = dataModelSeed == null ? new HashMap<>() : new HashMap<>(dataModelSeed);
             model.put("bodyHtml", sanitize ? HtmlSanitizer.sanitize(html) : html);
+            model.put("SIGNOFF_TYPE", signoff.getValue());
             addMetaData(language, model);
 
             return render(layout, model);
@@ -162,7 +204,7 @@ public class TemplateProcessingService {
             case Interviewee interviewee -> addIntervieweeData(dataModel, interviewee);
             case DataExportEmailContextDTO ctx -> addDataExportContextData(dataModel, ctx);
             case JobPublicationEmailContextDTO ctx -> addJobPublicationContextData(dataModel, ctx);
-            case ReferenceLetterInvitationContextDTO ctx -> addReferenceLetterInvitationContextData(dataModel, ctx);
+            case ReferenceLetterContextDTO ctx -> addReferenceLetterInvitationContextData(dataModel, ctx);
             case User user -> addUserData(dataModel, user);
             default -> throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
         }
@@ -294,7 +336,7 @@ public class TemplateProcessingService {
      * @param dataModel the data model map
      * @param ctx       the invitation context for the external referee
      */
-    private void addReferenceLetterInvitationContextData(Map<String, Object> dataModel, ReferenceLetterInvitationContextDTO ctx) {
+    private void addReferenceLetterInvitationContextData(Map<String, Object> dataModel, ReferenceLetterContextDTO ctx) {
         dataModel.put(TemplateVariable.REFEREE_NAME_TITLE.getValue(), ctx.refereeNameTitle());
         dataModel.put(TemplateVariable.REFEREE_FIRST_NAME.getValue(), ctx.refereeFirstName());
         dataModel.put(TemplateVariable.REFEREE_LAST_NAME.getValue(), ctx.refereeLastName());

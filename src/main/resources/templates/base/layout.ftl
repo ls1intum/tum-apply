@@ -1,7 +1,7 @@
 <#ftl output_format="HTML">
 
 <#-- Base Layout containing the styles -->
-<#macro emailLayout bodyHtml="" language="en">
+<#macro emailLayout bodyHtml="" language="en" signoff="none">
   <!DOCTYPE html>
   <html>
   <head>
@@ -16,6 +16,21 @@
         ${bodyHtml?no_esc}
       <#else>
         <#nested />
+      </#if>
+
+      <#if signoff != "none">
+        <#if language == "de">
+          <#import "../de/signoff.ftl" as s>
+        <#else>
+          <#import "../en/signoff.ftl" as s>
+        </#if>
+        <#if signoff == "system">
+          <@s.system />
+        <#elseif signoff == "group">
+          <@s.researchGroup />
+        <#elseif signoff == "systemFormal">
+          <@s.systemFormal />
+        </#if>
       </#if>
     </div>
     <div style="font-size: 12px; color: #777777; text-align: center; padding-top: 20px;">

@@ -2139,7 +2139,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/ReferenceLetterContextDTO'}
+              schema: {$ref: '#/components/schemas/ReferenceLetterUploadContextDTO'}
     post:
       tags: [reference-letter-upload-resource]
       operationId: upload
@@ -2894,6 +2894,7 @@ components:
         averageRating: {type: number, format: double}
         jobId: {type: string, format: uuid}
         professor: {$ref: '#/components/schemas/ProfessorDTO'}
+        ratingCount: {type: integer, format: int32}
       required: [applicationDetailDTO]
     ApplicationEvaluationDetailListDTO:
       type: object
@@ -3139,7 +3140,7 @@ components:
             INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR,
             INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
             INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
-            APPLICANT_DATA_DELETION_WARNING, REFERENCE_LETTER_INVITATION]
+            APPLICANT_DATA_DELETION_WARNING, REFERENCE_LETTER_INVITATION, REFERENCE_LETTER_REMINDER]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -3154,7 +3155,7 @@ components:
             INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR,
             INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
             INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
-            APPLICANT_DATA_DELETION_WARNING, REFERENCE_LETTER_INVITATION]
+            APPLICANT_DATA_DELETION_WARNING, REFERENCE_LETTER_INVITATION, REFERENCE_LETTER_REMINDER]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
     EmailTemplateOverviewDTO:
@@ -3170,7 +3171,7 @@ components:
             INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR, INTERVIEW_ASSIGNED_PROFESSOR,
             INTERVIEW_LOCATION_CHANGED, INTERVIEW_SELF_SCHEDULING_INVITATION, INTERVIEW_CANCELLED,
             INTERVIEW_RESCHEDULE_REQUESTED, DATA_EXPORT_READY, USER_DATA_DELETION_WARNING,
-            APPLICANT_DATA_DELETION_WARNING, REFERENCE_LETTER_INVITATION]
+            APPLICANT_DATA_DELETION_WARNING, REFERENCE_LETTER_INVITATION, REFERENCE_LETTER_REMINDER]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         firstName: {type: string}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
@@ -3371,7 +3372,6 @@ components:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
         contractDuration: {type: integer, format: int32}
-        contractExtendable: {type: boolean}
         endDate: {type: string, format: date}
         fundingType:
           type: string
@@ -3387,6 +3387,7 @@ components:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
+        referenceLettersRequired: {type: integer, format: int32}
         researchArea: {type: string}
         startDate: {type: string, format: date}
         startDateByArrangement: {type: boolean}
@@ -3423,7 +3424,6 @@ components:
           enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         contractDuration: {type: integer, format: int32}
-        contractExtendable: {type: boolean}
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
         fundingType:
@@ -3497,7 +3497,6 @@ components:
           type: array
           items: {$ref: '#/components/schemas/ComplianceIssue'}
         contractDuration: {type: integer, format: int32}
-        contractExtendable: {type: boolean}
         endDate: {type: string, format: date}
         fundingType:
           type: string
@@ -3747,7 +3746,7 @@ components:
           type: array
           items: {$ref: '#/components/schemas/RatingDTO'}
           uniqueItems: true
-    ReferenceLetterContextDTO:
+    ReferenceLetterUploadContextDTO:
       type: object
       properties:
         applicantFirstName: {type: string}
@@ -3757,7 +3756,7 @@ components:
         researchGroupName: {type: string}
         status:
           type: string
-          enum: [REQUESTED, SUBMITTED, EXPIRED]
+          enum: [ADDED, REQUESTED, SUBMITTED, EXPIRED]
     ReferenceRequestDTO:
       type: object
       properties:
@@ -3768,7 +3767,7 @@ components:
         referenceRequestId: {type: string, format: uuid}
         status:
           type: string
-          enum: [REQUESTED, SUBMITTED, EXPIRED]
+          enum: [ADDED, REQUESTED, SUBMITTED, EXPIRED]
         title: {type: string}
     RejectDTO:
       type: object

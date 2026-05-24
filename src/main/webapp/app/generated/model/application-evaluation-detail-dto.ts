@@ -17,4 +17,5 @@ export interface ApplicationEvaluationDetailDTO {
     readonly averageRating?: number;
     readonly jobId?: string;
     readonly professor?: ProfessorDTO;
+    readonly ratingCount?: number;
 }

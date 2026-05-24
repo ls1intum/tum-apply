@@ -15,7 +15,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ReferenceLetterContextDTO } from '../model/reference-letter-context-dto';
+import { ReferenceLetterUploadContextDTO } from '../model/reference-letter-upload-context-dto';
 import { ReferenceRequestDTO } from '../model/reference-request-dto';
 
 @Injectable({ providedIn: 'root' })
@@ -28,10 +28,10 @@ export class ReferenceLetterUploadResourceApi {
      * 
      * @param token 
      */
-    getContext(token: string): Observable<ReferenceLetterContextDTO> {
+    getContext(token: string): Observable<ReferenceLetterUploadContextDTO> {
         const tokenPath = encodeURIComponent(String(token));
         const url = `${this.basePath}/api/reference-letters/${tokenPath}`;
-        return this.http.get<ReferenceLetterContextDTO>(url);
+        return this.http.get<ReferenceLetterUploadContextDTO>(url);
     }
 
     /**
