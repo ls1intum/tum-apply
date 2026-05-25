@@ -66,11 +66,6 @@ export class ApplicationCardComponent {
   });
 
   /**
-   * Number of ratings submitted for this application.
-   */
-  readonly displayRatingCount = computed<number | undefined>(() => this.application()?.ratingCount ?? undefined);
-
-  /**
    * Dynamic font size for applicant name based on length
    */
   readonly nameFontSize = computed<string>(() => {

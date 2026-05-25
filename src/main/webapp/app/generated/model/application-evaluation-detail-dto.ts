@@ -15,7 +15,6 @@ export interface ApplicationEvaluationDetailDTO {
     readonly applicationDetailDTO: ApplicationDetailDTO;
     readonly appliedAt?: string;
     readonly averageRating?: number;
-    readonly ratingCount?: number;
     readonly jobId?: string;
     readonly professor?: ProfessorDTO;
 }
