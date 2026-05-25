@@ -45,11 +45,13 @@ export class RatingComponent {
   }
 
   getButtonBg(index: number): string {
+    if (index < 0 || index >= this.likertValues.length) return 'var(--p-background-surface-alt)';
     const sectionValue = this.likertValues[index];
     return this.rating() === sectionValue ? this.getColorForValue(sectionValue) : 'var(--p-background-surface-alt)';
   }
 
   getButtonTextColor(index: number): string {
+    if (index < 0 || index >= this.likertValues.length) return 'var(--p-text-color)';
     return this.rating() === this.likertValues[index] ? 'white' : 'var(--p-text-color)';
   }
 
@@ -57,6 +59,8 @@ export class RatingComponent {
     const r = this.rating();
     if (r === undefined) return '';
     const idx = this.likertValues.indexOf(r);
-    return idx >= 0 ? this.tooltipTexts()[idx] : '';
+    const texts = this.tooltipTexts();
+    if (idx < 0 || idx >= texts.length) return '';
+    return texts[idx] ?? '';
   }
 }
