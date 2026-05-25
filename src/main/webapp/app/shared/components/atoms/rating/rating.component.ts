@@ -2,6 +2,13 @@ import { Component, computed, inject, input, model } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 
+type LikertValue = -2 | -1 | 0 | 1 | 2;
+
+interface LikertEntry {
+  value: LikertValue;
+  key: string;
+}
+
 @Component({
   selector: 'jhi-rating',
   templateUrl: './rating.component.html',
@@ -10,21 +17,29 @@ export class RatingComponent {
   rating = model<number | undefined>(undefined);
   selectable = input<boolean>(false);
 
-  readonly likertValues = [-2, -1, 0, 1, 2];
+  readonly likertScale: LikertEntry[] = [
+    { value: -2, key: 'very_bad' },
+    { value: -1, key: 'bad' },
+    { value: 0, key: 'neutral' },
+    { value: 1, key: 'good' },
+    { value: 2, key: 'very_good' },
+  ];
+
+  readonly likertValues: LikertValue[] = this.likertScale.map(s => s.value);
 
   readonly tooltipTexts = computed(() => {
     this.langChange();
-    return this.tooltipKeys.map(suffix => this.translateService.instant(`evaluation.ratings.${suffix}`));
+    return this.likertScale.map(s => this.translateService.instant(`evaluation.ratings.${s.key}`) as string);
   });
 
-  private readonly tooltipKeys = ['very_bad', 'bad', 'neutral', 'good', 'very_good'];
   private translateService = inject(TranslateService);
   private langChange = toSignal(this.translateService.onLangChange, { initialValue: undefined });
 
   onSectionClick(index: number): void {
     if (!this.selectable()) return;
-    const newRating = this.likertValues[index];
-    this.rating.set(this.rating() === newRating ? undefined : newRating);
+    const entry = this.entryAt(index);
+    if (entry === undefined) return;
+    this.rating.set(this.rating() === entry.value ? undefined : entry.value);
   }
 
   getColorForValue(value: number): string {
@@ -45,22 +60,26 @@ export class RatingComponent {
   }
 
   getButtonBg(index: number): string {
-    if (index < 0 || index >= this.likertValues.length) return 'var(--p-background-surface-alt)';
-    const sectionValue = this.likertValues[index];
-    return this.rating() === sectionValue ? this.getColorForValue(sectionValue) : 'var(--p-background-surface-alt)';
+    const entry = this.entryAt(index);
+    if (entry === undefined) return 'var(--p-background-surface-alt)';
+    return this.rating() === entry.value ? this.getColorForValue(entry.value) : 'var(--p-background-surface-alt)';
   }
 
   getButtonTextColor(index: number): string {
-    if (index < 0 || index >= this.likertValues.length) return 'var(--p-text-color)';
-    return this.rating() === this.likertValues[index] ? 'white' : 'var(--p-text-color)';
+    const entry = this.entryAt(index);
+    if (entry === undefined) return 'var(--p-text-color)';
+    return this.rating() === entry.value ? 'white' : 'var(--p-text-color)';
   }
 
   getSelectedLabel(): string {
     const r = this.rating();
     if (r === undefined) return '';
-    const idx = this.likertValues.indexOf(r);
-    const texts = this.tooltipTexts();
-    if (idx < 0 || idx >= texts.length) return '';
-    return texts[idx] ?? '';
+    const entry = this.likertScale.find(s => s.value === r);
+    if (entry === undefined) return '';
+    return this.translateService.instant(`evaluation.ratings.${entry.key}`) as string;
+  }
+
+  private entryAt(index: number): LikertEntry | undefined {
+    return this.likertScale.find((_, i) => i === index);
   }
 }
