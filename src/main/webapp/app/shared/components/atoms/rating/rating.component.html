@@ -2,6 +2,7 @@
   <div class="flex flex-wrap gap-2">
     @for (item of likertValues; track $index) {
       <button
+        type="button"
         class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-150 border border-border-default focus:outline-none"
         [style.background-color]="getButtonBg($index)"
         [style.color]="getButtonTextColor($index)"
