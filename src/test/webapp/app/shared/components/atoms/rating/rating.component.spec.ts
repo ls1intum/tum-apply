@@ -50,6 +50,7 @@ describe('RatingComponent', () => {
     expect(component.rating()).toBe(2);
   });
 
+  // ---------------- BUTTON BACKGROUND ----------------
   it.each<[number | undefined, number, string]>([
     [undefined, 0, 'var(--p-background-surface-alt)'],
     [-2, 0, 'var(--color-negative-active)'],
@@ -58,10 +59,22 @@ describe('RatingComponent', () => {
     [1, 3, 'var(--color-positive-hover)'],
     [2, 4, 'var(--color-positive-active)'],
     [2, 0, 'var(--p-background-surface-alt)'],
-  ])('should return %s for rating=%s section=%s', (rating, section, expected) => {
+  ])('getButtonBg: rating=%s index=%s → %s', (rating, index, expected) => {
     fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
-    expect(component.getSectionColor(section)).toBe(expected);
+    expect(component.getButtonBg(index)).toBe(expected);
+  });
+
+  // ---------------- BUTTON TEXT COLOR ----------------
+  it.each<[number | undefined, number, string]>([
+    [-2, 0, 'white'],
+    [1, 3, 'white'],
+    [undefined, 0, 'var(--p-text-color)'],
+    [-2, 1, 'var(--p-text-color)'],
+  ])('getButtonTextColor: rating=%s index=%s → %s', (rating, index, expected) => {
+    fixture.componentRef.setInput('rating', rating);
+    fixture.detectChanges();
+    expect(component.getButtonTextColor(index)).toBe(expected);
   });
 
   // ---------------- TOOLTIP TEXTS ----------------
@@ -74,12 +87,17 @@ describe('RatingComponent', () => {
     expect(tooltips[4]).toBe('evaluation.ratings.very_good');
   });
 
-  it.each<[boolean, string]>([
-    [true, 'pointer'],
-    [false, 'default'],
-  ])('should return cursor=%s for selectable=%s', (selectable, expected) => {
-    fixture.componentRef.setInput('selectable', selectable);
+  // ---------------- SELECTED LABEL ----------------
+  it.each<[number | undefined, string]>([
+    [undefined, ''],
+    [-2, 'evaluation.ratings.very_bad'],
+    [-1, 'evaluation.ratings.bad'],
+    [0, 'evaluation.ratings.neutral'],
+    [1, 'evaluation.ratings.good'],
+    [2, 'evaluation.ratings.very_good'],
+  ])('getSelectedLabel: rating=%s → %s', (rating, expected) => {
+    fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
-    expect(component.getCursor()).toBe(expected);
+    expect(component.getSelectedLabel()).toBe(expected);
   });
 });
