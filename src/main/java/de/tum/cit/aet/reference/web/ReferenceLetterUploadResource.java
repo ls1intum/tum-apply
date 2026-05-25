@@ -1,7 +1,7 @@
 package de.tum.cit.aet.reference.web;
 
 import de.tum.cit.aet.core.security.annotations.Public;
-import de.tum.cit.aet.reference.dto.ReferenceLetterContextDTO;
+import de.tum.cit.aet.reference.dto.ReferenceLetterUploadContextDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.reference.service.ReferenceRequestService;
 import lombok.AllArgsConstructor;
@@ -38,7 +38,7 @@ public class ReferenceLetterUploadResource {
      */
     @Public
     @GetMapping("/{token}")
-    public ResponseEntity<ReferenceLetterContextDTO> getContext(@PathVariable String token) {
+    public ResponseEntity<ReferenceLetterUploadContextDTO> getContext(@PathVariable String token) {
         log.info("GET /api/reference-letters/{} - Resolving token context", maskToken(token));
         return ResponseEntity.ok(referenceRequestService.getContextByToken(token));
     }

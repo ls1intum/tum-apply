@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * @param status             current request status (controls whether the upload form is shown)
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ReferenceLetterContextDTO(
+public record ReferenceLetterUploadContextDTO(
     String applicantFirstName,
     String applicantLastName,
     String jobTitle,

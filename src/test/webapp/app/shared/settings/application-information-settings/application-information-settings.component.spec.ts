@@ -5,6 +5,7 @@ import { of, throwError } from 'rxjs';
 
 import { ApplicantDTO } from 'app/generated/model/applicant-dto';
 import { ApplicationInformationData, ApplicationInformationSettingsComponent } from 'app/shared/settings/application-information-settings';
+import { AUTO_SAVE_DELAY_MS } from 'app/shared/constants/saving-states';
 import { SavingStates } from 'app/shared/constants/saving-states';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
@@ -76,7 +77,7 @@ describe('ApplicationInformationSettingsComponent', () => {
     instantMock.mockImplementation((key: string | string[]) => (Array.isArray(key) ? key.join(',') : key));
 
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
+      imports: [ReactiveFormsModule, ApplicationInformationSettingsComponent],
       providers: [
         provideApplicantResourceApiMock(applicantApiMock),
         provideAccountServiceMock(accountServiceMock),
@@ -209,6 +210,90 @@ describe('ApplicationInformationSettingsComponent', () => {
 
       component.updateSelect('country', undefined);
       expect(component.data().country).toBeUndefined();
+      component['autoSave'].reset();
+    });
+
+    it('should mark postcode invalid and touched when country no longer matches a prefilled postcode', async () => {
+      const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
+      await flushAsyncWork();
+      fixture.detectChanges();
+
+      const component = fixture.componentInstance;
+      const updatedData: ApplicationInformationData = structuredClone(component.data());
+      updatedData.country = { value: 'de', name: 'countries.de' };
+      updatedData.postcode = '80333';
+      component.data.set(updatedData);
+      fixture.detectChanges();
+
+      component.updateSelect('country', { value: 'NL', name: 'countries.NL' });
+      fixture.detectChanges();
+
+      expect(component.applicationInfoForm().controls.postcode.touched).toBe(true);
+      expect(component.applicationInfoForm().controls.postcode.errors).toHaveProperty('invalidPostalCode');
+      expect(fixture.nativeElement.textContent).toContain('entity.applicationPage1.validation.postalCode');
+      component['autoSave'].reset();
+    });
+
+    it('should treat a whitespace-only postcode as empty when country changes', async () => {
+      const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
+      await flushAsyncWork();
+      fixture.detectChanges();
+
+      const component = fixture.componentInstance;
+      const updatedData: ApplicationInformationData = structuredClone(component.data());
+      updatedData.country = { value: 'de', name: 'countries.de' };
+      updatedData.postcode = '   ';
+      component.data.set(updatedData);
+      fixture.detectChanges();
+
+      component.updateSelect('country', { value: 'NL', name: 'countries.NL' });
+      fixture.detectChanges();
+
+      expect(component.applicationInfoForm().controls.postcode.touched).toBe(false);
+      expect(component.applicationInfoForm().controls.postcode.errors).toBeNull();
+      component['autoSave'].reset();
+    });
+
+    it('should autosave when the country select is cleared', async () => {
+      vi.useFakeTimers();
+      const component = await createComponent();
+      vi.clearAllMocks();
+
+      component.updateSelect('country', undefined);
+      await vi.advanceTimersByTimeAsync(AUTO_SAVE_DELAY_MS);
+
+      expect(applicantApiMock.updateApplicantPersonalInformation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          country: undefined,
+        }),
+      );
+
+      component['autoSave'].reset();
+      vi.useRealTimers();
+    });
+
+    it('should cancel a pending autosave when the form becomes invalid before debounce expiry', async () => {
+      vi.useFakeTimers();
+      const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
+      await flushAsyncWork();
+      fixture.detectChanges();
+
+      const component = fixture.componentInstance;
+      vi.clearAllMocks();
+
+      component.applicationInfoForm().controls.city.setValue('Berlin');
+      fixture.detectChanges();
+
+      component.updateSelect('country', { value: 'NL', name: 'countries.NL' });
+      fixture.detectChanges();
+
+      await vi.advanceTimersByTimeAsync(AUTO_SAVE_DELAY_MS);
+
+      expect(component.applicationInfoForm().valid).toBe(false);
+      expect(applicantApiMock.updateApplicantPersonalInformation).not.toHaveBeenCalled();
+
+      component['autoSave'].reset();
+      vi.useRealTimers();
     });
   });
 
@@ -334,6 +419,29 @@ describe('ApplicationInformationSettingsComponent', () => {
 
       expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.applicationInformation.saveFailed');
       expect(toastServiceMock.showSuccessKey).not.toHaveBeenCalled();
+    });
+
+    it('should not persist when performAutoSave runs while the form is invalid', async () => {
+      const fixture = TestBed.createComponent(ApplicationInformationSettingsComponent);
+      await flushAsyncWork();
+      fixture.detectChanges();
+
+      const component = fixture.componentInstance;
+      vi.clearAllMocks();
+
+      const updatedData: ApplicationInformationData = structuredClone(component.data());
+      updatedData.country = { value: 'NL', name: 'countries.NL' };
+      component.data.set(updatedData);
+      fixture.detectChanges();
+      component['revealPostcodeCountryMismatch']();
+      fixture.detectChanges();
+
+      const saved = await component.performAutoSave();
+
+      expect(component.applicationInfoForm().valid).toBe(false);
+      expect(saved).toBe(false);
+      expect(applicantApiMock.updateApplicantPersonalInformation).not.toHaveBeenCalled();
+      component['autoSave'].reset();
     });
   });
 });

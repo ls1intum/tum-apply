@@ -5,6 +5,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ResearchGroupInfoComponent } from 'app/usermanagement/research-group/research-group-info/research-group-info.component';
 import { User } from 'app/core/auth/account.service';
 import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
+import { SavingStates } from 'app/shared/constants/saving-states';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -46,6 +47,8 @@ describe('ResearchGroupInfoComponent', () => {
   };
 
   beforeEach(async () => {
+    vi.useFakeTimers();
+
     mockResearchGroupApi = createResearchGroupResourceApiMock();
     mockToastService = createToastServiceMock();
     mockAccountService = createAccountServiceMock();
@@ -68,6 +71,7 @@ describe('ResearchGroupInfoComponent', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.clearAllMocks();
   });
 
@@ -163,10 +167,24 @@ describe('ResearchGroupInfoComponent', () => {
 
       expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledOnce();
     });
+
+    it('should not trigger an auto-save while the form is being populated from the API', async () => {
+      mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
+      mockAccountService.user.set(mockUser);
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      // Run any pending debounce timer; nothing should be scheduled.
+      await vi.runAllTimersAsync();
+
+      expect(mockResearchGroupApi.updateResearchGroup).not.toHaveBeenCalled();
+      expect(component.savingState()).toBe(SavingStates.SAVED);
+    });
   });
 
-  describe('Save', () => {
-    it('should save research group data successfully', async () => {
+  describe('Auto-save', () => {
+    it('should auto-save after a debounced user edit and settle the badge on SAVED', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockAccountService.user.set(mockUser);
@@ -175,8 +193,10 @@ describe('ResearchGroupInfoComponent', () => {
       await fixture.whenStable();
 
       component.form.patchValue({ name: 'Updated Name', head: 'Updated Head' });
+      expect(component.savingState()).toBe(SavingStates.SAVING);
 
-      await component.onSave();
+      await vi.runAllTimersAsync();
+      await component.autoSave.flush();
 
       expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith(
         'rg-1',
@@ -186,11 +206,10 @@ describe('ResearchGroupInfoComponent', () => {
           abbreviation: mockResearchGroupData.abbreviation,
         }),
       );
-      expect(mockToastService.showSuccess).toHaveBeenCalledWith({ detail: 'researchGroup.groupInfo.toasts.updated' });
-      expect(component.isSaving()).toBe(false);
+      expect(component.savingState()).toBe(SavingStates.SAVED);
     });
 
-    it('should not save when form is invalid', async () => {
+    it('should leave the badge on SAVING while the form is invalid', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockAccountService.user.set(mockUser);
 
@@ -198,49 +217,12 @@ describe('ResearchGroupInfoComponent', () => {
       await fixture.whenStable();
 
       component.form.patchValue({ name: '', head: '' });
-
-      await component.onSave();
-
-      expect(mockResearchGroupApi.updateResearchGroup).not.toHaveBeenCalled();
-    });
-
-    it('should set isSaving to true during save operation', async () => {
-      mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockResearchGroupApi.updateResearchGroup.mockReturnValue(
-        new Promise(resolve => setTimeout(() => resolve(mockResearchGroupData), 100)),
-      );
-      mockAccountService.user.set(mockUser);
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      component.form.patchValue({ name: 'Updated Name', head: 'Updated Head' });
-
-      const savePromise = component.onSave();
-      expect(component.isSaving()).toBe(true);
-
-      await savePromise;
-      expect(component.isSaving()).toBe(false);
-    });
-
-    it('should show error when saving without research group id', async () => {
-      mockAccountService.user.set(Object.assign({}, mockUser, { researchGroup: undefined }));
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      component.form.patchValue({ name: 'Test Name', head: 'Test Head' });
-
-      await component.onSave();
+      await vi.runAllTimersAsync();
 
       expect(mockResearchGroupApi.updateResearchGroup).not.toHaveBeenCalled();
-      expect(mockToastService.showError).toHaveBeenCalledWith({
-        summary: 'researchGroup.groupInfo.toasts.saveFailed',
-        detail: 'researchGroup.groupInfo.toasts.noId',
-      });
     });
 
-    it('should show error toast when save fails', async () => {
+    it('should settle the badge on FAILED and toast when the save request errors', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
       mockAccountService.user.set(mockUser);
@@ -249,11 +231,22 @@ describe('ResearchGroupInfoComponent', () => {
       await fixture.whenStable();
 
       component.form.patchValue({ name: 'Updated Name', head: 'Updated Head' });
+      await component.autoSave.flush();
 
-      await component.onSave();
-
+      expect(component.savingState()).toBe(SavingStates.FAILED);
       expect(mockToastService.showError).toHaveBeenCalledWith({ detail: 'researchGroup.groupInfo.toasts.saveFailed' });
-      expect(component.isSaving()).toBe(false);
+    });
+
+    it('should not call the API when there is no research group id', async () => {
+      mockAccountService.user.set(Object.assign({}, mockUser, { researchGroup: undefined }));
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      component.form.patchValue({ name: 'Test Name', head: 'Test Head' });
+      await component.autoSave.flush();
+
+      expect(mockResearchGroupApi.updateResearchGroup).not.toHaveBeenCalled();
     });
   });
 
@@ -269,34 +262,9 @@ describe('ResearchGroupInfoComponent', () => {
       expect(component.form.value.address).toBe('Test Street');
 
       component.form.patchValue({ address: 'New Street' });
-
-      await component.onSave();
+      await component.autoSave.flush();
 
       expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith('rg-1', expect.objectContaining({ street: 'New Street' }));
-    });
-
-    it('should default undefined optional fields to empty strings on save', async () => {
-      mockResearchGroupApi.getResearchGroup.mockReturnValue(of({ name: 'Test', head: 'Test Head' }));
-      mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      await component.onSave();
-
-      expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith(
-        'rg-1',
-        expect.objectContaining({
-          abbreviation: '',
-          website: '',
-          email: '',
-          city: '',
-          postalCode: '',
-          street: '',
-          description: '',
-        }),
-      );
     });
 
     it('should default null name and head to empty strings on save', async () => {
@@ -307,13 +275,13 @@ describe('ResearchGroupInfoComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      component.form.patchValue({ name: null, head: null });
       component.form.controls.name.clearValidators();
       component.form.controls.head.clearValidators();
       component.form.controls.name.updateValueAndValidity();
       component.form.controls.head.updateValueAndValidity();
+      component.form.patchValue({ name: null, head: null });
 
-      await component.onSave();
+      await component.autoSave.flush();
 
       expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith('rg-1', expect.objectContaining({ name: '', head: '' }));
     });
