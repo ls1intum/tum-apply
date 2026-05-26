@@ -5,7 +5,6 @@ import { map } from 'rxjs';
 import { InputOtpChangeEvent, InputOtpModule } from 'primeng/inputotp';
 import { ButtonModule } from 'primeng/button';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
@@ -25,7 +24,6 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   readonly config = inject(ApplicationConfigService);
   readonly authFacade = inject(AuthFacadeService);
   readonly authOrchestratorService = inject(AuthOrchestratorService);
-  readonly translateService = inject(TranslateService);
   readonly breakpointObserver = inject(BreakpointObserver);
   readonly dynamicDialogConfig = inject(DynamicDialogConfig);
 
@@ -55,6 +53,9 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     { initialValue: null },
   );
 
+  readonly resendLabelKey = computed(() => (this.onCooldown() ? 'auth.common.otp.resendCooldown' : 'auth.common.otp.resend'));
+  readonly resendLabelParams = computed<Record<string, unknown>>(() => (this.onCooldown() ? { seconds: this.cooldownSeconds() } : {}));
+
   private readonly registrationOverride = signal<boolean | null>(null);
   private readonly isRegistration = computed(() => {
     const registrationOverride = this.registrationOverride();
@@ -67,13 +68,6 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     if (typeof registration === 'boolean') {
       this.registrationOverride.set(registration);
     }
-  }
-
-  // Localized instruction including TTL
-  get resendLabel(): string {
-    return this.onCooldown()
-      ? this.translateService.instant('auth.common.otp.resendCooldown', { seconds: this.cooldownSeconds() })
-      : this.translateService.instant('auth.common.otp.resend');
   }
 
   public getRegistrationFlag(): boolean {
@@ -113,7 +107,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     if (!this.disableResend()) {
       this.authOrchestratorService.clearError();
       this.setValue('');
-      void this.authFacade.requestOtp(this.isRegistration());
+      void this.authFacade.requestOtp(this.isRegistration(), true);
     }
   }
 
