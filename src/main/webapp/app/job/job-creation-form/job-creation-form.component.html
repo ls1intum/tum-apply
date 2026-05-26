@@ -134,45 +134,13 @@
                 class="text-sm italic text-text-secondary"
                 jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.languageNote"
               ></p>
-
-              <div class="flex flex-wrap items-center gap-3 mt-3 mb-3">
-                <jhi-segmented-toggle
-                  [value]="segmentValueForCurrentLang()"
-                  [disabled]="isGeneratingDraft()"
-                  [leftLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageEnglish'"
-                  [rightLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageGerman'"
-                  [translateLabels]="true"
-                  (valueChange)="changeDescriptionLanguage(langForSegmentValue($event))"
-                />
-
-                <!-- Translation indicator with direction -->
-                @if (isTranslating()) {
-                  <div class="flex gap-2 px-3 h-8 border border-border-default rounded-lg">
-                    <jhi-progress-spinner classStyling="w-4 h-4" strokeWidth="4" />
-                    @if (translationDirectionLabels(); as translationDirection) {
-                      <span class="flex items-center gap-1 text-sm font-semibold text-text-primary whitespace-nowrap">
-                        <span jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.translating"></span>
-                        <span class="ml-0.5">{{ translationDirection.source }}</span>
-                        <fa-icon [icon]="['fas', 'arrow-right']" class="text-xs" />
-                        <span>{{ translationDirection.target }}</span>
-                      </span>
-                    }
-                  </div>
-                }
-              </div>
             </div>
           </div>
 
           <div class="flex flex-col gap-2 mb-6">
             <div class="grid gap-4 items-start">
               <!-- Editor -->
-              <div>
-                @if (aiToggleSignal()) {
-                  <div class="flex items-center mt-5 -mb-5 justify-end gap-1 text-sm">
-                    <fa-icon class="text-xs text-primary-default" [icon]="['fas', 'custom-sparkle']" />
-                    <p class="m-0" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiLabel"></p>
-                  </div>
-                }
+              <div class="mt-6">
                 <jhi-editor
                   #jobDescriptionEditor
                   fieldId="jobDescription"

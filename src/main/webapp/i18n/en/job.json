@@ -184,10 +184,9 @@
       "jobDescription": {
         "label": "Job Description",
         "aiLabel": "AI writes, improves and translates for you.",
-        "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
+        "placeholderEN": "Describe the scope, tasks, and requirements of the position...",
         "placeholderDE": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Position.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nZulassungsvoraussetzungen\nTODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
-        "descriptionHelper": "Use the template above to structure your job description clearly for applicants.",
-        "toolTipText": "Help applicants understand the research focus, tasks, and expected qualifications.",
+        "descriptionHelper": "Describe the research context, goals, and overall scope of the position. List the main tasks and responsibilities. Specify the minimum requirements (e.g., degree, grades, language skills).",        "toolTipText": "Help applicants understand the research focus, tasks, and expected qualifications.",
         "templateEN": "<p><strong>Description</strong></p><p>TODO: Describe the research context, goals, and scope of the position.</p><br><p><strong>Tasks & Responsibilities</strong></p><p>TODO: List the main responsibilities of the candidate.</p><br><p><strong>Eligibility Criteria</strong></p><p>TODO: Specify the minimum requirements (degree, skills, language, etc.)</p>",
         "templateDE": "<p><strong>Beschreibung</strong></p><p>TODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Position.</p><br><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><p>TODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.</p><br><p><strong>Zulassungsvoraussetzungen</strong></p><p>TODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).</p>",
         "aiHeaderText": "TUMApply AI Assistant",
@@ -220,8 +219,8 @@
           "aiDisabledLabel": "AI disabled:",
           "aiDisabledText": "The AI Assistant is not available and the translation must be provided manually."
         },
-        "languageChoiceInfo": "Please choose and write the job description in either English or German:",
-        "languageNote": "Note: Both English and German descriptions are mandatory.",
+        "languageChoiceInfo": "Describe the research focus, main tasks, and expectations for the candidate. Define the minimum requirements and any preferred qualifications for applicants.",
+        "languageNote": " ",
         "translatingPlaceholder": "Translation is being generated...",
         "languageEnglish": "English",
         "languageGerman": "German",
@@ -416,7 +415,7 @@
     },
     "sections": {
       "jobDescription": "Job Details",
-      "jobDescriptionEN": "English Job Details",
+      "jobDescriptionEN": "Job Details",
       "jobDescriptionDE": "German Job Details",
       "dataProtection": "Data Protection Information"
     },
