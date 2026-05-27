@@ -11,13 +11,13 @@
         (mouseleave)="hoveredIndex.set(null)"
         (click)="onSectionClick(state.index)"
         (keydown.enter)="onSectionClick(state.index)"
-      >{{ state.label }}</button>
+      >
+        {{ state.label }}
+      </button>
     }
   </div>
 } @else if (selectedBadge(); as badge) {
-  <span
-    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
-    [style.background-color]="badge.color"
-    >{{ badge.label }}</span
-  >
+  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white" [style.background-color]="badge.color">{{
+    badge.label
+  }}</span>
 }
