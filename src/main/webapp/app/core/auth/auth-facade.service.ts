@@ -167,7 +167,11 @@ export class AuthFacadeService {
     return this.runAuthAction(
       async () => {
         await this.serverAuthenticationService.sendOtp(email, registration);
-        if (!resend) this.authOrchestrator.nextStep(!registration ? 'otp' : undefined);
+        if (resend) {
+          this.authOrchestrator.startOtpRefreshCooldown();
+        } else {
+          this.authOrchestrator.nextStep(!registration ? 'otp' : undefined);
+        }
       },
       {
         summary: this.translate.instant(`${this.translationKey}.otpSendFailed.summary`),

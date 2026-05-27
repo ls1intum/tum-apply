@@ -57,15 +57,15 @@ export class AuthOrchestratorService {
   });
   readonly totalRegisterSteps = REGISTER_STEPS.length - 1;
   // cooldown for OTP resend
-  readonly cooldownUntil = signal<number | null>(null);
+  readonly cooldownUntil = signal<number | undefined>(undefined);
   // cooldown for OTP submission after too many failed attempts
   readonly failedOtpAttempts = signal(0);
-  readonly otpAttemptCooldownUntil = signal<number | null>(null);
+  readonly otpAttemptCooldownUntil = signal<number | undefined>(undefined);
   readonly injector = inject(Injector);
   readonly _tick = toSignal(
     toObservable(this.cooldownUntil).pipe(
       switchMap(cooldownUntilTimestamp => {
-        if (cooldownUntilTimestamp === null) {
+        if (cooldownUntilTimestamp === undefined) {
           // No cooldown: no ticking, but keep initial value
           return EMPTY;
         }
@@ -85,7 +85,7 @@ export class AuthOrchestratorService {
     // depend on _tick so this recomputes ~4x per second
     this._tick();
     const cooldownUntilTimestamp = this.cooldownUntil();
-    if (cooldownUntilTimestamp === null) {
+    if (cooldownUntilTimestamp === undefined) {
       return 0;
     }
     const remainingTimeInMs = cooldownUntilTimestamp - Date.now();
@@ -95,7 +95,7 @@ export class AuthOrchestratorService {
   readonly _otpAttemptTick = toSignal(
     toObservable(this.otpAttemptCooldownUntil).pipe(
       switchMap(ts => {
-        if (ts === null) return EMPTY;
+        if (ts === undefined) return EMPTY;
         const remaining = Math.max(0, ts - Date.now());
         if (remaining === 0) return timer(0);
         return interval(250).pipe(takeUntil(timer(remaining)), endWith(0));
@@ -107,7 +107,7 @@ export class AuthOrchestratorService {
   readonly otpAttemptCooldownSeconds = computed(() => {
     this._otpAttemptTick();
     const ts = this.otpAttemptCooldownUntil();
-    if (ts === null) return 0;
+    if (ts === undefined) return 0;
     const remaining = ts - Date.now();
     return remaining <= 0 ? 0 : Math.ceil(remaining / 1000);
   });
@@ -119,7 +119,7 @@ export class AuthOrchestratorService {
       const mode = this.mode();
       const login = this.loginStep();
       const register = this.registerStep();
-      const cooldownSet = this.cooldownUntil() !== null;
+      const cooldownSet = this.cooldownUntil() !== undefined;
 
       if (!cooldownSet && ((mode === 'login' && login === 'otp') || (mode === 'register' && register === 'otp'))) {
         this.startOtpRefreshCooldown();
@@ -239,10 +239,10 @@ export class AuthOrchestratorService {
 
   resetOtpAttempts(): void {
     this.failedOtpAttempts.set(0);
-    this.otpAttemptCooldownUntil.set(null);
+    this.otpAttemptCooldownUntil.set(undefined);
   }
 
-  public startOtpRefreshCooldown(): void {
+  startOtpRefreshCooldown(): void {
     const cooldown = this.config.otp.resendCooldownSeconds;
     const now = Date.now();
     this.cooldownUntil.set(now + Math.max(0, cooldown) * 1000);
@@ -258,7 +258,7 @@ export class AuthOrchestratorService {
   private resetAll(): void {
     this.isBusy.set(false);
     this.error.set(null);
-    this.cooldownUntil.set(null);
+    this.cooldownUntil.set(undefined);
     this.redirectUri.set(null);
     this.resetOtpAttempts();
   }
