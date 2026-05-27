@@ -51,14 +51,14 @@ describe('RatingComponent', () => {
   });
 
   // ---------------- BUTTON STATES ----------------
-  it.each<[number | undefined, number, string]>([
-    [undefined, 0, 'transparent'],
+  it.each<[number | undefined, number, string | null]>([
+    [undefined, 0, null],
     [-2, 0, 'var(--color-negative-active)'],
     [-1, 1, 'var(--color-negative-hover)'],
     [0, 2, 'var(--color-warning-default)'],
     [1, 3, 'var(--color-positive-hover)'],
     [2, 4, 'var(--color-positive-active)'],
-    [2, 0, 'transparent'],
+    [2, 0, null],
   ])('buttonStates bg: rating=%s index=%s → %s', (rating, index, expected) => {
     fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();

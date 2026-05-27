@@ -45,13 +45,13 @@ export class RatingComponent {
       const isSelected = currentRating === entry.value;
       const isHovered = selectable && hovered === index;
 
-      let bg: string;
+      let bg: string | null;
       if (isSelected) {
         bg = color;
       } else if (isHovered) {
         bg = `color-mix(in srgb, ${color} 15%, transparent)`;
       } else {
-        bg = 'transparent';
+        bg = null;
       }
 
       return {
@@ -88,8 +88,8 @@ export class RatingComponent {
     this.rating.set(this.rating() === entry.value ? undefined : entry.value);
   }
 
-  /** Returns the CSS color variable for a Likert value, or transparent for undefined/unknown. */
-  colorForValue(value: number | undefined): string {
+  /** Returns the CSS color variable for a Likert value, or null for undefined/unknown (no style set). */
+  colorForValue(value: number | undefined): string | null {
     switch (value) {
       case -2:
         return 'var(--color-negative-active)';
@@ -102,7 +102,7 @@ export class RatingComponent {
       case 2:
         return 'var(--color-positive-active)';
       default:
-        return 'transparent';
+        return null;
     }
   }
 }
