@@ -1,23 +1,23 @@
 @if (selectable()) {
   <div class="flex gap-1.5">
-    @for (entry of likertScale; track entry.value) {
+    @for (state of buttonStates(); track state.entry.value) {
       <button
         type="button"
         class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-150 border focus:outline-none whitespace-nowrap cursor-pointer"
-        [style.background-color]="getButtonBg($index)"
-        [style.border-color]="getColorForValue(entry.value)"
-        [style.color]="getButtonTextColor($index)"
-        (mouseenter)="hoveredIndex.set($index)"
+        [style.background-color]="state.bg"
+        [style.border-color]="state.borderColor"
+        [style.color]="state.textColor"
+        (mouseenter)="hoveredIndex.set(state.index)"
         (mouseleave)="hoveredIndex.set(null)"
-        (click)="onSectionClick($index)"
-        (keydown.enter)="onSectionClick($index)"
-      >{{ tooltipMap().get(entry.value) }}</button>
+        (click)="onSectionClick(state.index)"
+        (keydown.enter)="onSectionClick(state.index)"
+      >{{ state.label }}</button>
     }
   </div>
-} @else if (rating() !== undefined) {
+} @else if (selectedBadge(); as badge) {
   <span
     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
-    [style.background-color]="getColorForValue(rating()!)"
-    >{{ getSelectedLabel() }}</span
+    [style.background-color]="badge.color"
+    >{{ badge.label }}</span
   >
 }

@@ -56,7 +56,7 @@ export class CommentSection {
       this.otherRatings.set(data.otherRatings ?? []);
       this.currentUserRating.set(data.currentUserRating ?? undefined);
     } catch {
-      this.toast.showError({ summary: 'Error', detail: 'Failed to load comment ratings' });
+      this.toast.showErrorKey('evaluation.errors.loadCommentRatings');
     }
   }
 

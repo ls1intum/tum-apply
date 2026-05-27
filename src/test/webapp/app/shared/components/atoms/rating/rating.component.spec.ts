@@ -50,31 +50,33 @@ describe('RatingComponent', () => {
     expect(component.rating()).toBe(2);
   });
 
-  // ---------------- BUTTON BACKGROUND ----------------
+  // ---------------- BUTTON STATES ----------------
   it.each<[number | undefined, number, string]>([
-    [undefined, 0, 'var(--p-background-surface-alt)'],
+    [undefined, 0, 'transparent'],
     [-2, 0, 'var(--color-negative-active)'],
     [-1, 1, 'var(--color-negative-hover)'],
     [0, 2, 'var(--color-warning-default)'],
     [1, 3, 'var(--color-positive-hover)'],
     [2, 4, 'var(--color-positive-active)'],
-    [2, 0, 'var(--p-background-surface-alt)'],
-  ])('getButtonBg: rating=%s index=%s → %s', (rating, index, expected) => {
+    [2, 0, 'transparent'],
+  ])('buttonStates bg: rating=%s index=%s → %s', (rating, index, expected) => {
     fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
-    expect(component.getButtonBg(index)).toBe(expected);
+    const state = component.buttonStates().find((_, i) => i === index);
+    expect(state?.bg).toBe(expected);
   });
 
-  // ---------------- BUTTON TEXT COLOR ----------------
+  // ---------------- BUTTON STATES (text color) ----------------
   it.each<[number | undefined, number, string]>([
     [-2, 0, 'white'],
     [1, 3, 'white'],
     [undefined, 0, 'var(--p-text-color)'],
     [-2, 1, 'var(--p-text-color)'],
-  ])('getButtonTextColor: rating=%s index=%s → %s', (rating, index, expected) => {
+  ])('buttonStates textColor: rating=%s index=%s → %s', (rating, index, expected) => {
     fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
-    expect(component.getButtonTextColor(index)).toBe(expected);
+    const state = component.buttonStates().find((_, i) => i === index);
+    expect(state?.textColor).toBe(expected);
   });
 
   // ---------------- TOOLTIP TEXTS ----------------
@@ -87,17 +89,17 @@ describe('RatingComponent', () => {
     expect(tooltips[4]).toBe('evaluation.ratings.very_good');
   });
 
-  // ---------------- SELECTED LABEL ----------------
-  it.each<[number | undefined, string]>([
-    [undefined, ''],
+  // ---------------- SELECTED BADGE ----------------
+  it.each<[number | undefined, string | undefined]>([
+    [undefined, undefined],
     [-2, 'evaluation.ratings.very_bad'],
     [-1, 'evaluation.ratings.bad'],
     [0, 'evaluation.ratings.neutral'],
     [1, 'evaluation.ratings.good'],
     [2, 'evaluation.ratings.very_good'],
-  ])('getSelectedLabel: rating=%s → %s', (rating, expected) => {
+  ])('selectedBadge: rating=%s → label=%s', (rating, expected) => {
     fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
-    expect(component.getSelectedLabel()).toBe(expected);
+    expect(component.selectedBadge()?.label).toBe(expected);
   });
 });
