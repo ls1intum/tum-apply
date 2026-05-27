@@ -59,7 +59,7 @@ describe('RatingComponent', () => {
     [1, 3, 'var(--color-positive-hover)'],
     [2, 4, 'var(--color-positive-active)'],
     [2, 0, null],
-  ])('buttonStates bg: rating=%s index=%s → %s', (rating, index, expected) => {
+  ])('should compute bg %s when rating=%s and index=%s', (rating, index, expected) => {
     fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
     const state = component.buttonStates().find((_, i) => i === index);
@@ -72,7 +72,7 @@ describe('RatingComponent', () => {
     [1, 3, 'white'],
     [undefined, 0, 'var(--p-text-color)'],
     [-2, 1, 'var(--p-text-color)'],
-  ])('buttonStates textColor: rating=%s index=%s → %s', (rating, index, expected) => {
+  ])('should compute textColor %s when rating=%s and index=%s', (rating, index, expected) => {
     fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
     const state = component.buttonStates().find((_, i) => i === index);
@@ -97,7 +97,7 @@ describe('RatingComponent', () => {
     [0, 'evaluation.ratings.neutral'],
     [1, 'evaluation.ratings.good'],
     [2, 'evaluation.ratings.very_good'],
-  ])('selectedBadge: rating=%s → label=%s', (rating, expected) => {
+  ])('should return selectedBadge label %s when rating=%s', (rating, expected) => {
     fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
     expect(component.selectedBadge()?.label).toBe(expected);
