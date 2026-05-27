@@ -1,16 +1,17 @@
 @if (selectable()) {
-  <div class="flex flex-wrap gap-2">
-    @for (item of likertValues; track $index) {
+  <div class="flex gap-1.5">
+    @for (entry of likertScale; track entry.value) {
       <button
         type="button"
-        class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-150 border border-border-default focus:outline-none"
+        class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-150 border focus:outline-none whitespace-nowrap cursor-pointer"
         [style.background-color]="getButtonBg($index)"
+        [style.border-color]="getColorForValue(entry.value)"
         [style.color]="getButtonTextColor($index)"
+        (mouseenter)="hoveredIndex.set($index)"
+        (mouseleave)="hoveredIndex.set(null)"
         (click)="onSectionClick($index)"
         (keydown.enter)="onSectionClick($index)"
-      >
-        {{ tooltipTexts()[$index] }}
-      </button>
+      >{{ tooltipMap().get(entry.value) }}</button>
     }
   </div>
 } @else if (rating() !== undefined) {
