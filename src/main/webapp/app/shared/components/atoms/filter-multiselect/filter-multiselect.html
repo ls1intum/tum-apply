@@ -83,8 +83,10 @@
               class="flex items-center m-1 p-2 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
               [class.bg-primary-hover-outlined]="focusedIndexOptionList() === i"
               role="option"
+              tabindex="-1"
               [attr.aria-selected]="option.selected"
               (click)="toggleOption(option.value)"
+              (keydown.enter)="toggleOption(option.value)"
             >
               <p-checkbox [binary]="true" [ngModel]="option.selected" [disabled]="true" />
               <span class="flex-1 pl-2 break-words hyphens-auto whitespace-normal">{{ option.label }}</span>
