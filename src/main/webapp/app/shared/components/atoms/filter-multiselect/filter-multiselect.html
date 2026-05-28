@@ -71,7 +71,7 @@
         </div>
       }
 
-      <div class="flex-1 overflow-y-auto">
+      <div class="flex-1 overflow-y-auto" role="listbox" aria-multiselectable="true">
         @if (hasVisibleItems()) {
           @for (option of visibleOptions(); track option.value; let i = $index) {
             @if (i === unselectedStartIndex()) {
@@ -82,10 +82,9 @@
               data-testid="filter-option"
               class="flex items-center m-1 p-2 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
               [class.bg-primary-hover-outlined]="focusedIndexOptionList() === i"
-              tabindex="0"
-              role="button"
+              role="option"
+              [attr.aria-selected]="option.selected"
               (click)="toggleOption(option.value)"
-              (keydown.enter)="toggleOption(option.value)"
             >
               <p-checkbox [binary]="true" [ngModel]="option.selected" [disabled]="true" />
               <span class="flex-1 pl-2 break-words hyphens-auto whitespace-normal">{{ option.label }}</span>
