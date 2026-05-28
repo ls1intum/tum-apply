@@ -76,7 +76,7 @@ export function createAuthOrchestratorServiceMock(): AuthOrchestratorServiceMock
     open: openMock,
     close: closeMock,
     previousStep: vi.fn(),
-    switchToRegister: vi.fn()
+    switchToRegister: vi.fn(),
   };
 }
 
