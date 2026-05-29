@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
@@ -29,6 +29,19 @@ export class CommentSection {
   protected createDraft = signal<string>('');
   protected currentUser = this.accountService.loadedUser()?.name ?? '';
   protected editingId = signal<string | undefined>(undefined);
+
+  protected readonly _loadEffect = effect(() => {
+    const id = this.applicationId();
+    this.createDraft.set('');
+    if (id !== undefined) {
+      void this.loadComments();
+      void this.loadOtherRatings(id);
+    } else {
+      this.comments.set([]);
+      this.otherRatings.set([]);
+      this.currentUserRating.set(undefined);
+    }
+  });
 
   protected readonly ratingByAuthor = computed<Map<string, number>>(() => {
     const map = new Map<string, number>();
