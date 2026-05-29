@@ -30,7 +30,7 @@ export class CommentSection {
   protected currentUser = this.accountService.loadedUser()?.name ?? '';
   protected editingId = signal<string | undefined>(undefined);
 
-  protected readonly _loadEffect = effect(() => {
+  protected readonly _loadCommentsEffect = effect(() => {
     const id = this.applicationId();
     this.createDraft.set('');
     if (id !== undefined) {
