@@ -3,12 +3,12 @@
     @for (state of buttonStates(); track state.entry.value) {
       <button
         type="button"
-        class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-150 border focus:outline-none whitespace-nowrap cursor-pointer"
+        class="px-3 py-1 rounded-full text-sm font-medium transition-colors border focus:outline-none whitespace-nowrap cursor-pointer"
         [style.background-color]="state.bg"
         [style.border-color]="state.borderColor"
         [style.color]="state.textColor"
         (mouseenter)="hoveredIndex.set(state.index)"
-        (mouseleave)="hoveredIndex.set(null)"
+        (mouseleave)="hoveredIndex.set(undefined)"
         (click)="onSectionClick(state.index)"
         (keydown.enter)="onSectionClick(state.index)"
       >
@@ -17,7 +17,9 @@
     }
   </div>
 } @else if (selectedBadge(); as badge) {
-  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white" [style.background-color]="badge.color">{{
-    badge.label
-  }}</span>
+  <span
+    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-color-base-white"
+    [style.background-color]="badge.color"
+    >{{ badge.label }}
+  </span>
 }

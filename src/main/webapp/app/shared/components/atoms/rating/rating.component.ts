@@ -30,8 +30,8 @@ export class RatingComponent {
     return this.likertScale.map(s => this.translateService.instant(`evaluation.ratings.${s.key}`) as string);
   });
 
-  /** Index of the button currently under the pointer, or null. */
-  readonly hoveredIndex = signal<number | null>(null);
+  /** Index of the button currently under the pointer, or undefined. */
+  readonly hoveredIndex = signal<number | undefined>(undefined);
 
   readonly buttonStates = computed(() => {
     this.langChange();
@@ -45,13 +45,13 @@ export class RatingComponent {
       const isSelected = currentRating === entry.value;
       const isHovered = selectable && hovered === index;
 
-      let bg: string | null;
+      let bg: string | undefined;
       if (isSelected) {
-        bg = color;
+        bg = color ?? undefined;
       } else if (isHovered) {
         bg = `color-mix(in srgb, ${color} 15%, transparent)`;
       } else {
-        bg = null;
+        bg = undefined;
       }
 
       return {
@@ -60,7 +60,7 @@ export class RatingComponent {
         label,
         bg,
         borderColor: color,
-        textColor: isSelected ? 'white' : 'var(--p-text-color)',
+        textColor: isSelected ? 'var(--color-base-white)' : 'var(--p-text-color)',
       };
     });
   });
@@ -88,8 +88,8 @@ export class RatingComponent {
     this.rating.set(this.rating() === entry.value ? undefined : entry.value);
   }
 
-  /** Returns the CSS color variable for a Likert value, or null for undefined/unknown (no style set). */
-  colorForValue(value: number | undefined): string | null {
+  /** Returns the CSS color variable for a Likert value, or undefined for unknown. */
+  colorForValue(value: number | undefined): string | undefined {
     switch (value) {
       case -2:
         return 'var(--color-negative-active)';
@@ -102,7 +102,7 @@ export class RatingComponent {
       case 2:
         return 'var(--color-positive-active)';
       default:
-        return null;
+        return undefined;
     }
   }
 }

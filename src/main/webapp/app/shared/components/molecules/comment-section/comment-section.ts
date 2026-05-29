@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
@@ -30,25 +30,19 @@ export class CommentSection {
   protected currentUser = this.accountService.loadedUser()?.name ?? '';
   protected editingId = signal<string | undefined>(undefined);
 
-  protected _loadCommentsEffect = effect(() => {
-    const id = this.applicationId();
-    this.createDraft.set('');
-    if (id !== undefined) {
-      void this.loadComments();
-      void this.loadOtherRatings(id);
-    } else {
-      this.comments.set([]);
-      this.otherRatings.set([]);
-      this.currentUserRating.set(undefined);
+  protected readonly ratingByAuthor = computed<Map<string, number>>(() => {
+    const map = new Map<string, number>();
+    const currentRating = this.currentUserRating();
+    if (this.currentUser !== '' && currentRating !== undefined) {
+      map.set(this.currentUser, currentRating);
     }
+    for (const r of this.otherRatings()) {
+      if (r.from !== undefined && r.rating !== undefined) {
+        map.set(r.from, r.rating);
+      }
+    }
+    return map;
   });
-
-  ratingForAuthor(author: string): number | undefined {
-    if (author === this.currentUser) {
-      return this.currentUserRating();
-    }
-    return this.otherRatings().find(r => r.from === author)?.rating;
-  }
 
   async loadOtherRatings(applicationId: string): Promise<void> {
     try {
