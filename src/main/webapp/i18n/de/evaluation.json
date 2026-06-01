@@ -151,7 +151,7 @@
       },
       "loadCommentRatings": {
         "summary": "Fehler",
-        "detail": "Laden der Kommentarbewertungen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        "detail": "Laden der Kommentar-Bewertungen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   }
