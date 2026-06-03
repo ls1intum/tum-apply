@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
@@ -326,7 +327,7 @@ public class AiService {
     public List<ComplianceIssue> analyzeCurrentJobDescription(JobFormDTO jobFormDTO, String lang, String userLang) {
         String raw = "de".equals(lang) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
         String input = raw != null ? Jsoup.parse(raw).text() : "";
-        List<BiasedIssue> genderAnalysis = genderBiasAnalysisService.analyzeText(input, lang);
+        Set<BiasedIssue> genderAnalysis = genderBiasAnalysisService.analyzeText(input, lang);
         return analyzeJobDescription(jobFormDTO.title(), jobFormDTO.jobId(), input, lang, userLang, genderAnalysis, null);
     }
 
@@ -356,8 +357,8 @@ public class AiService {
         String text,
         String lang,
         String userLang,
-        List<BiasedIssue> analysis,
-        List<BiasedIssue> translatedAnalysis
+        Set<BiasedIssue> analysis,
+        Set<BiasedIssue> translatedAnalysis
     ) {
         List<ComplianceIssue> complianceIssues;
         if (aiFeatureToggleService.isAiAvailable()) {
@@ -395,7 +396,7 @@ public class AiService {
         return complianceIssues;
     }
 
-    private static List<GenderCategory> types(List<BiasedIssue> issues) {
+    private static List<GenderCategory> types(Set<BiasedIssue> issues) {
         return issues == null ? null : issues.stream().map(BiasedIssue::getType).toList();
     }
 

@@ -198,7 +198,7 @@ public class JobService {
             job.getContractExtendable(),
             job.getGenderBiasScore(),
             job.getComplianceIssues(),
-            jobRepository.findBiasedIssuesByJobId(jobId)
+            job.getBiasedIssues()
         );
     }
 
@@ -430,8 +430,8 @@ public class JobService {
     }
 
     private JobFormDTO getJobFormWithAnalysis(UUID jobId) {
-        Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        return JobFormDTO.getFromEntity(job, job.getComplianceIssues(), jobRepository.findBiasedIssuesByJobId(jobId));
+        Job job = jobRepository.findByIdWithIssues(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        return JobFormDTO.getFromEntity(job, job.getComplianceIssues(), job.getBiasedIssues());
     }
 
     private void notifySubjectAreaSubscribers(Job job) {
@@ -469,7 +469,7 @@ public class JobService {
      * @return the job entity if the user can manage it
      */
     private Job assertCanManageJob(UUID jobId) {
-        Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = jobRepository.findByIdWithIssues(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;
     }
@@ -507,14 +507,13 @@ public class JobService {
         UUID jobId,
         int score,
         List<ComplianceIssue> complianceAnalysis,
-        List<BiasedIssue> biasedIssues,
+        Set<BiasedIssue> biasedIssues,
         String lang
     ) {
         if (jobId == null) {
             return;
         }
-        Job job = jobRepository.findByIdWithCompliance(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
-        job.setBiasedIssues(new HashSet<>(jobRepository.findBiasedIssuesByJobId(jobId)));
+        Job job = jobRepository.findByIdWithIssues(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         replaceIssuesForLanguage(job, complianceAnalysis, biasedIssues, lang);
         job.setGenderBiasScore(score);
@@ -526,7 +525,7 @@ public class JobService {
      * Issues from other languages stay unchanged.
      * Updates the job in place and caller saves it.
      */
-    private void replaceIssuesForLanguage(Job job, List<ComplianceIssue> complianceAnalysis, List<BiasedIssue> biasedIssues, String lang) {
+    private void replaceIssuesForLanguage(Job job, List<ComplianceIssue> complianceAnalysis, Set<BiasedIssue> biasedIssues, String lang) {
         Set<ComplianceIssue> issuesToSave = job
             .getComplianceIssues()
             .stream()

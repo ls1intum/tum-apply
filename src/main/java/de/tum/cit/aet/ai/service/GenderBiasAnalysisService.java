@@ -3,7 +3,11 @@ package de.tum.cit.aet.ai.service;
 import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.core.constants.GenderCategory;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import de.tum.cit.aet.core.service.GenderBiasAnalyzer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +27,7 @@ public class GenderBiasAnalysisService {
      * @param language the language code (e.g., "en" or "de")
      * @return a response containing the analysis result and identified biased words
      */
-    public List<BiasedIssue> analyzeText(String text, String language) {
+    public Set<BiasedIssue> analyzeText(String text, String language) {
         // Default to English if no language specified
         String effectiveLanguage = (language == null || language.trim().isEmpty()) ? "en" : language;
 
@@ -38,8 +42,8 @@ public class GenderBiasAnalysisService {
     /**
      * Convert analysis result to DTOs with suggestions
      */
-    private List<BiasedIssue> convertToBiasedIssues(GenderBiasAnalyzer.AnalysisResult result) {
-        List<BiasedIssue> issues = new ArrayList<>();
+    private Set<BiasedIssue> convertToBiasedIssues(GenderBiasAnalyzer.AnalysisResult result) {
+        Set<BiasedIssue> issues = new HashSet<>();
 
         // Add non inclusive words
         for (String word : result.nonInclusiveWords()) {

@@ -53,11 +53,11 @@ export class GenderBiasAnalysisDialogComponent {
   });
 
   readonly nonInclusiveWords = computed(() => {
-    return this.result().filter(w => w.type === 'NON_INCLUSIVE');
+    return this.result().filter(bias => bias.type === 'NON_INCLUSIVE');
   });
 
   readonly inclusiveWords = computed(() => {
-    return this.result().filter(w => w.type === 'INCLUSIVE');
+    return this.result().filter(bias => bias.type === 'INCLUSIVE');
   });
 
   readonly nonInclusiveWordCounts = computed(() => {
@@ -77,10 +77,10 @@ export class GenderBiasAnalysisDialogComponent {
 
   private getWordCounts(words: BiasedIssue[]): Map<string, number> {
     const counts = new Map<string, number>();
-    words.forEach(w => {
-      if (w.word) {
-        const current = counts.get(w.word) ?? 0;
-        counts.set(w.word, current + 1);
+    words.forEach(bias => {
+      if (bias.word) {
+        const current = counts.get(bias.word) ?? 0;
+        counts.set(bias.word, current + 1);
       }
     });
     return counts;

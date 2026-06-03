@@ -3,6 +3,9 @@ package de.tum.cit.aet.ai.util;
 import de.tum.cit.aet.ai.constants.ComplianceCategory;
 import de.tum.cit.aet.core.constants.GenderCategory;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public final class ComplianceScoreCalculator {
 
@@ -31,34 +34,17 @@ public final class ComplianceScoreCalculator {
             return 100;
         }
 
-        long criticalCount = categories
-            .stream()
-            .filter(c -> ComplianceCategory.CRITICAL_AGG == c)
-            .count();
+        Map<ComplianceCategory, Long> counts = categories.stream()
+            .collect(Collectors.groupingBy(
+                Function.identity(),
+                Collectors.counting()
+            ));
 
-        long dsgvoCount = categories
-            .stream()
-            .filter(c -> ComplianceCategory.DSGVO_MINIMIZATION == c)
-            .count();
-
-        if (criticalCount > 0) {
-            return 0;
-        }
-        if (dsgvoCount > 0) {
+        if (counts.get(ComplianceCategory.CRITICAL_AGG) > 0 || counts.get(ComplianceCategory.DSGVO_MINIMIZATION) > 0) {
             return 0;
         }
 
-        long transparencyCount = categories
-            .stream()
-            .filter(c -> ComplianceCategory.TRANSPARENCY == c)
-            .count();
-
-        long publicSectorCount = categories
-            .stream()
-            .filter(c -> ComplianceCategory.PUBLIC_SECTOR == c)
-            .count();
-
-        double totalCount = (double) transparencyCount + (double) publicSectorCount;
+        double totalCount = (double) counts.get(ComplianceCategory.TRANSPARENCY) + (double) counts.get(ComplianceCategory.PUBLIC_SECTOR);
 
         double score = 100.0 * Math.pow(PENALTY_FACTOR, totalCount);
         return (int) Math.max(0, Math.round(score));

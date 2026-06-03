@@ -15,7 +15,7 @@ import de.tum.cit.aet.ai.dto.TranslateComplianceDTO;
 import de.tum.cit.aet.ai.service.AiFeatureToggleService;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.ai.service.GenderBiasAnalysisService;
-import de.tum.cit.aet.ai.service.GenderBiasAnalyzer;
+import de.tum.cit.aet.core.service.GenderBiasAnalyzer;
 import de.tum.cit.aet.ai.web.AiResource;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.GenderCategory;
