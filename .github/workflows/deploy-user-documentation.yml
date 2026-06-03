@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - uses: actions/setup-node@v6
         with:
@@ -36,17 +36,14 @@ jobs:
 
       - name: Install dependencies
         working-directory: docs
-        # --ignore-workspace stops pnpm from walking up to the repo-root
-        # `pnpm-workspace.yaml` (which scopes the main app, not the docs site)
-        # and silently no-op'ing the install for `docs/`.
-        run: pnpm install --frozen-lockfile --ignore-workspace
+        run: pnpm install --frozen-lockfile
 
       - name: Build Docusaurus site
         working-directory: docs
         run: pnpm run build
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs/build
 
@@ -59,4 +56,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

@@ -47,8 +47,8 @@
         "gradle"
       ],
       "groupName": "vendor: Jackson FasterXML",
-      "matchSourceUrlPrefixes": [
-        "https://github.com/FasterXML/"
+      "matchSourceUrls": [
+        "https://github.com/FasterXML/**"
       ]
     },
     {
@@ -56,8 +56,8 @@
         "gradle"
       ],
       "groupName": "vendor: Keycloak",
-      "matchPackagePatterns": [
-        "^org\\.keycloak:"
+      "matchPackageNames": [
+        "org.keycloak:**"
       ]
     },
     {
@@ -68,10 +68,8 @@
       "matchPackageNames": [
         "primeng",
         "primeicons",
-        "tailwindcss-primeui"
-      ],
-      "matchPackagePrefixes": [
-        "@primeuix/"
+        "tailwindcss-primeui",
+        "@primeuix/**"
       ]
     },
     {
@@ -79,8 +77,8 @@
         "npm"
       ],
       "groupName": "vendor: ngx-translate",
-      "matchPackagePrefixes": [
-        "@ngx-translate/"
+      "matchPackageNames": [
+        "@ngx-translate/**"
       ]
     },
     {
@@ -88,8 +86,8 @@
         "gradle"
       ],
       "groupName": "vendor: JHipster",
-      "matchPackagePatterns": [
-        "^tech\\.jhipster:"
+      "matchPackageNames": [
+        "tech.jhipster:**"
       ]
     },
     {
@@ -97,8 +95,8 @@
         "gradle"
       ],
       "groupName": "vendor: Caffeine",
-      "matchPackagePatterns": [
-        "^com\\.github\\.ben-manes\\.caffeine:"
+      "matchPackageNames": [
+        "com.github.ben-manes.caffeine:**"
       ]
     },
     {
@@ -106,8 +104,8 @@
         "gradle"
       ],
       "groupName": "vendor: Lombok",
-      "matchPackagePatterns": [
-        "^org\\.projectlombok:lombok$"
+      "matchPackageNames": [
+        "org.projectlombok:lombok"
       ]
     },
     {
@@ -115,8 +113,8 @@
         "gradle"
       ],
       "groupName": "vendor: ArchUnit",
-      "matchPackagePatterns": [
-        "^com\\.tngtech\\.archunit:"
+      "matchPackageNames": [
+        "com.tngtech.archunit:**"
       ]
     },
     {
@@ -124,8 +122,8 @@
         "gradle"
       ],
       "groupName": "vendor: Testcontainers",
-      "matchPackagePatterns": [
-        "^org\\.testcontainers:"
+      "matchPackageNames": [
+        "org.testcontainers:**"
       ]
     }
   ]

@@ -1,7 +1,6 @@
 {
   "global": {
     "title": "TUMApply",
-    "browsehappy": "Du benutzt einen <strong>veralteten</strong> Browser. Bitte <a href=\"http://browsehappy.com/?locale=de/\">aktualisiere deinen Browser</a>, um die Benutzerfreundlichkeit zu erhöhen.",
     "routes": {
       "landingPage": {
         "applicant": "TUMApply - Bewerber Portal",
@@ -53,74 +52,11 @@
         "download": "TUMApply - Datenexport Download"
       }
     },
-    "menu": {
-      "home": "Startseite",
-      "colorTheme": "Farbschema ändern",
-      "entities": {
-        "main": "Entitäten",
-        "adminAuthority": "Authority"
-      },
-      "account": {
-        "main": "Zugang",
-        "settings": "Einstellungen",
-        "password": "Passwort",
-        "sessions": "Sitzungen",
-        "login": "Anmelden",
-        "logout": "Abmelden",
-        "register": "Registrierung"
-      },
-      "admin": {
-        "main": "Administration",
-        "userManagement": "Benutzerverwaltung",
-        "tracker": "Benutzer Aktivitäten",
-        "metrics": "Metriken",
-        "health": "Status",
-        "configuration": "Konfiguration",
-        "logs": "Protokoll",
-        "apidocs": "API",
-        "database": "Datenbank"
-      },
-      "language": "Sprache"
-    },
-    "messages": {
-      "info": {
-        "authenticated": {
-          "prefix": "Wenn du dich ",
-          "link": "anmelden",
-          "suffix": " möchtest, versuche es mit <br/>- Administrator (Name=\"admin\" und Passwort=\"admin\")<br/>- Benutzer (Name=\"user\" und Passwort=\"user\")."
-        },
-        "register": {
-          "noaccount": "Du hast noch keinen Zugang?",
-          "link": "Registriere dich"
-        }
-      },
-      "error": {
-        "dontmatch": "Das bestätigte Passwort entspricht nicht dem neuen Passwort!"
-      },
-      "validate": {
-        "newpassword": {
-          "required": "Ein neues Passwort wird benötigt.",
-          "minlength": "Das neue Passwort muss mindestens 4 Zeichen lang sein",
-          "maxlength": "Das neue Passwort darf nicht länger als 50 Zeichen sein",
-          "strength": "Passwortstärke:"
-        },
-        "confirmpassword": {
-          "required": "Du musst das Passwort bestätigen.",
-          "minlength": "Das bestätigte Passwort muss mindestens 4 Zeichen lang sein",
-          "maxlength": "Das bestätigte Passwort darf nicht länger als 50 Zeichen sein"
-        },
-        "email": {
-          "required": "Deine Email Adresse wird benötigt.",
-          "invalid": "Deine Email Adresse ist ungültig.",
-          "minlength": "Deine Email Adresse muss mindestens 5 Zeichen lang sein",
-          "maxlength": "Deine Email Adresse darf nicht länger als 50 Zeichen sein"
-        }
-      }
-    },
     "stepper": {
       "progress": "Schritt {current} von {total}"
     },
     "input": {
+      "requiredHint": "(Mit * markierte Felder sind Pflichtfelder.)",
       "error": {
         "required": "Dieses Feld ist ein Pflichtfeld.",
         "minLength": "Dieses Feld muss mindestens {min} Zeichen lang sein.",
@@ -134,25 +70,16 @@
       }
     },
     "editor": {
-      "header": {
-        "heading": "Heading",
-        "subheading": "Subheading",
-        "normal": "Normal"
-      },
       "align": {
         "center": "center",
         "right": "right",
         "justify": "justify"
       }
     },
-    "field": {
-      "id": "ID"
-    },
     "ribbon": {
       "dev": "Entwicklung",
       "test": "Entwicklung"
     },
-    "item-count": "Ergebnis {first} - {second} von {total} Elemente.",
     "dataExport": {
       "downloadSuccess": "Download erfolgreich!",
       "downloadSuccessMessage": "Dein Datenexport wurde erfolgreich heruntergeladen.",
@@ -215,19 +142,6 @@
     "delete": {
       "title": "Löschen bestätigen"
     },
-    "validation": {
-      "required": "Dieses Feld wird benötigt.",
-      "minlength": "Dieses Feld muss mind. {min} Zeichen lang sein.",
-      "maxlength": "Dieses Feld darf max. {max} Zeichen lang sein.",
-      "min": "Dieses Feld muss mind. {min} sein.",
-      "max": "Dieses Feld darf max. {max} sein.",
-      "minbytes": "Dieses Feld sollte mehr als {min} bytes haben.",
-      "maxbytes": "Dieses Feld sollte nicht mehr als {max} bytes haben.",
-      "pattern": "Dieses Feld muss das Muster {pattern} erfüllen.",
-      "number": "Dieses Feld muss eine Zahl sein.",
-      "datetimelocal": "Dieses Feld muss eine Datums- und Zeitangabe enthalten.",
-      "patternLogin": "Dieses Feld darf nur Buchstaben, Ziffern und E-Mail-Adressen enthalten."
-    },
     "filters": {
       "filter": "Filter",
       "sortingAndFilter": "Sortierung & Filter",
@@ -273,6 +187,10 @@
         "CV": "Lebenslauf",
         "CUSTOM": "Benutzerdefiniert"
       },
+      "aria": {
+        "removeFile": "Datei entfernen",
+        "selectFileToUpload": "Datei zum Hochladen auswählen"
+      },
       "tooltip": {
         "to_upload": "Muss noch hochgeladen werden",
         "already_uploaded": "Bereits hochgeladen",
@@ -301,15 +219,15 @@
         },
         "upload_failed": {
           "summary": "Upload fehlgeschlagen",
-          "detail": "Ein Fehler ist während des Uploads aufgetreten. Bitte versuche es erneut."
+          "detail": "Bitte überprüfe deine Verbindung und versuche es erneut. Sonst kontaktiere uns."
         },
         "delete_failed": {
           "summary": "Löschen fehlgeschlagen",
-          "detail": "Ein Fehler ist während des Löschens des Dokuments aufgetreten. Bitte versuche es erneut."
+          "detail": "Bitte versuche es erneut. Sonst kontaktiere uns."
         },
         "rename_failed": {
           "summary": "Umbenennen fehlgeschlagen",
-          "detail": "Ein Fehler ist während des Umbenennens des Dokuments aufgetreten. Bitte versuche es erneut."
+          "detail": "Bitte versuche es erneut. Sonst kontaktiere uns."
         }
       }
     },
@@ -334,6 +252,7 @@
       "personal_documents": "Persönliche Dokumente",
       "reference_letters": "Empfehlungsschreiben Anfragen",
       "reference_status": {
+        "added": "(hinzugefügt)",
         "requested": "(angefragt)",
         "submitted": "(eingereicht)",
         "expired": "(abgelaufen)"
@@ -365,7 +284,7 @@
       "loading": "Extrahiert...",
       "aiExtractionFailed": {
         "summary": "Extraktion fehlgeschlagen",
-        "detail": "Die Daten konnten nicht extrahiert werden. Bitte versuche es erneut."
+        "detail": "Stelle sicher, dass die Datei eine klar lesbare PDF ist, oder fülle die Felder manuell aus."
       }
     },
     "applicationPage1": {
@@ -563,56 +482,56 @@
           "detail": "Vielen Dank für deine Bewerbung."
         },
         "invalidJobId": {
-          "summary": "Ungültige Job-ID",
-          "detail": "Bitte prüfe die eingegebene Job-ID und versuche es erneut."
+          "summary": "Ungültiger Job-Link",
+          "detail": "Der Link ist möglicherweise fehlerhaft oder die Stelle wurde entfernt. Durchsuche die verfügbaren Stellen."
         },
         "invalidApplicationId": {
-          "summary": "Ungültige Bewerbungs-ID",
-          "detail": "Bitte prüfe die eingegebene Bewerbungs-ID und versuche es erneut."
+          "summary": "Ungültiger Bewerbungs-Link",
+          "detail": "Öffne die Bewerbung stattdessen über deine Bewerbungsübersicht."
         },
         "errorApplicationId": {
-          "summary": "Fehlerhafte Bewerbungs-ID",
-          "detail": "Es liegt ein Problem mit der Bewerbungs-ID vor. Bitte lade die Seite neu oder versuche es später erneut."
+          "summary": "Bewerbung konnte nicht geöffnet werden",
+          "detail": "Lade die Seite neu, oder öffne sie über deine Bewerbungsübersicht."
         },
         "invalidPageLink": {
           "summary": "Ungültiger Seitenlink",
-          "detail": "Dieser Bewerbungslink ist nicht gültig. Bitte öffne die Seite über die Übersicht und versuche es erneut."
+          "detail": "Öffne die Bewerbung über deine Bewerbungsübersicht."
         },
         "saveFailedWithStatus": {
           "summary": "Übermittlung fehlgeschlagen",
-          "detail": "Bewerbung konnte nicht übermittelt werden: {status}"
+          "detail": "Übermittlung fehlgeschlagen ({status}). Bitte versuche es erneut oder kontaktiere uns."
         },
         "fetchApplicationFailed": {
           "summary": "Bewerbung nicht geladen",
-          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+          "detail": "Lade die Seite neu, oder kontaktiere uns, wenn das Problem bleibt."
         },
         "fetchDocumentIdsFailed": {
           "summary": "Dokumente nicht geladen",
-          "detail": "Die Dokument-IDs für diese Bewerbung konnten nicht abgerufen werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+          "detail": "Lade die Seite neu, oder kontaktiere uns, wenn das Problem bleibt."
         },
         "notEditable": {
-          "summary": "Nicht bearbeitbar",
-          "detail": "Diese Bewerbung kann nicht bearbeitet werden, da sie bereits eingereicht wurde oder kein Entwurf mehr ist."
+          "summary": "Nicht mehr bearbeitbar",
+          "detail": "Sie wurde bereits eingereicht. Du kannst sie weiterhin in deiner Übersicht ansehen."
         },
         "authRequired": {
           "summary": "Anmeldung erforderlich",
-          "detail": "Bewerbung kann nicht eingereicht werden: Bitte melde dich an."
+          "detail": "Bitte melde dich an und versuche es erneut."
         },
         "saveFailed": {
           "summary": "Speichern fehlgeschlagen",
-          "detail": "Die Änderungen konnten nicht gespeichert werden. Bitte prüfe deine Verbindung und versuche es erneut."
+          "detail": "Prüfe deine Verbindung und versuche es erneut, oder kontaktiere uns."
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte lade die Seite neu, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+          "detail": "Lade die Seite neu, oder kontaktiere uns, wenn das Problem bleibt."
         },
         "initLoadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht initial geladen werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+          "detail": "Lade die Seite neu, oder kontaktiere uns, wenn das Problem bleibt."
         },
         "missingJobIdUnauthenticated": {
-          "summary": "Job-ID fehlt",
-          "detail": "Ohne Anmeldung muss eine Job-ID angegeben werden."
+          "summary": "Anmelden oder Job-Link öffnen",
+          "detail": "Melde dich an, oder öffne diese Seite über einen Job-Link."
         },
         "applicationDeleted": {
           "summary": "Bewerbung gelöscht",
@@ -620,7 +539,7 @@
         },
         "errorDeletingApplication": {
           "summary": "Löschen fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht gelöscht werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+          "detail": "Bitte versuche es erneut. Sonst kontaktiere uns."
         },
         "applicationWithdrawn": {
           "summary": "Bewerbung zurückgezogen",
@@ -628,31 +547,31 @@
         },
         "errorWithdrawingApplication": {
           "summary": "Zurückziehen fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht zurückgezogen werden. Bitte versuche es erneut, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+          "detail": "Bitte versuche es erneut. Sonst kontaktiere uns."
         },
         "jobIdNotAvailable": {
-          "summary": "Fehler",
-          "detail": "Job-ID ist für diese Bewerbung nicht verfügbar."
+          "summary": "Job-Referenz fehlt",
+          "detail": "Öffne sie über deine Bewerbungsübersicht, oder kontaktiere uns."
         },
         "invalidEmail": {
-          "summary": "Fehler",
-          "detail": "Bitte gib eine gültige E-Mail-Adresse an."
+          "summary": "E-Mail erforderlich",
+          "detail": "Bitte gib eine gültige E-Mail-Adresse ein, bevor du fortfährst."
         },
         "invalidFirstName": {
-          "summary": "Fehler",
-          "detail": "Bitte gib einen gültigen Vornamen an."
+          "summary": "Vorname erforderlich",
+          "detail": "Bitte gib einen gültigen Vornamen ein, bevor du fortfährst."
         },
         "invalidLastName": {
-          "summary": "Fehler",
-          "detail": "Bitte gib einen gültigen Nachnamen an."
+          "summary": "Nachname erforderlich",
+          "detail": "Bitte gib einen gültigen Nachnamen ein, bevor du fortfährst."
         },
         "migrationFailed": {
-          "summary": "Fehler",
-          "detail": "Der lokale Entwurf konnte nicht gespeichert werden. Versuche es erneut, lade die Seite neu oder überprüfe deine Verbindung."
+          "summary": "Entwurf nicht gespeichert",
+          "detail": "Bitte versuche es erneut, lade die Seite neu oder überprüfe deine Verbindung."
         },
         "otpVerificationFailed": {
-          "summary": "Fehler",
-          "detail": "E-Mail-Verifizierung fehlgeschlagen. Bitte versuch es erneut."
+          "summary": "E-Mail-Verifizierung fehlgeschlagen",
+          "detail": "Dein Code ist möglicherweise abgelaufen oder ungültig. Fordere einen neuen Code an und versuche es erneut."
         }
       },
       "applicationOverview": {
@@ -663,7 +582,7 @@
           },
           "error": {
             "summary": "Löschen fehlgeschlagen",
-            "detail": "Der Entwurf konnte nicht gelöscht werden. Bitte versuche es erneut."
+            "detail": "Bitte versuche es erneut. Sonst kontaktiere uns."
           }
         },
         "withdraw": {
@@ -680,17 +599,8 @@
     }
   },
   "error": {
-    "internalServerError": "Interner Serverfehler",
     "server.not.reachable": "Server ist nicht erreichbar",
     "url.not.found": "Nicht gefunden",
-    "NotNull": "Feld {fieldName} kann nicht leer sein!",
-    "Size": "Feld {fieldName} erfüllt nicht die minimalen/maximalen Voraussetzungen!",
-    "userexists": "Benutzername bereits vergeben!",
-    "emailexists": "Email wird bereits verwendet!",
-    "idexists": "Ein neuer {entityName} kann noch keine ID haben",
-    "idnull": "Ungültige ID",
-    "idinvalid": "Ungültige ID",
-    "idnotfound": "ID konnte nicht gefunden werden",
     "file": {
       "could.not.extract": "Datei konnte nicht extrahiert werden",
       "not.image": "Es wird erwartet, dass die Datei ein Bild ist. Die Datei ist jedoch vom Typ \"{fileType}\""
@@ -732,7 +642,7 @@
     },
     "uploadFailed": {
       "summary": "Upload fehlgeschlagen",
-      "detail": "Wir konnten Ihr Schreiben nicht speichern. Bitte versuchen Sie es erneut."
+      "detail": "Bitte versuche es erneut, oder kontaktiere uns über die Support-E-Mail."
     }
   },
   "imageUpload": {
@@ -755,7 +665,7 @@
       },
       "uploadFailed": {
         "summary": "Upload fehlgeschlagen",
-        "detail": "Bild-Upload fehlgeschlagen. Bitte versuche es erneut"
+        "detail": "Prüfe deine Verbindung und versuche es erneut, oder kontaktiere uns."
       }
     }
   }

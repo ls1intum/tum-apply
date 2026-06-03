@@ -68,7 +68,7 @@ class EmailServiceTest {
             emailTemplateService.resolveContent(any(ResearchGroup.class), eq(EmailType.APPLICATION_SENT), eq(Language.ENGLISH))
         ).thenReturn(content);
         when(templateProcessingService.renderSubject(eq("Hello"), any())).thenReturn("rendered-subject");
-        when(templateProcessingService.renderTemplate(eq(Language.ENGLISH), eq("<p>body</p>"), any())).thenReturn("rendered-body");
+        when(templateProcessingService.renderTemplate(eq(Language.ENGLISH), eq("<p>body</p>"), any(), any())).thenReturn("rendered-body");
         lenient().when(emailSettingService.canNotify(any(), any())).thenReturn(true);
 
         Email email = baseEmail.content(new Object()).build();
@@ -76,14 +76,14 @@ class EmailServiceTest {
 
         verify(emailTemplateService).resolveContent(any(ResearchGroup.class), eq(EmailType.APPLICATION_SENT), eq(Language.ENGLISH));
         verify(templateProcessingService).renderSubject(eq("Hello"), any());
-        verify(templateProcessingService).renderTemplate(eq(Language.ENGLISH), eq("<p>body</p>"), any());
+        verify(templateProcessingService).renderTemplate(eq(Language.ENGLISH), eq("<p>body</p>"), any(), any());
     }
 
     @Test
     void send_skipsTemplateLookup_whenCustomSubjectAndBodyAreSet() {
         ReflectionTestUtils.setField(emailService, "emailEnabled", false);
         when(templateProcessingService.renderSubject(eq("Custom"), any())).thenReturn("Custom");
-        when(templateProcessingService.renderRawTemplate(eq(Language.ENGLISH), anyString())).thenReturn("body");
+        when(templateProcessingService.renderRawTemplate(eq(Language.ENGLISH), anyString(), any())).thenReturn("body");
         lenient().when(emailSettingService.canNotify(any(), any())).thenReturn(true);
 
         Email email = baseEmail.customSubject("Custom").customBody("<p>x</p>").build();
@@ -101,7 +101,7 @@ class EmailServiceTest {
         lenient().when(emailSettingService.canNotify(any(), any())).thenReturn(false);
         when(emailTemplateService.resolveContent(any(), any(), any())).thenReturn(new EmailContent("s", "b"));
         when(templateProcessingService.renderSubject(eq("s"), any())).thenReturn("s");
-        when(templateProcessingService.renderTemplate(eq(Language.ENGLISH), eq("b"), any())).thenReturn("b");
+        when(templateProcessingService.renderTemplate(eq(Language.ENGLISH), eq("b"), any(), any())).thenReturn("b");
 
         Email email = baseEmail.content(new Object()).build();
 

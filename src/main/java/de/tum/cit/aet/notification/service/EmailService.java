@@ -2,6 +2,7 @@ package de.tum.cit.aet.notification.service;
 
 import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.exception.MailingException;
+import de.tum.cit.aet.notification.constants.SignoffType;
 import de.tum.cit.aet.notification.service.EmailTemplateService.EmailContent;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -123,10 +124,11 @@ public class EmailService {
      * @return the rendered HTML body
      */
     private String renderBody(Email email, EmailContent content) {
+        SignoffType signoff = email.getEmailType() != null ? email.getEmailType().getSignoffType() : SignoffType.NONE;
         if (StringUtils.isNotEmpty(email.getCustomBody()) || content == null) {
-            return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getCustomBody());
+            return templateProcessingService.renderRawTemplate(email.getLanguage(), email.getCustomBody(), signoff);
         }
-        return templateProcessingService.renderTemplate(email.getLanguage(), content.bodyHtml(), email.getContent());
+        return templateProcessingService.renderTemplate(email.getLanguage(), content.bodyHtml(), email.getContent(), signoff);
     }
 
     /**

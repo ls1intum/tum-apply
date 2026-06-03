@@ -1,15 +1,13 @@
 <div class="flex flex-col gap-3">
   <div>
-    <!-- Tailwind overrides target jhi-filter-multiselect's global classes (ViewEncapsulation.None);
-         the inline dropdown pushes the footer instead of overlapping it on short viewports. -->
     <jhi-filter-multiselect
-      class="[&_.filter-button]:justify-between [&_.filter-button]:hover:border-border-hover [&_.filter-trigger]:flex-1 [&_.filter-trigger]:min-w-0 [&_.trigger-summary]:hidden [&_.chip-row]:hidden [&_.filter-icon]:ml-auto [&_.filter-icon]:shrink-0 [&_.filter-dropdown]:!relative [&_.filter-dropdown]:!z-[1]"
       filterId="subject-areas"
       filterLabel="settings.notifications.applicant.subjectAreas.placeholder"
       filterSearchPlaceholder="settings.notifications.applicant.subjectAreas.filterPlaceholder"
       [filterOptions]="filterOptions()"
       [selectedValuesInput]="selectedValues()"
       [shouldTranslateOptions]="true"
+      [showChipsInTrigger]="false"
       (filterChange)="onFilterChange($event)"
     />
   </div>
