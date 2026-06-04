@@ -4,11 +4,7 @@
       <button
         type="button"
         class="px-3 py-1 rounded-full text-sm font-medium transition-colors border focus:outline-none whitespace-nowrap cursor-pointer"
-        [style.background-color]="state.bg"
-        [style.border-color]="state.borderColor"
-        [style.color]="state.textColor"
-        (mouseenter)="hoveredIndex.set(state.index)"
-        (mouseleave)="hoveredIndex.set(undefined)"
+        [class]="state.classes"
         (click)="onSectionClick(state.index)"
         (keydown.enter)="onSectionClick(state.index)"
       >
@@ -17,9 +13,7 @@
     }
   </div>
 } @else if (selectedBadge(); as badge) {
-  <span
-    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-color-base-white"
-    [style.background-color]="badge.color"
+  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-color-base-white" [class]="badge.bgClass"
     >{{ badge.label }}
   </span>
 }

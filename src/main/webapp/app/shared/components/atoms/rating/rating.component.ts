@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, model, signal } from '@angular/core';
+import { Component, computed, inject, input, model } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -8,6 +8,19 @@ interface LikertEntry {
   value: LikertValue;
   key: string;
 }
+
+interface VariantClasses {
+  bg: string;
+  hoverBg: string;
+}
+
+const VARIANT_CLASSES: Record<LikertValue, VariantClasses> = {
+  [-2]: { bg: 'bg-negative-active', hoverBg: 'hover:bg-negative-active/15' },
+  [-1]: { bg: 'bg-negative-hover', hoverBg: 'hover:bg-negative-hover/15' },
+  [0]: { bg: 'bg-warning-default', hoverBg: 'hover:bg-warning-default/15' },
+  [1]: { bg: 'bg-positive-hover', hoverBg: 'hover:bg-positive-hover/15' },
+  [2]: { bg: 'bg-positive-active', hoverBg: 'hover:bg-positive-active/15' },
+};
 
 @Component({
   selector: 'jhi-rating',
@@ -27,55 +40,34 @@ export class RatingComponent {
 
   readonly tooltipTexts = computed(() => {
     this.langChange();
-    return this.likertScale.map(s => this.translateService.instant(`evaluation.ratings.${s.key}`) as string);
+    return this.likertScale.map(s => {
+      const tooltip: string = this.translateService.instant(`evaluation.ratings.${s.key}`);
+      return tooltip;
+    });
   });
-
-  /** Index of the button currently under the pointer, or undefined. */
-  readonly hoveredIndex = signal<number | undefined>(undefined);
 
   readonly buttonStates = computed(() => {
     this.langChange();
     const currentRating = this.rating();
-    const selectable = this.selectable();
-    const hovered = this.hoveredIndex();
 
     return this.likertScale.map((entry, index) => {
-      const color = this.colorForValue(entry.value);
-      const label = this.translateService.instant(`evaluation.ratings.${entry.key}`) as string;
+      const label = this.translateService.instant(`evaluation.ratings.${entry.key}`);
       const isSelected = currentRating === entry.value;
-      const isHovered = selectable && hovered === index;
+      const variant = VARIANT_CLASSES[entry.value];
+      const classes: string = isSelected ? `${variant.bg} text-color-base-white` : variant.hoverBg;
 
-      let bg: string | undefined;
-      if (isSelected) {
-        bg = color ?? undefined;
-      } else if (isHovered) {
-        bg = `color-mix(in srgb, ${color} 15%, transparent)`;
-      } else {
-        bg = undefined;
-      }
-
-      return {
-        entry,
-        index,
-        label,
-        bg,
-        borderColor: color,
-        textColor: isSelected ? 'var(--color-base-white)' : 'var(--p-text-color)',
-      };
+      return { entry, index, label, classes };
     });
   });
 
-  /** Badge data for the read-only display variant. */
   readonly selectedBadge = computed(() => {
     this.langChange();
     const r = this.rating();
     if (r === undefined) return undefined;
     const entry = this.likertScale.find(s => s.value === r);
     if (entry === undefined) return undefined;
-    return {
-      color: this.colorForValue(r),
-      label: this.translateService.instant(`evaluation.ratings.${entry.key}`) as string,
-    };
+    const label: string = this.translateService.instant(`evaluation.ratings.${entry.key}`);
+    return { bgClass: VARIANT_CLASSES[entry.value].bg, label };
   });
 
   private translateService = inject(TranslateService);
@@ -86,23 +78,5 @@ export class RatingComponent {
     const entry = this.likertScale.find((_, i) => i === index);
     if (entry === undefined) return;
     this.rating.set(this.rating() === entry.value ? undefined : entry.value);
-  }
-
-  /** Returns the CSS color variable for a Likert value, or undefined for unknown. */
-  colorForValue(value: number | undefined): string | undefined {
-    switch (value) {
-      case -2:
-        return 'var(--color-negative-active)';
-      case -1:
-        return 'var(--color-negative-hover)';
-      case 0:
-        return 'var(--color-warning-default)';
-      case 1:
-        return 'var(--color-positive-hover)';
-      case 2:
-        return 'var(--color-positive-active)';
-      default:
-        return undefined;
-    }
   }
 }
