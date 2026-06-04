@@ -34,11 +34,9 @@ public final class ComplianceScoreCalculator {
             return 100;
         }
 
-        Map<ComplianceCategory, Long> counts = categories.stream()
-            .collect(Collectors.groupingBy(
-                Function.identity(),
-                Collectors.counting()
-            ));
+        Map<ComplianceCategory, Long> counts = categories
+            .stream()
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
         if (counts.get(ComplianceCategory.CRITICAL_AGG) > 0 || counts.get(ComplianceCategory.DSGVO_MINIMIZATION) > 0) {
             return 0;

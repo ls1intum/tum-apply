@@ -2,12 +2,11 @@ package de.tum.cit.aet.ai.service;
 
 import de.tum.cit.aet.ai.domain.BiasedIssue;
 import de.tum.cit.aet.core.constants.GenderCategory;
+import de.tum.cit.aet.core.service.GenderBiasAnalyzer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import de.tum.cit.aet.core.service.GenderBiasAnalyzer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

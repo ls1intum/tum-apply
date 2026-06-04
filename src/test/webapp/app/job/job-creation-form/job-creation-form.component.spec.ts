@@ -173,10 +173,6 @@ describe('JobCreationFormComponent', () => {
   });
 
   describe('Component Initialization', () => {
-    it('should create component', () => {
-      expect(component).toBeTruthy();
-    });
-
     it('should set mode to create by default', () => {
       expect(component.mode()).toBe('create');
     });

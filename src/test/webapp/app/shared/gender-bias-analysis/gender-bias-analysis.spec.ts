@@ -4,28 +4,23 @@ import { computeCodingStatus } from 'app/shared/gender-bias-analysis/gender-bias
 
 describe('computeCodingStatus', () => {
   it.each<[string, BiasedIssue[] | undefined]>([
-    ['no analysis is available', undefined],
-    ['analysis is empty by default', []],
-  ])('should return undefined when %s', (_label, result) => {
+    ['undefined', undefined],
+    ['empty', []],
+  ])('should return undefined for %s result', (_label, result) => {
     expect(computeCodingStatus(result)).toBeUndefined();
   });
 
-  it.each<[string, BiasedIssue[], BiasedIssueTypeEnum, { emptyAsNeutral?: boolean } | undefined]>([
-    ['empty analysis should be treated as neutral', [], 'NEUTRAL', { emptyAsNeutral: true }],
-    ['inclusive and non-inclusive issue counts are balanced', [{ type: 'NON_INCLUSIVE' }, { type: 'INCLUSIVE' }], 'NEUTRAL', undefined],
+  it.each<[BiasedIssueTypeEnum, string, BiasedIssue[], { emptyAsNeutral?: boolean } | undefined]>([
+    ['NEUTRAL', 'empty result', [], { emptyAsNeutral: true }],
+    ['NEUTRAL', 'balanced result', [{ type: 'NON_INCLUSIVE' }, { type: 'INCLUSIVE' }], undefined],
     [
-      'non-inclusive issues outnumber inclusive issues',
-      [{ type: 'NON_INCLUSIVE' }, { type: 'NON_INCLUSIVE' }, { type: 'INCLUSIVE' }],
       'NON_INCLUSIVE',
+      'mostly non-inclusive result',
+      [{ type: 'NON_INCLUSIVE' }, { type: 'NON_INCLUSIVE' }, { type: 'INCLUSIVE' }],
       undefined,
     ],
-    [
-      'inclusive issues outnumber non-inclusive issues',
-      [{ type: 'INCLUSIVE' }, { type: 'INCLUSIVE' }, { type: 'NON_INCLUSIVE' }],
-      'INCLUSIVE',
-      undefined,
-    ],
-  ])('should return %s when %s', (_label, result, expectedStatus, options) => {
+    ['INCLUSIVE', 'mostly inclusive result', [{ type: 'INCLUSIVE' }, { type: 'INCLUSIVE' }, { type: 'NON_INCLUSIVE' }], undefined],
+  ])('should return %s for %s', (expectedStatus, _label, result, options) => {
     expect(computeCodingStatus(result, options)).toBe(expectedStatus);
   });
 });
