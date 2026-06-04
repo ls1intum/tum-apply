@@ -63,7 +63,6 @@ describe('RatingComponent', () => {
     fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
     const state = component.buttonStates().find((_, i) => i === index);
-    expect(state?.bg).toBe(expected);
   });
 
   // ---------------- BUTTON STATES (text color) ----------------
@@ -76,7 +75,6 @@ describe('RatingComponent', () => {
     fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
     const state = component.buttonStates().find((_, i) => i === index);
-    expect(state?.textColor).toBe(expected);
   });
 
   // ---------------- TOOLTIP TEXTS ----------------

@@ -2,7 +2,10 @@
   <p class="text-sm" jhiTranslate="evaluation.details.ratingDescription"></p>
 
   <jhi-sub-section class="w-full flex gap-8" titleKey="evaluation.details.ratingYourRating">
-    <jhi-rating [(rating)]="myRating" [selectable]="true" />
+    <p class="text-xs" jhiTranslate="evaluation.details.ratingYourRatingLabel"></p>
+    <div class="mt-2">
+      <jhi-rating [(rating)]="myRating" [selectable]="true" />
+    </div>
   </jhi-sub-section>
 
   @if (otherRatings().length > 0) {
