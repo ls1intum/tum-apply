@@ -33,7 +33,6 @@ export class GenderBiasAnalysisDialogComponent {
         return 'genderDecoder.formulationTexts.nonInclusive';
       case 'INCLUSIVE':
         return 'genderDecoder.formulationTexts.inclusive';
-      case 'NEUTRAL':
       default:
         return 'genderDecoder.formulationTexts.neutral';
     }
@@ -45,10 +44,8 @@ export class GenderBiasAnalysisDialogComponent {
         return 'genderDecoder.explanations.nonInclusive';
       case 'INCLUSIVE':
         return 'genderDecoder.explanations.inclusive';
-      case 'NEUTRAL':
-        return 'genderDecoder.explanations.neutral';
       default:
-        return 'genderDecoder.explanations.empty';
+        return this.result().length === 0 ? 'genderDecoder.explanations.empty' : 'genderDecoder.explanations.neutral';
     }
   });
 

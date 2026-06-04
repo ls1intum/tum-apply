@@ -29,6 +29,7 @@ import de.tum.cit.aet.job.service.JobService;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -181,7 +182,7 @@ class AiResourceTest extends AbstractResourceTest {
         @SuppressWarnings("unchecked")
         ArgumentCaptor<List<ComplianceIssue>> complianceIssuesCaptor = ArgumentCaptor.forClass(List.class);
         @SuppressWarnings("unchecked")
-        ArgumentCaptor<List<BiasedIssue>> biasedIssuesCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<Set<BiasedIssue>> biasedIssuesCaptor = ArgumentCaptor.forClass(Set.class);
 
         Mockito.verify(jobService).updateAiAnalysis(
             Mockito.eq(JOB_ID),
@@ -191,7 +192,7 @@ class AiResourceTest extends AbstractResourceTest {
             Mockito.eq(language)
         );
 
-        List<BiasedIssue> biasedIssues = biasedIssuesCaptor.getValue();
+        Set<BiasedIssue> biasedIssues = biasedIssuesCaptor.getValue();
         assertThat(complianceIssuesCaptor.getValue()).isEmpty();
         assertThat(biasedIssues).allSatisfy(issue -> assertThat(issue.getLanguage()).isEqualTo(language));
         assertThat(biasedIssues)
@@ -269,7 +270,6 @@ class AiResourceTest extends AbstractResourceTest {
             JobState.DRAFT,
             null,
             true,
-            false,
             false,
             null,
             null,

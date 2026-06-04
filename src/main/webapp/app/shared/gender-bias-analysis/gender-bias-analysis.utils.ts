@@ -1,15 +1,12 @@
 import { BiasedIssue, BiasedIssueTypeEnum } from 'app/generated/model/biased-issue';
 
-export function computeCodingStatus(
-  result: BiasedIssue[] | undefined,
-  options: { emptyAsNeutral?: boolean } = {},
-): BiasedIssueTypeEnum | undefined {
+export function computeCodingStatus(result: BiasedIssue[] | undefined): BiasedIssueTypeEnum | undefined {
   if (result === undefined) {
     return undefined;
   }
 
   if (result.length === 0) {
-    return options.emptyAsNeutral === true ? 'NEUTRAL' : undefined;
+    return undefined;
   }
 
   const inclusiveCount = result.filter(issue => issue.type === 'INCLUSIVE').length;
@@ -21,5 +18,5 @@ export function computeCodingStatus(
   if (inclusiveCount > nonInclusiveCount) {
     return 'INCLUSIVE';
   }
-  return 'NEUTRAL';
+  return undefined;
 }
