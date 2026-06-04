@@ -12,14 +12,15 @@ interface LikertEntry {
 interface VariantClasses {
   bg: string;
   hoverBg: string;
+  textOn: string;
 }
 
 const VARIANT_CLASSES: Record<LikertValue, VariantClasses> = {
-  [-2]: { bg: 'bg-negative-active', hoverBg: 'hover:bg-negative-active/15' },
-  [-1]: { bg: 'bg-negative-hover', hoverBg: 'hover:bg-negative-hover/15' },
-  [0]: { bg: 'bg-warning-default', hoverBg: 'hover:bg-warning-default/15' },
-  [1]: { bg: 'bg-positive-hover', hoverBg: 'hover:bg-positive-hover/15' },
-  [2]: { bg: 'bg-positive-active', hoverBg: 'hover:bg-positive-active/15' },
+  [-2]: { bg: 'bg-negative-active', hoverBg: 'hover:bg-negative-active/15', textOn: 'text-text-on-danger' },
+  [-1]: { bg: 'bg-negative-hover', hoverBg: 'hover:bg-negative-hover/15', textOn: 'text-text-on-danger' },
+  [0]: { bg: 'bg-warning-default', hoverBg: 'hover:bg-warning-default/15', textOn: 'text-text-on-warn' },
+  [1]: { bg: 'bg-positive-hover', hoverBg: 'hover:bg-positive-hover/15', textOn: 'text-text-on-success' },
+  [2]: { bg: 'bg-positive-active', hoverBg: 'hover:bg-positive-active/15', textOn: 'text-text-on-success' },
 };
 
 @Component({
@@ -51,10 +52,10 @@ export class RatingComponent {
     const currentRating = this.rating();
 
     return this.likertScale.map((entry, index) => {
-      const label = this.translateService.instant(`evaluation.ratings.${entry.key}`);
+      const label: string = this.translateService.instant(`evaluation.ratings.${entry.key}`);
       const isSelected = currentRating === entry.value;
       const variant = VARIANT_CLASSES[entry.value];
-      const classes: string = isSelected ? `${variant.bg} text-color-base-white` : variant.hoverBg;
+      const classes: string = isSelected ? `${variant.bg} ${variant.textOn}` : variant.hoverBg;
 
       return { entry, index, label, classes };
     });
@@ -67,7 +68,8 @@ export class RatingComponent {
     const entry = this.likertScale.find(s => s.value === r);
     if (entry === undefined) return undefined;
     const label: string = this.translateService.instant(`evaluation.ratings.${entry.key}`);
-    return { bgClass: VARIANT_CLASSES[entry.value].bg, label };
+    const variant = VARIANT_CLASSES[entry.value];
+    return { classes: `${variant.bg} ${variant.textOn}`, label };
   });
 
   private translateService = inject(TranslateService);

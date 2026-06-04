@@ -51,30 +51,24 @@ describe('RatingComponent', () => {
   });
 
   // ---------------- BUTTON STATES ----------------
-  it.each<[number | undefined, number, string | undefined]>([
-    [undefined, 0, undefined],
-    [-2, 0, 'var(--color-negative-active)'],
-    [-1, 1, 'var(--color-negative-hover)'],
-    [0, 2, 'var(--color-warning-default)'],
-    [1, 3, 'var(--color-positive-hover)'],
-    [2, 4, 'var(--color-positive-active)'],
-    [2, 0, undefined],
-  ])('should compute bg %s when rating=%s and index=%s', (rating, index, expected) => {
+  it.each<[number | undefined, number, string, string | undefined]>([
+    [undefined, 0, 'hover:bg-negative-active/15', undefined],
+    [-2, 0, 'bg-negative-active', 'text-text-on-danger'],
+    [-1, 1, 'bg-negative-hover', 'text-text-on-danger'],
+    [0, 2, 'bg-warning-default', 'text-text-on-warn'],
+    [1, 3, 'bg-positive-hover', 'text-text-on-success'],
+    [2, 4, 'bg-positive-active', 'text-text-on-success'],
+    [2, 0, 'hover:bg-negative-active/15', undefined],
+  ])('should compute classes for rating=%s at index=%i', (rating, index, expectedClass, expectedTextClass) => {
     fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
-    const state = component.buttonStates().find((_, i) => i === index);
-  });
-
-  // ---------------- BUTTON STATES (text color) ----------------
-  it.each<[number | undefined, number, string]>([
-    [-2, 0, 'var(--color-base-white)'],
-    [1, 3, 'var(--color-base-white)'],
-    [undefined, 0, 'var(--p-text-color)'],
-    [-2, 1, 'var(--p-text-color)'],
-  ])('should compute textColor %s when rating=%s and index=%s', (rating, index, expected) => {
-    fixture.componentRef.setInput('rating', rating);
-    fixture.detectChanges();
-    const state = component.buttonStates().find((_, i) => i === index);
+    const classes: string | undefined = component.buttonStates().find((_, i) => i === index)?.classes;
+    expect(classes).toContain(expectedClass);
+    if (expectedTextClass !== undefined) {
+      expect(classes).toContain(expectedTextClass);
+    } else {
+      expect(classes).not.toContain('text-text-on-');
+    }
   });
 
   // ---------------- TOOLTIP TEXTS ----------------

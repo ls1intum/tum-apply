@@ -6,14 +6,11 @@
         class="px-3 py-1 rounded-full text-sm font-medium transition-colors border focus:outline-none whitespace-nowrap cursor-pointer"
         [class]="state.classes"
         (click)="onSectionClick(state.index)"
-        (keydown.enter)="onSectionClick(state.index)"
       >
         {{ state.label }}
       </button>
     }
   </div>
 } @else if (selectedBadge(); as badge) {
-  <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-medium text-color-base-white" [class]="badge.bgClass"
-    >{{ badge.label }}
-  </span>
+  <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-medium" [class]="badge.classes">{{ badge.label }} </span>
 }
