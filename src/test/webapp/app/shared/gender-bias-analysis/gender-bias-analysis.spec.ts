@@ -12,11 +12,7 @@ describe('computeCodingStatus', () => {
   });
 
   it.each<[BiasedIssueTypeEnum, string, BiasedIssue[]]>([
-    [
-      'NON_INCLUSIVE',
-      'mostly non-inclusive result',
-      [{ type: 'NON_INCLUSIVE' }, { type: 'NON_INCLUSIVE' }, { type: 'INCLUSIVE' }],
-    ],
+    ['NON_INCLUSIVE', 'mostly non-inclusive result', [{ type: 'NON_INCLUSIVE' }, { type: 'NON_INCLUSIVE' }, { type: 'INCLUSIVE' }]],
     ['INCLUSIVE', 'mostly inclusive result', [{ type: 'INCLUSIVE' }, { type: 'INCLUSIVE' }, { type: 'NON_INCLUSIVE' }]],
   ])('should return %s for %s', (expectedStatus, _label, result) => {
     expect(computeCodingStatus(result)).toBe(expectedStatus);
