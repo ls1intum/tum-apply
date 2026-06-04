@@ -34,7 +34,6 @@ public record JobFormDTO(
     UUID imageId, // Optional job banner image
     Boolean suitableForDisabled, // Position suitable for persons with severe disabilities
     Boolean startDateByArrangement, // Start date is to be agreed upon individually
-    Boolean contractExtendable, // Contract may be extended beyond the stated duration
     Integer genderBiasScore,
     List<ComplianceIssue> complianceIssues,
     Set<BiasedIssue> biasedIssues
@@ -89,7 +88,6 @@ public record JobFormDTO(
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getSuitableForDisabled(),
             job.getStartDateByArrangement(),
-            job.getContractExtendable(),
             job.getGenderBiasScore(),
             complianceIssues,
             biasedIssues

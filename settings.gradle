@@ -1,6 +1,8 @@
 
 pluginManagement {
     repositories {
+        gradlePluginPortal()
+        mavenCentral()
         // jhipster-needle-gradle-plugin-management-repositories - JHipster will add additional entries here
     }
     buildscript {

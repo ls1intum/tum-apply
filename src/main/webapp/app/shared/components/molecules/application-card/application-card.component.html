@@ -37,7 +37,12 @@
         </div>
 
         <!-- Average Rating -->
-        <jhi-star-rating [rating]="displayRating()" size="medium" [showValue]="true" />
+        <div class="flex items-center gap-1">
+          <jhi-star-rating [rating]="displayRating()" size="medium" [showValue]="true" />
+          @if (ratingCount(); as count) {
+            <span class="text-sm text-text-secondary">({{ count }})</span>
+          }
+        </div>
       </div>
     </div>
 

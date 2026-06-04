@@ -15,7 +15,6 @@ export interface JobFormDTO {
     readonly biasedIssues?: Array<BiasedIssue>;
     readonly complianceIssues?: Array<ComplianceIssue>;
     readonly contractDuration?: number;
-    readonly contractExtendable?: boolean;
     readonly endDate?: string;
     readonly fundingType?: JobFormDTOFundingTypeEnum;
     readonly genderBiasScore?: number;

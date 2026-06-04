@@ -1,4 +1,4 @@
-<div class="input-container">
+<div>
   <div class="label-top label-input-wrapper">
     @if (label(); as label) {
       <label class="custom-label" [for]="id()">
@@ -86,10 +86,10 @@
         </div>
       </quill-editor>
     </div>
-    <div class="editor-footer flex justify-between min-h-8">
+    <div class="flex justify-between min-h-8">
       <div class="error-text flex flex-col">
         @if (helperText(); as helperText) {
-          <span class="helper-text text-[0.8rem] text-text-primary">{{ displayHelperText() }}</span>
+          <span class="text-[0.8rem] text-text-primary">{{ displayHelperText() }}</span>
         }
         @if (isEmpty() || isOverCharLimit()) {
           {{ errorMessage() }}

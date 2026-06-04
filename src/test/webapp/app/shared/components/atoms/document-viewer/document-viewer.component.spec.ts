@@ -68,6 +68,18 @@ describe('DocumentViewerComponent', () => {
   });
 
   describe('initDocument', () => {
+    it('should create a preview directly from a local file', async () => {
+      const localFile = new File(['pdf'], 'preview.pdf', { type: 'application/pdf' });
+      cacheService.set = vi.fn().mockReturnValue(mockSafeUrl);
+      fixture.componentRef.setInput('documentFile', localFile);
+
+      await comp.initDocument(mockDocInfo.id, localFile);
+
+      expect(cacheService.set).toHaveBeenCalledWith('doc-123', localFile);
+      expect(documentApi.downloadDocument).not.toHaveBeenCalled();
+      expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl);
+    });
+
     it('should use cached document if available', async () => {
       cacheService.get = vi.fn().mockReturnValue(mockSafeUrl);
 
@@ -80,7 +92,7 @@ describe('DocumentViewerComponent', () => {
 
     it('should download document when not in cache', async () => {
       const mockBlob = new ArrayBuffer(100);
-      documentApi.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
+      documentApi.downloadDocument = vi.fn().mockReturnValue(of({ body: mockBlob }));
       cacheService.set = vi.fn().mockReturnValue(mockSafeUrl);
 
       await comp.initDocument();
@@ -111,7 +123,7 @@ describe('DocumentViewerComponent', () => {
       const mockDocInfo2 = createMockDocumentInfo({ id: 'doc-2' });
       const mockSafeUrl2 = domSanitizer.bypassSecurityTrustResourceUrl('blob:http://test/doc-2');
 
-      documentApi.downloadDocument = vi.fn().mockReturnValue(of(mockBlob));
+      documentApi.downloadDocument = vi.fn().mockReturnValue(of({ body: mockBlob }));
       cacheService.set = vi.fn().mockReturnValueOnce(mockSafeUrl).mockReturnValueOnce(mockSafeUrl2);
 
       // Test first document

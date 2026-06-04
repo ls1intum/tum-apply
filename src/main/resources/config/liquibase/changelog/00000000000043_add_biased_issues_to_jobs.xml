@@ -4,7 +4,7 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="042a_add_biased_issues_to_jobs" author="melissa">
+  <changeSet id="043a_add_biased_issues_to_jobs" author="melissa">
     <preConditions onFail="MARK_RAN">
       <not>
         <tableExists tableName="job_biased_issues"/>
@@ -20,7 +20,7 @@
     </createTable>
   </changeSet>
 
-  <changeSet id="042b_add_unique_constraint_biased_issues" author="aniruddh">
+  <changeSet id="043b_add_unique_constraint_biased_issues" author="aniruddh">
     <addUniqueConstraint
       tableName="job_biased_issues"
       columnNames="job_id, language, word, type"
