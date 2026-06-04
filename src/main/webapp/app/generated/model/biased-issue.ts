@@ -15,13 +15,12 @@ export interface BiasedIssue {
     readonly word?: string;
 }
 
-export type BiasedIssueTypeEnum = 'NON_INCLUSIVE' | 'INCLUSIVE' | 'NEUTRAL';
+export type BiasedIssueTypeEnum = 'NON_INCLUSIVE' | 'INCLUSIVE';
 
 export const BiasedIssueTypeEnum = {
     NonInclusive: 'NON_INCLUSIVE' as const,
     Inclusive: 'INCLUSIVE' as const,
-    Neutral: 'NEUTRAL' as const,
 } as const;
 
-export const BiasedIssueTypeEnumValues = ['NON_INCLUSIVE', 'INCLUSIVE', 'NEUTRAL'] as const;
+export const BiasedIssueTypeEnumValues = ['NON_INCLUSIVE', 'INCLUSIVE'] as const;
 
