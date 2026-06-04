@@ -427,7 +427,6 @@ class JobResourceTest extends AbstractResourceTest {
                 null,
                 null,
                 null,
-                null,
                 null
             );
 
