@@ -2957,7 +2957,7 @@ components:
         language: {type: string}
         type:
           type: string
-          enum: [NON_INCLUSIVE, INCLUSIVE, NEUTRAL]
+          enum: [NON_INCLUSIVE, INCLUSIVE]
         word: {type: string}
     BookSlotRequestDTO:
       type: object
