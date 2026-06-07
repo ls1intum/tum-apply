@@ -43,8 +43,13 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   readonly otpValue = signal<string>('');
   // disable resend if busy or in cooldown
   readonly disableResend: Signal<boolean> = computed(() => this.isBusy() || this.onCooldown());
+  // attempt cooldown after too many failed submissions
+  readonly isAttemptCooldown = computed(() => this.authOrchestratorService.isOtpAttemptCooldown());
+  readonly attemptCooldownSeconds = computed(() => this.authOrchestratorService.otpAttemptCooldownSeconds());
   // derived states
-  readonly disabledSubmit = computed(() => this.showError() || this.isBusy() || this.otpValue().length !== this.length);
+  readonly disabledSubmit = computed(
+    () => this.isAttemptCooldown() || this.showError() || this.isBusy() || this.otpValue().length !== this.length,
+  );
   // determine size of the OTP input based on screen size
   readonly otpSize = toSignal<'small' | 'large' | null>(
     this.breakpointObserver
