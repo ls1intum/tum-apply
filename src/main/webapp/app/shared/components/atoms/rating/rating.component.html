@@ -3,7 +3,7 @@
     @for (state of buttonStates(); track state.entry.value) {
       <button
         type="button"
-        class="px-3 py-1 rounded-full text-sm font-medium transition-colors border focus:outline-none whitespace-nowrap cursor-pointer"
+        class="px-3 py-1 rounded-full text-sm font-medium transition-colors border border-divider-default outline-none focus-visible:ring-3 focus-visible:ring-primary whitespace-nowrap cursor-pointer"
         [class]="state.classes"
         (click)="onSectionClick(state.index)"
       >
@@ -12,5 +12,5 @@
     }
   </div>
 } @else if (selectedBadge(); as badge) {
-  <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-medium" [class]="badge.classes">{{ badge.label }} </span>
+  <span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium" [class]="badge.classes">{{ badge.label }} </span>
 }
