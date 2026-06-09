@@ -19,6 +19,7 @@ import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ImageDTOImageTypeEnum } from 'app/generated/model/image-dto';
 import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageDTO } from 'app/generated/model/image-dto';
+import { BiasedIssue } from 'app/generated/model/biased-issue';
 import * as DropdownOptions from 'app/job/dropdown-options';
 import { unescapeJsonString } from 'app/shared/util/util';
 
@@ -171,19 +172,58 @@ describe('JobCreationFormComponent', () => {
     fixture?.destroy();
   });
 
-  it('should navigate to /my-positions when edit mode without jobId', async () => {
-    mockActivatedRoute.setUrl([new UrlSegment('job', {}), new UrlSegment('edit', {})]);
-    mockActivatedRoute.setParams({});
-    const initialCallCount = vi.mocked(mockRouter.navigate).mock.calls.length;
+  describe('Component Initialization', () => {
+    it('should set mode to create by default', () => {
+      expect(component.mode()).toBe('create');
+    });
 
-    const fixture2 = TestBed.createComponent(JobCreationFormComponent);
-    fixture2.detectChanges();
-    await fixture2.whenStable();
-    await new Promise(resolve => setTimeout(resolve, 0));
+    it('should set userId from loaded user', () => {
+      expect(component.userId()).toBe('u1');
+    });
 
-    const calls = vi.mocked(mockRouter.navigate).mock.calls.slice(initialCallCount);
-    expect(calls).toContainEqual([['/my-positions']]);
-    fixture2.destroy();
+    it('should expose gender decoder issues only for the selected description language', () => {
+      const issues: BiasedIssue[] = [
+        { language: 'en', word: 'leader', type: 'NON_INCLUSIVE' },
+        { language: 'de', word: 'durchsetzungsfähig', type: 'NON_INCLUSIVE' },
+        { word: 'legacy', type: 'INCLUSIVE' },
+      ];
+      component.biasedIssues.set(issues);
+
+      component.currentDescriptionLanguage.set('en');
+      expect(component.currentBiasedIssues().map(issue => issue.word)).toEqual(['leader', 'legacy']);
+
+      component.currentDescriptionLanguage.set('de');
+      expect(component.currentBiasedIssues().map(issue => issue.word)).toEqual(['durchsetzungsfähig', 'legacy']);
+    });
+
+    it('should initialize in create mode and populate form', async () => {
+      mockActivatedRoute.setUrl([new UrlSegment('job', {}), new UrlSegment('create', {})]);
+      mockImageApi.getMyDefaultJobBanners.mockClear();
+      const fixture2 = TestBed.createComponent(JobCreationFormComponent);
+      fixture2.detectChanges();
+      await fixture2.whenStable();
+
+      expect(fixture2.componentInstance.mode()).toBe('create');
+      expect(mockImageApi.getMyDefaultJobBanners).toHaveBeenCalledOnce();
+    });
+
+    it('should navigate to /my-positions if edit mode but no jobId', async () => {
+      // Update the existing mock for this test case BEFORE creating component
+      mockActivatedRoute.setUrl([new UrlSegment('job', {}), new UrlSegment('edit', {})]);
+      mockActivatedRoute.setParams({});
+
+      // Track the initial call count to check for new calls
+      const initialCallCount = vi.mocked(mockRouter.navigate).mock.calls.length;
+
+      const fixture2 = TestBed.createComponent(JobCreationFormComponent);
+      fixture2.detectChanges();
+      await fixture2.whenStable();
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      const calls = vi.mocked(mockRouter.navigate).mock.calls.slice(initialCallCount);
+      expect(calls).toContainEqual([['/my-positions']]);
+      fixture2.destroy();
+    });
   });
 
   it('should call Location.back on onBack', () => {

@@ -60,6 +60,7 @@ import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-ass
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
 import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-compliance-popover/ai-compliance-popover.component';
+import { BiasedIssue } from 'app/generated/model/biased-issue';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -305,6 +306,15 @@ export class JobCreationFormComponent {
 
   /** Whether any critical compliance issue exists */
   readonly hasCriticalCompliance = computed(() => this.complianceCriticalCount() > 0);
+
+  /** List of detected biased issues to update the UI and editor highlights */
+  readonly biasedIssues = signal<BiasedIssue[]>([]);
+
+  /** Gender decoder issues for the currently visible description language only. */
+  readonly currentBiasedIssues = computed(() => {
+    const lang = this.currentDescriptionLanguage();
+    return this.biasedIssues().filter(issue => !issue.language || issue.language === lang);
+  });
 
   /** The compliance issue currently shown in the popover (undefined = none is hovered). */
   readonly activePopoverIssue = signal<ComplianceIssue | undefined>(undefined);
@@ -653,12 +663,13 @@ export class JobCreationFormComponent {
     const currentLang = this.currentDescriptionLanguage();
     if (newLang === currentLang) return;
 
-    // If a save is pending, flush it immediately so we don't lose text.
-    // syncCurrentEditorIntoLanguageSignals copies the editor HTML into the
-    // language signal, but the languageChangeEffect below sets the form
-    // value with emitEvent:false — so the autosave effect won't re-trigger.
-    void this.autoSave.flush();
+    const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
+    const previousDescription = currentLang === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE();
 
+    this.syncCurrentEditorIntoLanguageSignals();
+    if (description !== previousDescription) {
+      void this.autoSave.flush();
+    }
     this.currentDescriptionLanguage.set(newLang);
   }
 
@@ -1068,7 +1079,9 @@ export class JobCreationFormComponent {
 
       // 3) Analyze source language first so the user sees highlights + score immediately.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
-        void Promise.all([this.analyzeAndUpdateScore(sourceLang), this.translateAndStoreOtherLanguage(sourceLang, sourceText)]);
+        await this.analyzeAndUpdateScore(sourceLang);
+        // Translation and target-language analysis run in the background (fire-and-forget).
+        void this.translateAndStoreOtherLanguage(sourceLang, sourceText);
       }
     } catch {
       this.autoSave.setState(SavingStates.FAILED);
@@ -1321,6 +1334,10 @@ export class JobCreationFormComponent {
       this.complianceIssues.set(saved.complianceIssues);
     }
 
+    if (saved.biasedIssues) {
+      this.biasedIssues.set(saved.biasedIssues);
+    }
+
     // keep editor in sync with selected language (without triggering autosave loop)
     const lang = this.currentDescriptionLanguage();
     const content = lang === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE();
@@ -1423,6 +1440,9 @@ export class JobCreationFormComponent {
     }
     if (job?.complianceIssues) {
       this.complianceIssues.set(job.complianceIssues);
+    }
+    if (job?.biasedIssues) {
+      this.biasedIssues.set(job.biasedIssues);
     }
 
     this.basicInfoForm.patchValue({
@@ -1615,8 +1635,12 @@ export class JobCreationFormComponent {
       //    of translation after both languages are available — avoids duplicate
       //    analysis calls that cause score flash issues.
       if (this.aiToggleSignal() && this.aiSystemEnabled()) {
-        // highlighting before translation
-        void Promise.all([this.analyzeAndUpdateScore(currentLang), this.translateAndStoreOtherLanguage(currentLang, description)]);
+        const text = description.trim();
+        const shouldAnalyze = text !== '' && text !== this.lastAnalyzedText[currentLang] && !this.isAnalyzing();
+
+        if (shouldAnalyze) {
+          void Promise.all([this.analyzeAndUpdateScore(currentLang), this.translateAndStoreOtherLanguage(currentLang, description)]);
+        }
       }
       return true;
     } catch {
@@ -1779,6 +1803,9 @@ export class JobCreationFormComponent {
         const updatedJob = await firstValueFrom(this.jobApi.getJobById(jobId));
         if (updatedJob.genderBiasScore !== undefined) {
           this.aiScore.set(updatedJob.genderBiasScore);
+          if (updatedJob.biasedIssues) {
+            this.biasedIssues.set(updatedJob.biasedIssues ?? []);
+          }
           break;
         }
         if (attempt === 0) {

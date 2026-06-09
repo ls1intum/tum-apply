@@ -8,9 +8,11 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
+import type { BiasedIssue } from './biased-issue';
 import type { ComplianceIssue } from './compliance-issue';
 
 export interface JobFormDTO {
+    readonly biasedIssues?: Array<BiasedIssue>;
     readonly complianceIssues?: Array<ComplianceIssue>;
     readonly contractDuration?: number;
     readonly endDate?: string;

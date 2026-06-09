@@ -4,6 +4,11 @@ import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.AbstractResourceTest;
+import de.tum.cit.aet.ai.constants.ComplianceAction;
+import de.tum.cit.aet.ai.constants.ComplianceCategory;
+import de.tum.cit.aet.ai.domain.BiasedIssue;
+import de.tum.cit.aet.ai.domain.ComplianceIssue;
+import de.tum.cit.aet.core.constants.GenderCategory;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.job.constants.*;
@@ -30,7 +35,9 @@ import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -102,6 +109,7 @@ class JobResourceTest extends AbstractResourceTest {
             imageId,
             true,
             false,
+            null,
             null,
             null
         );
@@ -213,6 +221,7 @@ class JobResourceTest extends AbstractResourceTest {
                 true,
                 false,
                 null,
+                null,
                 null
             );
 
@@ -312,6 +321,7 @@ class JobResourceTest extends AbstractResourceTest {
                 true,
                 false,
                 null,
+                null,
                 null
             );
             MvcTestClient client = role != null ? api.with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), role)) : api;
@@ -348,6 +358,7 @@ class JobResourceTest extends AbstractResourceTest {
                 true,
                 false,
                 null,
+                null,
                 null
             );
 
@@ -375,6 +386,71 @@ class JobResourceTest extends AbstractResourceTest {
         }
 
         @Test
+        void updateJobPreservesAndReturnsExistingAnalysisIssues() {
+            Job job = jobRepository.findAll().getFirst();
+            job.setGenderBiasScore(42);
+            job.setComplianceIssues(
+                List.of(
+                    new ComplianceIssue(
+                        "issue-1",
+                        ComplianceCategory.TRANSPARENCY,
+                        "text",
+                        "article",
+                        "explanation",
+                        ComplianceAction.ADD,
+                        "en"
+                    )
+                )
+            );
+            job.setBiasedIssues(Set.of(new BiasedIssue("en", "leader", GenderCategory.NON_INCLUSIVE)));
+            jobRepository.saveAndFlush(job);
+
+            JobFormDTO updatedPayload = new JobFormDTO(
+                job.getJobId(),
+                "Updated Title",
+                "Updated Area",
+                SubjectArea.DATA_SCIENCE,
+                professor.getUserId(),
+                Campus.GARCHING_HOCHBRUECK,
+                LocalDate.of(2025, 12, 1),
+                LocalDate.of(2026, 6, 30),
+                30,
+                6,
+                FundingType.PARTIALLY_FUNDED,
+                TvlGrade.E15,
+                null,
+                "Updated Description",
+                "Neue Beschreibung",
+                JobState.DRAFT,
+                null,
+                true,
+                null,
+                null,
+                null,
+                null
+            );
+
+            JobFormDTO returnedJob = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
+
+            assertThat(returnedJob.genderBiasScore()).isEqualTo(42);
+            assertThat(returnedJob.complianceIssues())
+                .singleElement()
+                .satisfies(issue -> {
+                    assertThat(issue.getId()).isEqualTo("issue-1");
+                    assertThat(issue.getLanguage()).isEqualTo("en");
+                });
+            assertThat(returnedJob.biasedIssues())
+                .singleElement()
+                .satisfies(issue -> {
+                    assertThat(issue.getLanguage()).isEqualTo("en");
+                    assertThat(issue.getWord()).isEqualTo("leader");
+                    assertThat(issue.getType()).isEqualTo(GenderCategory.NON_INCLUSIVE);
+                });
+        }
+
+        @Test
         void updateJobNonexistentJobThrowsNotFound() {
             JobFormDTO updatedPayload = new JobFormDTO(
                 UUID.randomUUID(),
@@ -396,6 +472,7 @@ class JobResourceTest extends AbstractResourceTest {
                 null,
                 true,
                 false,
+                null,
                 null,
                 null
             );
@@ -430,6 +507,7 @@ class JobResourceTest extends AbstractResourceTest {
                 null,
                 true,
                 false,
+                null,
                 null,
                 null
             );
