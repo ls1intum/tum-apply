@@ -198,7 +198,7 @@ describe('EditorComponent', () => {
         [{ type: 'INCLUSIVE' }, { type: 'INCLUSIVE' }, { type: 'NON_INCLUSIVE' }],
         'genderDecoder.formulationTexts.inclusive',
       ],
-      ['balanced issues', [{ type: 'INCLUSIVE' }, { type: 'NON_INCLUSIVE' }], undefined],
+      ['balanced issues', [{ type: 'INCLUSIVE' }, { type: 'NON_INCLUSIVE' }], 'genderDecoder.formulationTexts.neutral'],
     ] as [string, BiasedIssue[] | undefined, string | undefined][])(
       'should return expected text for %s',
       (_label, biasedAnalysis, expected) => {

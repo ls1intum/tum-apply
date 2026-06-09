@@ -93,7 +93,7 @@ describe('GenderBiasAnalysisDialogComponent', () => {
           { word: 'leader', type: 'NON_INCLUSIVE' },
           { word: 'supportive', type: 'INCLUSIVE' },
         ],
-        undefined,
+        'NEUTRAL',
         'genderDecoder.formulationTexts.neutral',
         'genderDecoder.explanations.neutral',
       ],
