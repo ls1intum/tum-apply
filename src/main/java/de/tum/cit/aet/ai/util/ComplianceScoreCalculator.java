@@ -38,11 +38,16 @@ public final class ComplianceScoreCalculator {
             .stream()
             .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-        if (counts.getOrDefault(ComplianceCategory.CRITICAL_AGG, 0L) > 0 || counts.getOrDefault(ComplianceCategory.DSGVO_MINIMIZATION, 0L) > 0) {
+        if (
+            counts.getOrDefault(ComplianceCategory.CRITICAL_AGG, 0L) > 0 ||
+            counts.getOrDefault(ComplianceCategory.DSGVO_MINIMIZATION, 0L) > 0
+        ) {
             return 0;
         }
 
-        double totalCount = (double) counts.getOrDefault(ComplianceCategory.TRANSPARENCY, 0L) + (double) counts.getOrDefault(ComplianceCategory.PUBLIC_SECTOR, 0L);
+        double totalCount =
+            (double) counts.getOrDefault(ComplianceCategory.TRANSPARENCY, 0L) +
+            (double) counts.getOrDefault(ComplianceCategory.PUBLIC_SECTOR, 0L);
 
         double score = 100.0 * Math.pow(PENALTY_FACTOR, totalCount);
         return (int) Math.max(0, Math.round(score));
