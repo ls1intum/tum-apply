@@ -6,7 +6,6 @@ import { BiasedIssue } from 'app/generated/model/biased-issue';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
-import { BiasedIssueTypeEnum } from 'app/generated/model/biased-issue';
 import { computeCodingStatus } from 'app/shared/gender-bias-analysis/gender-bias-analysis.utils';
 
 @Component({
