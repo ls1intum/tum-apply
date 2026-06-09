@@ -197,7 +197,7 @@ class AiResourceTest extends AbstractResourceTest {
         assertThat(biasedIssues).allSatisfy(issue -> assertThat(issue.getLanguage()).isEqualTo(language));
         assertThat(biasedIssues)
             .extracting(BiasedIssue::getWord, BiasedIssue::getType)
-            .containsExactlyElementsOf(
+            .containsExactlyInAnyOrderElementsOf(
                 expectedIssues
                     .stream()
                     .map(issue -> tuple(issue.word(), issue.type()))

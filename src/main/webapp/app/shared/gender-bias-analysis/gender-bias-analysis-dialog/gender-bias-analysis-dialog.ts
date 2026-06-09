@@ -23,9 +23,7 @@ export class GenderBiasAnalysisDialogComponent {
   visibleChange = output<boolean>();
   closeDialog = output();
 
-  readonly codingStatus = computed<BiasedIssueTypeEnum | undefined>(() => {
-    return computeCodingStatus(this.result());
-  });
+  readonly codingStatus = computed(() => computeCodingStatus(this.result()));
 
   readonly codingTranslationKey = computed(() => {
     switch (this.codingStatus()) {

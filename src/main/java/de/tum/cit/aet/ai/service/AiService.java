@@ -325,10 +325,16 @@ public class AiService {
      * @return A list of compliance issues containing the combined legal and linguistic findings.
      */
     public List<ComplianceIssue> analyzeCurrentJobDescription(JobFormDTO jobFormDTO, String lang, String userLang) {
-        String raw = "de".equals(lang) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
-        String input = raw != null ? Jsoup.parse(raw).text() : "";
-        Set<BiasedIssue> genderAnalysis = genderBiasAnalysisService.analyzeText(input, lang);
-        return analyzeJobDescription(jobFormDTO.title(), jobFormDTO.jobId(), input, lang, userLang, genderAnalysis, null);
+        // first lang
+        String firstRaw = "de".equals(lang) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
+        String firstInput = firstRaw != null ? Jsoup.parse(firstRaw).text() : "";
+        Set<BiasedIssue> originalAnalysis = genderBiasAnalysisService.analyzeText(firstInput, lang);
+        // second lang
+        String targetLang = "de".equals(lang) ? "en" : "de";
+        String secondRaw = "de".equals(targetLang) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
+        String secondInput = secondRaw != null ? Jsoup.parse(secondRaw).text() : "";
+        Set<BiasedIssue> targetAnalysis = secondInput.isBlank() ? null : genderBiasAnalysisService.analyzeText(secondInput, targetLang);
+        return analyzeJobDescription(jobFormDTO.title(), jobFormDTO.jobId(), firstInput, lang, userLang, originalAnalysis, targetAnalysis);
     }
 
     /**

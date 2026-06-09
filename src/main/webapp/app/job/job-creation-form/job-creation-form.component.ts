@@ -1804,7 +1804,7 @@ export class JobCreationFormComponent {
         if (updatedJob.genderBiasScore !== undefined) {
           this.aiScore.set(updatedJob.genderBiasScore);
           if (updatedJob.biasedIssues) {
-            this.biasedIssues.set(updatedJob.biasedIssues);
+            this.biasedIssues.set(updatedJob.biasedIssues ?? []);
           }
           break;
         }

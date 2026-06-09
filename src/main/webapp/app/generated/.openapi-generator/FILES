@@ -1,3 +1,5 @@
+api/actuator-api.ts
+api/actuator-resources.ts
 api/admin-dependency-resource-api.ts
 api/admin-dependency-resource-resources.ts
 api/admin-export-resource-api.ts
@@ -112,6 +114,7 @@ model/job-form-dto.ts
 model/job-preview-request.ts
 model/keycloak-config.ts
 model/keycloak-user-dto.ts
+model/link.ts
 model/login-request-dto.ts
 model/otp-complete-dto.ts
 model/otp-config.ts

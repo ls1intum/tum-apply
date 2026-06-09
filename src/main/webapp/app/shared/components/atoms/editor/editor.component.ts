@@ -191,9 +191,7 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
   });
 
-  readonly displayResult = computed<BiasedIssueTypeEnum | undefined>(() => {
-    return computeCodingStatus(this.biasedAnalysis());
-  });
+  readonly displayResult = computed(() => computeCodingStatus(this.biasedAnalysis()));
 
   readonly codingDisplay = computed(() => {
     this.langChange();
@@ -432,7 +430,7 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
   }
 
-  private getCodingTranslationKey(coding: BiasedIssueTypeEnum): string {
+  private getCodingTranslationKey(coding: BiasedIssueTypeEnum | 'NEUTRAL'): string {
     switch (coding) {
       case 'NON_INCLUSIVE':
         return 'genderDecoder.formulationTexts.nonInclusive';

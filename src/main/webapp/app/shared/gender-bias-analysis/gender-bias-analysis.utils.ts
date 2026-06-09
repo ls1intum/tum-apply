@@ -1,6 +1,6 @@
 import { BiasedIssue, BiasedIssueTypeEnum } from 'app/generated/model/biased-issue';
 
-export function computeCodingStatus(result: BiasedIssue[] | undefined): BiasedIssueTypeEnum | undefined {
+export function computeCodingStatus(result: BiasedIssue[] | undefined): BiasedIssueTypeEnum | 'NEUTRAL' | undefined {
   if (result === undefined) {
     return undefined;
   }
@@ -18,5 +18,5 @@ export function computeCodingStatus(result: BiasedIssue[] | undefined): BiasedIs
   if (inclusiveCount > nonInclusiveCount) {
     return 'INCLUSIVE';
   }
-  return undefined;
+  return 'NEUTRAL';
 }
