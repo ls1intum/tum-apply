@@ -197,10 +197,7 @@ export class ApplicationInformationSettingsComponent {
         postcode: normalizedValue.postcode as string,
       };
       this.data.set(nextData);
-      this.isValid.set(form.valid);
-      if (this.initialDataSnapshot() !== undefined && form.valid && this.hasChanges()) {
-        this.autoSave.notifyChanged();
-      }
+      this.queueAutoSaveIfNeeded();
     });
 
     const statusSubscription = form.statusChanges.subscribe(() => {
@@ -208,6 +205,7 @@ export class ApplicationInformationSettingsComponent {
     });
 
     this.isValid.set(form.valid);
+    this.revealPostcodeCountryMismatch();
 
     onCleanup(() => {
       valueSubscription.unsubscribe();
@@ -261,16 +259,26 @@ export class ApplicationInformationSettingsComponent {
     const updatedData = structuredClone(this.data());
     updatedData.dateOfBirth = $event ?? '';
     this.data.set(updatedData);
+    this.queueAutoSaveIfNeeded();
   }
 
   updateSelect(field: keyof ApplicationInformationData, value: SelectOption | undefined): void {
     const updatedData = structuredClone(this.data());
     updatedData[field] = value as never;
     this.data.set(updatedData);
+    if (field === 'country') {
+      this.revealPostcodeCountryMismatch();
+    }
+    this.queueAutoSaveIfNeeded();
   }
 
   async performAutoSave(): Promise<boolean> {
     try {
+      const form = this.applicationInfoForm();
+      if (!form.valid) {
+        return false;
+      }
+
       const loadedUser = this.accountService.loadedUser();
       if (loadedUser?.id == null) {
         this.toastService.showErrorKey('settings.applicationInformation.saveFailed');
@@ -351,5 +359,28 @@ export class ApplicationInformationSettingsComponent {
       country: data.country?.value,
       postcode: data.postcode,
     };
+  }
+
+  private revealPostcodeCountryMismatch(): void {
+    const postcodeControl = this.applicationInfoForm().controls.postcode;
+    postcodeControl.updateValueAndValidity({ emitEvent: false });
+    if (postcodeControl.hasError('invalidPostalCode')) {
+      postcodeControl.markAsTouched();
+    }
+  }
+
+  private queueAutoSaveIfNeeded(): void {
+    if (this.initialDataSnapshot() === undefined) {
+      return;
+    }
+
+    const form = this.applicationInfoForm();
+    this.isValid.set(form.valid);
+    if (form.valid && this.hasChanges()) {
+      this.autoSave.notifyChanged();
+      return;
+    }
+
+    this.autoSave.reset();
   }
 }

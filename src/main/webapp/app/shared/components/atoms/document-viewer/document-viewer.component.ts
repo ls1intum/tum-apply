@@ -13,6 +13,7 @@ import { DocumentCacheService } from 'app/service/document-cache.service';
 })
 export class DocumentViewerComponent {
   documentId = input.required<DocumentInformationHolderDTO>();
+  documentFile = input<File | undefined>(undefined);
 
   sanitizedBlobUrl = signal<SafeResourceUrl | undefined>(undefined);
 
@@ -21,10 +22,17 @@ export class DocumentViewerComponent {
 
   private readonly docDownloadEffect = effect(() => {
     const docId = this.documentId().id;
-    void this.initDocument(docId);
+    const file = this.documentFile();
+    void this.initDocument(docId, file);
   });
 
-  async initDocument(docId: string = this.documentId().id): Promise<void> {
+  async initDocument(docId: string = this.documentId().id, file: File | undefined = this.documentFile()): Promise<void> {
+    if (file) {
+      const safeUrl = this.cache.set(docId, file);
+      this.sanitizedBlobUrl.set(safeUrl);
+      return;
+    }
+
     // check cache first
     const cached = this.cache.get(docId);
     if (cached !== undefined) {

@@ -1,4 +1,4 @@
-<div class="input-container">
+<div>
   <div class="label-top label-input-wrapper">
     @if (label()) {
       <label class="custom-label" [for]="id()">
@@ -32,7 +32,6 @@
         [minFractionDigits]="minFractionDigits()"
         [maxFractionDigits]="maxFractionDigits()"
         [inputStyleClass]="inputStyleClass()"
-        class="custom-input"
       />
 
       @if (formControl()) {

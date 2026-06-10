@@ -7,14 +7,14 @@
         <span jhiTranslate="researchGroup.groupInfoHeader"></span>
       </h1>
     </div>
-    <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" [disabled]="!form.valid || isSaving()" (click)="onSave()" />
   </div>
-  <div class="card">
+  <div>
     <p jhiTranslate="researchGroup.groupInfo.description"></p>
-    <div class="card-body">
+    <p class="mb-4 text-xs text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
+    <div>
       <div class="space-y-4">
         <form [formGroup]="form">
-          <div class="form-group">
+          <div>
             <!-- Basic information section -->
             <p-divider layout="horizontal">
               <span jhiTranslate="researchGroup.groupInfo.fields.section1"></span>
@@ -162,4 +162,9 @@
       </div>
     </div>
   </div>
+
+  <ng-template #savingBadgeTemplate>
+    <jhi-saving-badge [state]="savingState()" />
+  </ng-template>
+  <jhi-sticky-footer-shell [statusTemplate]="savingBadgeTemplate" />
 </div>

@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { PanelModule } from 'primeng/panel';
 import { Router } from '@angular/router';
@@ -19,7 +19,15 @@ type SidebarCategory = { title: string; buttons: SidebarButton[] };
 })
 export class SidebarComponent {
   isSidebarCollapsed = input.required<boolean>();
+  /** When rendered inside the mobile drawer we drop the desktop chrome (right border, fixed width, collapse toggle). */
+  isInDrawer = input<boolean>(false);
   sidebarCollapsedChange = output<boolean>();
+
+  readonly wrapperClass = computed(() =>
+    this.isInDrawer()
+      ? 'flex flex-col h-full top-0 sticky flex-1 w-full'
+      : 'flex flex-col h-full top-0 sticky flex-1 py-4 px-4 w-[var(--sidebar-width)] border-r border-divider-default',
+  );
 
   /**
    * Custom groups for sidebar links that have multiple paths.

@@ -185,7 +185,7 @@ for CI builds.
 
 Usage:
   node local-pr-coverage.mjs [options]
-  npm run coverage:pr [-- options]
+  pnpm run coverage:pr [-- options]
 
 Options:
   --base-branch <branch>       Base branch to compare against (default: origin/develop)
@@ -212,16 +212,16 @@ Examples:
   node local-pr-coverage.mjs
 
   # Test specific client modules only
-  npm run coverage:pr -- --client-modules core,shared --client-only
+  pnpm run coverage:pr -- --client-modules core,shared --client-only
 
   # Test specific server modules only
-  npm run coverage:pr -- --server-modules core,job --server-only
+  pnpm run coverage:pr -- --server-modules core,job --server-only
 
   # Mix: auto-detect client, specify server modules
-  npm run coverage:pr -- --server-modules core
+  pnpm run coverage:pr -- --server-modules core
 
   # Skip tests and use existing coverage data
-  npm run coverage:pr -- --skip-tests --client-modules core
+  pnpm run coverage:pr -- --skip-tests --client-modules core
 `);
 }
 
@@ -444,8 +444,8 @@ async function runClientTests(modules, options) {
 
   // Run prebuild first (separate command, no shell interpolation)
   try {
-    const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-    const prebuildResult = spawnSync(npmCmd, ['run', 'prebuild'], {
+    const pnpmCmd = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+    const prebuildResult = spawnSync(pnpmCmd, ['run', 'prebuild'], {
       cwd: PROJECT_ROOT,
       stdio: options.verbose ? 'inherit' : 'pipe',
       encoding: 'utf-8',

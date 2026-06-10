@@ -45,7 +45,6 @@ export interface JobDetails {
   location: JobFormDTOLocationEnum;
   workload: string;
   contractDuration: string;
-  contractExtendable: boolean;
   fundingType: JobFormDTOFundingTypeEnum | undefined;
   tvlGrade: JobFormDTOTvlGradeEnum | undefined;
   jobDescriptionEN: string;
@@ -522,7 +521,6 @@ export class JobDetailComponent {
       location: data.location as JobFormDTOLocationEnum,
       workload: data.workload?.toString() ?? '',
       contractDuration: data.contractDuration?.toString() ?? '',
-      contractExtendable: data.contractExtendable ?? false,
       fundingType: data.fundingType as JobFormDTOFundingTypeEnum | undefined,
       tvlGrade: data.tvlGrade as JobFormDTOTvlGradeEnum | undefined,
       jobDescriptionEN: data.jobDescriptionEN ?? '',

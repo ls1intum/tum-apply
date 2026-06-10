@@ -38,6 +38,26 @@ public class ApplicantService {
     }
 
     /**
+     * Looks up an applicant by user id without creating one when missing.
+     *
+     * @param userId the user id of the applicant
+     * @return the applicant if present, otherwise empty
+     */
+    public Optional<Applicant> findByUserId(UUID userId) {
+        return applicantRepository.findById(userId);
+    }
+
+    /**
+     * Returns whether an applicant exists for the given user id.
+     *
+     * @param userId the user id to check
+     * @return true if an applicant exists, false otherwise
+     */
+    public boolean existsByUserId(UUID userId) {
+        return applicantRepository.existsById(userId);
+    }
+
+    /**
      * Retrieves the current user's applicant profile with all personal information.
      * Creates an empty applicant profile if none exists yet.
      *
