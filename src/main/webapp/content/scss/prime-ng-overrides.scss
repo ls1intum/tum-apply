@@ -16,22 +16,27 @@ p-step[data-p-active='true'] .p-step-title {
 }
 
 /* -------------------------------
-   Custom Global Styles for Login
+   Auth modal icon buttons
 ---------------------------------- */
-.login-header-button .p-button-text.p-button-info {
-  color: white !important;
-  transition: all 0.3s ease;
+@mixin auth-modal-icon-color($color) {
+  .p-button,
+  button.p-button,
+  fa-icon,
+  svg {
+    color: $color !important;
+    fill: currentColor !important;
+  }
 }
 
-.registration-header-button .p-button-text {
-  color: white !important;
-  transition: all 0.3s ease;
-}
+.login-header-button,
+.registration-header-button {
+  @include auth-modal-icon-color(var(--p-text-on-primary));
 
-.login-header-button .p-button-text.p-button-info:hover,
-.registration-header-button .p-button-text:hover {
-  filter: drop-shadow(0 0 0.075rem white);
-  background: rgba(255, 255, 255, 0.05);
+  .p-button:hover,
+  button.p-button:hover {
+    filter: drop-shadow(0 0 0.075rem var(--p-text-on-primary));
+    background: rgba(255, 255, 255, 0.08);
+  }
 }
 
 /* -------------------------------
