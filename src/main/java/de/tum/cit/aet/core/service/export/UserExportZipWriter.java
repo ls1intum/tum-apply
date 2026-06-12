@@ -369,10 +369,22 @@ public class UserExportZipWriter {
         List<List<String>> intervieweeRows = applicantData
             .interviewees()
             .stream()
-            .map(interviewee -> List.of(toCsvValue(interviewee.jobTitle()), toCsvValue(interviewee.lastInvited())))
+            .map(interviewee ->
+                List.of(
+                    toCsvValue(interviewee.jobTitle()),
+                    toCsvValue(interviewee.lastInvited()),
+                    toCsvValue(interviewee.rating()),
+                    toCsvValue(interviewee.assessmentNotes())
+                )
+            )
             .toList();
 
-        addCsvFileToZip(zipOut, "data/applicant_interviewees.csv", List.of("job_title", "last_invited"), intervieweeRows);
+        addCsvFileToZip(
+            zipOut,
+            "data/applicant_interviewees.csv",
+            List.of("job_title", "last_invited", "interview_rating", "interview_notes"),
+            intervieweeRows
+        );
     }
 
     private void writeApplicantSubjectAreaSubscriptionsCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {

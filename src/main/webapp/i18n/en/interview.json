@@ -342,7 +342,7 @@
       "back": "Back to Overview",
       "rating": {
         "label": "Score",
-        "info": "Rate the interview. This is not visible to applicants."
+        "info": "Rate the interview."
       },
       "notes": {
         "label": "Interview Note",
