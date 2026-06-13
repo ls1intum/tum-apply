@@ -38,11 +38,53 @@ export class ReferenceLetterUploadResourceApi {
      * 
      * 
      * @param token 
+     * @param relationship 
+     * @param acquaintanceDuration 
+     * @param acquaintanceDepth 
+     * @param ratingIntellectualAbility 
+     * @param ratingResearchPotential 
+     * @param ratingMotivation 
+     * @param ratingCommunication 
+     * @param ratingLeadership 
+     * @param ratingCollaboration 
+     * @param overallRecommendation 
      * @param file 
      */
-    upload(token: string, file: Blob): Observable<ReferenceRequestDTO> {
+    upload(token: string, relationship: 'COURSE_INSTRUCTOR' | 'RESEARCH_SUPERVISOR' | 'THESIS_ADVISOR' | 'EMPLOYER' | 'ACADEMIC_ADVISOR' | 'OTHER', acquaintanceDuration: 'LESS_THAN_ONE_YEAR' | 'ONE_TO_TWO_YEARS' | 'THREE_TO_FIVE_YEARS' | 'MORE_THAN_FIVE_YEARS', acquaintanceDepth: 'CASUALLY' | 'MODERATELY' | 'WELL' | 'VERY_WELL', ratingIntellectualAbility: 'TOP_ONE_TO_TWO_PERCENT' | 'TOP_FIVE_PERCENT' | 'TOP_TEN_PERCENT' | 'TOP_TWENTY_FIVE_PERCENT' | 'TOP_FIFTY_PERCENT' | 'BELOW_AVERAGE' | 'CANNOT_JUDGE', ratingResearchPotential: 'TOP_ONE_TO_TWO_PERCENT' | 'TOP_FIVE_PERCENT' | 'TOP_TEN_PERCENT' | 'TOP_TWENTY_FIVE_PERCENT' | 'TOP_FIFTY_PERCENT' | 'BELOW_AVERAGE' | 'CANNOT_JUDGE', ratingMotivation: 'TOP_ONE_TO_TWO_PERCENT' | 'TOP_FIVE_PERCENT' | 'TOP_TEN_PERCENT' | 'TOP_TWENTY_FIVE_PERCENT' | 'TOP_FIFTY_PERCENT' | 'BELOW_AVERAGE' | 'CANNOT_JUDGE', ratingCommunication: 'TOP_ONE_TO_TWO_PERCENT' | 'TOP_FIVE_PERCENT' | 'TOP_TEN_PERCENT' | 'TOP_TWENTY_FIVE_PERCENT' | 'TOP_FIFTY_PERCENT' | 'BELOW_AVERAGE' | 'CANNOT_JUDGE', ratingLeadership: 'TOP_ONE_TO_TWO_PERCENT' | 'TOP_FIVE_PERCENT' | 'TOP_TEN_PERCENT' | 'TOP_TWENTY_FIVE_PERCENT' | 'TOP_FIFTY_PERCENT' | 'BELOW_AVERAGE' | 'CANNOT_JUDGE', ratingCollaboration: 'TOP_ONE_TO_TWO_PERCENT' | 'TOP_FIVE_PERCENT' | 'TOP_TEN_PERCENT' | 'TOP_TWENTY_FIVE_PERCENT' | 'TOP_FIFTY_PERCENT' | 'BELOW_AVERAGE' | 'CANNOT_JUDGE', overallRecommendation: 'HIGHEST_ENTHUSIASM' | 'STRONGLY_RECOMMEND' | 'RECOMMEND' | 'RECOMMEND_WITH_RESERVATIONS' | 'DO_NOT_RECOMMEND', file: Blob): Observable<ReferenceRequestDTO> {
         const tokenPath = encodeURIComponent(String(token));
-        const url = `${this.basePath}/api/reference-letters/${tokenPath}`;
+        const queryParams = new URLSearchParams();
+        if (relationship !== undefined && relationship !== null) {
+            queryParams.set('relationship', String(relationship));
+        }
+        if (acquaintanceDuration !== undefined && acquaintanceDuration !== null) {
+            queryParams.set('acquaintanceDuration', String(acquaintanceDuration));
+        }
+        if (acquaintanceDepth !== undefined && acquaintanceDepth !== null) {
+            queryParams.set('acquaintanceDepth', String(acquaintanceDepth));
+        }
+        if (ratingIntellectualAbility !== undefined && ratingIntellectualAbility !== null) {
+            queryParams.set('ratingIntellectualAbility', String(ratingIntellectualAbility));
+        }
+        if (ratingResearchPotential !== undefined && ratingResearchPotential !== null) {
+            queryParams.set('ratingResearchPotential', String(ratingResearchPotential));
+        }
+        if (ratingMotivation !== undefined && ratingMotivation !== null) {
+            queryParams.set('ratingMotivation', String(ratingMotivation));
+        }
+        if (ratingCommunication !== undefined && ratingCommunication !== null) {
+            queryParams.set('ratingCommunication', String(ratingCommunication));
+        }
+        if (ratingLeadership !== undefined && ratingLeadership !== null) {
+            queryParams.set('ratingLeadership', String(ratingLeadership));
+        }
+        if (ratingCollaboration !== undefined && ratingCollaboration !== null) {
+            queryParams.set('ratingCollaboration', String(ratingCollaboration));
+        }
+        if (overallRecommendation !== undefined && overallRecommendation !== null) {
+            queryParams.set('overallRecommendation', String(overallRecommendation));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/reference-letters/${tokenPath}${queryString ? `?${queryString}` : ''}`;
         const formData = new FormData();
         if (file !== undefined && file !== null) {
             formData.append('file', file);

@@ -116,11 +116,22 @@ public class MvcTestClient {
     }
 
     public <T> T multipartPostAndRead(String url, List<MockMultipartFile> files, TypeReference<T> responseType, int expectedStatus) {
+        return multipartPostAndRead(url, files, Map.of(), responseType, expectedStatus);
+    }
+
+    public <T> T multipartPostAndRead(
+        String url,
+        List<MockMultipartFile> files,
+        Map<String, String> params,
+        TypeReference<T> responseType,
+        int expectedStatus
+    ) {
         try {
             MockMultipartHttpServletRequestBuilder builder = multipart(url);
             for (MockMultipartFile file : files) {
                 builder.file(file);
             }
+            params.forEach(builder::param);
             // Apply default Accept header and RequestPostProcessors (e.g., JWT)
             builder = applyDefaults(builder);
             MvcResult result = mockMvc.perform(builder).andExpect(status().is(expectedStatus)).andReturn();

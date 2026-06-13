@@ -18,6 +18,7 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.reference.dto.CreateReferenceRequestDTO;
+import de.tum.cit.aet.reference.dto.ReferenceLetterSubmissionDTO;
 import de.tum.cit.aet.reference.dto.ReferenceLetterUploadContextDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
@@ -202,17 +203,19 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Stores the recommendation letter PDF uploaded by an external referee, links it to the
-     * reference request, marks the request {@code SUBMITTED} and — if all required letters are now
-     * in — transitions the application from {@code PENDING} back to {@code SENT}.
+     * Stores the recommendation letter PDF uploaded by an external referee together with the
+     * structured assessment answers, links the document to the reference request, marks the request
+     * {@code SUBMITTED} and — if all required letters are now in — transitions the application from
+     * {@code PENDING} back to {@code SENT}.
      *
-     * @param rawToken the plaintext token from the invitation email
-     * @param file     the uploaded PDF
+     * @param rawToken   the plaintext token from the invitation email
+     * @param file       the uploaded PDF
+     * @param assessment the structured answers the referee filled in on the upload page
      * @return the updated request as a DTO
      * @throws EntityNotFoundException      when the token is unknown
      * @throws OperationNotAllowedException when the request is already submitted or the deadline has passed
      */
-    public ReferenceRequestDTO uploadLetter(String rawToken, MultipartFile file) {
+    public ReferenceRequestDTO uploadLetter(String rawToken, MultipartFile file, ReferenceLetterSubmissionDTO assessment) {
         ReferenceRequest entry = findByRawToken(rawToken);
         assertUploadAllowed(entry);
 
@@ -229,12 +232,32 @@ public class ReferenceRequestService {
         );
 
         entry.setDocumentId(document.getDocumentId());
+        applyAssessment(entry, assessment);
         entry.setStatus(ReferenceRequestStatus.SUBMITTED);
         ReferenceRequest saved = referenceRequestRepository.save(entry);
 
         promoteApplicationToSentIfComplete(application);
 
         return ReferenceRequestDTO.fromEntity(saved);
+    }
+
+    /**
+     * Copies the structured assessment answers onto the reference request entity.
+     *
+     * @param entry      the reference request being submitted
+     * @param assessment the answers the referee provided
+     */
+    private void applyAssessment(ReferenceRequest entry, ReferenceLetterSubmissionDTO assessment) {
+        entry.setRelationship(assessment.relationship());
+        entry.setAcquaintanceDuration(assessment.acquaintanceDuration());
+        entry.setAcquaintanceDepth(assessment.acquaintanceDepth());
+        entry.setRatingIntellectualAbility(assessment.ratingIntellectualAbility());
+        entry.setRatingResearchPotential(assessment.ratingResearchPotential());
+        entry.setRatingMotivation(assessment.ratingMotivation());
+        entry.setRatingCommunication(assessment.ratingCommunication());
+        entry.setRatingLeadership(assessment.ratingLeadership());
+        entry.setRatingCollaboration(assessment.ratingCollaboration());
+        entry.setOverallRecommendation(assessment.overallRecommendation());
     }
 
     /**
@@ -426,10 +449,10 @@ public class ReferenceRequestService {
         String deadline =
             entry.getTokenExpiresAt() != null
                 ? entry
-                      .getTokenExpiresAt()
-                      .atZone(ZoneOffset.systemDefault())
-                      .withZoneSameInstant(ZoneOffset.UTC)
-                      .format(DEADLINE_FORMATTER)
+                .getTokenExpiresAt()
+                .atZone(ZoneOffset.systemDefault())
+                .withZoneSameInstant(ZoneOffset.UTC)
+                .format(DEADLINE_FORMATTER)
                 : "";
 
         ReferenceLetterContextDTO ctx = new ReferenceLetterContextDTO(

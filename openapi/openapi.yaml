@@ -2148,6 +2148,74 @@ paths:
         in: path
         required: true
         schema: {type: string}
+      - name: relationship
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [COURSE_INSTRUCTOR, RESEARCH_SUPERVISOR, THESIS_ADVISOR, EMPLOYER,
+            ACADEMIC_ADVISOR, OTHER]
+      - name: acquaintanceDuration
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [LESS_THAN_ONE_YEAR, ONE_TO_TWO_YEARS, THREE_TO_FIVE_YEARS, MORE_THAN_FIVE_YEARS]
+      - name: acquaintanceDepth
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [CASUALLY, MODERATELY, WELL, VERY_WELL]
+      - name: ratingIntellectualAbility
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [TOP_ONE_TO_TWO_PERCENT, TOP_FIVE_PERCENT, TOP_TEN_PERCENT, TOP_TWENTY_FIVE_PERCENT,
+            TOP_FIFTY_PERCENT, BELOW_AVERAGE, CANNOT_JUDGE]
+      - name: ratingResearchPotential
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [TOP_ONE_TO_TWO_PERCENT, TOP_FIVE_PERCENT, TOP_TEN_PERCENT, TOP_TWENTY_FIVE_PERCENT,
+            TOP_FIFTY_PERCENT, BELOW_AVERAGE, CANNOT_JUDGE]
+      - name: ratingMotivation
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [TOP_ONE_TO_TWO_PERCENT, TOP_FIVE_PERCENT, TOP_TEN_PERCENT, TOP_TWENTY_FIVE_PERCENT,
+            TOP_FIFTY_PERCENT, BELOW_AVERAGE, CANNOT_JUDGE]
+      - name: ratingCommunication
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [TOP_ONE_TO_TWO_PERCENT, TOP_FIVE_PERCENT, TOP_TEN_PERCENT, TOP_TWENTY_FIVE_PERCENT,
+            TOP_FIFTY_PERCENT, BELOW_AVERAGE, CANNOT_JUDGE]
+      - name: ratingLeadership
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [TOP_ONE_TO_TWO_PERCENT, TOP_FIVE_PERCENT, TOP_TEN_PERCENT, TOP_TWENTY_FIVE_PERCENT,
+            TOP_FIFTY_PERCENT, BELOW_AVERAGE, CANNOT_JUDGE]
+      - name: ratingCollaboration
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [TOP_ONE_TO_TWO_PERCENT, TOP_FIVE_PERCENT, TOP_TEN_PERCENT, TOP_TWENTY_FIVE_PERCENT,
+            TOP_FIFTY_PERCENT, BELOW_AVERAGE, CANNOT_JUDGE]
+      - name: overallRecommendation
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [HIGHEST_ENTHUSIASM, STRONGLY_RECOMMEND, RECOMMEND, RECOMMEND_WITH_RESERVATIONS,
+            DO_NOT_RECOMMEND]
       requestBody:
         content:
           multipart/form-data:
