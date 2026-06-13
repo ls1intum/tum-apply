@@ -16,7 +16,12 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ReferenceLetterUploadContextDTO } from '../model/reference-letter-upload-context-dto';
+import { PeerRating } from '../model/peer-rating';
+import { RefereeRelationship } from '../model/referee-relationship';
+import { AcquaintanceDuration } from '../model/acquaintance-duration';
+import { OverallRecommendation } from '../model/overall-recommendation';
 import { ReferenceRequestDTO } from '../model/reference-request-dto';
+import { AcquaintanceDepth } from '../model/acquaintance-depth';
 
 @Injectable({ providedIn: 'root' })
 export class ReferenceLetterUploadResourceApi {
@@ -50,7 +55,7 @@ export class ReferenceLetterUploadResourceApi {
      * @param overallRecommendation 
      * @param file 
      */
-    upload(token: string, relationship: 'COURSE_INSTRUCTOR' | 'RESEARCH_SUPERVISOR' | 'THESIS_ADVISOR' | 'EMPLOYER' | 'ACADEMIC_ADVISOR' | 'OTHER', acquaintanceDuration: 'LESS_THAN_ONE_YEAR' | 'ONE_TO_TWO_YEARS' | 'THREE_TO_FIVE_YEARS' | 'MORE_THAN_FIVE_YEARS', acquaintanceDepth: 'CASUALLY' | 'MODERATELY' | 'WELL' | 'VERY_WELL', ratingIntellectualAbility: 'TOP_ONE_TO_TWO_PERCENT' | 'TOP_FIVE_PERCENT' | 'TOP_TEN_PERCENT' | 'TOP_TWENTY_FIVE_PERCENT' | 'TOP_FIFTY_PERCENT' | 'BELOW_AVERAGE' | 'CANNOT_JUDGE', ratingResearchPotential: 'TOP_ONE_TO_TWO_PERCENT' | 'TOP_FIVE_PERCENT' | 'TOP_TEN_PERCENT' | 'TOP_TWENTY_FIVE_PERCENT' | 'TOP_FIFTY_PERCENT' | 'BELOW_AVERAGE' | 'CANNOT_JUDGE', ratingMotivation: 'TOP_ONE_TO_TWO_PERCENT' | 'TOP_FIVE_PERCENT' | 'TOP_TEN_PERCENT' | 'TOP_TWENTY_FIVE_PERCENT' | 'TOP_FIFTY_PERCENT' | 'BELOW_AVERAGE' | 'CANNOT_JUDGE', ratingCommunication: 'TOP_ONE_TO_TWO_PERCENT' | 'TOP_FIVE_PERCENT' | 'TOP_TEN_PERCENT' | 'TOP_TWENTY_FIVE_PERCENT' | 'TOP_FIFTY_PERCENT' | 'BELOW_AVERAGE' | 'CANNOT_JUDGE', ratingLeadership: 'TOP_ONE_TO_TWO_PERCENT' | 'TOP_FIVE_PERCENT' | 'TOP_TEN_PERCENT' | 'TOP_TWENTY_FIVE_PERCENT' | 'TOP_FIFTY_PERCENT' | 'BELOW_AVERAGE' | 'CANNOT_JUDGE', ratingCollaboration: 'TOP_ONE_TO_TWO_PERCENT' | 'TOP_FIVE_PERCENT' | 'TOP_TEN_PERCENT' | 'TOP_TWENTY_FIVE_PERCENT' | 'TOP_FIFTY_PERCENT' | 'BELOW_AVERAGE' | 'CANNOT_JUDGE', overallRecommendation: 'HIGHEST_ENTHUSIASM' | 'STRONGLY_RECOMMEND' | 'RECOMMEND' | 'RECOMMEND_WITH_RESERVATIONS' | 'DO_NOT_RECOMMEND', file: Blob): Observable<ReferenceRequestDTO> {
+    upload(token: string, relationship: RefereeRelationship, acquaintanceDuration: AcquaintanceDuration, acquaintanceDepth: AcquaintanceDepth, ratingIntellectualAbility: PeerRating, ratingResearchPotential: PeerRating, ratingMotivation: PeerRating, ratingCommunication: PeerRating, ratingLeadership: PeerRating, ratingCollaboration: PeerRating, overallRecommendation: OverallRecommendation, file: Blob): Observable<ReferenceRequestDTO> {
         const tokenPath = encodeURIComponent(String(token));
         const queryParams = new URLSearchParams();
         if (relationship !== undefined && relationship !== null) {
