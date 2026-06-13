@@ -60,10 +60,7 @@ public class PDFBuilder {
     private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0x18, 0x72, 0xDD);
     private static final DeviceRgb METADATA_COLOR = new DeviceRgb(0x8d, 0x8d, 0x8f);
 
-    // iText selects fonts for converted HTML through this provider. Restricting it to the
-    // Helvetica variants keeps every HTML element (headings, bold and italic runs included)
-    // on the same family as the programmatically built parts of the document. Built once and
-    // reused across exports, as a FontProvider is not mutated after construction.
+    // Reused across exports so converted HTML uses the same Helvetica font as the rest of the document.
     private static final FontProvider HTML_FONT_PROVIDER = createHelveticaFontProvider();
 
     // ----------------- Font Sizes -----------------
