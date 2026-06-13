@@ -323,7 +323,8 @@
       "description": "Füge deine Ausbildung hinzu.",
       "section": {
         "bachelor": "Bachelor Studium",
-        "master": "Master Studium"
+        "master": "Master Studium",
+        "education": "Ausbildung"
       },
       "label": {
         "gradeUpperLimit": "Höchstmögliche Note",
