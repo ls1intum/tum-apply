@@ -242,7 +242,10 @@ export class DatePickerComponent {
    * Parses typed keyboard input (DD/MM/YYYY or DD.MM.YYYY) and emits when input is complete and valid.
    */
   onInputTyped(event: Event): void {
-    const value = (event.target as HTMLInputElement).value.trim();
+    const target = event.target;
+    if (!target || !('value' in target)) return;
+    const inputElement: { value: string } = target as { value: string };
+    const value = inputElement.value.trim();
 
     if (!value) {
       this.modelDate.set(undefined);

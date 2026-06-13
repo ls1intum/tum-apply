@@ -220,6 +220,142 @@ describe('DatePickerComponent', () => {
     });
   });
 
+  describe('Keyboard Input Parsing (onInputTyped)', () => {
+    const createInputEvent = (value: string): Event => {
+      return { target: { value } } as unknown as Event;
+    };
+
+    it('should clear the model and emit undefined when input is empty', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const emitSpy = vi.spyOn(comp.selectedDateChange, 'emit');
+
+      comp.onInputTyped(createInputEvent(''));
+
+      expect(comp.modelDate()).toBeUndefined();
+      expect(emitSpy).toHaveBeenCalledWith(undefined);
+    });
+
+    it('should do nothing when the event target has no value property', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const emitSpy = vi.spyOn(comp.selectedDateChange, 'emit');
+
+      comp.onInputTyped({ target: {} } as unknown as Event);
+
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should parse an English date (DD/MM/YYYY) and emit the ISO string', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const emitSpy = vi.spyOn(comp.selectedDateChange, 'emit');
+      comp.currentLanguage.set('en');
+
+      comp.onInputTyped(createInputEvent('13/06/2099'));
+
+      expect(emitSpy).toHaveBeenCalledWith('2099-06-13');
+    });
+
+    it('should parse a German date (DD.MM.YYYY) and emit the ISO string', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const emitSpy = vi.spyOn(comp.selectedDateChange, 'emit');
+      comp.currentLanguage.set('de');
+
+      comp.onInputTyped(createInputEvent('13.06.2099'));
+
+      expect(emitSpy).toHaveBeenCalledWith('2099-06-13');
+    });
+
+    it('should update modelDate via setTimeout after a valid input', async () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      comp.currentLanguage.set('en');
+
+      comp.onInputTyped(createInputEvent('13/06/2099'));
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expectDateProperties(comp.modelDate(), 2099, 5, 13);
+    });
+
+    it('should convert a 2-digit year to 2000+ and emit the ISO string', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const emitSpy = vi.spyOn(comp.selectedDateChange, 'emit');
+      comp.currentLanguage.set('en');
+
+      comp.onInputTyped(createInputEvent('13/06/99'));
+
+      expect(emitSpy).toHaveBeenCalledWith('2099-06-13');
+    });
+
+    it.each([
+      ['13/06', 'en'],     // missing year part
+      ['13/06/202', 'en'], // 3-digit year
+    ])('should do nothing for incomplete input "%s"', (input, lang) => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const emitSpy = vi.spyOn(comp.selectedDateChange, 'emit');
+      comp.currentLanguage.set(lang);
+
+      comp.onInputTyped(createInputEvent(input));
+
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing when the wrong separator is used for the language', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const emitSpy = vi.spyOn(comp.selectedDateChange, 'emit');
+      comp.currentLanguage.set('en'); // expects slashes
+
+      comp.onInputTyped(createInputEvent('13.06.2099')); // dots — wrong for English
+
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['30/02/2099', 'en'], // Feb 30 — doesn't exist
+      ['00/06/2099', 'en'], // day 0 — out of range
+      ['13/13/2099', 'en'], // month 13 — out of range
+      ['13/06/1800', 'en'], // year before 1900
+    ])('should reject the invalid date "%s"', (input, lang) => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const emitSpy = vi.spyOn(comp.selectedDateChange, 'emit');
+      comp.currentLanguage.set(lang);
+
+      comp.onInputTyped(createInputEvent(input));
+
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not emit when the parsed date is before the effective minimum date', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const emitSpy = vi.spyOn(comp.selectedDateChange, 'emit');
+      comp.currentLanguage.set('en');
+
+      comp.onInputTyped(createInputEvent('13/06/2000'));
+
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not emit when the parsed date is after maxDate', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      fixture.componentRef.setInput('maxDate', new Date(2098, 0, 1));
+      fixture.detectChanges();
+      const emitSpy = vi.spyOn(comp.selectedDateChange, 'emit');
+      comp.currentLanguage.set('en');
+
+      comp.onInputTyped(createInputEvent('13/06/2099'));
+
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('Language and Localization', () => {
     it('should handle language changes and date format computation for each language', () => {
       const fixture = createFixture();
