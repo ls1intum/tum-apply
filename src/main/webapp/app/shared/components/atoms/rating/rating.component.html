@@ -1,5 +1,5 @@
 @if (selectable()) {
-  <div class="flex gap-1.5">
+  <div class="flex flex-wrap gap-1.5">
     @for (state of buttonStates(); track state.entry.value) {
       <button
         type="button"

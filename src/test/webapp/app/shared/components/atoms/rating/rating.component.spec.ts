@@ -71,16 +71,6 @@ describe('RatingComponent', () => {
     }
   });
 
-  // ---------------- TOOLTIP TEXTS ----------------
-  it('should expose translated tooltip text for every likert value', () => {
-    const tooltips = component.tooltipTexts();
-    expect(tooltips[0]).toBe('evaluation.ratings.very_bad');
-    expect(tooltips[1]).toBe('evaluation.ratings.bad');
-    expect(tooltips[2]).toBe('evaluation.ratings.neutral');
-    expect(tooltips[3]).toBe('evaluation.ratings.good');
-    expect(tooltips[4]).toBe('evaluation.ratings.very_good');
-  });
-
   // ---------------- SELECTED BADGE ----------------
   it.each<[number | undefined, string | undefined]>([
     [undefined, undefined],

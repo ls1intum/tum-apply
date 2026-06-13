@@ -39,14 +39,6 @@ export class RatingComponent {
     { value: 2, key: 'very_good' },
   ];
 
-  readonly tooltipTexts = computed(() => {
-    this.langChange();
-    return this.likertScale.map(s => {
-      const tooltip: string = this.translateService.instant(`evaluation.ratings.${s.key}`);
-      return tooltip;
-    });
-  });
-
   readonly buttonStates = computed(() => {
     this.langChange();
     const currentRating = this.rating();
