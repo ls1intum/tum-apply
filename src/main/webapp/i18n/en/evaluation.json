@@ -109,10 +109,10 @@
         "expired": "(expired)",
         "declined": "(declined)"
       },
-      "referenceConfidential": "Confidential",
-      "referenceShared": "Visible to applicant",
+      "referenceConfidential": "Confidential — not visible to the applicant",
+      "referenceShared": "Visible to the applicant",
       "documentNoUploads": "No documents uploaded",
-      "documentView": "View",
+      "documentView": "View all",
       "documentDownloadAll": "Download all",
       "furtherDocuments": "Further documents",
       "ratingTitle": "Ratings",

@@ -87,6 +87,9 @@ export default class ApplicationDetailForApplicantComponent {
     return this.application()?.references ?? [];
   });
 
+  /** The applicant's confidentiality waiver, applied to all of the application's reference letters. */
+  readonly referenceLettersConfidential = computed(() => this.references()[0]?.confidential ?? true);
+
   /**
    * Reference requests with an uploaded letter, mapped to a viewer-friendly shape.
    * Drives the per-letter preview cards on the detail page.

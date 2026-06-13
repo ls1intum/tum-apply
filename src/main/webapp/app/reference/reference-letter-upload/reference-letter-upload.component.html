@@ -115,28 +115,29 @@
           [(documentIds)]="uploadedDocuments"
           (queuedFilesChange)="onQueuedFilesChanged($event)"
         />
+      </div>
 
-        <div class="flex flex-wrap justify-center items-center gap-3">
-          <jhi-button
-            severity="primary"
-            icon="check"
-            label="reference.upload.confirm"
-            [shouldTranslate]="true"
-            [disabled]="!hasQueuedFile() || uploading()"
-            [loading]="uploading()"
-            (click)="confirmUpload()"
-          />
-          <jhi-confirm-dialog
-            label="reference.decline.button"
-            severity="danger"
-            variant="outlined"
-            confirmIcon="xmark"
-            header="reference.decline.confirmHeader"
-            message="reference.decline.confirmMessage"
-            [showOpenButton]="true"
-            (confirmed)="confirmDecline()"
-          />
-        </div>
+      <!-- Actions -->
+      <div class="mt-4 flex items-center justify-center gap-3">
+        <jhi-confirm-dialog
+          label="reference.decline.button"
+          severity="danger"
+          variant="outlined"
+          confirmIcon="xmark"
+          header="reference.decline.confirmHeader"
+          message="reference.decline.confirmMessage"
+          [showOpenButton]="true"
+          (confirmed)="confirmDecline()"
+        />
+        <jhi-button
+          severity="success"
+          icon="check"
+          label="reference.upload.confirm"
+          [shouldTranslate]="true"
+          [disabled]="!hasQueuedFile() || uploading()"
+          [loading]="uploading()"
+          (click)="confirmUpload()"
+        />
       </div>
     }
   </div>

@@ -295,6 +295,14 @@
           <div class="flex flex-col gap-8">
             @if (currentReferenceRequests().length > 0) {
               <jhi-section titleKey="evaluation.details.referenceLetterStatus" icon="envelope">
+                <p class="flex text-sm text-text-secondary mb-2 items-start">
+                  <fa-icon [icon]="referenceLettersConfidential() ? 'lock' : 'circle-info'" class="text-primary mt-0.5 w-5 shrink-0 -ml-2 mr-1" />
+                  <span
+                    [jhiTranslate]="
+                      referenceLettersConfidential() ? 'evaluation.details.referenceConfidential' : 'evaluation.details.referenceShared'
+                    "
+                  ></span>
+                </p>
                 <ul class="list-disc list-inside marker:text-primary text-sm">
                   @for (reference of currentReferenceRequests(); track reference.referenceRequestId) {
                     <li class="py-1">
@@ -311,15 +319,6 @@
                       } @else {
                         <span class="text-text-secondary ml-1" jhiTranslate="evaluation.details.referenceStatus.requested">Requested</span>
                       }
-                      @if (reference.confidential) {
-                        <span class="ml-2 text-xs italic text-text-secondary" jhiTranslate="evaluation.details.referenceConfidential"
-                        >Confidential</span
-                        >
-                      } @else {
-                        <span class="ml-2 text-xs italic text-text-secondary" jhiTranslate="evaluation.details.referenceShared"
-                        >Visible to applicant</span
-                        >
-                      }
                     </li>
                   }
                 </ul>
@@ -335,13 +334,14 @@
               />
               <ng-container actions>
                 @if (docSection.hasDocuments()) {
-                  <div class="flex flex-wrap gap-2">
+                  <div class="ml-auto flex flex-wrap gap-2">
                     <jhi-button
                       class="whitespace-nowrap"
                       label="evaluation.details.documentView"
                       [shouldTranslate]="true"
                       icon="eye"
                       variant="outlined"
+                      size="xs"
                       (click)="docSection.dialogVisible.set(true)"
                     />
                     <jhi-button
@@ -350,6 +350,7 @@
                       [shouldTranslate]="true"
                       icon="download"
                       variant="outlined"
+                      size="xs"
                       (click)="docSection.downloadAllDocuments()"
                     />
                   </div>

@@ -259,6 +259,8 @@
         "declined": "(declined)"
       },
       "reference_deadline": "Deadline",
+      "reference_confidential": "Confidential — only the supervising professor can view the submitted letters.",
+      "reference_shared": "You can also view the submitted letters.",
       "not_found": "Application not found"
     },
     "applicationSteps": {
@@ -628,7 +630,7 @@
     "confidentialNote": "The applicant has waived their right to access this letter. Only the supervising professor will be able to read it.",
     "sharedNote": "The applicant will also be able to view your submitted letter.",
     "decline": {
-      "button": "Decline to write a letter",
+      "button": "Decline",
       "confirmHeader": "Decline request",
       "confirmMessage": "Are you sure you do not want to provide a recommendation letter? This cannot be undone.",
       "failed": "The request could not be declined. Please try again."

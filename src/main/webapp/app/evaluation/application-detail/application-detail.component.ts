@@ -80,6 +80,8 @@ export class ApplicationDetailComponent {
   currentApplication = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
   currentDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
   currentReferenceRequests = computed(() => this.currentApplication()?.applicationDetailDTO.references ?? []);
+  /** The applicant's confidentiality waiver, applied to all reference letters of the application. */
+  referenceLettersConfidential = computed(() => this.currentReferenceRequests()[0]?.confidential ?? true);
   sortBy = signal<string>('appliedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
@@ -409,12 +411,12 @@ export class ApplicationDetailComponent {
       apps.map(app =>
         app.applicationDetailDTO.applicationId === id
           ? {
-              ...app,
-              applicationDetailDTO: {
-                ...app.applicationDetailDTO,
-                applicationState: newState,
-              },
-            }
+            ...app,
+            applicationDetailDTO: {
+              ...app.applicationDetailDTO,
+              applicationState: newState,
+            },
+          }
           : app,
       ),
     );
@@ -495,12 +497,12 @@ export class ApplicationDetailComponent {
           application.applicationDetailDTO.applicationState === ApplicationDetailDTOApplicationStateEnum.InReview ||
           application.applicationDetailDTO.applicationState === ApplicationDetailDTOApplicationStateEnum.Interview)
           ? {
-              ...application,
-              applicationDetailDTO: {
-                ...application.applicationDetailDTO,
-                applicationState: ApplicationDetailDTOApplicationStateEnum.Rejected,
-              },
-            }
+            ...application,
+            applicationDetailDTO: {
+              ...application.applicationDetailDTO,
+              applicationState: ApplicationDetailDTOApplicationStateEnum.Rejected,
+            },
+          }
           : application,
       ),
     );

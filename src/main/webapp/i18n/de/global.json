@@ -259,6 +259,8 @@
         "declined": "(abgelehnt)"
       },
       "reference_deadline": "Frist",
+      "reference_confidential": "Vertraulich — nur die betreuende Professorin oder der betreuende Professor kann die eingereichten Schreiben einsehen.",
+      "reference_shared": "Du kannst die eingereichten Schreiben ebenfalls einsehen.",
       "not_found": "Bewerbung nicht gefunden"
     },
     "applicationSteps": {
@@ -628,7 +630,7 @@
     "confidentialNote": "Die bewerbende Person hat auf ihr Recht verzichtet, dieses Schreiben einzusehen. Nur die betreuende Professorin oder der betreuende Professor kann es lesen.",
     "sharedNote": "Die bewerbende Person kann Ihr eingereichtes Schreiben ebenfalls einsehen.",
     "decline": {
-      "button": "Empfehlungsschreiben ablehnen",
+      "button": "Ablehnen",
       "confirmHeader": "Anfrage ablehnen",
       "confirmMessage": "Sind Sie sicher, dass Sie kein Empfehlungsschreiben bereitstellen möchten? Dies kann nicht rückgängig gemacht werden.",
       "failed": "Die Anfrage konnte nicht abgelehnt werden. Bitte versuchen Sie es erneut."

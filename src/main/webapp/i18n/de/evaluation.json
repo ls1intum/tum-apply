@@ -109,10 +109,10 @@
         "expired": "(abgelaufen)",
         "declined": "(abgelehnt)"
       },
-      "referenceConfidential": "Vertraulich",
-      "referenceShared": "Für Bewerbende sichtbar",
+      "referenceConfidential": "Vertraulich — für die bewerbende Person nicht sichtbar",
+      "referenceShared": "Für die bewerbende Person sichtbar",
       "documentNoUploads": "Keine Dokumente hochgeladen",
-      "documentView": "Anzeigen",
+      "documentView": "Alle anzeigen",
       "documentDownloadAll": "Alle herunterladen",
       "furtherDocuments": "Weitere Dokumente",
       "ratingTitle": "Bewertungen",
