@@ -19,6 +19,7 @@ const TOKEN = 'sample-token';
 interface ReferenceLetterUploadComponentInternals {
   onQueuedFilesChanged(files: File[]): void;
   confirmUpload(): Promise<void>;
+  confirmDecline(): Promise<void>;
 }
 
 const internals = (component: ReferenceLetterUploadComponent): ReferenceLetterUploadComponentInternals =>
@@ -125,6 +126,48 @@ describe('ReferenceLetterUploadComponent', () => {
 
       const root = fixture.nativeElement as HTMLElement;
       expect(root.textContent).toContain('reference.success.title');
+    });
+  });
+
+  describe('decline', () => {
+    it('should POST the decline and switch to the declined view on confirm', async () => {
+      await setupFixture();
+
+      await internals(component).confirmDecline();
+      fixture.detectChanges();
+
+      expect(api.decline).toHaveBeenCalledOnce();
+      expect(api.decline).toHaveBeenCalledWith(TOKEN);
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('reference.declined.title');
+    });
+
+    it('should toast and stay on the upload view on decline failure', async () => {
+      await setupFixture();
+      api.decline.mockReturnValueOnce(throwError(() => new Error('boom')));
+
+      await internals(component).confirmDecline();
+
+      expect(toast.showErrorKey).toHaveBeenCalledWith('reference.decline.failed');
+    });
+
+    it('should render the declined view for an already-declined token', async () => {
+      await setupFixture(undefined, createMockContext({ status: ReferenceRequestDTOStatusEnum.Declined }));
+
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('reference.declined.title');
+    });
+  });
+
+  describe('confidentiality note', () => {
+    it('should show the confidential note when the applicant waived access', async () => {
+      await setupFixture(undefined, createMockContext({ confidential: true }));
+
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('reference.confidentialNote');
+    });
+
+    it('should show the shared note when access is not waived', async () => {
+      await setupFixture(undefined, createMockContext({ confidential: false }));
+
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('reference.sharedNote');
     });
   });
 });

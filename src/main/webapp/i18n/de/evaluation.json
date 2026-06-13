@@ -106,13 +106,15 @@
       "referenceStatus": {
         "requested": "(angefragt)",
         "submitted": "(eingereicht)",
-        "expired": "(abgelaufen)"
+        "expired": "(abgelaufen)",
+        "declined": "(abgelehnt)"
       },
+      "referenceConfidential": "Vertraulich",
+      "referenceShared": "Für Bewerbende sichtbar",
       "documentNoUploads": "Keine Dokumente hochgeladen",
       "documentView": "Anzeigen",
       "documentDownloadAll": "Alle herunterladen",
-      "moreDocument": "+1 weiteres Dokument",
-      "moreDocuments": "+{count} weitere Dokumente",
+      "furtherDocuments": "Weitere Dokumente",
       "ratingTitle": "Bewertungen",
       "ratingDescription": "Bewerte die Bewerbung und sieh dir an, wie andere sie bewertet haben.",
       "ratingYourRating": "Deine Bewertung",

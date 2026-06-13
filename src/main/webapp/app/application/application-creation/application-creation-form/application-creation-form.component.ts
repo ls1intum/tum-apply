@@ -379,7 +379,7 @@ export default class ApplicationCreationFormComponent {
               this.showSendDialog.set(true);
             },
             disabled: !allPagesValid,
-            label: 'button.send',
+            label: 'button.submit',
             shouldTranslate: true,
             changePanel: false,
           },

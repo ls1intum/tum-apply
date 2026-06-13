@@ -10,6 +10,8 @@
 
 
 export interface ReferenceRequestDTO {
+    readonly confidential?: boolean;
+    readonly deadline?: string;
     readonly documentId?: string;
     readonly email?: string;
     readonly firstName?: string;
@@ -19,14 +21,15 @@ export interface ReferenceRequestDTO {
     readonly title?: string;
 }
 
-export type ReferenceRequestDTOStatusEnum = 'ADDED' | 'REQUESTED' | 'SUBMITTED' | 'EXPIRED';
+export type ReferenceRequestDTOStatusEnum = 'ADDED' | 'REQUESTED' | 'SUBMITTED' | 'EXPIRED' | 'DECLINED';
 
 export const ReferenceRequestDTOStatusEnum = {
     Added: 'ADDED' as const,
     Requested: 'REQUESTED' as const,
     Submitted: 'SUBMITTED' as const,
     Expired: 'EXPIRED' as const,
+    Declined: 'DECLINED' as const,
 } as const;
 
-export const ReferenceRequestDTOStatusEnumValues = ['ADDED', 'REQUESTED', 'SUBMITTED', 'EXPIRED'] as const;
+export const ReferenceRequestDTOStatusEnumValues = ['ADDED', 'REQUESTED', 'SUBMITTED', 'EXPIRED', 'DECLINED'] as const;
 

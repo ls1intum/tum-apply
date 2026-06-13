@@ -89,10 +89,11 @@ public class ReferenceRequestService {
         if (!currentUserService.isAdmin() && !currentUserService.isCurrentUser(application.getApplicant().getUserId())) {
             currentUserService.assertAccessTo(application.getJob().getResearchGroup());
         }
+        boolean confidential = application.isReferenceLettersConfidential();
         return referenceRequestRepository
             .findByApplicationApplicationIdOrderByCreatedAtAsc(application.getApplicationId())
             .stream()
-            .map(ReferenceRequestDTO::fromEntity)
+            .map(entry -> ReferenceRequestDTO.fromEntity(entry, confidential))
             .toList();
     }
 
@@ -116,7 +117,41 @@ public class ReferenceRequestService {
         entry.setLastName(payload.lastName().trim());
         entry.setEmail(payload.email().trim());
         entry.setStatus(ReferenceRequestStatus.ADDED);
-        return ReferenceRequestDTO.fromEntity(referenceRequestRepository.save(entry));
+        ReferenceRequest saved = referenceRequestRepository.save(entry);
+        return ReferenceRequestDTO.fromEntity(saved, application.isReferenceLettersConfidential());
+    }
+
+    /**
+     * Applies the applicant's confidentiality waiver to every referee on the application. A single
+     * checkbox governs all of an application's letters, so the flag is kept in sync across all
+     * entries. Only allowed while the application is still editable.
+     *
+     * @param applicationId the owning application
+     * @param confidential  true when the applicant waives access to the submitted letters
+     */
+    public void setConfidentiality(UUID applicationId, boolean confidential) {
+        Application application = assertOwnsApplication(applicationId);
+        assertApplicationEditable(application);
+        application.setReferenceLettersConfidential(confidential);
+        applicationRepository.save(application);
+    }
+
+    /**
+     * Marks the reference request behind the token as {@code DECLINED} when the referee chooses not
+     * to provide a letter. Only a {@code REQUESTED} request with a non-expired token may be declined;
+     * the decision is terminal.
+     *
+     * @param rawToken the plaintext token from the invitation email
+     * @return the updated request as a DTO
+     * @throws EntityNotFoundException      when the token is unknown
+     * @throws OperationNotAllowedException when the request is no longer open for a decision
+     */
+    public ReferenceRequestDTO declineRequest(String rawToken) {
+        ReferenceRequest entry = findByRawToken(rawToken);
+        assertDeclineAllowed(entry);
+        entry.setStatus(ReferenceRequestStatus.DECLINED);
+        ReferenceRequest saved = referenceRequestRepository.save(entry);
+        return ReferenceRequestDTO.fromEntity(saved, saved.getApplication().isReferenceLettersConfidential());
     }
 
     /**
@@ -197,7 +232,8 @@ public class ReferenceRequestService {
             job.getTitle(),
             job.getResearchGroup() != null ? job.getResearchGroup().getName() : null,
             entry.getTokenExpiresAt(),
-            entry.getStatus()
+            entry.getStatus(),
+            application.isReferenceLettersConfidential()
         );
     }
 
@@ -234,7 +270,7 @@ public class ReferenceRequestService {
 
         promoteApplicationToSentIfComplete(application);
 
-        return ReferenceRequestDTO.fromEntity(saved);
+        return ReferenceRequestDTO.fromEntity(saved, application.isReferenceLettersConfidential());
     }
 
     /**
@@ -358,6 +394,24 @@ public class ReferenceRequestService {
     }
 
     /**
+     * Guards the decline write path: only a {@code REQUESTED} request with a non-expired token may be
+     * declined. Already-submitted, expired or already-declined requests are immutable.
+     *
+     * @param entry the reference request being declined
+     */
+    private void assertDeclineAllowed(ReferenceRequest entry) {
+        if (entry.getStatus() == ReferenceRequestStatus.EXPIRED) {
+            throw new OperationNotAllowedException("This reference letter upload link has expired.");
+        }
+        if (entry.getTokenExpiresAt() != null && entry.getTokenExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new OperationNotAllowedException("This reference letter upload link has expired.");
+        }
+        if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
+            throw new OperationNotAllowedException("This reference request can no longer be declined.");
+        }
+    }
+
+    /**
      * Transitions the owning application from {@code PENDING} to {@code SENT} once the
      * number of submitted letters meets the job's requirement. Triggers no additional emails —
      * the professor was already notified at submit time.
@@ -426,10 +480,10 @@ public class ReferenceRequestService {
         String deadline =
             entry.getTokenExpiresAt() != null
                 ? entry
-                      .getTokenExpiresAt()
-                      .atZone(ZoneOffset.systemDefault())
-                      .withZoneSameInstant(ZoneOffset.UTC)
-                      .format(DEADLINE_FORMATTER)
+                .getTokenExpiresAt()
+                .atZone(ZoneOffset.systemDefault())
+                .withZoneSameInstant(ZoneOffset.UTC)
+                .format(DEADLINE_FORMATTER)
                 : "";
 
         ReferenceLetterContextDTO ctx = new ReferenceLetterContextDTO(

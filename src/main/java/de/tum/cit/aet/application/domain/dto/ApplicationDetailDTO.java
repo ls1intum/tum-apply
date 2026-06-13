@@ -61,7 +61,7 @@ public record ApplicationDetailDTO(
             HtmlSanitizer.sanitize(application.getProjects()),
             HtmlSanitizer.sanitize(application.getSpecialSkills()),
             HtmlSanitizer.sanitize(application.getMotivation()),
-            mapReferences(application.getReferenceRequests())
+            mapReferences(application.getReferenceRequests(), application.isReferenceLettersConfidential())
         );
     }
 
@@ -71,16 +71,17 @@ public record ApplicationDetailDTO(
      * returns an empty list to avoid LazyInitializationException.
      *
      * @param referenceRequests the set of reference request entities, possibly uninitialized
+     * @param confidential      the owning application's confidentiality waiver, applied to all its reference letters
      * @return the list of reference request DTOs, or empty if the input was null, uninitialized, or empty
      */
-    private static List<ReferenceRequestDTO> mapReferences(Set<ReferenceRequest> referenceRequests) {
+    private static List<ReferenceRequestDTO> mapReferences(Set<ReferenceRequest> referenceRequests, boolean confidential) {
         if (referenceRequests == null || !Hibernate.isInitialized(referenceRequests) || referenceRequests.isEmpty()) {
             return List.of();
         }
         return referenceRequests
             .stream()
             .sorted(Comparator.comparing(ReferenceRequest::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())))
-            .map(ReferenceRequestDTO::fromEntity)
+            .map(entity -> ReferenceRequestDTO.fromEntity(entity, confidential))
             .toList();
     }
 }

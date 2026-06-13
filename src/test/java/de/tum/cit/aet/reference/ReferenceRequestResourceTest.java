@@ -344,4 +344,40 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
             assertThat(reloaded.getState()).isEqualTo(ApplicationState.SENT);
         }
     }
+
+    @Nested
+    class Confidentiality {
+
+        private static final String CONFIDENTIALITY_URL = "/api/applications/%s/references/confidentiality?confidential=%s";
+
+        @Test
+        void shouldExposeConfidentialTrueByDefault() {
+            ReferenceRequestDTO created = api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .postAndRead(
+                    String.format(REFERENCES_URL, savedApplication.getApplicationId()),
+                    defaultPayload(),
+                    ReferenceRequestDTO.class,
+                    201
+                );
+
+            assertThat(created.confidential()).isTrue();
+        }
+
+        @Test
+        void shouldWaiveConfidentialityForTheWholeApplication() {
+            ReferenceRequestTestData.saved(referenceRequestRepository, savedApplication, "first@example.com");
+            ReferenceRequestTestData.saved(referenceRequestRepository, savedApplication, "second@example.com");
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(String.format(CONFIDENTIALITY_URL, savedApplication.getApplicationId(), false), null, Void.class, 204);
+
+            Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
+            assertThat(reloaded.isReferenceLettersConfidential()).isFalse();
+            assertThat(getReferencesAsApplicant(savedApplication.getApplicationId()))
+                .isNotEmpty()
+                .allSatisfy(reference -> assertThat(reference.confidential()).isFalse());
+        }
+    }
 }

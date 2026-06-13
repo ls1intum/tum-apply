@@ -70,4 +70,20 @@ public class ReferenceRequestResource {
         referenceRequestService.removeFromApplication(applicationId, referenceId);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Sets the confidentiality waiver for all referees on the application. When confidential, the
+     * applicant cannot view the submitted letters (only the supervising professor can).
+     *
+     * @param applicationId the owning application
+     * @param confidential  true when the applicant waives access to the submitted letters
+     * @return 204 No Content on success
+     */
+    @ApplicantOrAdmin
+    @PutMapping("/confidentiality")
+    public ResponseEntity<Void> setConfidentiality(@PathVariable UUID applicationId, @RequestParam boolean confidential) {
+        log.info("PUT /api/applications/{}/references/confidentiality - confidential={}", applicationId, confidential);
+        referenceRequestService.setConfidentiality(applicationId, confidential);
+        return ResponseEntity.noContent().build();
+    }
 }

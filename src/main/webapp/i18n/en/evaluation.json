@@ -106,13 +106,15 @@
       "referenceStatus": {
         "requested": "(requested)",
         "submitted": "(submitted)",
-        "expired": "(expired)"
+        "expired": "(expired)",
+        "declined": "(declined)"
       },
+      "referenceConfidential": "Confidential",
+      "referenceShared": "Visible to applicant",
       "documentNoUploads": "No documents uploaded",
       "documentView": "View",
       "documentDownloadAll": "Download all",
-      "moreDocument": "+1 more document",
-      "moreDocuments": "+{count} more documents",
+      "furtherDocuments": "Further documents",
       "ratingTitle": "Ratings",
       "ratingDescription": "Rate the application and view how other reviewers have assessed it.",
       "ratingYourRating": "Your Rating",

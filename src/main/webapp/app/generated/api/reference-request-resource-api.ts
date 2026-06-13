@@ -59,4 +59,21 @@ export class ReferenceRequestResourceApi {
         return this.http.delete<void>(url);
     }
 
+    /**
+     * 
+     * 
+     * @param applicationId 
+     * @param confidential 
+     */
+    setConfidentiality(applicationId: string, confidential: boolean): Observable<void> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const queryParams = new URLSearchParams();
+        if (confidential !== undefined && confidential !== null) {
+            queryParams.set('confidential', String(confidential));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/applications/${applicationIdPath}/references/confidentiality${queryString ? `?${queryString}` : ''}`;
+        return this.http.put<void>(url, null);
+    }
+
 }

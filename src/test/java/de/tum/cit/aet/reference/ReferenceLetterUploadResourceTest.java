@@ -46,6 +46,7 @@ import tools.jackson.core.type.TypeReference;
 class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
 
     private static final String CONTEXT_URL = "/api/reference-letters/%s";
+    private static final String DECLINE_URL = "/api/reference-letters/%s/decline";
 
     @Autowired
     ApplicationRepository applicationRepository;
@@ -139,6 +140,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
             assertThat(context.jobTitle()).isEqualTo(jobWithReferences.getTitle());
             assertThat(context.researchGroupName()).isEqualTo(researchGroup.getName());
             assertThat(context.status()).isEqualTo(ReferenceRequestStatus.REQUESTED);
+            assertThat(context.confidential()).isTrue();
         }
 
         @Test
@@ -195,6 +197,50 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
                 new TypeReference<>() {},
                 400
             );
+        }
+    }
+
+    @Nested
+    class DeclineRequest {
+
+        @Test
+        void shouldTransitionRequestToDeclined() {
+            savedRequestedEntry("decline-token");
+
+            ReferenceRequestDTO updated = api.postAndRead(
+                String.format(DECLINE_URL, "decline-token"),
+                null,
+                ReferenceRequestDTO.class,
+                200
+            );
+
+            assertThat(updated.status()).isEqualTo(ReferenceRequestStatus.DECLINED);
+
+            ReferenceRequest persisted = referenceRequestRepository.findById(updated.referenceRequestId()).orElseThrow();
+            assertThat(persisted.getStatus()).isEqualTo(ReferenceRequestStatus.DECLINED);
+        }
+
+        @Test
+        void shouldReject400WhenAlreadySubmitted() {
+            ReferenceRequest entry = savedRequestedEntry("submitted-token");
+            entry.setStatus(ReferenceRequestStatus.SUBMITTED);
+            referenceRequestRepository.save(entry);
+
+            api.postAndReturnBytes(String.format(DECLINE_URL, "submitted-token"), null, 400);
+        }
+
+        @Test
+        void shouldReject400WhenExpired() {
+            ReferenceRequest entry = savedRequestedEntry("lapsed-token");
+            entry.setTokenExpiresAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(1));
+            referenceRequestRepository.save(entry);
+
+            api.postAndReturnBytes(String.format(DECLINE_URL, "lapsed-token"), null, 400);
+        }
+
+        @Test
+        void shouldReturn404WhenTokenIsUnknown() {
+            api.postAndReturnBytes(String.format(DECLINE_URL, "no-such-token"), null, 404);
         }
     }
 }

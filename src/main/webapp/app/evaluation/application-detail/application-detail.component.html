@@ -146,7 +146,7 @@
                 class="whitespace-nowrap transition-all duration-200"
                 [class.blur-[3px]]="!sensitiveInfoVisible()"
                 [class.select-none]="!sensitiveInfoVisible()"
-                >{{
+              >{{
                   application.applicationDetailDTO.applicant?.user?.nationality
                     ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
                     : '—'
@@ -158,7 +158,7 @@
                 class="whitespace-nowrap transition-all duration-200"
                 [class.blur-[3px]]="!sensitiveInfoVisible()"
                 [class.select-none]="!sensitiveInfoVisible()"
-                >{{
+              >{{
                   application.applicationDetailDTO.applicant?.user?.gender
                     ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
                     : '—'
@@ -302,12 +302,23 @@
                       <span class="font-normal text-text-secondary text-sm ml-1"> ({{ reference.email }}) </span>
                       @if (reference.status === 'SUBMITTED') {
                         <span class="text-positive-default ml-1" jhiTranslate="evaluation.details.referenceStatus.submitted"
-                          >Submitted</span
+                        >Submitted</span
                         >
                       } @else if (reference.status === 'EXPIRED') {
                         <span class="text-negative-default ml-1" jhiTranslate="evaluation.details.referenceStatus.expired">Expired</span>
+                      } @else if (reference.status === 'DECLINED') {
+                        <span class="text-negative-default ml-1" jhiTranslate="evaluation.details.referenceStatus.declined">Declined</span>
                       } @else {
                         <span class="text-text-secondary ml-1" jhiTranslate="evaluation.details.referenceStatus.requested">Requested</span>
+                      }
+                      @if (reference.confidential) {
+                        <span class="ml-2 text-xs italic text-text-secondary" jhiTranslate="evaluation.details.referenceConfidential"
+                        >Confidential</span
+                        >
+                      } @else {
+                        <span class="ml-2 text-xs italic text-text-secondary" jhiTranslate="evaluation.details.referenceShared"
+                        >Visible to applicant</span
+                        >
                       }
                     </li>
                   }
@@ -317,10 +328,33 @@
 
             <jhi-section titleKey="evaluation.details.documentTitle" icon="file-lines">
               <jhi-document-section
+                #docSection
                 [idsDTO]="currentDocumentIds()"
                 [applicationId]="currentApplicationId()"
                 [referenceLetters]="currentReferenceRequests()"
               />
+              <ng-container actions>
+                @if (docSection.hasDocuments()) {
+                  <div class="flex flex-wrap gap-2">
+                    <jhi-button
+                      class="whitespace-nowrap"
+                      label="evaluation.details.documentView"
+                      [shouldTranslate]="true"
+                      icon="eye"
+                      variant="outlined"
+                      (click)="docSection.dialogVisible.set(true)"
+                    />
+                    <jhi-button
+                      class="whitespace-nowrap"
+                      label="evaluation.details.documentDownloadAll"
+                      [shouldTranslate]="true"
+                      icon="download"
+                      variant="outlined"
+                      (click)="docSection.downloadAllDocuments()"
+                    />
+                  </div>
+                }
+              </ng-container>
             </jhi-section>
           </div>
         </div>

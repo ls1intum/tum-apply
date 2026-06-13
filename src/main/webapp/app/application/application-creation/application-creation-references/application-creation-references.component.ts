@@ -8,6 +8,7 @@ import { SelectModule } from 'primeng/select';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ReferenceRequestResourceApi } from 'app/generated/api/reference-request-resource-api';
@@ -37,6 +38,7 @@ const TOAST_PREFIX = 'entity.applicationReferences';
     ButtonComponent,
     StringInputComponent,
     SelectComponent,
+    CheckboxComponent,
   ],
   templateUrl: './application-creation-references.component.html',
 })
@@ -61,6 +63,9 @@ export default class ApplicationCreationReferencesComponent {
     lastName: this.formBuilder.nonNullable.control('', Validators.required),
     email: this.formBuilder.nonNullable.control('', [Validators.required, Validators.email, Validators.pattern(/.+\..{2,}$/)]),
   });
+
+  /** Checked = the applicant waives access to the submitted letters (only the professor sees them). */
+  readonly confidentialControl = this.formBuilder.nonNullable.control(true);
 
   /** Has the applicant added at least the required number of referees? */
   readonly stepValid = computed(() => this.references().length >= this.requiredCount());
@@ -146,6 +151,22 @@ export default class ApplicationCreationReferencesComponent {
   }
 
   /**
+   * Persists the applicant's confidentiality waiver on the application. One decision applies to all
+   * of the application's reference letters, so a single flag is stored on the application rather than
+   * on each referee.
+   *
+   * @param confidential the new waiver value chosen by the applicant
+   */
+  async onConfidentialChange(confidential: boolean): Promise<void> {
+    try {
+      await firstValueFrom(this.referenceApi.setConfidentiality(this.applicationId(), confidential));
+    } catch {
+      this.confidentialControl.setValue(!confidential, { emitEvent: false });
+      this.toastService.showErrorKey(`${TOAST_PREFIX}.toast.confidentialityFailed`);
+    }
+  }
+
+  /**
    * Clears the add form value and resets validation state so the inputs render as
    * pristine and untouched after a successful submit.
    */
@@ -168,6 +189,10 @@ export default class ApplicationCreationReferencesComponent {
     try {
       const list = await firstValueFrom(this.referenceApi.getReferences(this.applicationId()));
       this.references.set(list);
+      // All referees share one waiver value; mirror it onto the checkbox without re-triggering the server sync.
+      if (list.length > 0) {
+        this.confidentialControl.setValue(list[0].confidential ?? true, { emitEvent: false });
+      }
       this.referencesChanged.emit(this.references());
     } catch {
       this.toastService.showErrorKey(`${TOAST_PREFIX}.toast.loadFailed`);

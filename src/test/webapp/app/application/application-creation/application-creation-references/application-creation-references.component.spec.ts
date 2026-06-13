@@ -284,4 +284,40 @@ describe('ApplicationCreationReferencesComponent', () => {
       expect(component.references()).toHaveLength(1);
     });
   });
+
+  describe('confidentiality waiver', () => {
+    it('should mirror the loaded waiver value onto the checkbox control', async () => {
+      await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a', confidential: false })]);
+
+      expect(component.confidentialControl.value).toBe(false);
+    });
+
+    it('should persist the waiver on the application when toggled', async () => {
+      await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a', confidential: true })]);
+
+      await component.onConfidentialChange(false);
+
+      expect(referenceApi.setConfidentiality).toHaveBeenCalledOnce();
+      expect(referenceApi.setConfidentiality).toHaveBeenCalledWith(APPLICATION_ID, false);
+    });
+
+    it('should persist the waiver even when no referees exist yet', async () => {
+      await setupFixture([]);
+
+      await component.onConfidentialChange(false);
+
+      expect(referenceApi.setConfidentiality).toHaveBeenCalledOnce();
+      expect(referenceApi.setConfidentiality).toHaveBeenCalledWith(APPLICATION_ID, false);
+    });
+
+    it('should revert the control and toast on failure', async () => {
+      await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a', confidential: true })]);
+      referenceApi.setConfidentiality.mockReturnValueOnce(throwError(() => new Error('boom')));
+
+      await component.onConfidentialChange(false);
+
+      expect(component.confidentialControl.value).toBe(true);
+      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.applicationReferences.toast.confidentialityFailed');
+    });
+  });
 });

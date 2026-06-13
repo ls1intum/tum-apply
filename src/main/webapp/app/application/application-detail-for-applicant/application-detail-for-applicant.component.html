@@ -185,14 +185,14 @@
               <div class="info-row">
                 <span jhiTranslate="entity.detail_card.gender"></span>
                 <span class="value">{{
-                  application.applicant?.user?.gender ? ('genders.' + application.applicant?.user?.gender | translate) : '-'
-                }}</span>
+                    application.applicant?.user?.gender ? ('genders.' + application.applicant?.user?.gender | translate) : '-'
+                  }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="entity.detail_card.nationality"></span>
                 <span class="value">{{
-                  application.applicant?.user?.nationality ? ('nationalities.' + application.applicant?.user?.nationality | translate) : '-'
-                }}</span>
+                    application.applicant?.user?.nationality ? ('nationalities.' + application.applicant?.user?.nationality | translate) : '-'
+                  }}</span>
               </div>
             </div>
             @if (application.applicant?.user?.website || application.applicant?.user?.linkedinUrl) {
@@ -287,12 +287,20 @@
                   @if (!previewDetailData()) {
                     @if (reference.status === 'SUBMITTED') {
                       <span class="text-positive-default" jhiTranslate="entity.application_detail.reference_status.submitted"
-                        >Submitted</span
+                      >Submitted</span
                       >
                     } @else if (reference.status === 'EXPIRED') {
                       <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.expired">Expired</span>
+                    } @else if (reference.status === 'DECLINED') {
+                      <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.declined">Declined</span>
                     } @else {
                       <span class="text-text-secondary" jhiTranslate="entity.application_detail.reference_status.requested">Requested</span>
+                      @if (reference.deadline) {
+                        <span class="font-normal text-text-secondary text-sm ml-1">
+                          · <span jhiTranslate="entity.application_detail.reference_deadline"></span>:
+                          {{ reference.deadline | localizedDate }}
+                        </span>
+                      }
                     }
                   }
                 </li>
@@ -308,7 +316,7 @@
       <section>
         @if (
           documentIds.bachelorDocumentIds || documentIds.masterDocumentIds || documentIds.cvDocumentId || documentIds.referenceDocumentIds
-        ) {
+          ) {
           @if (!previewDetailData()) {
             <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>
           }
