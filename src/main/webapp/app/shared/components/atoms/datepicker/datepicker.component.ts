@@ -239,6 +239,31 @@ export class DatePickerComponent {
   });
 
   /**
+   * Parses typed keyboard input (DD/MM/YYYY or DD.MM.YYYY) and emits when input is complete and valid.
+   */
+  onInputTyped(event: Event): void {
+    const value = (event.target as HTMLInputElement).value.trim();
+
+    if (!value) {
+      this.modelDate.set(undefined);
+      this.selectedDateChange.emit(undefined);
+      return;
+    }
+
+    const separator = this.currentLanguage() === 'de' ? '.' : '/';
+    const localDate = parseLocalDateString(value, separator);
+    if (!localDate) return;
+    const minDate = this.effectiveMinDate();
+    const maxDate = this.maxDate();
+    if (localDate < minDate) return;
+    if (maxDate && localDate > maxDate) return;
+
+    const iso = `${localDate.getFullYear().toString().padStart(4, '0')}-${localDate.getMonth().toString().padStart(2, '0')}-${localDate.getDay().toString().padStart(2, '0')}`;
+    this.selectedDateChange.emit(iso);
+    setTimeout(() => this.modelDate.set(localDate), 0);
+  }
+
+  /**
    * Converts a Date object to ISO date string and emits it as `selectedDateChange`.
    * @param date - The Date object selected by the user
    */

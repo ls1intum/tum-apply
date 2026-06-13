@@ -37,6 +37,7 @@
     showIcon="true"
     [inputStyleClass]="inputStyleClass"
     [appendTo]="'body'"
+    (input)="onInputTyped($event)"
   >
     <ng-template pTemplate="date" let-date>
       @let highlightedDate = highlightedDateParts();

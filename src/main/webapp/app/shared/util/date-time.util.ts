@@ -80,14 +80,15 @@ export function toLocalDateString(date: Date): string {
  * Uses local time instead of UTC to avoid timezone shifts for date-only values.
  *
  * @param value The date string to parse
+ * @param separator The separator character between year, month, and day, defaults to '-'
  * @returns The parsed local Date, or undefined if the input is invalid
  */
-export function parseLocalDateString(value: string | undefined): Date | undefined {
+export function parseLocalDateString(value: string | undefined, separator = '-'): Date | undefined {
   if (!value || value.trim() === '') {
     return undefined;
   }
 
-  const parts = value.split('-');
+  const parts = value.split(separator);
   if (parts.length !== 3) {
     return undefined;
   }
