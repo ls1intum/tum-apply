@@ -4,22 +4,26 @@
   }
   @case (AppState.Sent) {
     <div class="flex flex-wrap items-center gap-2">
-      <jhi-tag text="entity.applicationOverview.state.submitted" color="secondary" width="7rem" />
-      @if (recommendationMissing()) {
-        <jhi-tag
-          text="entity.applicationOverview.recommendationMissing"
-          tooltipText="entity.applicationOverview.recommendationMissingTooltip"
-          color="warn"
-          [icon]="faExclamationTriangle"
-        />
-      }
+      <jhi-tag
+        text="entity.applicationOverview.state.submitted"
+        color="secondary"
+        width="7rem"
+        [icon]="recommendationMissing() ? faExclamationTriangle : undefined"
+        [tooltipText]="recommendationMissing() ? 'entity.applicationOverview.recommendationMissingTooltip' : undefined"
+      />
     </div>
   }
   @case (AppState.Accepted) {
     <jhi-tag text="entity.applicationOverview.state.accepted" color="success" width="7rem" />
   }
   @case (AppState.InReview) {
-    <jhi-tag text="entity.applicationOverview.state.inReview" color="warn" width="7rem" />
+    <jhi-tag
+      text="entity.applicationOverview.state.inReview"
+      color="warn"
+      width="7rem"
+      [icon]="recommendationMissing() ? faExclamationTriangle : undefined"
+      [tooltipText]="recommendationMissing() ? 'entity.applicationOverview.recommendationMissingTooltip' : undefined"
+    />
   }
   @case (AppState.Interview) {
     <jhi-tag text="entity.applicationOverview.state.interview" color="info" width="7rem" />
