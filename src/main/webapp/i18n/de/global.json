@@ -608,6 +608,9 @@
   },
   "reference": {
     "title": "Empfehlungsschreiben hochladen",
+    "assessment": {
+      "title": "Bewertungen der Referenzgeber"
+    },
     "questions": {
       "relationship": {
         "title": "Ihr Verhältnis zur bewerbenden Person",

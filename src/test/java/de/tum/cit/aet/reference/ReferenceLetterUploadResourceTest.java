@@ -185,6 +185,10 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
 
             assertThat(updated.status()).isEqualTo(ReferenceRequestStatus.SUBMITTED);
             assertThat(updated.documentId()).isNotNull();
+            // The returned DTO exposes the assessment so the professor evaluation view can render it.
+            assertThat(updated.relationship()).isEqualTo(RefereeRelationship.RESEARCH_SUPERVISOR);
+            assertThat(updated.ratingIntellectualAbility()).isEqualTo(PeerRating.TOP_FIVE_PERCENT);
+            assertThat(updated.overallRecommendation()).isEqualTo(OverallRecommendation.STRONGLY_RECOMMEND);
 
             ReferenceRequest persisted = referenceRequestRepository.findById(updated.referenceRequestId()).orElseThrow();
             assertThat(persisted.getStatus()).isEqualTo(ReferenceRequestStatus.SUBMITTED);

@@ -19,6 +19,14 @@ import { AcquaintanceDuration } from 'app/generated/model/acquaintance-duration'
 import { AcquaintanceDepth } from 'app/generated/model/acquaintance-depth';
 import { PeerRating } from 'app/generated/model/peer-rating';
 import { OverallRecommendation } from 'app/generated/model/overall-recommendation';
+import {
+  DEPTH_OPTIONS,
+  DURATION_OPTIONS,
+  OVERALL_OPTIONS,
+  RATING_OPTIONS,
+  RATING_ROWS,
+  RELATIONSHIP_OPTIONS,
+} from 'app/reference/reference-assessment.constants';
 
 /**
  * Public landing page for external referees to fill in a structured assessment and upload a
@@ -43,50 +51,12 @@ export class ReferenceLetterUploadComponent {
   protected readonly queuedFile = signal<File | undefined>(undefined);
   protected readonly hasQueuedFile = computed(() => !!this.queuedFile());
 
-  protected readonly relationshipOptions: SelectOption[] = [
-    { name: 'reference.questions.relationship.capacity.options.courseInstructor', value: RefereeRelationship.CourseInstructor },
-    { name: 'reference.questions.relationship.capacity.options.researchSupervisor', value: RefereeRelationship.ResearchSupervisor },
-    { name: 'reference.questions.relationship.capacity.options.thesisAdvisor', value: RefereeRelationship.ThesisAdvisor },
-    { name: 'reference.questions.relationship.capacity.options.employer', value: RefereeRelationship.Employer },
-    { name: 'reference.questions.relationship.capacity.options.academicAdvisor', value: RefereeRelationship.AcademicAdvisor },
-    { name: 'reference.questions.relationship.capacity.options.other', value: RefereeRelationship.Other },
-  ];
-  protected readonly durationOptions: SelectOption[] = [
-    { name: 'reference.questions.relationship.duration.options.lessThanOneYear', value: AcquaintanceDuration.LessThanOneYear },
-    { name: 'reference.questions.relationship.duration.options.oneToTwoYears', value: AcquaintanceDuration.OneToTwoYears },
-    { name: 'reference.questions.relationship.duration.options.threeToFiveYears', value: AcquaintanceDuration.ThreeToFiveYears },
-    { name: 'reference.questions.relationship.duration.options.moreThanFiveYears', value: AcquaintanceDuration.MoreThanFiveYears },
-  ];
-  protected readonly depthOptions: SelectOption[] = [
-    { name: 'reference.questions.relationship.depth.options.casually', value: AcquaintanceDepth.Casually },
-    { name: 'reference.questions.relationship.depth.options.moderately', value: AcquaintanceDepth.Moderately },
-    { name: 'reference.questions.relationship.depth.options.well', value: AcquaintanceDepth.Well },
-    { name: 'reference.questions.relationship.depth.options.veryWell', value: AcquaintanceDepth.VeryWell },
-  ];
-  protected readonly ratingOptions: SelectOption[] = [
-    { name: 'reference.questions.rating.options.top1to2', value: PeerRating.TopOneToTwoPercent },
-    { name: 'reference.questions.rating.options.top5', value: PeerRating.TopFivePercent },
-    { name: 'reference.questions.rating.options.top10', value: PeerRating.TopTenPercent },
-    { name: 'reference.questions.rating.options.top25', value: PeerRating.TopTwentyFivePercent },
-    { name: 'reference.questions.rating.options.top50', value: PeerRating.TopFiftyPercent },
-    { name: 'reference.questions.rating.options.belowAverage', value: PeerRating.BelowAverage },
-    { name: 'reference.questions.rating.options.cannotJudge', value: PeerRating.CannotJudge },
-  ];
-  protected readonly overallOptions: SelectOption[] = [
-    { name: 'reference.questions.overall.options.highestEnthusiasm', value: OverallRecommendation.HighestEnthusiasm },
-    { name: 'reference.questions.overall.options.stronglyRecommend', value: OverallRecommendation.StronglyRecommend },
-    { name: 'reference.questions.overall.options.recommend', value: OverallRecommendation.Recommend },
-    { name: 'reference.questions.overall.options.recommendWithReservations', value: OverallRecommendation.RecommendWithReservations },
-    { name: 'reference.questions.overall.options.doNotRecommend', value: OverallRecommendation.DoNotRecommend },
-  ];
-  protected readonly ratingRows: { key: string; labelKey: string }[] = [
-    { key: 'ratingIntellectualAbility', labelKey: 'reference.questions.rating.rows.intellectualAbility' },
-    { key: 'ratingResearchPotential', labelKey: 'reference.questions.rating.rows.researchPotential' },
-    { key: 'ratingMotivation', labelKey: 'reference.questions.rating.rows.motivation' },
-    { key: 'ratingCommunication', labelKey: 'reference.questions.rating.rows.communication' },
-    { key: 'ratingLeadership', labelKey: 'reference.questions.rating.rows.leadership' },
-    { key: 'ratingCollaboration', labelKey: 'reference.questions.rating.rows.collaboration' },
-  ];
+  protected readonly relationshipOptions = RELATIONSHIP_OPTIONS;
+  protected readonly durationOptions = DURATION_OPTIONS;
+  protected readonly depthOptions = DEPTH_OPTIONS;
+  protected readonly ratingOptions = RATING_OPTIONS;
+  protected readonly overallOptions = OVERALL_OPTIONS;
+  protected readonly ratingRows = RATING_ROWS;
 
   protected readonly answers = signal<Record<string, string | undefined>>({});
 

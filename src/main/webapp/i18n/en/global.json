@@ -608,6 +608,9 @@
   },
   "reference": {
     "title": "Upload your recommendation letter",
+    "assessment": {
+      "title": "Recommenders' assessments"
+    },
     "questions": {
       "relationship": {
         "title": "Your relationship to the applicant",
