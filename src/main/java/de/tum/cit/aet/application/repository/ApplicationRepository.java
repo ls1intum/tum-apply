@@ -328,15 +328,29 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
      * @return a paginated list of application overview DTOs
      */
     @Query(
-        """
+        value = """
             SELECT new de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO(
                 a.applicationId,
                 j.jobId,
                 j.title,
                 rg.name,
                 a.state,
-                a.createdAt
+                a.createdAt,
+                CASE
+                    WHEN SUM(CASE WHEN rr.status = de.tum.cit.aet.reference.constants.ReferenceRequestStatus.SUBMITTED THEN 1 ELSE 0 END)
+                        < j.referenceLettersRequired THEN TRUE
+                    ELSE FALSE
+                END
             )
+            FROM Application a
+            JOIN a.job j
+            JOIN j.researchGroup rg
+            LEFT JOIN a.referenceRequests rr
+            WHERE a.applicant.userId = :applicantId
+            GROUP BY a.applicationId, j.jobId, j.title, rg.name, a.state, a.createdAt, j.referenceLettersRequired
+        """,
+        countQuery = """
+            SELECT COUNT(a)
             FROM Application a
             JOIN a.job j
             JOIN j.researchGroup rg

@@ -432,10 +432,11 @@
     },
     "applicationOverview": {
       "header": "Deine Bewerbungen",
+      "recommendationMissing": "Empfehlung fehlt",
+      "recommendationMissingTooltip": "Es fehlen noch erforderliche Empfehlungsschreiben.",
       "state": {
         "draft": "Entwurf",
         "submitted": "Eingereicht",
-        "pending": "Ausstehend",
         "accepted": "Angenommen",
         "rejected": "Abgelehnt",
         "withdrawn": "Zurückgezogen",

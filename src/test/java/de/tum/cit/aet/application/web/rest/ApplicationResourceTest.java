@@ -19,6 +19,8 @@ import de.tum.cit.aet.core.documents.repository.DocumentRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
+import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -34,6 +36,7 @@ import de.tum.cit.aet.utility.testdata.ApplicantTestData;
 import de.tum.cit.aet.utility.testdata.ApplicationTestData;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
 import de.tum.cit.aet.utility.testdata.JobTestData;
+import de.tum.cit.aet.utility.testdata.ReferenceRequestTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
@@ -65,6 +68,9 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
     @Autowired
     ResearchGroupRepository researchGroupRepository;
+
+    @Autowired
+    ReferenceRequestRepository referenceRequestRepository;
 
     @Autowired
     DocumentRepository documentRepository;
@@ -509,6 +515,57 @@ class ApplicationResourceTest extends AbstractResourceTest {
             assertThat(detailDTO.motivation()).isEqualTo("Passionate about AI research");
             assertThat(detailDTO.supervisingProfessorName()).isEqualTo("Alice Smith");
             assertThat(detailDTO.researchGroup()).isEqualTo("Test Group");
+        }
+
+        @Test
+        void shouldReportRecommendationMissingBasedOnReferenceCompleteness() {
+            Job jobWithReferences = JobTestData.saved(
+                jobRepository,
+                professor,
+                researchGroup,
+                "PhD with References",
+                JobState.PUBLISHED,
+                LocalDate.of(2026, 9, 1)
+            );
+            jobWithReferences.setReferenceLettersRequired(2);
+            jobWithReferences = jobRepository.save(jobWithReferences);
+
+            // Submitted but only 1 of 2 letters in -> missing
+            Application incompleteApp = ApplicationTestData.savedSent(applicationRepository, jobWithReferences, applicant);
+            saveReference(incompleteApp, "in-1@example.com", ReferenceRequestStatus.SUBMITTED);
+            saveReference(incompleteApp, "in-2@example.com", ReferenceRequestStatus.REQUESTED);
+
+            // Submitted with both letters in -> not missing
+            Application completeApp = ApplicationTestData.savedSent(applicationRepository, jobWithReferences, applicant);
+            saveReference(completeApp, "co-1@example.com", ReferenceRequestStatus.SUBMITTED);
+            saveReference(completeApp, "co-2@example.com", ReferenceRequestStatus.SUBMITTED);
+
+            // Job that requires no letters -> not missing
+            Application noReferencesApp = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+
+            PageResponse<ApplicationOverviewDTO> applications = api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .getAndRead("/api/applications/pages?pageSize=10&pageNumber=0", null, new TypeReference<>() {}, 200);
+
+            assertThat(recommendationMissingFor(applications, incompleteApp)).isTrue();
+            assertThat(recommendationMissingFor(applications, completeApp)).isFalse();
+            assertThat(recommendationMissingFor(applications, noReferencesApp)).isFalse();
+        }
+
+        private void saveReference(Application application, String email, ReferenceRequestStatus status) {
+            referenceRequestRepository.save(
+                ReferenceRequestTestData.newReferenceRequest(application, "Prof. Dr.", "Ada", "Lovelace", email, status)
+            );
+        }
+
+        private boolean recommendationMissingFor(PageResponse<ApplicationOverviewDTO> page, Application application) {
+            return page
+                .content()
+                .stream()
+                .filter(dto -> dto.getApplicationId().equals(application.getApplicationId()))
+                .findFirst()
+                .orElseThrow()
+                .isRecommendationMissing();
         }
 
         @Test

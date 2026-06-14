@@ -324,17 +324,17 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void shouldHoldApplicationInPendingStateWhenReferenceLettersAreStillMissing() {
+        void shouldKeepApplicationSentWhenReferenceLettersAreStillMissing() {
             saveAddedReference("waiting@example.com");
 
             submitApplication();
 
             Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
-            assertThat(reloaded.getState()).isEqualTo(ApplicationState.PENDING);
+            assertThat(reloaded.getState()).isEqualTo(ApplicationState.SENT);
         }
 
         @Test
-        void shouldPromoteToSentWhenJobRequiresNoReferenceLetters() {
+        void shouldKeepApplicationSentWhenJobRequiresNoReferenceLetters() {
             jobWithReferences.setReferenceLettersRequired(0);
             jobRepository.save(jobWithReferences);
 
