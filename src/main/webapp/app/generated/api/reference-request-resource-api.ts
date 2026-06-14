@@ -17,6 +17,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ReferenceRequestDTO } from '../model/reference-request-dto';
 import { CreateReferenceRequestDTO } from '../model/create-reference-request-dto';
+import { UpdateReferenceRequestDTO } from '../model/update-reference-request-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ReferenceRequestResourceApi {
@@ -57,6 +58,20 @@ export class ReferenceRequestResourceApi {
         const referenceIdPath = encodeURIComponent(String(referenceId));
         const url = `${this.basePath}/api/applications/${applicationIdPath}/references/${referenceIdPath}`;
         return this.http.delete<void>(url);
+    }
+
+    /**
+     * 
+     * 
+     * @param applicationId 
+     * @param referenceId 
+     * @param updateReferenceRequestDTO 
+     */
+    update(applicationId: string, referenceId: string, updateReferenceRequestDTO: UpdateReferenceRequestDTO): Observable<ReferenceRequestDTO> {
+        const applicationIdPath = encodeURIComponent(String(applicationId));
+        const referenceIdPath = encodeURIComponent(String(referenceId));
+        const url = `${this.basePath}/api/applications/${applicationIdPath}/references/${referenceIdPath}`;
+        return this.http.put<ReferenceRequestDTO>(url, updateReferenceRequestDTO);
     }
 
 }

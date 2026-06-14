@@ -1,7 +1,7 @@
-<p class="mb-6" jhiTranslate="entity.applicationReferences.description"></p>
+<p class="mb-6" [jhiTranslate]="descriptionKey()"></p>
 <p class="mb-4 text-xs text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
 
-<form [formGroup]="addForm" class="flex flex-col gap-3" (ngSubmit)="onAdd()">
+<form [formGroup]="addForm" class="flex flex-col gap-3" (ngSubmit)="onSubmit()">
   <div class="grid grid-cols-1 md:gap-3 md:grid-cols-4">
     <jhi-select
       label="entity.applicationReferences.label.title"
@@ -29,26 +29,40 @@
     <jhi-string-input label="entity.applicationReferences.label.email" [control]="addForm.controls.email" [required]="true" width="100%" />
   </div>
 
-  <div class="flex justify-end">
+  <div class="flex justify-end gap-2">
+    @if (editingId()) {
+      <jhi-button
+        type="button"
+        severity="primary"
+        variant="outlined"
+        icon="xmark"
+        [disabled]="loading()"
+        label="button.cancel"
+        [shouldTranslate]="true"
+        (click)="onCancelEdit()"
+      />
+    }
     <jhi-button
       type="submit"
       severity="primary"
-      icon="plus"
+      [icon]="editingId() ? 'check' : 'plus'"
       [disabled]="addForm.invalid || loading()"
-      label="entity.applicationReferences.button.add"
+      [label]="editingId() ? 'button.save' : 'entity.applicationReferences.button.add'"
       [shouldTranslate]="true"
     />
   </div>
 </form>
 
-<p-divider layout="horizontal">
-  <span jhiTranslate="entity.applicationReferences.section.required"></span>
-</p-divider>
+@if (requiredCount() > 0) {
+  <p-divider layout="horizontal">
+    <span jhiTranslate="entity.applicationReferences.section.required"></span>
+  </p-divider>
 
-<p class="text-sm text-text-secondary mb-4">
-  <span jhiTranslate="entity.applicationReferences.requiredCount" [translateValues]="{ count: requiredCount() }"></span>
-  <strong>{{ references().length }}/{{ requiredCount() }}</strong>
-</p>
+  <p class="text-sm text-text-secondary mb-4">
+    <span jhiTranslate="entity.applicationReferences.requiredCount" [translateValues]="{ count: requiredCount() }"></span>
+    <strong>{{ references().length }}/{{ requiredCount() }}</strong>
+  </p>
+}
 
 @if (references().length === 0) {
   <p class="text-text-disabled text-sm mb-3" jhiTranslate="entity.applicationReferences.empty"></p>
@@ -60,7 +74,23 @@
           <span class="font-medium">{{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}</span>
           <span class="text-text-secondary text-sm">{{ reference.email }}</span>
         </div>
-        <jhi-button severity="danger" variant="text" icon="trash" [disabled]="loading()" (click)="onRemove(reference)" />
+        <div class="flex items-center gap-2">
+          @switch (reference.status) {
+            @case ('SUBMITTED') {
+              <span class="text-positive-default text-sm" jhiTranslate="entity.application_detail.reference_status.submitted"></span>
+            }
+            @case ('EXPIRED') {
+              <span class="text-negative-default text-sm" jhiTranslate="entity.application_detail.reference_status.expired"></span>
+            }
+            @case ('REQUESTED') {
+              <span class="text-text-secondary text-sm" jhiTranslate="entity.application_detail.reference_status.requested"></span>
+            }
+          }
+          @if (reference.status !== 'SUBMITTED') {
+            <jhi-button severity="primary" variant="text" icon="pencil" [disabled]="loading()" (click)="onEdit(reference)" />
+            <jhi-button severity="danger" variant="text" icon="trash" [disabled]="loading()" (click)="onRemove(reference)" />
+          }
+        </div>
       </li>
     }
   </ul>

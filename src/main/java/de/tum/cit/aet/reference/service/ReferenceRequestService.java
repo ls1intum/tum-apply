@@ -20,6 +20,7 @@ import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.reference.dto.CreateReferenceRequestDTO;
 import de.tum.cit.aet.reference.dto.ReferenceLetterUploadContextDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
+import de.tum.cit.aet.reference.dto.UpdateReferenceRequestDTO;
 import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.nio.charset.StandardCharsets;
@@ -53,6 +54,18 @@ public class ReferenceRequestService {
     private static final int MAX_REMINDERS = 2;
     private static final long FIRST_REMINDER_HOURS = 24L * 7;
     private static final long FINAL_REMINDER_HOURS = 24L;
+
+    /**
+     * Application states in which an applicant may still add, edit or remove referee contacts.
+     * Excludes the terminal states (accepted, rejected, withdrawn, job closed) where the outcome is fixed.
+     */
+    private static final Set<ApplicationState> REFERENCE_MANAGEABLE_STATES = EnumSet.of(
+        ApplicationState.SAVED,
+        ApplicationState.SENT,
+        ApplicationState.PENDING,
+        ApplicationState.IN_REVIEW,
+        ApplicationState.INTERVIEW
+    );
 
     private final ReferenceRequestRepository referenceRequestRepository;
     private final ApplicationRepository applicationRepository;
@@ -97,8 +110,10 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Adds a new referee contact to the application. The application must still be editable
-     * (state SAVED) and the job must have reference letters enabled.
+     * Adds a new referee contact to the application. Allowed while the application is in a
+     * non-terminal state and the job has reference letters enabled. When the application has
+     * already been submitted the referee is invited immediately; in a draft the invitation is
+     * deferred until the application is submitted.
      *
      * @param applicationId the owning application
      * @param payload       the referee's title, name and email
@@ -106,7 +121,7 @@ public class ReferenceRequestService {
      */
     public ReferenceRequestDTO addToApplication(UUID applicationId, CreateReferenceRequestDTO payload) {
         Application application = assertOwnsApplication(applicationId);
-        assertApplicationEditable(application);
+        assertReferencesManageable(application);
         assertReferenceLettersEnabled(application);
 
         ReferenceRequest entry = new ReferenceRequest();
@@ -116,25 +131,77 @@ public class ReferenceRequestService {
         entry.setLastName(payload.lastName().trim());
         entry.setEmail(payload.email().trim());
         entry.setStatus(ReferenceRequestStatus.ADDED);
-        return ReferenceRequestDTO.fromEntity(referenceRequestRepository.save(entry));
+
+        if (application.getState() == ApplicationState.SAVED) {
+            referenceRequestRepository.save(entry);
+        } else {
+            issueInvitation(application, entry);
+        }
+        return ReferenceRequestDTO.fromEntity(entry);
     }
 
     /**
-     * Removes a referee contact from the application. Only allowed while the application is
-     * still editable.
+     * Updates the title, name and email of an existing referee contact. A reference whose letter has
+     * already been submitted is immutable. When the application has already been submitted and the email
+     * changes, a fresh invitation is issued to the new address (rotating the token so any earlier link
+     * stops working).
      *
      * @param applicationId the owning application
-     * @param referenceId   the entry to remove
+     * @param referenceId   the entry to update
+     * @param payload       the new title, name and email
+     * @return the updated entry as a DTO
      */
-    public void removeFromApplication(UUID applicationId, UUID referenceId) {
+    public ReferenceRequestDTO updateInApplication(UUID applicationId, UUID referenceId, UpdateReferenceRequestDTO payload) {
         Application application = assertOwnsApplication(applicationId);
-        assertApplicationEditable(application);
+        assertReferencesManageable(application);
 
         ReferenceRequest entry = referenceRequestRepository
             .findByIdWithApplication(referenceId)
             .orElseThrow(() -> EntityNotFoundException.forId("ReferenceRequest", referenceId));
         if (!entry.getApplication().getApplicationId().equals(application.getApplicationId())) {
             throw new OperationNotAllowedException("Reference does not belong to the given application.");
+        }
+        if (entry.getStatus() == ReferenceRequestStatus.SUBMITTED) {
+            throw new OperationNotAllowedException("A reference whose letter was already submitted can no longer be edited.");
+        }
+
+        String previousEmail = entry.getEmail() == null ? "" : entry.getEmail().trim();
+        entry.setTitle(payload.title());
+        entry.setFirstName(payload.firstName().trim());
+        entry.setLastName(payload.lastName().trim());
+        entry.setEmail(payload.email().trim());
+
+        boolean emailChanged = !entry.getEmail().equalsIgnoreCase(previousEmail);
+        boolean alreadyInvited =
+            entry.getStatus() == ReferenceRequestStatus.REQUESTED || entry.getStatus() == ReferenceRequestStatus.EXPIRED;
+
+        if (emailChanged && alreadyInvited && application.getJob().getReferenceLettersRequired() > 0) {
+            issueInvitation(application, entry);
+        } else {
+            referenceRequestRepository.save(entry);
+        }
+        return ReferenceRequestDTO.fromEntity(entry);
+    }
+
+    /**
+     * Removes a referee contact from the application. Allowed while the application is in a non-terminal
+     * state, except for references whose letter has already been submitted.
+     *
+     * @param applicationId the owning application
+     * @param referenceId   the entry to remove
+     */
+    public void removeFromApplication(UUID applicationId, UUID referenceId) {
+        Application application = assertOwnsApplication(applicationId);
+        assertReferencesManageable(application);
+
+        ReferenceRequest entry = referenceRequestRepository
+            .findByIdWithApplication(referenceId)
+            .orElseThrow(() -> EntityNotFoundException.forId("ReferenceRequest", referenceId));
+        if (!entry.getApplication().getApplicationId().equals(application.getApplicationId())) {
+            throw new OperationNotAllowedException("Reference does not belong to the given application.");
+        }
+        if (entry.getStatus() == ReferenceRequestStatus.SUBMITTED) {
+            throw new OperationNotAllowedException("A reference whose letter was already submitted can no longer be removed.");
         }
         referenceRequestRepository.delete(entry);
     }
@@ -157,25 +224,41 @@ public class ReferenceRequestService {
             if (entry.getStatus() != ReferenceRequestStatus.ADDED || entry.getTokenHash() != null) {
                 continue;
             }
-            String rawToken = generateToken();
-            LocalDateTime expiry = computeTokenExpiry(application.getJob());
-
-            entry.setStatus(ReferenceRequestStatus.REQUESTED);
-            entry.setTokenHash(hashToken(rawToken));
-            entry.setTokenExpiresAt(expiry);
-
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime deadline = entry.getTokenExpiresAt().atZone(ZoneOffset.systemDefault()).toLocalDateTime();
-            long hoursUntilDeadline = ChronoUnit.HOURS.between(now, deadline);
-            if (hoursUntilDeadline <= FINAL_REMINDER_HOURS) {
-                entry.setReminderCount(MAX_REMINDERS);
-            } else if (hoursUntilDeadline <= FIRST_REMINDER_HOURS) {
-                entry.setReminderCount(1);
-            }
-
-            referenceRequestRepository.save(entry);
-            sendRefereeEmail(application, entry, rawToken, EmailType.REFERENCE_LETTER_INVITATION);
+            issueInvitation(application, entry);
         }
+    }
+
+    /**
+     * Issues a fresh token for a single referee, marks the entry {@code REQUESTED}, resets its reminder
+     * bookkeeping and sends the invitation email. Used both for the bulk dispatch at submission time and
+     * when a referee is added or re-pointed to a new email after the application was already submitted.
+     * Must run inside a transaction so the lazily loaded {@code job.researchGroup} stays attached.
+     *
+     * @param application the owning application
+     * @param entry       the referee entry to (re-)invite
+     */
+    private void issueInvitation(Application application, ReferenceRequest entry) {
+        String rawToken = generateToken();
+        LocalDateTime expiry = computeTokenExpiry(application.getJob());
+
+        entry.setStatus(ReferenceRequestStatus.REQUESTED);
+        entry.setTokenHash(hashToken(rawToken));
+        entry.setTokenExpiresAt(expiry);
+        entry.setLastReminderAt(null);
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime deadline = expiry.atZone(ZoneOffset.systemDefault()).toLocalDateTime();
+        long hoursUntilDeadline = ChronoUnit.HOURS.between(now, deadline);
+        if (hoursUntilDeadline <= FINAL_REMINDER_HOURS) {
+            entry.setReminderCount(MAX_REMINDERS);
+        } else if (hoursUntilDeadline <= FIRST_REMINDER_HOURS) {
+            entry.setReminderCount(1);
+        } else {
+            entry.setReminderCount(0);
+        }
+
+        referenceRequestRepository.save(entry);
+        sendRefereeEmail(application, entry, rawToken, EmailType.REFERENCE_LETTER_INVITATION);
     }
 
     /**
@@ -383,19 +466,19 @@ public class ReferenceRequestService {
      * Loads the application and verifies the current user owns it (or is an admin).
      *
      * @param applicationId the application to load
-     * @return the loaded application with eager applicant + job
+     * @return the loaded application with eager applicant, job and research group
      */
     private Application assertOwnsApplication(UUID applicationId) {
         Application application = applicationRepository
-            .findByIdWithApplicantAndJob(applicationId)
+            .findByIdWithApplicantJobAndResearchGroup(applicationId)
             .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
         currentUserService.assertAccessTo(application);
         return application;
     }
 
-    private void assertApplicationEditable(Application application) {
-        if (!ApplicationState.SAVED.equals(application.getState())) {
-            throw new OperationNotAllowedException("References can only be modified while the application is in SAVED state.");
+    private void assertReferencesManageable(Application application) {
+        if (!REFERENCE_MANAGEABLE_STATES.contains(application.getState())) {
+            throw new OperationNotAllowedException("References can no longer be modified for this application.");
         }
     }
 
@@ -426,10 +509,10 @@ public class ReferenceRequestService {
         String deadline =
             entry.getTokenExpiresAt() != null
                 ? entry
-                      .getTokenExpiresAt()
-                      .atZone(ZoneOffset.systemDefault())
-                      .withZoneSameInstant(ZoneOffset.UTC)
-                      .format(DEADLINE_FORMATTER)
+                .getTokenExpiresAt()
+                .atZone(ZoneOffset.systemDefault())
+                .withZoneSameInstant(ZoneOffset.UTC)
+                .format(DEADLINE_FORMATTER)
                 : "";
 
         ReferenceLetterContextDTO ctx = new ReferenceLetterContextDTO(

@@ -25,7 +25,10 @@ import { ApplicationDetailDTO } from '../../generated/model/application-detail-d
 import { ApplicationDocumentIdsDTO } from '../../generated/model/application-document-ids-dto';
 import { ReferenceRequestDTO } from '../../generated/model/reference-request-dto';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
+import ApplicationCreationReferencesComponent from '../application-creation/application-creation-references/application-creation-references.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
+
+const REFERENCE_MANAGEABLE_STATES = ['SAVED', 'SENT', 'PENDING', 'IN_REVIEW', 'INTERVIEW'];
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
@@ -34,6 +37,7 @@ import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
     BackButtonComponent,
     FontAwesomeModule,
     ApplicationStateForApplicantsComponent,
+    ApplicationCreationReferencesComponent,
     DocumentViewerComponent,
     ConfirmDialogModule,
     ConfirmDialog,
@@ -85,6 +89,17 @@ export default class ApplicationDetailForApplicantComponent {
       return preview;
     }
     return this.application()?.references ?? [];
+  });
+
+  /**
+   * Whether the applicant may still add, edit or remove referees: the job requires reference letters,
+   * the application is in a non-terminal state, and this is the live detail page (not a creation preview).
+   */
+  readonly canManageReferences = computed<boolean>(() => {
+    if (this.previewDetailData()) return false;
+    const app = this.application();
+    if (!app || (app.referenceLettersRequired ?? 0) <= 0) return false;
+    return REFERENCE_MANAGEABLE_STATES.includes(app.applicationState);
   });
 
   /**

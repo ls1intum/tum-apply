@@ -185,14 +185,14 @@
               <div class="info-row">
                 <span jhiTranslate="entity.detail_card.gender"></span>
                 <span class="value">{{
-                  application.applicant?.user?.gender ? ('genders.' + application.applicant?.user?.gender | translate) : '-'
-                }}</span>
+                    application.applicant?.user?.gender ? ('genders.' + application.applicant?.user?.gender | translate) : '-'
+                  }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="entity.detail_card.nationality"></span>
                 <span class="value">{{
-                  application.applicant?.user?.nationality ? ('nationalities.' + application.applicant?.user?.nationality | translate) : '-'
-                }}</span>
+                    application.applicant?.user?.nationality ? ('nationalities.' + application.applicant?.user?.nationality | translate) : '-'
+                  }}</span>
               </div>
             </div>
             @if (application.applicant?.user?.website || application.applicant?.user?.linkedinUrl) {
@@ -266,7 +266,7 @@
       </section>
     </div>
 
-    @if (references().length > 0) {
+    @if (canManageReferences() || references().length > 0) {
       <section>
         @if (!previewDetailData()) {
           <h2 class="section-title" jhiTranslate="entity.application_detail.reference_letters"></h2>
@@ -277,27 +277,37 @@
             <h3 class="section-card-title" jhiTranslate="entity.application_detail.reference_letters"></h3>
           </div>
           <div class="section-card-body">
-            <ul class="list-disc list-inside marker:text-primary">
-              @for (reference of references(); track reference.referenceRequestId) {
-                <li class="py-1 font-medium items-center gap-2">
-                  <span>
-                    {{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}
-                    <span class="font-normal text-text-secondary text-sm ml-1"> ({{ reference.email }}) </span>
-                  </span>
-                  @if (!previewDetailData()) {
-                    @if (reference.status === 'SUBMITTED') {
-                      <span class="text-positive-default" jhiTranslate="entity.application_detail.reference_status.submitted"
+            @if (canManageReferences()) {
+              <jhi-application-creation-references
+                [applicationId]="applicationId()"
+                [requiredCount]="application.referenceLettersRequired ?? 0"
+                descriptionKey="entity.applicationReferences.manageDescription"
+              />
+            } @else {
+              <ul class="list-disc list-inside marker:text-primary">
+                @for (reference of references(); track reference.referenceRequestId) {
+                  <li class="py-1 font-medium items-center gap-2">
+                    <span>
+                      {{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}
+                      <span class="font-normal text-text-secondary text-sm ml-1"> ({{ reference.email }}) </span>
+                    </span>
+                    @if (!previewDetailData()) {
+                      @if (reference.status === 'SUBMITTED') {
+                        <span class="text-positive-default" jhiTranslate="entity.application_detail.reference_status.submitted"
                         >Submitted</span
-                      >
-                    } @else if (reference.status === 'EXPIRED') {
-                      <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.expired">Expired</span>
-                    } @else {
-                      <span class="text-text-secondary" jhiTranslate="entity.application_detail.reference_status.requested">Requested</span>
+                        >
+                      } @else if (reference.status === 'EXPIRED') {
+                        <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.expired">Expired</span>
+                      } @else {
+                        <span class="text-text-secondary" jhiTranslate="entity.application_detail.reference_status.requested"
+                        >Requested</span
+                        >
+                      }
                     }
-                  }
-                </li>
-              }
-            </ul>
+                  </li>
+                }
+              </ul>
+            }
           </div>
         </div>
       </section>
@@ -308,7 +318,7 @@
       <section>
         @if (
           documentIds.bachelorDocumentIds || documentIds.masterDocumentIds || documentIds.cvDocumentId || documentIds.referenceDocumentIds
-        ) {
+          ) {
           @if (!previewDetailData()) {
             <h2 class="section-title" jhiTranslate="entity.application_detail.personal_documents"></h2>
           }

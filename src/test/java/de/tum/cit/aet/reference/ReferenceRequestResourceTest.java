@@ -3,6 +3,7 @@ package de.tum.cit.aet.reference;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -20,6 +21,7 @@ import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.reference.dto.CreateReferenceRequestDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
+import de.tum.cit.aet.reference.dto.UpdateReferenceRequestDTO;
 import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
 import de.tum.cit.aet.reference.service.ReferenceRequestService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
@@ -193,7 +195,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void shouldRejectWhenApplicationNotInSavedState() {
+        void shouldInviteImmediatelyWhenAddingToSubmittedApplication() {
             Application sentApplication = ApplicationTestData.saved(
                 applicationRepository,
                 jobWithReferences,
@@ -201,9 +203,35 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                 ApplicationState.SENT
             );
 
+            ReferenceRequestDTO created = api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .postAndRead(
+                    String.format(REFERENCES_URL, sentApplication.getApplicationId()),
+                    defaultPayload(),
+                    ReferenceRequestDTO.class,
+                    201
+                );
+
+            assertThat(created.status()).isEqualTo(ReferenceRequestStatus.REQUESTED);
+            ReferenceRequest persisted = referenceRequestRepository.findById(created.referenceRequestId()).orElseThrow();
+            assertThat(persisted.getStatus()).isEqualTo(ReferenceRequestStatus.REQUESTED);
+            assertThat(persisted.getTokenHash()).isNotBlank();
+            assertThat(persisted.getTokenExpiresAt()).isNotNull();
+            verify(mockSender, times(1)).sendAsync(any());
+        }
+
+        @Test
+        void shouldRejectWhenApplicationInTerminalState() {
+            Application withdrawnApplication = ApplicationTestData.saved(
+                applicationRepository,
+                jobWithReferences,
+                applicant,
+                ApplicationState.WITHDRAWN
+            );
+
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .postAndReturnBytes(String.format(REFERENCES_URL, sentApplication.getApplicationId()), defaultPayload(), 400);
+                .postAndReturnBytes(String.format(REFERENCES_URL, withdrawnApplication.getApplicationId()), defaultPayload(), 400);
         }
 
         @Test
@@ -279,6 +307,150 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                 );
 
             assertThat(referenceRequestRepository.findById(foreignEntry.getReferenceRequestId())).isPresent();
+        }
+
+        @Test
+        void shouldRejectRemovingSubmittedReference() {
+            ReferenceRequest entry = ReferenceRequestTestData.newReferenceRequest(savedApplication, "done@example.com");
+            entry.setStatus(ReferenceRequestStatus.SUBMITTED);
+            entry = referenceRequestRepository.save(entry);
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .deleteAndRead(
+                    String.format(REFERENCE_BY_ID_URL, savedApplication.getApplicationId(), entry.getReferenceRequestId()),
+                    null,
+                    Void.class,
+                    400
+                );
+
+            assertThat(referenceRequestRepository.findById(entry.getReferenceRequestId())).isPresent();
+        }
+    }
+
+    @Nested
+    class UpdateReference {
+
+        @Test
+        void shouldUpdateTitleNameAndEmailWithoutEmailingWhileDraft() {
+            ReferenceRequest entry = referenceRequestRepository.save(
+                ReferenceRequestTestData.newReferenceRequest(
+                    savedApplication,
+                    "Prof.",
+                    "Ada",
+                    "Lovelace",
+                    "old@example.com",
+                    ReferenceRequestStatus.ADDED
+                )
+            );
+            UpdateReferenceRequestDTO payload = new UpdateReferenceRequestDTO("Dr.", "Grace", "Hopper", "grace@example.com");
+
+            ReferenceRequestDTO updated = api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(
+                    String.format(REFERENCE_BY_ID_URL, savedApplication.getApplicationId(), entry.getReferenceRequestId()),
+                    payload,
+                    ReferenceRequestDTO.class,
+                    200
+                );
+
+            assertThat(updated.firstName()).isEqualTo("Grace");
+            assertThat(updated.lastName()).isEqualTo("Hopper");
+            assertThat(updated.email()).isEqualTo("grace@example.com");
+            ReferenceRequest persisted = referenceRequestRepository.findById(entry.getReferenceRequestId()).orElseThrow();
+            assertThat(persisted.getTitle()).isEqualTo("Dr.");
+            assertThat(persisted.getStatus()).isEqualTo(ReferenceRequestStatus.ADDED);
+            verify(mockSender, never()).sendAsync(any());
+        }
+
+        @Test
+        void shouldResendInvitationWhenEmailChangesAfterSubmission() {
+            Application pendingApplication = ApplicationTestData.saved(
+                applicationRepository,
+                jobWithReferences,
+                applicant,
+                ApplicationState.PENDING
+            );
+            ReferenceRequest entry = ReferenceRequestTestData.newReferenceRequest(pendingApplication, "old@example.com");
+            entry.setStatus(ReferenceRequestStatus.REQUESTED);
+            entry.setTokenHash("original-hash");
+            entry = referenceRequestRepository.save(entry);
+            UpdateReferenceRequestDTO payload = new UpdateReferenceRequestDTO("Prof. Dr.", "Ada", "Lovelace", "new@example.com");
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(
+                    String.format(REFERENCE_BY_ID_URL, pendingApplication.getApplicationId(), entry.getReferenceRequestId()),
+                    payload,
+                    ReferenceRequestDTO.class,
+                    200
+                );
+
+            ReferenceRequest persisted = referenceRequestRepository.findById(entry.getReferenceRequestId()).orElseThrow();
+            assertThat(persisted.getEmail()).isEqualTo("new@example.com");
+            assertThat(persisted.getStatus()).isEqualTo(ReferenceRequestStatus.REQUESTED);
+            assertThat(persisted.getTokenHash()).isNotEqualTo("original-hash");
+            verify(mockSender, times(1)).sendAsync(any());
+        }
+
+        @Test
+        void shouldNotResendInvitationWhenOnlyNameChangesAfterSubmission() {
+            Application pendingApplication = ApplicationTestData.saved(
+                applicationRepository,
+                jobWithReferences,
+                applicant,
+                ApplicationState.PENDING
+            );
+            ReferenceRequest entry = ReferenceRequestTestData.newReferenceRequest(pendingApplication, "keep@example.com");
+            entry.setStatus(ReferenceRequestStatus.REQUESTED);
+            entry.setTokenHash("keep-hash");
+            entry = referenceRequestRepository.save(entry);
+            UpdateReferenceRequestDTO payload = new UpdateReferenceRequestDTO("Prof. Dr.", "Grace", "Hopper", "keep@example.com");
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(
+                    String.format(REFERENCE_BY_ID_URL, pendingApplication.getApplicationId(), entry.getReferenceRequestId()),
+                    payload,
+                    ReferenceRequestDTO.class,
+                    200
+                );
+
+            ReferenceRequest persisted = referenceRequestRepository.findById(entry.getReferenceRequestId()).orElseThrow();
+            assertThat(persisted.getFirstName()).isEqualTo("Grace");
+            assertThat(persisted.getTokenHash()).isEqualTo("keep-hash");
+            verify(mockSender, never()).sendAsync(any());
+        }
+
+        @Test
+        void shouldRejectUpdatingSubmittedReference() {
+            ReferenceRequest entry = ReferenceRequestTestData.newReferenceRequest(savedApplication, "done@example.com");
+            entry.setStatus(ReferenceRequestStatus.SUBMITTED);
+            entry = referenceRequestRepository.save(entry);
+            UpdateReferenceRequestDTO payload = new UpdateReferenceRequestDTO("Dr.", "Grace", "Hopper", "grace@example.com");
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(
+                    String.format(REFERENCE_BY_ID_URL, savedApplication.getApplicationId(), entry.getReferenceRequestId()),
+                    payload,
+                    Void.class,
+                    400
+                );
+        }
+
+        @Test
+        void shouldReject404WhenReferenceUnknown() {
+            UpdateReferenceRequestDTO payload = new UpdateReferenceRequestDTO(null, "Grace", "Hopper", "grace@example.com");
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(
+                    String.format(REFERENCE_BY_ID_URL, savedApplication.getApplicationId(), UUID.randomUUID()),
+                    payload,
+                    Void.class,
+                    404
+                );
         }
     }
 
