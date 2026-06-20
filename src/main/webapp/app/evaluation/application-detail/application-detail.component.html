@@ -150,7 +150,8 @@
                   application.applicationDetailDTO.applicant?.user?.nationality
                     ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
                     : '—'
-                }}</span>
+                }}</span
+              >
               <!-- Gender -->
               <span> &middot; </span>
               <span
@@ -161,7 +162,8 @@
                   application.applicationDetailDTO.applicant?.user?.gender
                     ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
                     : '—'
-                }}</span>
+                }}</span
+              >
               <!-- Privacy Toggle Button -->
               <jhi-button
                 [icon]="sensitiveInfoVisible() ? 'eye-slash' : 'eye'"
