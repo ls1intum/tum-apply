@@ -480,10 +480,10 @@ public class ReferenceRequestService {
         String deadline =
             entry.getTokenExpiresAt() != null
                 ? entry
-                .getTokenExpiresAt()
-                .atZone(ZoneOffset.systemDefault())
-                .withZoneSameInstant(ZoneOffset.UTC)
-                .format(DEADLINE_FORMATTER)
+                      .getTokenExpiresAt()
+                      .atZone(ZoneOffset.systemDefault())
+                      .withZoneSameInstant(ZoneOffset.UTC)
+                      .format(DEADLINE_FORMATTER)
                 : "";
 
         ReferenceLetterContextDTO ctx = new ReferenceLetterContextDTO(

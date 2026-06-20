@@ -143,12 +143,6 @@ public class Application extends AbstractAuditingEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<ApplicationDocument> applicationDocuments;
 
-    /**
-     * Whether the applicant has waived their right to access the submitted reference letters.
-     * One decision applies to all reference requests on this application: when true, only the
-     * supervising professor (and admins) may view the letters, never the applicant. The
-     * recommendation status stays visible to everyone regardless.
-     */
     @Column(name = "reference_letters_confidential", nullable = false)
     private boolean referenceLettersConfidential = true;
 

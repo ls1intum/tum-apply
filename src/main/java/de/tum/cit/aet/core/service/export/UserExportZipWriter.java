@@ -245,18 +245,18 @@ public class UserExportZipWriter {
             entries == null
                 ? List.of()
                 : entries
-                .stream()
-                .map(entry ->
-                    List.of(
-                        toCsvValue(entry.jobTitle()),
-                        toCsvValue(entry.title()),
-                        toCsvValue(entry.firstName()),
-                        toCsvValue(entry.lastName()),
-                        toCsvValue(entry.email()),
-                        toCsvValue(entry.status())
-                    )
-                )
-                .toList();
+                      .stream()
+                      .map(entry ->
+                          List.of(
+                              toCsvValue(entry.jobTitle()),
+                              toCsvValue(entry.title()),
+                              toCsvValue(entry.firstName()),
+                              toCsvValue(entry.lastName()),
+                              toCsvValue(entry.email()),
+                              toCsvValue(entry.status())
+                          )
+                      )
+                      .toList();
 
         addCsvFileToZip(
             zipOut,
