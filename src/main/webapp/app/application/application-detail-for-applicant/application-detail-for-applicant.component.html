@@ -277,21 +277,19 @@
             <h3 class="section-card-title" jhiTranslate="entity.application_detail.reference_letters"></h3>
           </div>
           <div class="section-card-body">
-            @if (!previewDetailData()) {
-              <p class="flex text-sm text-text-secondary mb-3 items-start">
-                <fa-icon
-                  [icon]="referenceLettersConfidential() ? 'lock' : 'circle-info'"
-                  class="text-primary mt-0.5 -ml-2 mr-1 w-5 shrink-0"
-                />
-                <span
-                  [jhiTranslate]="
-                    referenceLettersConfidential()
-                      ? 'entity.application_detail.reference_confidential'
-                      : 'entity.application_detail.reference_shared'
-                  "
-                ></span>
-              </p>
-            }
+            <p class="flex text-sm text-text-secondary mb-3 items-start">
+              <fa-icon
+                [icon]="referenceLettersConfidential() ? 'lock' : 'circle-info'"
+                class="text-primary mt-0.5 -ml-2 mr-1 w-5 shrink-0"
+              />
+              <span
+                [jhiTranslate]="
+                  referenceLettersConfidential()
+                    ? 'entity.application_detail.reference_confidential'
+                    : 'entity.application_detail.reference_shared'
+                "
+              ></span>
+            </p>
             <ul class="list-disc list-inside marker:text-primary">
               @for (reference of references(); track reference.referenceRequestId) {
                 <li class="py-1 font-medium items-center gap-2">
@@ -311,7 +309,7 @@
                     } @else {
                       <span class="text-text-secondary" jhiTranslate="entity.application_detail.reference_status.requested">Requested</span>
                       @if (reference.deadline) {
-                        <span class="font-normal text-text-secondary text-sm ml-1">
+                        <span class="font-normal text-text-secondary text-sm">
                           · <span jhiTranslate="entity.application_detail.reference_deadline"></span>:
                           {{ reference.deadline | localizedDate }}
                         </span>
