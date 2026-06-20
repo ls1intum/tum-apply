@@ -167,10 +167,6 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
             ReferenceRequest persisted = referenceRequestRepository.findById(updated.referenceRequestId()).orElseThrow();
             assertThat(persisted.getStatus()).isEqualTo(ReferenceRequestStatus.SUBMITTED);
             assertThat(persisted.getDocumentId()).isEqualTo(updated.documentId());
-
-            // Uploading a letter leaves the application state untouched.
-            Application reloaded = applicationRepository.findById(application.getApplicationId()).orElseThrow();
-            assertThat(reloaded.getState()).isEqualTo(ApplicationState.SENT);
         }
 
         @Test

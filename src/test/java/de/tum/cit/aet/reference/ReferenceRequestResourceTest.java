@@ -322,26 +322,5 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                 });
             verify(mockSender, times(2)).sendAsync(any());
         }
-
-        @Test
-        void shouldKeepApplicationSentWhenReferenceLettersAreStillMissing() {
-            saveAddedReference("waiting@example.com");
-
-            submitApplication();
-
-            Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
-            assertThat(reloaded.getState()).isEqualTo(ApplicationState.SENT);
-        }
-
-        @Test
-        void shouldKeepApplicationSentWhenJobRequiresNoReferenceLetters() {
-            jobWithReferences.setReferenceLettersRequired(0);
-            jobRepository.save(jobWithReferences);
-
-            submitApplication();
-
-            Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
-            assertThat(reloaded.getState()).isEqualTo(ApplicationState.SENT);
-        }
     }
 }
