@@ -149,9 +149,10 @@ public class ReferenceRequestService {
     public ReferenceRequestDTO declineRequest(String rawToken) {
         ReferenceRequest entry = findByRawToken(rawToken);
         assertDeclineAllowed(entry);
+        boolean confidential = entry.getApplication().isReferenceLettersConfidential();
         entry.setStatus(ReferenceRequestStatus.DECLINED);
         ReferenceRequest saved = referenceRequestRepository.save(entry);
-        return ReferenceRequestDTO.fromEntity(saved, saved.getApplication().isReferenceLettersConfidential());
+        return ReferenceRequestDTO.fromEntity(saved, confidential);
     }
 
     /**
