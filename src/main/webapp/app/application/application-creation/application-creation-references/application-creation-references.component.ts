@@ -66,7 +66,7 @@ export default class ApplicationCreationReferencesComponent {
     email: this.formBuilder.nonNullable.control('', [Validators.required, Validators.email, Validators.pattern(/.+\..{2,}$/)]),
   });
 
-  /** Checked = the applicant waives access to the submitted letters (only the professor sees them). */
+  /** Whether the applicant waives access to the submitted letters (only the professor sees them). */
   readonly confidentialControl = this.formBuilder.nonNullable.control(true);
 
   /** Has the applicant added at least the required number of referees? */
