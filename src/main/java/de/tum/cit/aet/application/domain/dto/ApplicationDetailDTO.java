@@ -56,11 +56,7 @@ public record ApplicationDetailDTO(
      * @param includeReferenceLetterDocumentIds whether linked uploaded reference-letter ids should be exposed
      * @return the detail DTO
      */
-    public static ApplicationDetailDTO getFromEntity(
-        Application application,
-        Job job,
-        boolean includeReferenceLetterDocumentIds
-    ) {
+    public static ApplicationDetailDTO getFromEntity(Application application, Job job, boolean includeReferenceLetterDocumentIds) {
         if (application == null) {
             throw new EntityNotFoundException("Application Entity should not be null");
         }

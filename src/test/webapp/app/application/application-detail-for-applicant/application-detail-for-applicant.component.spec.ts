@@ -244,13 +244,20 @@ describe('ApplicationDetailForApplicantComponent', () => {
       email: 'ada@example.com',
       documentId: 'reference-letter-1',
     } as ReferenceRequestDTO;
+    const submittedReferenceWithoutDocument: ReferenceRequestDTO = {
+      referenceRequestId: 'reference-request-1',
+      firstName: 'Ada',
+      lastName: 'Lovelace',
+      email: 'ada@example.com',
+      documentId: undefined,
+    } as ReferenceRequestDTO;
 
-    it('should not expose viewer inputs for confidential reference letters', () => {
+    it('should not expose viewer inputs when the reference has no document id', () => {
       const { component } = setupTest(null);
       component.actualDetailData.set(
         makeDetail({
           referenceLettersConfidential: true,
-          references: [submittedReference],
+          references: [submittedReferenceWithoutDocument],
         }),
       );
       component.actualDetailDataExists.set(true);
@@ -258,11 +265,11 @@ describe('ApplicationDetailForApplicantComponent', () => {
       expect(component.submittedReferenceLetters()).toEqual([]);
     });
 
-    it('should expose viewer inputs for shared reference letters', () => {
+    it('should expose viewer inputs for references with document ids', () => {
       const { component } = setupTest(null);
       component.actualDetailData.set(
         makeDetail({
-          referenceLettersConfidential: false,
+          referenceLettersConfidential: true,
           references: [submittedReference],
         }),
       );

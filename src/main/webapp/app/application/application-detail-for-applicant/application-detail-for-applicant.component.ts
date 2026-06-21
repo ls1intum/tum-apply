@@ -94,12 +94,8 @@ export default class ApplicationDetailForApplicantComponent {
    * Reference requests with an uploaded letter, mapped to a viewer-friendly shape.
    * Drives the per-letter preview cards on the detail page.
    */
-  submittedReferenceLetters = computed(() => {
-    if (this.referenceLettersConfidential()) {
-      return [];
-    }
-
-    return this.references()
+  submittedReferenceLetters = computed(() =>
+    this.references()
       .filter(reference => !!reference.documentId)
       .map(reference => ({
         documentId: reference.documentId,
@@ -109,8 +105,8 @@ export default class ApplicationDetailForApplicantComponent {
           name: `${reference.firstName ?? ''} ${reference.lastName ?? ''}`.trim(),
           size: 0,
         },
-      }));
-  });
+      })),
+  );
 
   readonly primaryActionButton = computed<ActionButton | null>(() => {
     const app = this.application();

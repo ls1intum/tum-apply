@@ -576,7 +576,9 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 );
 
             assertThat(detail.referenceLettersConfidential()).isTrue();
-            assertThat(detail.references()).singleElement().satisfies(reference -> assertThat(reference.documentId()).isNull());
+            assertThat(detail.references())
+                .singleElement()
+                .satisfies(reference -> assertThat(reference.documentId()).isNull());
         }
 
         @Test
@@ -593,9 +595,9 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 );
 
             assertThat(detail.referenceLettersConfidential()).isFalse();
-            assertThat(detail.references()).singleElement().satisfies(reference ->
-                assertThat(reference.documentId()).isEqualTo(referenceRequest.getDocumentId())
-            );
+            assertThat(detail.references())
+                .singleElement()
+                .satisfies(reference -> assertThat(reference.documentId()).isEqualTo(referenceRequest.getDocumentId()));
         }
 
         @Test
