@@ -2893,6 +2893,7 @@ components:
         jobTitle: {type: string}
         motivation: {type: string}
         projects: {type: string}
+        referenceLettersConfidential: {type: boolean}
         references:
           type: array
           items: {$ref: '#/components/schemas/ReferenceRequestDTO'}
@@ -2967,6 +2968,7 @@ components:
         job: {$ref: '#/components/schemas/JobCardDTO'}
         motivation: {type: string}
         projects: {type: string}
+        referenceLettersConfidential: {type: boolean}
         specialSkills: {type: string}
       required: [applicationState, job]
     ApplicationOverviewDTO:
@@ -3790,7 +3792,6 @@ components:
     ReferenceRequestDTO:
       type: object
       properties:
-        confidential: {type: boolean}
         deadline: {type: string, format: date-time}
         documentId: {type: string, format: uuid}
         email: {type: string}
