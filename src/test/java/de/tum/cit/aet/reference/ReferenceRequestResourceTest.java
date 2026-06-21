@@ -348,6 +348,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
 
     @Nested
     class Confidentiality {
+
         @Test
         void shouldKeepApplicationConfidentialByDefaultWhenAddingReferences() {
             api

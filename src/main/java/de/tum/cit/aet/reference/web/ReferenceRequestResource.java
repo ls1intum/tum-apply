@@ -70,5 +70,4 @@ public class ReferenceRequestResource {
         referenceRequestService.removeFromApplication(applicationId, referenceId);
         return ResponseEntity.noContent().build();
     }
-
 }

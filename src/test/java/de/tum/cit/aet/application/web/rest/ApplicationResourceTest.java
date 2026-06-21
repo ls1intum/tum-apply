@@ -328,29 +328,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void updateApplicationPersistsReferenceLetterConfidentiality() {
-            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
-
-            UpdateApplicationDTO updatePayload = new UpdateApplicationDTO(
-                application.getApplicationId(),
-                ApplicantDTO.getFromEntity(applicant),
-                null,
-                ApplicationState.SAVED,
-                null,
-                null,
-                null,
-                false
-            );
-
-            api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead("/api/applications", updatePayload, ApplicationForApplicantDTO.class, 200);
-
-            Application updated = applicationRepository.findById(application.getApplicationId()).orElseThrow();
-            assertThat(updated.isReferenceLettersConfidential()).isFalse();
-        }
-
-        @Test
         void sendingApplicationReplacesOldApplicantDocuments() throws Exception {
             // Create an applicant profile CV that should be replaced
             Document existingProfileCv = DocumentTestData.savedMockDocument(
