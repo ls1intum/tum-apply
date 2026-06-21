@@ -351,8 +351,8 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
         private static final String CONFIDENTIALITY_URL = "/api/applications/%s/references/confidentiality?confidential=%s";
 
         @Test
-        void shouldExposeConfidentialTrueByDefault() {
-            ReferenceRequestDTO created = api
+        void shouldKeepApplicationConfidentialByDefaultWhenAddingReferences() {
+            api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .postAndRead(
                     String.format(REFERENCES_URL, savedApplication.getApplicationId()),
@@ -361,7 +361,8 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                     201
                 );
 
-            assertThat(created.confidential()).isTrue();
+            Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
+            assertThat(reloaded.isReferenceLettersConfidential()).isTrue();
         }
 
         @Test
@@ -375,9 +376,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
 
             Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
             assertThat(reloaded.isReferenceLettersConfidential()).isFalse();
-            assertThat(getReferencesAsApplicant(savedApplication.getApplicationId()))
-                .isNotEmpty()
-                .allSatisfy(reference -> assertThat(reference.confidential()).isFalse());
+            assertThat(getReferencesAsApplicant(savedApplication.getApplicationId())).hasSize(2);
         }
     }
 }

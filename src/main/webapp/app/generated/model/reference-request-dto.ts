@@ -10,7 +10,6 @@
 
 
 export interface ReferenceRequestDTO {
-    readonly confidential?: boolean;
     readonly deadline?: string;
     readonly documentId?: string;
     readonly email?: string;

@@ -20,7 +20,6 @@ export const createMockReferenceRequestDTO = (overrides: Partial<ReferenceReques
       lastName: 'Lovelace',
       email: 'ada@example.com',
       status: ReferenceRequestDTOStatusEnum.Requested,
-      confidential: true,
     },
     overrides,
   );

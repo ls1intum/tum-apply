@@ -143,6 +143,7 @@ export default class ApplicationCreationFormComponent {
   applicationDetailsDataValid = signal<boolean>(false);
   referencesValid = signal<boolean>(true);
   references = signal<ReferenceRequestDTO[]>([]);
+  referenceLettersConfidential = signal<boolean>(true);
   referenceLettersRequired = signal<number>(0);
   referenceLettersEnabled = computed(() => this.referenceLettersRequired() > 0);
   savingTick = signal<number>(0);
@@ -447,6 +448,7 @@ export default class ApplicationCreationFormComponent {
         this.personalInfoData.set(getPage1FromApplication(application));
         this.educationData.set(getPage2FromApplication(application));
         this.applicationDetailsData.set(getPage3FromApplication(application));
+        this.referenceLettersConfidential.set(application.referenceLettersConfidential ?? true);
 
         this.updateDocumentInformation();
       } catch (error) {
@@ -780,6 +782,7 @@ export default class ApplicationCreationFormComponent {
       projects: p3.experiences,
       jobTitle: this.title(),
       references: this.references(),
+      referenceLettersConfidential: this.referenceLettersConfidential(),
     };
 
     if (state !== undefined) {

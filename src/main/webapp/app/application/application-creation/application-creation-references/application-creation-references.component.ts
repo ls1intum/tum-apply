@@ -45,9 +45,11 @@ const TOAST_PREFIX = 'entity.applicationReferences';
 export default class ApplicationCreationReferencesComponent {
   applicationId = input.required<string>();
   requiredCount = input<number>(0);
+  referenceLettersConfidential = input<boolean>(true);
 
   valid = output<boolean>();
   referencesChanged = output<ReferenceRequestDTO[]>();
+  referenceLettersConfidentialChanged = output<boolean>();
 
   references = signal<ReferenceRequestDTO[]>([]);
   loading = signal<boolean>(false);
@@ -82,6 +84,7 @@ export default class ApplicationCreationReferencesComponent {
     const id = this.applicationId();
     if (!id || this.initialized()) return;
     this.initialized.set(true);
+    this.confidentialControl.setValue(this.referenceLettersConfidential(), { emitEvent: false });
     void this.refresh();
   });
 
@@ -160,6 +163,7 @@ export default class ApplicationCreationReferencesComponent {
   async onConfidentialChange(confidential: boolean): Promise<void> {
     try {
       await firstValueFrom(this.referenceApi.setConfidentiality(this.applicationId(), confidential));
+      this.referenceLettersConfidentialChanged.emit(confidential);
     } catch {
       this.confidentialControl.setValue(!confidential, { emitEvent: false });
       this.toastService.showErrorKey(`${TOAST_PREFIX}.toast.confidentialityFailed`);
@@ -189,10 +193,6 @@ export default class ApplicationCreationReferencesComponent {
     try {
       const list = await firstValueFrom(this.referenceApi.getReferences(this.applicationId()));
       this.references.set(list);
-      // All referees share one waiver value; mirror it onto the checkbox without re-triggering the server sync.
-      if (list.length > 0) {
-        this.confidentialControl.setValue(list[0].confidential ?? true, { emitEvent: false });
-      }
       this.referencesChanged.emit(this.references());
     } catch {
       this.toastService.showErrorKey(`${TOAST_PREFIX}.toast.loadFailed`);

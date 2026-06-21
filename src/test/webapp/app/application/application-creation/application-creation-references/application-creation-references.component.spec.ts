@@ -22,7 +22,7 @@ describe('ApplicationCreationReferencesComponent', () => {
   let referenceApi: ReferenceRequestResourceApiMock;
   let toast: ToastServiceMock;
 
-  const setupFixture = async (initial: ReferenceRequestDTO[] = [], requiredCount = 2) => {
+  const setupFixture = async (initial: ReferenceRequestDTO[] = [], requiredCount = 2, referenceLettersConfidential = true) => {
     referenceApi = createReferenceRequestResourceApiMock(initial);
     toast = createToastServiceMock();
 
@@ -40,6 +40,7 @@ describe('ApplicationCreationReferencesComponent', () => {
     component = fixture.componentInstance;
     fixture.componentRef.setInput('applicationId', APPLICATION_ID);
     fixture.componentRef.setInput('requiredCount', requiredCount);
+    fixture.componentRef.setInput('referenceLettersConfidential', referenceLettersConfidential);
     fixture.detectChanges();
     await fixture.whenStable();
   };
@@ -287,18 +288,20 @@ describe('ApplicationCreationReferencesComponent', () => {
 
   describe('confidentiality waiver', () => {
     it('should mirror the loaded waiver value onto the checkbox control', async () => {
-      await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a', confidential: false })]);
+      await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a' })], 2, false);
 
       expect(component.confidentialControl.value).toBe(false);
     });
 
     it('should persist the waiver on the application when toggled', async () => {
-      await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a', confidential: true })]);
+      await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a' })]);
+      const emitSpy = vi.spyOn(component.referenceLettersConfidentialChanged, 'emit');
 
       await component.onConfidentialChange(false);
 
       expect(referenceApi.setConfidentiality).toHaveBeenCalledOnce();
       expect(referenceApi.setConfidentiality).toHaveBeenCalledWith(APPLICATION_ID, false);
+      expect(emitSpy).toHaveBeenCalledWith(false);
     });
 
     it('should persist the waiver even when no referees exist yet', async () => {
@@ -311,7 +314,7 @@ describe('ApplicationCreationReferencesComponent', () => {
     });
 
     it('should revert the control and toast on failure', async () => {
-      await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a', confidential: true })]);
+      await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a' })]);
       referenceApi.setConfidentiality.mockReturnValueOnce(throwError(() => new Error('boom')));
 
       await component.onConfidentialChange(false);

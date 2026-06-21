@@ -89,11 +89,10 @@ public class ReferenceRequestService {
         if (!currentUserService.isAdmin() && !currentUserService.isCurrentUser(application.getApplicant().getUserId())) {
             currentUserService.assertAccessTo(application.getJob().getResearchGroup());
         }
-        boolean confidential = application.isReferenceLettersConfidential();
         return referenceRequestRepository
             .findByApplicationApplicationIdOrderByCreatedAtAsc(application.getApplicationId())
             .stream()
-            .map(entry -> ReferenceRequestDTO.fromEntity(entry, confidential))
+            .map(ReferenceRequestDTO::fromEntity)
             .toList();
     }
 
@@ -118,13 +117,12 @@ public class ReferenceRequestService {
         entry.setEmail(payload.email().trim());
         entry.setStatus(ReferenceRequestStatus.ADDED);
         ReferenceRequest saved = referenceRequestRepository.save(entry);
-        return ReferenceRequestDTO.fromEntity(saved, application.isReferenceLettersConfidential());
+        return ReferenceRequestDTO.fromEntity(saved);
     }
 
     /**
-     * Applies the applicant's confidentiality waiver to every referee on the application. A single
-     * checkbox governs all of an application's letters, so the flag is kept in sync across all
-     * entries. Only allowed while the application is still editable.
+     * Applies the applicant's confidentiality waiver to the application. A single checkbox governs
+     * all of an application's letters. Only allowed while the application is still editable.
      *
      * @param applicationId the owning application
      * @param confidential  true when the applicant waives access to the submitted letters
@@ -149,10 +147,9 @@ public class ReferenceRequestService {
     public ReferenceRequestDTO declineRequest(String rawToken) {
         ReferenceRequest entry = findByRawToken(rawToken);
         assertDeclineAllowed(entry);
-        boolean confidential = entry.getApplication().isReferenceLettersConfidential();
         entry.setStatus(ReferenceRequestStatus.DECLINED);
         ReferenceRequest saved = referenceRequestRepository.save(entry);
-        return ReferenceRequestDTO.fromEntity(saved, confidential);
+        return ReferenceRequestDTO.fromEntity(saved);
     }
 
     /**
@@ -271,7 +268,7 @@ public class ReferenceRequestService {
 
         promoteApplicationToSentIfComplete(application);
 
-        return ReferenceRequestDTO.fromEntity(saved, application.isReferenceLettersConfidential());
+        return ReferenceRequestDTO.fromEntity(saved);
     }
 
     /**

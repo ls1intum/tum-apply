@@ -88,7 +88,7 @@ export default class ApplicationDetailForApplicantComponent {
   });
 
   /** The applicant's confidentiality waiver, applied to all of the application's reference letters. */
-  readonly referenceLettersConfidential = computed(() => this.references()[0]?.confidential ?? true);
+  readonly referenceLettersConfidential = computed(() => this.application()?.referenceLettersConfidential ?? true);
 
   /**
    * Reference requests with an uploaded letter, mapped to a viewer-friendly shape.

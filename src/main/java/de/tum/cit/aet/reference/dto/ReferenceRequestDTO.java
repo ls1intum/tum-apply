@@ -8,7 +8,7 @@ import java.util.UUID;
 
 /**
  * Read model exposed to the applicant in the application creation form and to professors on the
- * evaluation page. Includes the confidentiality decision and the referee's submission deadline.
+ * evaluation page. Application-level confidentiality is exposed by the owning application DTO.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ReferenceRequestDTO(
@@ -19,15 +19,13 @@ public record ReferenceRequestDTO(
     String email,
     ReferenceRequestStatus status,
     UUID documentId,
-    boolean confidential,
     LocalDateTime deadline
 ) {
     /**
-     * @param entity       the persisted reference request
-     * @param confidential the owning application's confidentiality waiver, applied to all its reference letters
+     * @param entity the persisted reference request
      * @return a DTO mirroring the entity, including the linked document id when a letter was uploaded
      */
-    public static ReferenceRequestDTO fromEntity(ReferenceRequest entity, boolean confidential) {
+    public static ReferenceRequestDTO fromEntity(ReferenceRequest entity) {
         return new ReferenceRequestDTO(
             entity.getReferenceRequestId(),
             entity.getTitle(),
@@ -36,7 +34,6 @@ public record ReferenceRequestDTO(
             entity.getEmail(),
             entity.getStatus(),
             entity.getDocumentId(),
-            confidential,
             entity.getTokenExpiresAt()
         );
     }

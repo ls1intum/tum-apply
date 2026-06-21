@@ -62,8 +62,10 @@
         class="w-full"
         [applicationId]="applicationId()"
         [requiredCount]="referenceLettersRequired()"
+        [referenceLettersConfidential]="referenceLettersConfidential()"
         (valid)="onReferencesValidityChanged($event)"
         (referencesChanged)="onReferencesChanged($event)"
+        (referenceLettersConfidentialChanged)="referenceLettersConfidential.set($event)"
       />
     }
   </div>
