@@ -177,6 +177,9 @@ public class ApplicationService {
         application.setProjects(HtmlSanitizer.sanitize(updateApplicationDTO.projects()));
         application.setSpecialSkills(HtmlSanitizer.sanitize(updateApplicationDTO.specialSkills()));
         application.setMotivation(HtmlSanitizer.sanitize(updateApplicationDTO.motivation()));
+        if (updateApplicationDTO.referenceLettersConfidential() != null) {
+            application.setReferenceLettersConfidential(updateApplicationDTO.referenceLettersConfidential());
+        }
         if (isSubmitting) {
             application.setAppliedAt(LocalDateTime.now());
         }

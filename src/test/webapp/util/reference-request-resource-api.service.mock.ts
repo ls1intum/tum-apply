@@ -8,7 +8,6 @@ export type ReferenceRequestResourceApiMock = {
   getReferences: ReturnType<typeof vi.fn>;
   add: ReturnType<typeof vi.fn>;
   remove: ReturnType<typeof vi.fn>;
-  setConfidentiality: ReturnType<typeof vi.fn>;
 };
 
 export const createMockReferenceRequestDTO = (overrides: Partial<ReferenceRequestDTO> = {}): ReferenceRequestDTO => {
@@ -40,7 +39,6 @@ export function createReferenceRequestResourceApiMock(initial: ReferenceRequestD
       ),
     ),
     remove: vi.fn().mockReturnValue(of(void 0)),
-    setConfidentiality: vi.fn().mockReturnValue(of(void 0)),
   };
 }
 

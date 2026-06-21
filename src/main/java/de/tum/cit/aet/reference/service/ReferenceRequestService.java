@@ -121,20 +121,6 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Applies the applicant's confidentiality waiver to the application. A single checkbox governs
-     * all of an application's letters. Only allowed while the application is still editable.
-     *
-     * @param applicationId the owning application
-     * @param confidential  true when the applicant waives access to the submitted letters
-     */
-    public void setConfidentiality(UUID applicationId, boolean confidential) {
-        Application application = assertOwnsApplication(applicationId);
-        assertApplicationEditable(application);
-        application.setReferenceLettersConfidential(confidential);
-        applicationRepository.save(application);
-    }
-
-    /**
      * Marks the reference request behind the token as {@code DECLINED} when the referee chooses not
      * to provide a letter. Only a {@code REQUESTED} request with a non-expired token may be declined;
      * the decision is terminal.

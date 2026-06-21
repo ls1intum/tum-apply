@@ -153,21 +153,8 @@ export default class ApplicationCreationReferencesComponent {
     }
   }
 
-  /**
-   * Persists the applicant's confidentiality waiver on the application. One decision applies to all
-   * of the application's reference letters, so a single flag is stored on the application rather than
-   * on each referee.
-   *
-   * @param confidential the new waiver value chosen by the applicant
-   */
-  async onConfidentialChange(confidential: boolean): Promise<void> {
-    try {
-      await firstValueFrom(this.referenceApi.setConfidentiality(this.applicationId(), confidential));
-      this.referenceLettersConfidentialChanged.emit(confidential);
-    } catch {
-      this.confidentialControl.setValue(!confidential, { emitEvent: false });
-      this.toastService.showErrorKey(`${TOAST_PREFIX}.toast.confidentialityFailed`);
-    }
+  onConfidentialChange(confidential: boolean): void {
+    this.referenceLettersConfidentialChanged.emit(confidential);
   }
 
   /**

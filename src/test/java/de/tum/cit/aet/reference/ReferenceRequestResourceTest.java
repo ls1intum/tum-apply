@@ -299,7 +299,8 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                 ApplicationState.SENT,
                 null,
                 null,
-                null
+                null,
+                true
             );
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -347,9 +348,6 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
 
     @Nested
     class Confidentiality {
-
-        private static final String CONFIDENTIALITY_URL = "/api/applications/%s/references/confidentiality?confidential=%s";
-
         @Test
         void shouldKeepApplicationConfidentialByDefaultWhenAddingReferences() {
             api
@@ -366,16 +364,12 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void shouldWaiveConfidentialityForTheWholeApplication() {
+        void shouldNotChangeApplicationConfidentialityWhenManagingReferences() {
             ReferenceRequestTestData.saved(referenceRequestRepository, savedApplication, "first@example.com");
             ReferenceRequestTestData.saved(referenceRequestRepository, savedApplication, "second@example.com");
 
-            api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .putAndRead(String.format(CONFIDENTIALITY_URL, savedApplication.getApplicationId(), false), null, Void.class, 204);
-
             Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
-            assertThat(reloaded.isReferenceLettersConfidential()).isFalse();
+            assertThat(reloaded.isReferenceLettersConfidential()).isTrue();
             assertThat(getReferencesAsApplicant(savedApplication.getApplicationId())).hasSize(2);
         }
     }

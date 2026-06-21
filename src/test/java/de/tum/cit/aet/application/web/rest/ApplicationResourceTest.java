@@ -265,7 +265,8 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 ApplicationState.SENT,
                 "Updated projects description",
                 "Java, Kotlin, Spring Boot",
-                "I want to update my motivation"
+                "I want to update my motivation",
+                false
             );
 
             ApplicationForApplicantDTO returnedApp = api
@@ -283,6 +284,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             assertThat(updated.getProjects()).isEqualTo("Updated projects description");
             assertThat(updated.getSpecialSkills()).isEqualTo("Java, Kotlin, Spring Boot");
             assertThat(updated.getMotivation()).isEqualTo("I want to update my motivation");
+            assertThat(updated.isReferenceLettersConfidential()).isFalse();
         }
 
         @Test
@@ -311,7 +313,8 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 ApplicationState.SENT,
                 null,
                 null,
-                null
+                null,
+                true
             );
 
             api
@@ -322,6 +325,29 @@ class ApplicationResourceTest extends AbstractResourceTest {
             Set<ApplicantDocument> applicantCvs = documentRepository.findApplicantDocumentsByType(applicant.getUserId(), DocumentType.CV);
             assertThat(applicantCvs).hasSize(1);
             assertThat(applicantCvs.iterator().next().getPath()).isEqualTo(appCv.getPath());
+        }
+
+        @Test
+        void updateApplicationPersistsReferenceLetterConfidentiality() {
+            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
+
+            UpdateApplicationDTO updatePayload = new UpdateApplicationDTO(
+                application.getApplicationId(),
+                ApplicantDTO.getFromEntity(applicant),
+                null,
+                ApplicationState.SAVED,
+                null,
+                null,
+                null,
+                false
+            );
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead("/api/applications", updatePayload, ApplicationForApplicantDTO.class, 200);
+
+            Application updated = applicationRepository.findById(application.getApplicationId()).orElseThrow();
+            assertThat(updated.isReferenceLettersConfidential()).isFalse();
         }
 
         @Test
@@ -358,7 +384,8 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 ApplicationState.SENT,
                 null,
                 null,
-                null
+                null,
+                true
             );
 
             api
@@ -384,7 +411,8 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 ApplicationState.SENT,
                 "Updated projects",
                 "Updated skills",
-                "Updated motivation"
+                "Updated motivation",
+                true
             );
 
             Void response = api.putAndRead("/api/applications", updatePayload, Void.class, 403);

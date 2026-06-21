@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { throwError } from 'rxjs';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
@@ -293,34 +292,22 @@ describe('ApplicationCreationReferencesComponent', () => {
       expect(component.confidentialControl.value).toBe(false);
     });
 
-    it('should persist the waiver on the application when toggled', async () => {
+    it('should emit the waiver when toggled', async () => {
       await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a' })]);
       const emitSpy = vi.spyOn(component.referenceLettersConfidentialChanged, 'emit');
 
-      await component.onConfidentialChange(false);
+      component.onConfidentialChange(false);
 
-      expect(referenceApi.setConfidentiality).toHaveBeenCalledOnce();
-      expect(referenceApi.setConfidentiality).toHaveBeenCalledWith(APPLICATION_ID, false);
       expect(emitSpy).toHaveBeenCalledWith(false);
     });
 
-    it('should persist the waiver even when no referees exist yet', async () => {
+    it('should emit the waiver even when no referees exist yet', async () => {
       await setupFixture([]);
+      const emitSpy = vi.spyOn(component.referenceLettersConfidentialChanged, 'emit');
 
-      await component.onConfidentialChange(false);
+      component.onConfidentialChange(false);
 
-      expect(referenceApi.setConfidentiality).toHaveBeenCalledOnce();
-      expect(referenceApi.setConfidentiality).toHaveBeenCalledWith(APPLICATION_ID, false);
-    });
-
-    it('should revert the control and toast on failure', async () => {
-      await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a' })]);
-      referenceApi.setConfidentiality.mockReturnValueOnce(throwError(() => new Error('boom')));
-
-      await component.onConfidentialChange(false);
-
-      expect(component.confidentialControl.value).toBe(true);
-      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.applicationReferences.toast.confidentialityFailed');
+      expect(emitSpy).toHaveBeenCalledWith(false);
     });
   });
 });

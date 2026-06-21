@@ -624,6 +624,11 @@ export default class ApplicationCreationFormComponent {
     this.references.set(list);
   }
 
+  onReferenceLettersConfidentialChanged(confidential: boolean): void {
+    this.referenceLettersConfidential.set(confidential);
+    this.onValueChanged();
+  }
+
   // Authenticates the current visitor (OTP) and ensures a server-side application exists.
   // Resolves once `applicationId` is populated, or earlier (no-op) when validation
   // failed and the user needs to fill in missing fields before retrying.

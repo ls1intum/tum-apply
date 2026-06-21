@@ -695,21 +695,6 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ReferenceRequestDTO'}
-  /api/applications/{applicationId}/references/confidentiality:
-    put:
-      tags: [reference-request-resource]
-      operationId: setConfidentiality
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: confidential
-        in: query
-        required: true
-        schema: {type: boolean}
-      responses:
-        '200': {description: OK}
   /api/applications/{applicationId}/references/{referenceId}:
     delete:
       tags: [reference-request-resource]
@@ -3968,6 +3953,7 @@ components:
         desiredDate: {type: string, format: date}
         motivation: {type: string}
         projects: {type: string}
+        referenceLettersConfidential: {type: boolean}
         specialSkills: {type: string}
       required: [applicant, applicationId, applicationState]
     UpdateAssessmentDTO:
