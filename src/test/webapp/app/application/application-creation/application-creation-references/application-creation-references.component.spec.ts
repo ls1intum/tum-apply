@@ -12,6 +12,7 @@ import {
 import ApplicationCreationReferencesComponent from 'app/application/application-creation/application-creation-references/application-creation-references.component';
 import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
 import { SelectOption } from 'app/shared/components/atoms/select/select.component';
+import {throwError} from "rxjs";
 
 describe('ApplicationCreationReferencesComponent', () => {
   const APPLICATION_ID = '11111111-0000-0000-0000-000000000001';
