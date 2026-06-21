@@ -169,6 +169,9 @@ public class ApplicationService {
         Application application = assertCanManageApplication(updateApplicationDTO.applicationId());
         boolean isSubmitting = ApplicationState.SENT.equals(updateApplicationDTO.applicationState());
         ApplicationState targetState = updateApplicationDTO.applicationState();
+        if (isSubmitting && referenceRequestService.hasIncompleteReferences(application)) {
+            targetState = ApplicationState.PENDING;
+        }
         application.setState(targetState);
         application.setDesiredStartDate(updateApplicationDTO.desiredDate());
         application.setProjects(HtmlSanitizer.sanitize(updateApplicationDTO.projects()));
