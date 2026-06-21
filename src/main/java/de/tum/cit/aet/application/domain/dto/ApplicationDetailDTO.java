@@ -36,9 +36,7 @@ public record ApplicationDetailDTO(
     List<ReferenceRequestDTO> references
 ) {
     /**
-     * Converts an Application entity to a detail DTO for the evaluation view.
-     * Rich-text fields (projects, specialSkills, motivation) are sanitized on read
-     * as defense-in-depth before sending to the client.
+     * Converts an Application entity to a detail DTO for the evaluation view, including reference letters.
      *
      * @param application the application entity
      * @param job         the associated job entity
@@ -50,6 +48,8 @@ public record ApplicationDetailDTO(
 
     /**
      * Converts an Application entity to a detail DTO for the evaluation view.
+     * Rich-text fields (projects, specialSkills, motivation) are sanitized on read
+     * as defense-in-depth before sending to the client.
      *
      * @param application                       the application entity
      * @param job                               the associated job entity
