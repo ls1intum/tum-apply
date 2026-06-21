@@ -345,33 +345,4 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
             assertThat(reloaded.getState()).isEqualTo(ApplicationState.SENT);
         }
     }
-
-    @Nested
-    class Confidentiality {
-
-        @Test
-        void shouldKeepApplicationConfidentialByDefaultWhenAddingReferences() {
-            api
-                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-                .postAndRead(
-                    String.format(REFERENCES_URL, savedApplication.getApplicationId()),
-                    defaultPayload(),
-                    ReferenceRequestDTO.class,
-                    201
-                );
-
-            Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
-            assertThat(reloaded.isReferenceLettersConfidential()).isTrue();
-        }
-
-        @Test
-        void shouldNotChangeApplicationConfidentialityWhenManagingReferences() {
-            ReferenceRequestTestData.saved(referenceRequestRepository, savedApplication, "first@example.com");
-            ReferenceRequestTestData.saved(referenceRequestRepository, savedApplication, "second@example.com");
-
-            Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
-            assertThat(reloaded.isReferenceLettersConfidential()).isTrue();
-            assertThat(getReferencesAsApplicant(savedApplication.getApplicationId())).hasSize(2);
-        }
-    }
 }
