@@ -48,6 +48,7 @@ export default class ApplicationCreationReferencesComponent {
   referenceLettersConfidential = input<boolean>(true);
 
   valid = output<boolean>();
+  changed = output<boolean>();
   referencesChanged = output<ReferenceRequestDTO[]>();
   referenceLettersConfidentialChanged = output<boolean>();
 
@@ -155,6 +156,7 @@ export default class ApplicationCreationReferencesComponent {
 
   onConfidentialChange(confidential: boolean): void {
     this.referenceLettersConfidentialChanged.emit(confidential);
+    this.changed.emit(true);
   }
 
   /**

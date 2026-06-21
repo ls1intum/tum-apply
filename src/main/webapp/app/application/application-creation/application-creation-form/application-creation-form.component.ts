@@ -626,7 +626,6 @@ export default class ApplicationCreationFormComponent {
 
   onReferenceLettersConfidentialChanged(confidential: boolean): void {
     this.referenceLettersConfidential.set(confidential);
-    this.onValueChanged();
   }
 
   // Authenticates the current visitor (OTP) and ensures a server-side application exists.
