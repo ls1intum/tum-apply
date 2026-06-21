@@ -45,6 +45,22 @@ public record ApplicationDetailDTO(
      * @return the detail DTO
      */
     public static ApplicationDetailDTO getFromEntity(Application application, Job job) {
+        return getFromEntity(application, job, true);
+    }
+
+    /**
+     * Converts an Application entity to a detail DTO for the evaluation view.
+     *
+     * @param application                       the application entity
+     * @param job                               the associated job entity
+     * @param includeReferenceLetterDocumentIds whether linked uploaded reference-letter ids should be exposed
+     * @return the detail DTO
+     */
+    public static ApplicationDetailDTO getFromEntity(
+        Application application,
+        Job job,
+        boolean includeReferenceLetterDocumentIds
+    ) {
         if (application == null) {
             throw new EntityNotFoundException("Application Entity should not be null");
         }
@@ -63,7 +79,7 @@ public record ApplicationDetailDTO(
             HtmlSanitizer.sanitize(application.getSpecialSkills()),
             HtmlSanitizer.sanitize(application.getMotivation()),
             application.isReferenceLettersConfidential(),
-            mapReferences(application.getReferenceRequests())
+            mapReferences(application.getReferenceRequests(), includeReferenceLetterDocumentIds)
         );
     }
 
@@ -75,14 +91,17 @@ public record ApplicationDetailDTO(
      * @param referenceRequests the set of reference request entities, possibly uninitialized
      * @return the list of reference request DTOs, or empty if the input was null, uninitialized, or empty
      */
-    private static List<ReferenceRequestDTO> mapReferences(Set<ReferenceRequest> referenceRequests) {
+    private static List<ReferenceRequestDTO> mapReferences(
+        Set<ReferenceRequest> referenceRequests,
+        boolean includeReferenceLetterDocumentIds
+    ) {
         if (referenceRequests == null || !Hibernate.isInitialized(referenceRequests) || referenceRequests.isEmpty()) {
             return List.of();
         }
         return referenceRequests
             .stream()
             .sorted(Comparator.comparing(ReferenceRequest::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())))
-            .map(ReferenceRequestDTO::fromEntity)
+            .map(referenceRequest -> ReferenceRequestDTO.fromEntity(referenceRequest, includeReferenceLetterDocumentIds))
             .toList();
     }
 }

@@ -16,6 +16,7 @@ import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 import { ApplicationDetailDTO, ApplicationDetailDTOApplicationStateEnum } from 'app/generated/model/application-detail-dto';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/application-document-ids-dto';
 import { createPdfExportResourceApiMock, providePdfExportResourceApiMock } from 'util/pdf-export-resource-api.service.mock';
+import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
 
 function setupTest(paramId: string | null, appApiOverrides?: Partial<ApplicationResourceApiMock>) {
   const applicationApi: ApplicationResourceApiMock = Object.assign({}, createApplicationResourceApiMock(), appApiOverrides ?? {});
@@ -233,6 +234,52 @@ describe('ApplicationDetailForApplicantComponent', () => {
     const labels = getApplicationPDFLabels(translate as unknown as TranslateService);
     expect(labels.application).toBe('evaluation.application');
     expect(Object.keys(labels)).toContain('grade');
+  });
+
+  describe('submittedReferenceLetters', () => {
+    const submittedReference: ReferenceRequestDTO = {
+      referenceRequestId: 'reference-request-1',
+      firstName: 'Ada',
+      lastName: 'Lovelace',
+      email: 'ada@example.com',
+      documentId: 'reference-letter-1',
+    } as ReferenceRequestDTO;
+
+    it('should not expose viewer inputs for confidential reference letters', () => {
+      const { component } = setupTest(null);
+      component.actualDetailData.set(
+        makeDetail({
+          referenceLettersConfidential: true,
+          references: [submittedReference],
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      expect(component.submittedReferenceLetters()).toEqual([]);
+    });
+
+    it('should expose viewer inputs for shared reference letters', () => {
+      const { component } = setupTest(null);
+      component.actualDetailData.set(
+        makeDetail({
+          referenceLettersConfidential: false,
+          references: [submittedReference],
+        }),
+      );
+      component.actualDetailDataExists.set(true);
+
+      expect(component.submittedReferenceLetters()).toEqual([
+        {
+          documentId: 'reference-letter-1',
+          refereeName: 'Ada Lovelace',
+          viewerInput: {
+            id: 'reference-letter-1',
+            name: 'Ada Lovelace',
+            size: 0,
+          },
+        },
+      ]);
+    });
   });
 
   describe('grade displays', () => {

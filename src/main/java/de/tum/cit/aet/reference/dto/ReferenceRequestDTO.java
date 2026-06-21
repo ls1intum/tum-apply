@@ -26,6 +26,15 @@ public record ReferenceRequestDTO(
      * @return a DTO mirroring the entity, including the linked document id when a letter was uploaded
      */
     public static ReferenceRequestDTO fromEntity(ReferenceRequest entity) {
+        return fromEntity(entity, true);
+    }
+
+    /**
+     * @param entity            the persisted reference request
+     * @param includeDocumentId whether to include the linked uploaded letter id
+     * @return a DTO mirroring the entity, optionally omitting the linked document id
+     */
+    public static ReferenceRequestDTO fromEntity(ReferenceRequest entity, boolean includeDocumentId) {
         return new ReferenceRequestDTO(
             entity.getReferenceRequestId(),
             entity.getTitle(),
@@ -33,7 +42,7 @@ public record ReferenceRequestDTO(
             entity.getLastName(),
             entity.getEmail(),
             entity.getStatus(),
-            entity.getDocumentId(),
+            includeDocumentId ? entity.getDocumentId() : null,
             entity.getTokenExpiresAt()
         );
     }

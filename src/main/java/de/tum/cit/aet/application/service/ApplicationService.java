@@ -533,7 +533,8 @@ public class ApplicationService {
             .findByIdWithApplicantJobAndReferences(applicationId)
             .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
         currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
-        return ApplicationDetailDTO.getFromEntity(application, application.getJob());
+        boolean includeReferenceLetterDocumentIds = currentUserService.isAdmin() || !application.isReferenceLettersConfidential();
+        return ApplicationDetailDTO.getFromEntity(application, application.getJob(), includeReferenceLetterDocumentIds);
     }
 
     /**
