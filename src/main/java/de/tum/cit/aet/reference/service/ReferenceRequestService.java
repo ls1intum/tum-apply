@@ -132,7 +132,7 @@ public class ReferenceRequestService {
      */
     public ReferenceRequestDTO declineRequest(String rawToken) {
         ReferenceRequest entry = findByRawToken(rawToken);
-        assertDeclineAllowed(entry);
+        assertReferenceActionAllowed(entry);
         entry.setStatus(ReferenceRequestStatus.DECLINED);
         ReferenceRequest saved = referenceRequestRepository.save(entry);
         return ReferenceRequestDTO.fromEntity(saved);
@@ -234,7 +234,7 @@ public class ReferenceRequestService {
      */
     public ReferenceRequestDTO uploadLetter(String rawToken, MultipartFile file) {
         ReferenceRequest entry = findByRawToken(rawToken);
-        assertUploadAllowed(entry);
+        assertReferenceActionAllowed(entry);
 
         Application application = entry.getApplication();
         User uploaderForAudit = application.getApplicant().getUser();
@@ -360,38 +360,17 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Guards the upload write path: only {@code REQUESTED} requests with a non-expired token may
-     * accept a new file. Already-submitted or expired requests are immutable.
+     * Guards token-backed referee actions: only {@code REQUESTED} requests with a non-expired token may
+     * be changed. Already-submitted, expired or already-declined requests are immutable.
      *
-     * @param entry the reference request being uploaded against
+     * @param entry the reference request being changed
      */
-    private void assertUploadAllowed(ReferenceRequest entry) {
-        if (entry.getStatus() == ReferenceRequestStatus.EXPIRED) {
-            throw new OperationNotAllowedException("This reference letter upload link has expired.");
+    private void assertReferenceActionAllowed(ReferenceRequest entry) {
+        if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
+            throw new OperationNotAllowedException("This reference request is no longer accepting changes.");
         }
         if (entry.getTokenExpiresAt() != null && entry.getTokenExpiresAt().isBefore(LocalDateTime.now())) {
             throw new OperationNotAllowedException("This reference letter upload link has expired.");
-        }
-        if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
-            throw new OperationNotAllowedException("This reference letter upload link is no longer accepting files.");
-        }
-    }
-
-    /**
-     * Guards the decline write path: only a {@code REQUESTED} request with a non-expired token may be
-     * declined. Already-submitted, expired or already-declined requests are immutable.
-     *
-     * @param entry the reference request being declined
-     */
-    private void assertDeclineAllowed(ReferenceRequest entry) {
-        if (entry.getStatus() == ReferenceRequestStatus.EXPIRED) {
-            throw new OperationNotAllowedException("This reference letter upload link has expired.");
-        }
-        if (entry.getTokenExpiresAt() != null && entry.getTokenExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new OperationNotAllowedException("This reference letter upload link has expired.");
-        }
-        if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
-            throw new OperationNotAllowedException("This reference request can no longer be declined.");
         }
     }
 
