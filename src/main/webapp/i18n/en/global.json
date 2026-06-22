@@ -432,10 +432,11 @@
     },
     "applicationOverview": {
       "header": "Your Applications",
+      "recommendationMissing": "Recommendation missing",
+      "recommendationMissingTooltip": "Some required recommendation letters are still missing.",
       "state": {
         "draft": "Draft",
         "submitted": "Submitted",
-        "pending": "Pending",
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",
