@@ -160,7 +160,6 @@ model/update-application-dto.ts
 model/update-assessment-dto.ts
 model/update-avatar-dto.ts
 model/update-password-dto.ts
-model/update-reference-request-dto.ts
 model/update-slot-location-dto.ts
 model/update-user-name-dto.ts
 model/user-booking-info-dto.ts
