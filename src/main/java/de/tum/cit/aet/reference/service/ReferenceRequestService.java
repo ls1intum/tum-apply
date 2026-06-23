@@ -62,7 +62,6 @@ public class ReferenceRequestService {
     private static final Set<ApplicationState> REFERENCE_MANAGEABLE_STATES = EnumSet.of(
         ApplicationState.SAVED,
         ApplicationState.SENT,
-        ApplicationState.PENDING,
         ApplicationState.IN_REVIEW,
         ApplicationState.INTERVIEW
     );
