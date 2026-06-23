@@ -369,7 +369,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                 applicationRepository,
                 jobWithReferences,
                 applicant,
-                ApplicationState.PENDING
+                ApplicationState.SENT
             );
             ReferenceRequest entry = ReferenceRequestTestData.newReferenceRequest(pendingApplication, "old@example.com");
             entry.setStatus(ReferenceRequestStatus.REQUESTED);
@@ -399,7 +399,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                 applicationRepository,
                 jobWithReferences,
                 applicant,
-                ApplicationState.PENDING
+                ApplicationState.SENT
             );
             ReferenceRequest entry = ReferenceRequestTestData.newReferenceRequest(pendingApplication, "keep@example.com");
             entry.setStatus(ReferenceRequestStatus.REQUESTED);
