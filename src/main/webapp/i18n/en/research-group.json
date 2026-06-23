@@ -115,6 +115,7 @@
       "manageMembers": "Manage Members",
       "addMembers": "Add Members",
       "addMembersButton": "Add members",
+      "roleLabel": "Role",
       "searchPlaceholder": "Search for a member using their name or email...",
       "singleEntity": "User",
       "multipleEntities": "Users",

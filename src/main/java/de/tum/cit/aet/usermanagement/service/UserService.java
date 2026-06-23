@@ -3,12 +3,15 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.InvalidParameterException;
 import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import java.time.Duration;
@@ -31,16 +34,19 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+    private final ResearchGroupRepository researchGroupRepository;
     private final ImageService imageService;
     private static final Duration LAST_ACTIVITY_UPDATE_THRESHOLD = Duration.ofHours(24);
 
     public UserService(
         UserRepository userRepository,
         UserResearchGroupRoleRepository userResearchGroupRoleRepository,
+        ResearchGroupRepository researchGroupRepository,
         ImageService imageService
     ) {
         this.userRepository = userRepository;
         this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
+        this.researchGroupRepository = researchGroupRepository;
         this.imageService = imageService;
     }
 
@@ -194,6 +200,46 @@ public class UserService {
         List<UserShortDTO> userDTOs = users.stream().map(UserShortDTO::new).toList();
 
         return new PageResponseDTO<>(userDTOs, userIdsPage.getTotalElements());
+    }
+
+    /**
+     * Replaces all existing role mappings of a user with a single mapping that matches
+     * the requested role. EMPLOYEE and PROFESSOR roles must be attached to a research
+     * group; APPLICANT and ADMIN must be passed without one. The user's primary
+     * research-group reference is kept in sync with the new mapping.
+     *
+     * @param userId          the user being updated
+     * @param role            the new primary role
+     * @param researchGroupId the research group for EMPLOYEE/PROFESSOR, otherwise null
+     * @throws InvalidParameterException if the role/group combination is inconsistent
+     * @throws EntityNotFoundException   if no user or research group exists with the given ID
+     */
+    @Transactional
+    public void setPrimaryRole(UUID userId, UserRole role, UUID researchGroupId) {
+        boolean groupBound = role == UserRole.EMPLOYEE || role == UserRole.PROFESSOR;
+        if (groupBound && researchGroupId == null) {
+            throw new InvalidParameterException("Role " + role + " requires a researchGroupId.");
+        }
+        if (!groupBound && researchGroupId != null) {
+            throw new InvalidParameterException("Role " + role + " must not be assigned to a research group.");
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+        ResearchGroup group = researchGroupId == null ? null : researchGroupRepository.findByIdElseThrow(researchGroupId);
+
+        // 1) Drop existing role mappings — admin-driven role swap is a hard replace.
+        userResearchGroupRoleRepository.deleteByUserId(userId);
+
+        // 2) Create the new role mapping.
+        UserResearchGroupRole mapping = new UserResearchGroupRole();
+        mapping.setUser(user);
+        mapping.setRole(role);
+        mapping.setResearchGroup(group);
+        userResearchGroupRoleRepository.save(mapping);
+
+        // 3) Keep the primary research-group reference on the user aligned with the new role.
+        user.setResearchGroup(group);
+        userRepository.save(user);
     }
 
     /**
