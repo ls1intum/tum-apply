@@ -4,7 +4,6 @@ import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.reference.dto.CreateReferenceRequestDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
-import de.tum.cit.aet.reference.dto.UpdateReferenceRequestDTO;
 import de.tum.cit.aet.reference.service.ReferenceRequestService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -70,7 +69,7 @@ public class ReferenceRequestResource {
     public ResponseEntity<ReferenceRequestDTO> update(
         @PathVariable UUID applicationId,
         @PathVariable UUID referenceId,
-        @Valid @RequestBody UpdateReferenceRequestDTO payload
+        @Valid @RequestBody CreateReferenceRequestDTO payload
     ) {
         log.info("PUT /api/applications/{}/references/{} - Updating reference", applicationId, referenceId);
         return ResponseEntity.ok(referenceRequestService.updateInApplication(applicationId, referenceId, payload));

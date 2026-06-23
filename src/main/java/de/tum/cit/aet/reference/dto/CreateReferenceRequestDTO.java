@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 /**
- * Payload an applicant submits to add a single referee contact to their application.
+ * Payload an applicant submits to add or update a referee contact on their application.
  *
  * @param title     optional academic title or salutation (e.g. {@code Prof. Dr.})
  * @param firstName referee's first name

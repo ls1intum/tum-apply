@@ -20,7 +20,6 @@ import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.reference.dto.CreateReferenceRequestDTO;
 import de.tum.cit.aet.reference.dto.ReferenceLetterUploadContextDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
-import de.tum.cit.aet.reference.dto.UpdateReferenceRequestDTO;
 import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.nio.charset.StandardCharsets;
@@ -150,7 +149,7 @@ public class ReferenceRequestService {
      * @param payload       the new title, name and email
      * @return the updated entry as a DTO
      */
-    public ReferenceRequestDTO updateInApplication(UUID applicationId, UUID referenceId, UpdateReferenceRequestDTO payload) {
+    public ReferenceRequestDTO updateInApplication(UUID applicationId, UUID referenceId, CreateReferenceRequestDTO payload) {
         Application application = assertOwnsApplication(applicationId);
         assertReferencesManageable(application);
 
