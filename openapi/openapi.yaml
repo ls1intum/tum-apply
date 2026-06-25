@@ -3971,7 +3971,7 @@ components:
     UpdatePasswordDTO:
       type: object
       properties:
-        newPassword: {type: string, minLength: 1}
+        newPassword: {type: string, maxLength: 128, minLength: 8}
       required: [newPassword]
     UpdateSlotLocationDTO:
       type: object
