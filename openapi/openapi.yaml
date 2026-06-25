@@ -3573,8 +3573,6 @@ components:
       type: object
       properties:
         clientId: {type: string}
-        externalLoginRealm: {type: string}
-        externalRelyingPartyId: {type: string}
         relyingPartyId: {type: string}
         tumLoginRealm: {type: string}
         url: {type: string}
