@@ -87,6 +87,9 @@ export class AuthFacadeService {
           return true;
         }
         this.authMethod = 'server';
+        // A direct Google/Apple sign-in returns as a server (cookie) session; send the
+        // registration confirmation email here if this round-trip completed a registration.
+        await this.handlePendingIdpRegistration();
         return true;
       }
 
@@ -261,7 +264,22 @@ export class AuthFacadeService {
 
   // --------------- IdPs ---------------
   /**
-   * Logs in via a Keycloak identity provider.
+   * Starts a direct backend OIDC login for Google/Apple (no Keycloak brokering). Performs a full-page
+   * redirect to the backend authorization endpoint; the backend verifies the identity, provisions the
+   * local user, sets the session cookies and redirects back to the SPA, where `initAuth` resumes the session.
+   *
+   * @param provider the external identity provider (Google or Apple)
+   * @param isRegistration if true, marks the flow so a registration confirmation email is sent on return
+   */
+  loginWithSocialProvider(provider: IdpProvider, isRegistration = false): void {
+    if (isRegistration) {
+      localStorage.setItem(this.REGISTRATION_KEY, 'true');
+    }
+    window.location.href = `/oauth2/authorization/${provider}`;
+  }
+
+  /**
+   * Logs in via a Keycloak identity provider (TUM SSO).
    * @param provider Google, Apple, Microsoft, etc.
    * @param redirectUri optional post-login redirect
    * @param isRegistration if true, sends a registration email after login

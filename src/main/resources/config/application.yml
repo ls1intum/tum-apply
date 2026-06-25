@@ -407,3 +407,23 @@ app:
     refresh-ttl-seconds: ${APP_TOKEN_REFRESH_TTL_SECONDS:2592000}
     rsa-private-key: ${APP_TOKEN_RSA_PRIVATE_KEY:}
     rsa-public-key: ${APP_TOKEN_RSA_PUBLIC_KEY:}
+
+# ===================================================================
+# Direct Google/Apple sign-in (replaces Keycloak IdP brokering).
+# Activated only under the `social-login` profile so dev/test/CI (no client credentials) are unaffected.
+# Enable with SPRING_PROFILES_ACTIVE=...,social-login plus the provider credentials below.
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: social-login
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: openid,email,profile
+            client-name: Google
