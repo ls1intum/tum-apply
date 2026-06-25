@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.security.oauth2;
 
+import de.tum.cit.aet.core.security.otp.OtpUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,26 +22,38 @@ import org.springframework.util.SerializationUtils;
 import org.springframework.web.util.WebUtils;
 
 /**
- * Stores the pending {@link OAuth2AuthorizationRequest} in a short-lived cookie instead of the HTTP session.
+ * Stores the pending {@link OAuth2AuthorizationRequest} in a short-lived, HMAC-signed cookie instead of the
+ * HTTP session.
  * <p>
  * Required for Apple Sign In: Apple returns the authorization code via a cross-site {@code form_post} (a POST
  * from {@code appleid.apple.com}), on which a {@code SameSite=Strict/Lax} session cookie would not be sent —
  * so the default session-backed repository cannot find the saved request. This cookie is written with
- * {@code SameSite=None; Secure; HttpOnly} so it is returned on the cross-site callback. The OAuth2 {@code state}
- * parameter still provides CSRF protection for the flow.
+ * {@code SameSite=None; Secure; HttpOnly}.
+ * <p>
+ * Security: the cookie value is read before authentication, so it is treated as untrusted. It is signed with
+ * HMAC-SHA256 using a server-side secret and the signature is verified (constant-time) <em>before</em> the
+ * payload is deserialized; a forged or tampered cookie is rejected and never reaches {@link ObjectInputStream}.
+ * As defence-in-depth, deserialization is additionally restricted to a small class allowlist.
  */
 @Slf4j
 public class HttpCookieOAuth2AuthorizationRequestRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
     private static final String COOKIE_NAME = "oauth2_auth_request";
     private static final Duration COOKIE_TTL = Duration.ofMinutes(5);
+    private static final String SEPARATOR = ".";
 
-    /** Classes permitted during deserialization of the cookie value (defence against gadget chains). */
-    private static final Set<String> ALLOWED_PACKAGES = Set.of("java.", "javax.", "org.springframework.security.oauth2.");
+    /** Concrete class prefixes the serialized authorization request is composed of (allowlist for deserialization). */
+    private static final Set<String> ALLOWED_PACKAGES = Set.of("java.util.", "java.lang.", "org.springframework.security.oauth2.");
+
+    private final String hmacSecret;
+
+    public HttpCookieOAuth2AuthorizationRequestRepository(String hmacSecret) {
+        this.hmacSecret = hmacSecret;
+    }
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-        return readCookie(request).map(this::deserialize).orElse(null);
+        return readCookie(request).map(this::verifyAndDeserialize).orElse(null);
     }
 
     @Override
@@ -53,8 +66,9 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
             writeCookie(response, "", 0);
             return;
         }
-        String value = Base64.getUrlEncoder().withoutPadding().encodeToString(SerializationUtils.serialize(authorizationRequest));
-        writeCookie(response, value, (int) COOKIE_TTL.toSeconds());
+        String payload = Base64.getUrlEncoder().withoutPadding().encodeToString(SerializationUtils.serialize(authorizationRequest));
+        String signed = payload + SEPARATOR + OtpUtil.hmacSha256Base64(hmacSecret, payload);
+        writeCookie(response, signed, (int) COOKIE_TTL.toSeconds());
     }
 
     @Override
@@ -68,7 +82,9 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 
     private Optional<String> readCookie(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, COOKIE_NAME);
-        return cookie == null || cookie.getValue() == null || cookie.getValue().isBlank() ? Optional.empty() : Optional.of(cookie.getValue());
+        return cookie == null || cookie.getValue() == null || cookie.getValue().isBlank()
+            ? Optional.empty()
+            : Optional.of(cookie.getValue());
     }
 
     private void writeCookie(HttpServletResponse response, String value, int maxAgeSeconds) {
@@ -82,9 +98,20 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
-    private OAuth2AuthorizationRequest deserialize(String value) {
+    private OAuth2AuthorizationRequest verifyAndDeserialize(String value) {
+        int separatorIndex = value.lastIndexOf(SEPARATOR);
+        if (separatorIndex <= 0 || separatorIndex == value.length() - 1) {
+            return null;
+        }
+        String payload = value.substring(0, separatorIndex);
+        String signature = value.substring(separatorIndex + 1);
+        // Verify the HMAC before doing anything with the payload; reject forged/tampered cookies.
+        if (!OtpUtil.constantTimeEquals(OtpUtil.hmacSha256Base64(hmacSecret, payload), signature)) {
+            log.debug("Rejecting OAuth2 authorization-request cookie with invalid signature");
+            return null;
+        }
         try {
-            byte[] bytes = Base64.getUrlDecoder().decode(value);
+            byte[] bytes = Base64.getUrlDecoder().decode(payload);
             try (ObjectInputStream in = new AllowlistObjectInputStream(new ByteArrayInputStream(bytes))) {
                 return (OAuth2AuthorizationRequest) in.readObject();
             }

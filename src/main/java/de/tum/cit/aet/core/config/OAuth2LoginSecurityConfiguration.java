@@ -80,14 +80,17 @@ public class OAuth2LoginSecurityConfiguration {
     }
 
     /**
-     * Stores the pending authorization request in a {@code SameSite=None} cookie so Apple's cross-site
-     * {@code form_post} callback can recover it.
+     * Stores the pending authorization request in a {@code SameSite=None}, HMAC-signed cookie so Apple's
+     * cross-site {@code form_post} callback can recover it.
      *
+     * @param hmacSecret server-side secret used to sign and verify the cookie
      * @return the cookie-based authorization request repository
      */
     @Bean
-    public HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository() {
-        return new HttpCookieOAuth2AuthorizationRequestRepository();
+    public HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository(
+        @Value("${security.otp.hmac-secret}") String hmacSecret
+    ) {
+        return new HttpCookieOAuth2AuthorizationRequestRepository(hmacSecret);
     }
 
     /**

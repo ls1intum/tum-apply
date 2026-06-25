@@ -14,8 +14,11 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 class HttpCookieOAuth2AuthorizationRequestRepositoryTest {
 
     private static final String COOKIE_NAME = "oauth2_auth_request";
+    private static final String HMAC_SECRET = "3vWK1lE1FnrjAovOmWwn8O9xqq5WTtNOY/NUdSAKmoQ=";
 
-    private final HttpCookieOAuth2AuthorizationRequestRepository repository = new HttpCookieOAuth2AuthorizationRequestRepository();
+    private final HttpCookieOAuth2AuthorizationRequestRepository repository = new HttpCookieOAuth2AuthorizationRequestRepository(
+        HMAC_SECRET
+    );
 
     private static OAuth2AuthorizationRequest sampleRequest() {
         return OAuth2AuthorizationRequest.authorizationCode()
@@ -74,6 +77,36 @@ class HttpCookieOAuth2AuthorizationRequestRepositoryTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setCookies(new Cookie(COOKIE_NAME, "not-valid-base64-or-object"));
 
+        assertThat(repository.loadAuthorizationRequest(request)).isNull();
+    }
+
+    @Test
+    void tamperedOrUnsignedCookieIsRejectedBeforeDeserialization() {
+        // A payload with no valid HMAC signature must be rejected and never deserialized.
+        OAuth2AuthorizationRequest original = sampleRequest();
+        MockHttpServletResponse saveResponse = new MockHttpServletResponse();
+        repository.saveAuthorizationRequest(original, new MockHttpServletRequest(), saveResponse);
+        String signed = saveResponse.getCookie(COOKIE_NAME).getValue();
+        String payloadOnly = signed.substring(0, signed.lastIndexOf('.')); // drop the signature
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setCookies(new Cookie(COOKIE_NAME, payloadOnly + ".deadbeef"));
+
+        assertThat(repository.loadAuthorizationRequest(request)).isNull();
+    }
+
+    @Test
+    void cookieSignedWithDifferentSecretIsRejected() {
+        OAuth2AuthorizationRequest original = sampleRequest();
+        MockHttpServletResponse saveResponse = new MockHttpServletResponse();
+        new HttpCookieOAuth2AuthorizationRequestRepository("YW5vdGhlci1zZWNyZXQtdmFsdWUtZm9yLXRlc3Rpbmc=")
+            .saveAuthorizationRequest(original, new MockHttpServletRequest(), saveResponse);
+        String foreignSigned = saveResponse.getCookie(COOKIE_NAME).getValue();
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setCookies(new Cookie(COOKIE_NAME, foreignSigned));
+
+        // Same payload, but signed with a different secret -> signature check fails.
         assertThat(repository.loadAuthorizationRequest(request)).isNull();
     }
 }
