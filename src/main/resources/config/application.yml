@@ -407,6 +407,12 @@ app:
     refresh-ttl-seconds: ${APP_TOKEN_REFRESH_TTL_SECONDS:2592000}
     rsa-private-key: ${APP_TOKEN_RSA_PRIVATE_KEY:}
     rsa-public-key: ${APP_TOKEN_RSA_PUBLIC_KEY:}
+  # In-app WebAuthn (passkeys). rp-id must be the registrable domain serving the app;
+  # allowed-origins must list every front-end origin (comma-separated).
+  webauthn:
+    rp-id: ${APP_WEBAUTHN_RP_ID:localhost}
+    rp-name: ${APP_WEBAUTHN_RP_NAME:TUM Apply}
+    allowed-origins: ${APP_WEBAUTHN_ALLOWED_ORIGINS:http://localhost:4200,http://localhost:8080}
 
 # ===================================================================
 # Direct Google/Apple sign-in (replaces Keycloak IdP brokering).
