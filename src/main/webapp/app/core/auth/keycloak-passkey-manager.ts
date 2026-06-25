@@ -35,10 +35,8 @@ interface PasskeyManagerDependencies {
   pendingRealmStorageKey: string;
   keycloakUrl: string;
   tumRealmName: string;
-  externalRealmName: string;
   clientId: string;
   relyingPartyId: string;
-  externalRelyingPartyId: string;
   getTokenParsed: () => Record<string, unknown>;
   canManagePasskeys: () => boolean;
   getPasskeyUserIdentity: () => { id: string; username: string; displayName: string } | undefined;
@@ -321,7 +319,11 @@ export class KeycloakPasskeyManager {
 
   /** Returns configured RP ID for the requested realm, falling back to current hostname. */
   private getRelyingPartyIdForRealm(realmKind: KeycloakRealmKind): string {
-    const relyingPartyId = realmKind === KeycloakRealmKind.External ? this.deps.externalRelyingPartyId : this.deps.relyingPartyId;
+    const relyingPartyIdsByKind: Record<KeycloakRealmKind, string> = {
+      [KeycloakRealmKind.Tum]: this.deps.relyingPartyId,
+      [KeycloakRealmKind.External]: this.deps.relyingPartyId,
+    };
+    const relyingPartyId = relyingPartyIdsByKind[realmKind];
     return relyingPartyId.trim() !== '' ? relyingPartyId : window.location.hostname;
   }
 
@@ -350,6 +352,10 @@ export class KeycloakPasskeyManager {
 
   /** Resolves realm name from realm kind. */
   private getRealmName(realmKind: KeycloakRealmKind): string {
-    return realmKind === KeycloakRealmKind.Tum ? this.deps.tumRealmName : this.deps.externalRealmName;
+    const realmNamesByKind: Record<KeycloakRealmKind, string> = {
+      [KeycloakRealmKind.Tum]: this.deps.tumRealmName,
+      [KeycloakRealmKind.External]: this.deps.tumRealmName,
+    };
+    return realmNamesByKind[realmKind];
   }
 }

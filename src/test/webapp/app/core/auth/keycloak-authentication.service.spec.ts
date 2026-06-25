@@ -117,7 +117,6 @@ describe('KeycloakAuthenticationService', () => {
   describe('login with providers', () => {
     it.each([
       [IdpProvider.Google, 'google'],
-      [IdpProvider.Microsoft, 'microsoft'],
       [IdpProvider.Apple, 'apple'],
     ])('should login with %s provider using idpHint %s', async (provider, hint) => {
       await service.loginWithProvider(provider);

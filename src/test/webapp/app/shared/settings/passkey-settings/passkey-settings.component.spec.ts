@@ -8,6 +8,7 @@ import {
   provideKeycloakAuthenticationServiceMock,
 } from 'util/keycloak.mock';
 import { PasskeyCredentialSummary } from 'app/core/auth/models/auth.model';
+import { WebAuthnService } from 'app/core/auth/webauthn.service';
 import { PasskeySettingsComponent } from 'app/shared/settings/passkey-settings/passkey-settings.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
@@ -50,6 +51,11 @@ describe('PasskeySettingsComponent', () => {
         provideToastServiceMock(toastServiceMock),
         provideTranslateMock(translateServiceMock),
         provideFontAwesomeTesting(),
+        // TUM sessions use the Keycloak passkey path; provide a stub so DI does not pull in HttpClient.
+        {
+          provide: WebAuthnService,
+          useValue: { register: vi.fn(), authenticate: vi.fn(), list: vi.fn().mockResolvedValue([]), remove: vi.fn() },
+        },
       ],
     }).compileComponents();
   });
