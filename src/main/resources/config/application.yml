@@ -427,3 +427,25 @@ spring:
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: openid,email,profile
             client-name: Google
+          apple:
+            client-id: ${APPLE_CLIENT_ID}
+            client-authentication-method: private_key_jwt
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/apple"
+            scope: openid,email,name
+            client-name: Apple
+            provider: apple
+        provider:
+          apple:
+            authorization-uri: https://appleid.apple.com/auth/authorize
+            token-uri: https://appleid.apple.com/auth/token
+            jwk-set-uri: https://appleid.apple.com/auth/keys
+            issuer-uri: https://appleid.apple.com
+            user-name-attribute: sub
+# Apple Sign In service-account credentials used to build the ES256 client_assertion.
+aet:
+  apple:
+    team-id: ${APPLE_TEAM_ID}
+    key-id: ${APPLE_KEY_ID}
+    client-id: ${APPLE_CLIENT_ID}
+    private-key: ${APPLE_PRIVATE_KEY}

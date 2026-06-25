@@ -28,6 +28,15 @@ public interface EmailVerificationOtpRepository extends TumApplyJpaRepository<Em
     Optional<EmailVerificationOtp> findTop1ByEmailAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(String email, Instant now);
 
     /**
+     * Returns the most recently created OTP for the given email, regardless of used/expired state.
+     * Used to enforce the server-side resend cooldown.
+     *
+     * @param email normalized email to search for (trimmed, lower-cased)
+     * @return the newest OTP for the email, if any
+     */
+    Optional<EmailVerificationOtp> findTop1ByEmailOrderByCreatedAtDesc(String email);
+
+    /**
      * Invalidates all unused OTPs for the given email by setting {@code used=true}.
      * <p>
      * Call this before creating a new OTP to enforce a single-active-code policy. Note that the update does
