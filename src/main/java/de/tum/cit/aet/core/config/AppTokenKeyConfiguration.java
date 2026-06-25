@@ -22,7 +22,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
@@ -126,20 +131,48 @@ public class AppTokenKeyConfiguration {
     }
 
     /**
-     * Decoder for app-issued tokens. Verifies the signature against the local public key (no network)
-     * and validates the issuer and timestamps. Wired into {@code MultiRealmJwtDecoder} for the app issuer.
+     * Resource-server decoder for app-issued tokens. Verifies the signature against the local public key
+     * (no network), validates issuer + timestamps, and — critically — requires {@code typ=access} so a
+     * refresh token can never be replayed as a bearer access token. Wired into {@code MultiRealmJwtDecoder}
+     * for the app issuer.
      *
      * @param appSigningRsaKey the application's RSA signing key (its public part is used to verify)
-     * @return a local decoder for app-issued tokens
+     * @return a local decoder that only accepts app access tokens
      * @throws JOSEException if the public key cannot be derived from the JWK
      */
     @Bean("appJwtDecoder")
     public JwtDecoder appJwtDecoder(RSAKey appSigningRsaKey) throws JOSEException {
+        return buildDecoder(appSigningRsaKey, requireTokenType("access"));
+    }
+
+    /**
+     * Decoder used by {@code AppTokenService} to validate refresh tokens (signature + issuer + timestamps).
+     * It does NOT constrain {@code typ}, since the caller explicitly checks {@code typ=refresh} afterwards;
+     * keeping it separate ensures the resource-server decoder above can hard-require {@code typ=access}.
+     *
+     * @param appSigningRsaKey the application's RSA signing key
+     * @return a local decoder for verifying app refresh tokens
+     * @throws JOSEException if the public key cannot be derived from the JWK
+     */
+    @Bean("appRefreshTokenDecoder")
+    public JwtDecoder appRefreshTokenDecoder(RSAKey appSigningRsaKey) throws JOSEException {
+        return buildDecoder(appSigningRsaKey, null);
+    }
+
+    private JwtDecoder buildDecoder(RSAKey appSigningRsaKey, OAuth2TokenValidator<Jwt> additionalValidator) throws JOSEException {
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(appSigningRsaKey.toRSAPublicKey())
             .signatureAlgorithm(SignatureAlgorithm.RS256)
             .build();
-        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuer));
+        OAuth2TokenValidator<Jwt> base = JwtValidators.createDefaultWithIssuer(issuer);
+        decoder.setJwtValidator(additionalValidator == null ? base : new DelegatingOAuth2TokenValidator<>(base, additionalValidator));
         return decoder;
+    }
+
+    private static OAuth2TokenValidator<Jwt> requireTokenType(String expectedType) {
+        return jwt ->
+            expectedType.equals(jwt.getClaimAsString("typ"))
+                ? OAuth2TokenValidatorResult.success()
+                : OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_token", "Expected token typ=" + expectedType, null));
     }
 
     private static RSAPrivateKey parsePrivateKey(String pem) throws Exception {

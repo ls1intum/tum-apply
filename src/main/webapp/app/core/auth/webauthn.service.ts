@@ -19,6 +19,7 @@ export class WebAuthnService {
 
   /** Registers a new passkey for the currently authenticated applicant. */
   async register(label: string): Promise<void> {
+    this.assertSupported();
     const optionsJson = await firstValueFrom(
       this.http.post<PublicKeyCredentialCreationOptionsJSON>('/webauthn/register/options', {}, this.options),
     );
@@ -49,6 +50,7 @@ export class WebAuthnService {
 
   /** Authenticates the current browser via an existing passkey and establishes an app session. */
   async authenticate(): Promise<void> {
+    this.assertSupported();
     const optionsJson = await firstValueFrom(
       this.http.post<PublicKeyCredentialRequestOptionsJSON>('/webauthn/authenticate/options', {}, this.options),
     );
@@ -86,6 +88,12 @@ export class WebAuthnService {
   /** Removes one of the current applicant's passkeys by credential id. */
   async remove(credentialId: string): Promise<void> {
     await firstValueFrom(this.http.delete(`/api/auth/webauthn/passkeys/${encodeURIComponent(credentialId)}`, this.options));
+  }
+
+  private assertSupported(): void {
+    if (typeof window === 'undefined' || typeof window.PublicKeyCredential === 'undefined' || !window.isSecureContext) {
+      throw new Error('Passkeys are not supported in this browser context');
+    }
   }
 
   private toCreationOptions(json: PublicKeyCredentialCreationOptionsJSON): PublicKeyCredentialCreationOptions {

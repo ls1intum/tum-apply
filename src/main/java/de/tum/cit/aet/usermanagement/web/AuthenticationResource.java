@@ -62,14 +62,16 @@ public class AuthenticationResource {
     }
 
     /**
-     * Logs out the user by invalidating the refresh token at Keycloak and clearing authentication cookies.
+     * Logs out the user by revoking the refresh token and clearing authentication cookies.
+     * <p>
+     * Public on purpose: it operates on the refresh-token cookie directly and must still succeed when the
+     * short-lived access token has already expired (the client calls this exactly on session expiry).
      *
      * @param request  the HTTP servlet request containing the refresh_token cookie
      * @param response the HTTP servlet response used to clear authentication cookies
      * @return HTTP 200 OK if logout is successful
-     * @throws UnauthorizedException if the refresh token is missing or logout fails
      */
-    @Authenticated
+    @Public
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         String accessToken = null;

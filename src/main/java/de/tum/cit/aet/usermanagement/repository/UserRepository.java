@@ -116,6 +116,17 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     Optional<User> findByEmailIgnoreCase(String email);
 
     /**
+     * Finds the earliest-created user with the given email (case-insensitive). Email is not globally unique
+     * — the same address can legitimately back both a TUM staff account (Keycloak-provisioned) and an
+     * applicant account — so this returns a single deterministic match instead of failing when more than one
+     * row exists.
+     *
+     * @param email normalized email address
+     * @return the oldest matching user, if any
+     */
+    Optional<User> findTopByEmailIgnoreCaseOrderByCreatedAtAsc(String email);
+
+    /**
      * Checks if a user exists with the given email in a case-insensitive manner.
      *
      * @param email normalized email address

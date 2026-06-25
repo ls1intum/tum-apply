@@ -9,6 +9,10 @@ import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +25,9 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Mints and validates the JWTs that TUMApply issues for applicants (replacing Keycloak token exchange
@@ -43,10 +49,12 @@ public class AppTokenService {
     private static final String TYPE_REFRESH = "refresh";
 
     private final JwtEncoder appJwtEncoder;
-    private final JwtDecoder appJwtDecoder;
+    private final JwtDecoder appRefreshTokenDecoder;
     private final AppRefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
+    private final ConcurrentMap<String, CompletableFuture<AuthResponseDTO>> inFlightRefreshes = new ConcurrentHashMap<>();
 
+    private final TransactionTemplate transactionTemplate;
     private final String issuer;
     private final String kid;
     private final String azp;
@@ -55,9 +63,10 @@ public class AppTokenService {
 
     public AppTokenService(
         JwtEncoder appJwtEncoder,
-        @Qualifier("appJwtDecoder") JwtDecoder appJwtDecoder,
+        @Qualifier("appRefreshTokenDecoder") JwtDecoder appRefreshTokenDecoder,
         AppRefreshTokenRepository refreshTokenRepository,
         UserRepository userRepository,
+        PlatformTransactionManager transactionManager,
         @Value("${app.token.issuer}") String issuer,
         @Value("${app.token.kid:tumapply}") String kid,
         @Value("${app.token.azp:tumapply-internal}") String azp,
@@ -65,9 +74,10 @@ public class AppTokenService {
         @Value("${app.token.refresh-ttl-seconds:2592000}") long refreshTtlSeconds
     ) {
         this.appJwtEncoder = appJwtEncoder;
-        this.appJwtDecoder = appJwtDecoder;
+        this.appRefreshTokenDecoder = appRefreshTokenDecoder;
         this.refreshTokenRepository = refreshTokenRepository;
         this.userRepository = userRepository;
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
         this.issuer = issuer;
         this.kid = kid;
         this.azp = azp;
@@ -100,32 +110,65 @@ public class AppTokenService {
     }
 
     /**
-     * Validates a refresh token and rotates it: the presented token is revoked and a new pair is issued.
-     * Reuse of an already-revoked token is treated as theft and revokes every active token for that user.
+     * Validates a refresh token and rotates it: the presented token is atomically revoked and a new pair is
+     * issued. Reuse of an already-revoked token (or losing the atomic claim) is treated as theft and revokes
+     * every active token for that user.
+     * <p>
+     * Concurrent calls with the SAME refresh token are de-duplicated and share a single rotation result, so
+     * legitimate parallel requests (e.g. the cookie {@code BearerTokenResolver} auto-refresh firing on several
+     * in-flight requests at access-token expiry) do not trip replay detection and log the user out.
      *
      * @param refreshToken the refresh token from the client's cookie
      * @return a freshly issued token pair
      * @throws UnauthorizedException if the token is invalid, expired, unknown, or revoked
      */
-    @Transactional
     public AuthResponseDTO refresh(String refreshToken) {
+        CompletableFuture<AuthResponseDTO> pending = new CompletableFuture<>();
+        CompletableFuture<AuthResponseDTO> inFlight = inFlightRefreshes.putIfAbsent(refreshToken, pending);
+        if (inFlight != null) {
+            return awaitInFlight(inFlight);
+        }
+        try {
+            AuthResponseDTO result = transactionTemplate.execute(status -> rotate(refreshToken));
+            pending.complete(result);
+            return result;
+        } catch (RuntimeException ex) {
+            pending.completeExceptionally(ex);
+            throw ex;
+        } finally {
+            inFlightRefreshes.remove(refreshToken, pending);
+        }
+    }
+
+    private AuthResponseDTO rotate(String refreshToken) {
         Jwt jwt = decodeRefreshToken(refreshToken);
         String jti = jwt.getId();
         UUID userId = parseSubject(jwt);
 
         AppRefreshToken record = refreshTokenRepository.findById(jti).orElseThrow(() -> new UnauthorizedException("Unknown refresh token"));
 
-        if (record.isRevoked()) {
-            // Replay of a rotated/revoked token: revoke the whole family.
+        // Atomically claim the token; if it was already revoked (or another request claimed it first), treat
+        // the reuse as theft and revoke the whole family.
+        if (record.isRevoked() || refreshTokenRepository.revokeIfActive(jti) == 0) {
             refreshTokenRepository.revokeAllForUser(userId);
             log.warn("Refresh token replay detected for user {}; revoked all sessions", userId);
             throw new UnauthorizedException("Refresh token already used");
         }
 
-        refreshTokenRepository.revokeIfActive(jti);
-
         User user = userRepository.findById(userId).orElseThrow(() -> new UnauthorizedException("User no longer exists"));
         return issueFor(user);
+    }
+
+    private AuthResponseDTO awaitInFlight(CompletableFuture<AuthResponseDTO> inFlight) {
+        try {
+            return inFlight.join();
+        } catch (CompletionException ex) {
+            Throwable cause = ex.getCause() != null ? ex.getCause() : ex;
+            if (cause instanceof RuntimeException runtimeException) {
+                throw runtimeException;
+            }
+            throw new UnauthorizedException("Refresh failed", cause);
+        }
     }
 
     /**
@@ -200,7 +243,7 @@ public class AppTokenService {
         }
         Jwt jwt;
         try {
-            jwt = appJwtDecoder.decode(refreshToken);
+            jwt = appRefreshTokenDecoder.decode(refreshToken);
         } catch (JwtException ex) {
             throw new UnauthorizedException("Invalid refresh token", ex);
         }

@@ -38,6 +38,10 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.SimpleTransactionStatus;
 
 @ExtendWith(MockitoExtension.class)
 class AppTokenServiceTest {
@@ -79,12 +83,33 @@ class AppTokenServiceTest {
             nimbusDecoder,
             refreshTokenRepository,
             userRepository,
+            noOpTransactionManager(),
             ISSUER,
             KID,
             "tumapply-internal",
             300,
             2_592_000
         );
+    }
+
+    /** No-op transaction manager so {@code TransactionTemplate} simply runs the callback inline in unit tests. */
+    private static PlatformTransactionManager noOpTransactionManager() {
+        return new PlatformTransactionManager() {
+            @Override
+            public TransactionStatus getTransaction(TransactionDefinition definition) {
+                return new SimpleTransactionStatus();
+            }
+
+            @Override
+            public void commit(TransactionStatus status) {
+                // no-op
+            }
+
+            @Override
+            public void rollback(TransactionStatus status) {
+                // no-op
+            }
+        };
     }
 
     private static User user(UUID id) {
@@ -128,6 +153,7 @@ class AppTokenServiceTest {
         record.setExpiresAt(Instant.now().plusSeconds(1000));
         record.setRevoked(false);
         when(refreshTokenRepository.findById(refreshJti)).thenReturn(Optional.of(record));
+        when(refreshTokenRepository.revokeIfActive(refreshJti)).thenReturn(1);
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
 
         AuthResponseDTO refreshed = service.refresh(issued.refreshToken());

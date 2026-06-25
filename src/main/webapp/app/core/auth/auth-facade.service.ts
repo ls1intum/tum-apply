@@ -13,6 +13,7 @@ import { IdpProvider, KeycloakAuthenticationService } from './keycloak-authentic
 import { KeycloakRealmKind } from './keycloak-authentication.utils';
 import { AccountService } from './account.service';
 import { AuthOrchestratorService } from './auth-orchestrator.service';
+import { WebAuthnService } from './webauthn.service';
 
 type AuthMethod = 'none' | 'server' | 'keycloak';
 
@@ -50,6 +51,7 @@ export class AuthFacadeService {
   private readonly accountService = inject(AccountService);
   private readonly router = inject(Router);
   private readonly authOrchestrator = inject(AuthOrchestratorService);
+  private readonly webAuthnService = inject(WebAuthnService);
   private readonly documentCache = inject(DocumentCacheService);
   private readonly toastService = inject(ToastService);
   private readonly translate = inject(TranslateService);
@@ -233,6 +235,31 @@ export class AuthFacadeService {
       async () => {
         await this.keycloakAuthenticationService.loginWithPasskey(realmKind, this.authOrchestrator.redirectUri() ?? undefined);
         this.authMethod = 'keycloak';
+        await this.accountService.loadUser();
+        this.authOrchestrator.authSuccess();
+      },
+      {
+        summary: this.translate.instant(`${this.translationKey}.passkeyLoginFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.passkeyLoginFailed.detail`),
+      },
+      false,
+    );
+  }
+
+  /**
+   * Logs in an applicant via an in-app WebAuthn passkey (no Keycloak). On success a server (cookie) session
+   * is established, the user profile is loaded, and the auth flow is completed.
+   *
+   * @param redirectUri optional post-login redirect URI
+   */
+  async loginWithInAppPasskey(redirectUri?: string): Promise<void> {
+    if (redirectUri !== undefined && redirectUri.trim() !== '') {
+      this.authOrchestrator.redirectUri.set(redirectUri);
+    }
+    return this.runAuthAction(
+      async () => {
+        await this.webAuthnService.authenticate();
+        this.authMethod = 'server';
         await this.accountService.loadUser();
         this.authOrchestrator.authSuccess();
       },

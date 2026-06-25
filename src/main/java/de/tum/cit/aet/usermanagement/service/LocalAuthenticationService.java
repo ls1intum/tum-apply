@@ -35,7 +35,10 @@ public class LocalAuthenticationService {
      */
     public AuthResponseDTO loginWithCredentials(String email, String rawPassword) {
         User user = userService.findByEmail(email).orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
-        if (user.getPasswordHash() == null || rawPassword == null || !passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+        boolean credentialsValid =
+            user.getPasswordHash() != null && rawPassword != null && passwordEncoder.matches(rawPassword, user.getPasswordHash());
+        // Require a verified email as well; the message stays generic to avoid revealing which check failed.
+        if (!credentialsValid || !user.isEmailVerified()) {
             throw new UnauthorizedException("Invalid username or password");
         }
         return appTokenService.issueFor(user);

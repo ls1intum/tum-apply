@@ -112,7 +112,9 @@ public class UserService {
         if (normalizedEmail.isBlank()) {
             return Optional.empty();
         }
-        return userRepository.findByEmailIgnoreCase(normalizedEmail);
+        // Email is not globally unique (a TUM staff account and an applicant account may share one); return a
+        // single deterministic match so a duplicate never turns a lookup into an IncorrectResultSize error.
+        return userRepository.findTopByEmailIgnoreCaseOrderByCreatedAtAsc(normalizedEmail);
     }
 
     /**

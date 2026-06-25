@@ -49,7 +49,7 @@ class EmailVerificationServiceTest {
         EmailVerificationOtp recent = new EmailVerificationOtp();
         recent.setEmail("applicant@example.org");
         recent.setCreatedAt(Instant.now().minusSeconds(10)); // within the 60s cooldown
-        when(otpRepository.findTop1ByEmailOrderByCreatedAtDesc("applicant@example.org")).thenReturn(Optional.of(recent));
+        when(otpRepository.findTop1ByEmailAndUsedFalseOrderByCreatedAtDesc("applicant@example.org")).thenReturn(Optional.of(recent));
 
         service.sendCode("applicant@example.org", "127.0.0.1", true);
 
@@ -60,7 +60,7 @@ class EmailVerificationServiceTest {
 
     @Test
     void sendsCodeWhenNoRecentCodeExists() {
-        when(otpRepository.findTop1ByEmailOrderByCreatedAtDesc("applicant@example.org")).thenReturn(Optional.empty());
+        when(otpRepository.findTop1ByEmailAndUsedFalseOrderByCreatedAtDesc("applicant@example.org")).thenReturn(Optional.empty());
 
         service.sendCode("applicant@example.org", "127.0.0.1", true);
 
@@ -74,7 +74,7 @@ class EmailVerificationServiceTest {
         EmailVerificationOtp old = new EmailVerificationOtp();
         old.setEmail("applicant@example.org");
         old.setCreatedAt(Instant.now().minusSeconds(120)); // older than the 60s cooldown
-        when(otpRepository.findTop1ByEmailOrderByCreatedAtDesc("applicant@example.org")).thenReturn(Optional.of(old));
+        when(otpRepository.findTop1ByEmailAndUsedFalseOrderByCreatedAtDesc("applicant@example.org")).thenReturn(Optional.of(old));
 
         service.sendCode("applicant@example.org", "127.0.0.1", true);
 

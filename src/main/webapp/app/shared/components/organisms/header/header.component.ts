@@ -245,7 +245,7 @@ export class HeaderComponent {
 
   async onApplicantPasskeyLogin(): Promise<void> {
     this.closeMobileMenu();
-    await this.authFacadeService.loginWithPasskey(KeycloakRealmKind.External, this.router.url);
+    await this.authFacadeService.loginWithInAppPasskey(this.router.url);
   }
 
   logout(): void {

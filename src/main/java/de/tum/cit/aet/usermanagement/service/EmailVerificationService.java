@@ -168,7 +168,7 @@ public class EmailVerificationService {
             return false;
         }
         return emailVerificationOtpRepository
-            .findTop1ByEmailOrderByCreatedAtDesc(email)
+            .findTop1ByEmailAndUsedFalseOrderByCreatedAtDesc(email)
             .map(latest -> Instant.now().isBefore(latest.getCreatedAt().plusSeconds(otpResendCooldownSeconds)))
             .orElse(false);
     }

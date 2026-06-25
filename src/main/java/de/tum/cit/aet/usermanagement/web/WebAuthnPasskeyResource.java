@@ -64,7 +64,12 @@ public class WebAuthnPasskeyResource {
         if (userEntity == null) {
             return ResponseEntity.notFound().build();
         }
-        Bytes id = Bytes.fromBase64(credentialId);
+        Bytes id;
+        try {
+            id = Bytes.fromBase64(credentialId);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.notFound().build();
+        }
         CredentialRecord credential = userCredentialRepository.findByCredentialId(id);
         if (credential == null || !credential.getUserEntityUserId().equals(userEntity.getId())) {
             return ResponseEntity.notFound().build();

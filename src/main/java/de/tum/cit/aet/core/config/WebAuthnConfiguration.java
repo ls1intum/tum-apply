@@ -160,7 +160,10 @@ public class WebAuthnConfiguration {
             .csrf(CsrfConfigurer::disable)
             .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
             // A session is allowed here only to carry the WebAuthn challenge between the two ceremony calls.
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+            // Rotate the session id on authentication to prevent session fixation.
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).sessionFixation(fixation -> fixation.changeSessionId())
+            )
             .authorizeHttpRequests(requests ->
                 requests.requestMatchers("/webauthn/authenticate/options", "/login/webauthn").permitAll().anyRequest().authenticated()
             )

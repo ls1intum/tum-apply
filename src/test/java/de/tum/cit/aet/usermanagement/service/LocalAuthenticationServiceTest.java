@@ -43,6 +43,7 @@ class LocalAuthenticationServiceTest {
         user.setUserId(UUID.randomUUID());
         user.setEmail("applicant@example.org");
         user.setPasswordHash("$2a$hash");
+        user.setEmailVerified(true);
     }
 
     @Test
@@ -61,6 +62,18 @@ class LocalAuthenticationServiceTest {
         when(passwordEncoder.matches("wrong", "$2a$hash")).thenReturn(false);
 
         assertThatThrownBy(() -> service.loginWithCredentials("applicant@example.org", "wrong")).isInstanceOf(UnauthorizedException.class);
+        verify(appTokenService, never()).issueFor(user);
+    }
+
+    @Test
+    void rejectsUnverifiedEmailEvenWithCorrectPassword() {
+        user.setEmailVerified(false);
+        when(userService.findByEmail("applicant@example.org")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("secret", "$2a$hash")).thenReturn(true);
+
+        assertThatThrownBy(() -> service.loginWithCredentials("applicant@example.org", "secret")).isInstanceOf(
+            UnauthorizedException.class
+        );
         verify(appTokenService, never()).issueFor(user);
     }
 
