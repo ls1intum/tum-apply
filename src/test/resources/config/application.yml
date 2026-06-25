@@ -131,3 +131,13 @@ security:
     max-attempts: 6
     resend-cooldown-seconds: 60
     hmac-secret: 3vWK1lE1FnrjAovOmWwn8O9xqq5WTtNOY/NUdSAKmoQ=
+
+app:
+  token:
+    issuer: https://tumapply.test
+    kid: tumapply-test
+    azp: tumapply-internal
+    access-ttl-seconds: 300
+    refresh-ttl-seconds: 2592000
+    rsa-private-key:
+    rsa-public-key:

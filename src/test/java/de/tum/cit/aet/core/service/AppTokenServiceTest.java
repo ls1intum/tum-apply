@@ -1,0 +1,173 @@
+package de.tum.cit.aet.core.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
+import de.tum.cit.aet.core.exception.UnauthorizedException;
+import de.tum.cit.aet.usermanagement.domain.AppRefreshToken;
+import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
+import de.tum.cit.aet.usermanagement.repository.AppRefreshTokenRepository;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+
+@ExtendWith(MockitoExtension.class)
+class AppTokenServiceTest {
+
+    private static final String ISSUER = "https://tumapply.test";
+    private static final String KID = "tumapply-test";
+
+    @Mock
+    private AppRefreshTokenRepository refreshTokenRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    private JwtDecoder decoder;
+    private AppTokenService service;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        KeyPair keyPair = generator.generateKeyPair();
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+
+        RSAKey rsaKey = new RSAKey.Builder(publicKey)
+            .privateKey(privateKey)
+            .keyID(KID)
+            .keyUse(KeyUse.SIGNATURE)
+            .algorithm(JWSAlgorithm.RS256)
+            .build();
+        JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(rsaKey));
+
+        NimbusJwtDecoder nimbusDecoder = NimbusJwtDecoder.withPublicKey(publicKey).signatureAlgorithm(SignatureAlgorithm.RS256).build();
+        nimbusDecoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(ISSUER));
+        this.decoder = nimbusDecoder;
+
+        this.service = new AppTokenService(
+            new NimbusJwtEncoder(jwkSource),
+            nimbusDecoder,
+            refreshTokenRepository,
+            userRepository,
+            ISSUER,
+            KID,
+            "tumapply-internal",
+            300,
+            2_592_000
+        );
+    }
+
+    private static User user(UUID id) {
+        User user = new User();
+        user.setUserId(id);
+        user.setEmail("applicant@example.org");
+        user.setFirstName("Ada");
+        user.setLastName("Lovelace");
+        return user;
+    }
+
+    @Test
+    void issueForMintsAccessTokenWithExpectedClaims() {
+        UUID id = UUID.randomUUID();
+
+        AuthResponseDTO tokens = service.issueFor(user(id));
+
+        Jwt access = decoder.decode(tokens.accessToken());
+        assertThat(access.getSubject()).isEqualTo(id.toString());
+        assertThat(access.getClaimAsString("email")).isEqualTo("applicant@example.org");
+        assertThat(access.getClaimAsString("given_name")).isEqualTo("Ada");
+        assertThat(access.getClaimAsString("family_name")).isEqualTo("Lovelace");
+        assertThat(access.getClaimAsString("typ")).isEqualTo("access");
+        assertThat(access.getClaimAsString("azp")).isEqualTo("tumapply-internal");
+        assertThat(tokens.expiresIn()).isEqualTo(300);
+        assertThat(tokens.refreshExpiresIn()).isEqualTo(2_592_000);
+        // The refresh token id must be persisted so it can later be revoked.
+        verify(refreshTokenRepository).save(any(AppRefreshToken.class));
+    }
+
+    @Test
+    void refreshRotatesTokenAndRevokesPrevious() {
+        UUID id = UUID.randomUUID();
+        User user = user(id);
+        AuthResponseDTO issued = service.issueFor(user);
+        String refreshJti = decoder.decode(issued.refreshToken()).getId();
+
+        AppRefreshToken record = new AppRefreshToken();
+        record.setJti(refreshJti);
+        record.setUserId(id);
+        record.setExpiresAt(Instant.now().plusSeconds(1000));
+        record.setRevoked(false);
+        when(refreshTokenRepository.findById(refreshJti)).thenReturn(Optional.of(record));
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+
+        AuthResponseDTO refreshed = service.refresh(issued.refreshToken());
+
+        assertThat(decoder.decode(refreshed.accessToken()).getSubject()).isEqualTo(id.toString());
+        verify(refreshTokenRepository).revokeIfActive(refreshJti);
+        verify(refreshTokenRepository, never()).revokeAllForUser(any());
+    }
+
+    @Test
+    void refreshOfRevokedTokenIsTreatedAsReplayAndRevokesAll() {
+        UUID id = UUID.randomUUID();
+        AuthResponseDTO issued = service.issueFor(user(id));
+        String refreshJti = decoder.decode(issued.refreshToken()).getId();
+
+        AppRefreshToken record = new AppRefreshToken();
+        record.setJti(refreshJti);
+        record.setUserId(id);
+        record.setExpiresAt(Instant.now().plusSeconds(1000));
+        record.setRevoked(true);
+        when(refreshTokenRepository.findById(refreshJti)).thenReturn(Optional.of(record));
+
+        assertThatThrownBy(() -> service.refresh(issued.refreshToken())).isInstanceOf(UnauthorizedException.class);
+        verify(refreshTokenRepository).revokeAllForUser(id);
+    }
+
+    @Test
+    void refreshOfUnknownTokenIsRejected() {
+        UUID id = UUID.randomUUID();
+        AuthResponseDTO issued = service.issueFor(user(id));
+        when(refreshTokenRepository.findById(any())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.refresh(issued.refreshToken())).isInstanceOf(UnauthorizedException.class);
+    }
+
+    @Test
+    void accessTokenCannotBeUsedAsRefreshToken() {
+        AuthResponseDTO issued = service.issueFor(user(UUID.randomUUID()));
+
+        // The access token has typ=access; the refresh path must reject it.
+        assertThatThrownBy(() -> service.refresh(issued.accessToken())).isInstanceOf(UnauthorizedException.class);
+    }
+}

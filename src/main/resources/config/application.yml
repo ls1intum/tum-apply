@@ -388,3 +388,22 @@ security:
     max-attempts: ${OTP_MAX_ATTEMPTS:6}
     resend-cooldown-seconds: ${OTP_RESEND_COOLDOWN_SECONDS:60}
     hmac-secret: ${OTP_HMAC_SECRET:3vWK1lE1FnrjAovOmWwn8O9xqq5WTtNOY/NUdSAKmoQ=}
+
+# ===================================================================
+# Application-issued JWTs (internal user management for applicants)
+# - TUMApply signs its own access/refresh tokens for applicants; Keycloak is only used for TUM staff.
+# - issuer: stable issuer URI embedded in app tokens and trusted by the resource server
+# - kid: key id placed in the JWT header (enables future key rotation)
+# - access/refresh-ttl-seconds: token lifetimes
+# - rsa-private-key / rsa-public-key: PKCS#8 / X.509 PEM signing keypair.
+#   REQUIRED in the prod profile; when blank (dev only) an ephemeral key is generated at startup.
+# ===================================================================
+app:
+  token:
+    issuer: ${APP_TOKEN_ISSUER:https://tumapply.aet.cit.tum.de}
+    kid: ${APP_TOKEN_KID:tumapply}
+    azp: ${APP_TOKEN_AZP:tumapply-internal}
+    access-ttl-seconds: ${APP_TOKEN_ACCESS_TTL_SECONDS:300}
+    refresh-ttl-seconds: ${APP_TOKEN_REFRESH_TTL_SECONDS:2592000}
+    rsa-private-key: ${APP_TOKEN_RSA_PRIVATE_KEY:}
+    rsa-public-key: ${APP_TOKEN_RSA_PUBLIC_KEY:}

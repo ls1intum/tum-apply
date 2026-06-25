@@ -6,7 +6,7 @@ import de.tum.cit.aet.core.security.CustomJwtAuthenticationConverter;
 import de.tum.cit.aet.core.security.SpaWebFilter;
 import de.tum.cit.aet.core.util.CookieUtils;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
-import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
+import de.tum.cit.aet.usermanagement.service.TokenRefreshDispatcher;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.text.ParseException;
@@ -38,21 +38,21 @@ public class SecurityConfiguration {
 
     private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
     private final CorsFilter corsFilter;
-    private final KeycloakAuthenticationService keycloakAuthenticationService;
+    private final TokenRefreshDispatcher tokenRefreshDispatcher;
     private final Set<String> trustedIssuers;
 
     public SecurityConfiguration(
         CustomJwtAuthenticationConverter customJwtAuthenticationConverter,
         CorsFilter corsFilter,
-        KeycloakAuthenticationService keycloakAuthenticationService,
+        TokenRefreshDispatcher tokenRefreshDispatcher,
         @Value("${keycloak.url}") String keycloakUrl,
         @Value("${keycloak.tum-login-realm}") String tumLoginRealm,
-        @Value("${keycloak.external-login-realm}") String externalLoginRealm
+        @Value("${app.token.issuer}") String appIssuer
     ) {
         this.customJwtAuthenticationConverter = customJwtAuthenticationConverter;
         this.corsFilter = corsFilter;
-        this.keycloakAuthenticationService = keycloakAuthenticationService;
-        this.trustedIssuers = Set.of(realmIssuer(keycloakUrl, tumLoginRealm), realmIssuer(keycloakUrl, externalLoginRealm));
+        this.tokenRefreshDispatcher = tokenRefreshDispatcher;
+        this.trustedIssuers = Set.of(realmIssuer(keycloakUrl, tumLoginRealm), appIssuer);
     }
 
     /**
@@ -219,7 +219,7 @@ public class SecurityConfiguration {
                     !refreshCookie.getValue().isBlank() &&
                     hasUntrustedIssuer(accessCookie.getValue())
                 ) {
-                    AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(accessCookie.getValue(), refreshCookie.getValue());
+                    AuthResponseDTO tokens = tokenRefreshDispatcher.refresh(accessCookie.getValue(), refreshCookie.getValue());
                     writeAuthCookies(tokens);
                     return tokens.accessToken();
                 }
@@ -227,7 +227,7 @@ public class SecurityConfiguration {
             } else if (
                 (accessCookie == null || accessCookie.getValue() == null || accessCookie.getValue().isBlank()) && refreshCookie != null
             ) {
-                AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(null, refreshCookie.getValue());
+                AuthResponseDTO tokens = tokenRefreshDispatcher.refresh(null, refreshCookie.getValue());
                 writeAuthCookies(tokens);
                 return tokens.accessToken();
             }

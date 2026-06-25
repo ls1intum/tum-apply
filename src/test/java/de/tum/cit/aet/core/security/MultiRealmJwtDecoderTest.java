@@ -18,10 +18,10 @@ class MultiRealmJwtDecoderTest {
 
     private static final String KEYCLOAK_URL = "http://localhost:9080";
     private static final String TUM_REALM = "tumidpldap";
-    private static final String EXTERNAL_REALM = "external-login";
+    private static final String APP_ISSUER = "https://tumapply.test";
 
     @Test
-    void decodeShouldUseDecoderForTrustedTumIssuer() {
+    void decodeShouldUseRemoteDecoderForTrustedTumIssuer() {
         String tumIssuer = KEYCLOAK_URL + "/realms/" + TUM_REALM;
         String token = jwtWithIssuer(tumIssuer);
 
@@ -29,7 +29,7 @@ class MultiRealmJwtDecoderTest {
         AtomicReference<String> decodedToken = new AtomicReference<>();
         Jwt expectedJwt = sampleJwt("decoded-subject");
 
-        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(KEYCLOAK_URL, TUM_REALM, EXTERNAL_REALM, issuer -> {
+        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(KEYCLOAK_URL, TUM_REALM, APP_ISSUER, appDecoderThatFails(), issuer -> {
             factoryIssuer.set(issuer);
             return rawToken -> {
                 decodedToken.set(rawToken);
@@ -45,14 +45,38 @@ class MultiRealmJwtDecoderTest {
     }
 
     @Test
-    void decodeShouldReuseCachedDecoderPerIssuer() {
-        String externalIssuer = KEYCLOAK_URL + "/realms/" + EXTERNAL_REALM;
-        String token = jwtWithIssuer(externalIssuer);
+    void decodeShouldUseLocalAppDecoderForAppIssuer() {
+        String token = jwtWithIssuer(APP_ISSUER);
+        Jwt expectedJwt = sampleJwt("app-subject");
+        AtomicInteger remoteFactoryCalls = new AtomicInteger(0);
+
+        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(
+            KEYCLOAK_URL,
+            TUM_REALM,
+            APP_ISSUER,
+            rawToken -> expectedJwt,
+            issuer -> {
+                remoteFactoryCalls.incrementAndGet();
+                return rawToken -> sampleJwt("should-not-be-used");
+            }
+        );
+
+        Jwt result = decoder.decode(token);
+
+        assertThat(result).isSameAs(expectedJwt);
+        // The app issuer must be validated locally, never via the remote (network) factory.
+        assertThat(remoteFactoryCalls.get()).isZero();
+    }
+
+    @Test
+    void decodeShouldReuseCachedRemoteDecoderPerIssuer() {
+        String tumIssuer = KEYCLOAK_URL + "/realms/" + TUM_REALM;
+        String token = jwtWithIssuer(tumIssuer);
 
         AtomicInteger factoryCalls = new AtomicInteger(0);
         JwtDecoder fixedDecoder = rawToken -> sampleJwt("cached");
 
-        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(KEYCLOAK_URL, TUM_REALM, EXTERNAL_REALM, issuer -> {
+        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(KEYCLOAK_URL, TUM_REALM, APP_ISSUER, appDecoderThatFails(), issuer -> {
             factoryCalls.incrementAndGet();
             return fixedDecoder;
         });
@@ -64,14 +88,20 @@ class MultiRealmJwtDecoderTest {
     }
 
     @Test
+    void decodeShouldRejectDecommissionedExternalRealmIssuer() {
+        String externalIssuer = KEYCLOAK_URL + "/realms/external-login";
+        String token = jwtWithIssuer(externalIssuer);
+        MultiRealmJwtDecoder decoder = newDecoder();
+
+        assertThatThrownBy(() -> decoder.decode(token))
+            .isInstanceOf(BadJwtException.class)
+            .hasMessageContaining("Untrusted token issuer");
+    }
+
+    @Test
     void decodeShouldRejectUntrustedIssuer() {
         String token = jwtWithIssuer("http://malicious.example/realms/evil");
-        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(
-            KEYCLOAK_URL,
-            TUM_REALM,
-            EXTERNAL_REALM,
-            issuer -> rawToken -> sampleJwt("x")
-        );
+        MultiRealmJwtDecoder decoder = newDecoder();
 
         assertThatThrownBy(() -> decoder.decode(token))
             .isInstanceOf(BadJwtException.class)
@@ -80,31 +110,27 @@ class MultiRealmJwtDecoderTest {
 
     @Test
     void decodeShouldRejectMalformedToken() {
-        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(
-            KEYCLOAK_URL,
-            TUM_REALM,
-            EXTERNAL_REALM,
-            issuer -> rawToken -> sampleJwt("x")
-        );
+        MultiRealmJwtDecoder decoder = newDecoder();
 
-        assertThatThrownBy(() -> decoder.decode("not-a-jwt"))
-            .isInstanceOf(BadJwtException.class)
-            .hasMessageContaining("Invalid JWT");
+        assertThatThrownBy(() -> decoder.decode("not-a-jwt")).isInstanceOf(BadJwtException.class).hasMessageContaining("Invalid JWT");
     }
 
     @Test
     void decodeShouldRejectTokenWithoutIssuer() {
         String token = jwtWithoutIssuer();
-        MultiRealmJwtDecoder decoder = new MultiRealmJwtDecoder(
-            KEYCLOAK_URL,
-            TUM_REALM,
-            EXTERNAL_REALM,
-            issuer -> rawToken -> sampleJwt("x")
-        );
+        MultiRealmJwtDecoder decoder = newDecoder();
 
-        assertThatThrownBy(() -> decoder.decode(token))
-            .isInstanceOf(BadJwtException.class)
-            .hasMessageContaining("Missing token issuer");
+        assertThatThrownBy(() -> decoder.decode(token)).isInstanceOf(BadJwtException.class).hasMessageContaining("Missing token issuer");
+    }
+
+    private static MultiRealmJwtDecoder newDecoder() {
+        return new MultiRealmJwtDecoder(KEYCLOAK_URL, TUM_REALM, APP_ISSUER, appDecoderThatFails(), issuer -> rawToken -> sampleJwt("x"));
+    }
+
+    private static JwtDecoder appDecoderThatFails() {
+        return rawToken -> {
+            throw new AssertionError("app decoder should not be called for non-app issuers");
+        };
     }
 
     private static Jwt sampleJwt(String subject) {
