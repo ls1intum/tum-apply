@@ -302,7 +302,8 @@ export class AuthFacadeService {
     if (isRegistration) {
       localStorage.setItem(this.REGISTRATION_KEY, 'true');
     }
-    window.location.href = `/oauth2/authorization/${provider}`;
+    // provider is a fixed IdpProvider enum value; encode it defensively and navigate via assign().
+    window.location.assign(`/oauth2/authorization/${encodeURIComponent(provider)}`);
   }
 
   /**

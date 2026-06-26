@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.service;
 
+import de.tum.cit.aet.core.dto.AppTokenProperties;
 import de.tum.cit.aet.core.exception.UnauthorizedException;
 import de.tum.cit.aet.usermanagement.domain.AppRefreshToken;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -15,15 +16,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.JwtException;
-import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,22 +67,18 @@ public class AppTokenService {
         AppRefreshTokenRepository refreshTokenRepository,
         UserRepository userRepository,
         PlatformTransactionManager transactionManager,
-        @Value("${app.token.issuer}") String issuer,
-        @Value("${app.token.kid:tumapply}") String kid,
-        @Value("${app.token.azp:tumapply-internal}") String azp,
-        @Value("${app.token.access-ttl-seconds:300}") long accessTtlSeconds,
-        @Value("${app.token.refresh-ttl-seconds:2592000}") long refreshTtlSeconds
+        AppTokenProperties properties
     ) {
         this.appJwtEncoder = appJwtEncoder;
         this.appRefreshTokenDecoder = appRefreshTokenDecoder;
         this.refreshTokenRepository = refreshTokenRepository;
         this.userRepository = userRepository;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
-        this.issuer = issuer;
-        this.kid = kid;
-        this.azp = azp;
-        this.accessTtlSeconds = accessTtlSeconds;
-        this.refreshTtlSeconds = refreshTtlSeconds;
+        this.issuer = properties.issuer();
+        this.kid = properties.kid();
+        this.azp = properties.azp();
+        this.accessTtlSeconds = properties.accessTtlSeconds();
+        this.refreshTtlSeconds = properties.refreshTtlSeconds();
     }
 
     /**

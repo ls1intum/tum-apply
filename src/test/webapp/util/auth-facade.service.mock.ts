@@ -4,7 +4,7 @@ import { vi } from 'vitest';
 
 export type AuthFacadeServiceMock = Pick<
   AuthFacadeService,
-  'requestOtp' | 'verifyOtp' | 'loginWithEmail' | 'loginWithProvider' | 'registerPasskey' | 'logout'
+  'requestOtp' | 'verifyOtp' | 'loginWithEmail' | 'loginWithProvider' | 'loginWithSocialProvider' | 'registerPasskey' | 'logout'
 >;
 
 export function createAuthFacadeServiceMock(): AuthFacadeServiceMock {
@@ -13,6 +13,7 @@ export function createAuthFacadeServiceMock(): AuthFacadeServiceMock {
     verifyOtp: vi.fn(),
     loginWithEmail: vi.fn(),
     loginWithProvider: vi.fn(),
+    loginWithSocialProvider: vi.fn(),
     registerPasskey: vi.fn(),
     logout: vi.fn(),
   };

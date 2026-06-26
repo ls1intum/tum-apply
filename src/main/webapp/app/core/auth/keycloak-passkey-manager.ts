@@ -319,11 +319,11 @@ export class KeycloakPasskeyManager {
 
   /** Returns configured RP ID for the requested realm, falling back to current hostname. */
   private getRelyingPartyIdForRealm(realmKind: KeycloakRealmKind): string {
-    const relyingPartyIdsByKind: Record<KeycloakRealmKind, string> = {
-      [KeycloakRealmKind.Tum]: this.deps.relyingPartyId,
-      [KeycloakRealmKind.External]: this.deps.relyingPartyId,
-    };
-    const relyingPartyId = relyingPartyIdsByKind[realmKind];
+    const relyingPartyIdsByKind = new Map<KeycloakRealmKind, string>([
+      [KeycloakRealmKind.Tum, this.deps.relyingPartyId],
+      [KeycloakRealmKind.External, this.deps.relyingPartyId],
+    ]);
+    const relyingPartyId = relyingPartyIdsByKind.get(realmKind) ?? this.deps.relyingPartyId;
     return relyingPartyId.trim() !== '' ? relyingPartyId : window.location.hostname;
   }
 
@@ -352,10 +352,10 @@ export class KeycloakPasskeyManager {
 
   /** Resolves realm name from realm kind. */
   private getRealmName(realmKind: KeycloakRealmKind): string {
-    const realmNamesByKind: Record<KeycloakRealmKind, string> = {
-      [KeycloakRealmKind.Tum]: this.deps.tumRealmName,
-      [KeycloakRealmKind.External]: this.deps.tumRealmName,
-    };
-    return realmNamesByKind[realmKind];
+    const realmNamesByKind = new Map<KeycloakRealmKind, string>([
+      [KeycloakRealmKind.Tum, this.deps.tumRealmName],
+      [KeycloakRealmKind.External, this.deps.tumRealmName],
+    ]);
+    return realmNamesByKind.get(realmKind) ?? this.deps.tumRealmName;
   }
 }

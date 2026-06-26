@@ -398,6 +398,7 @@ app:
     rp-name: ${APP_WEBAUTHN_RP_NAME:TUM Apply}
     allowed-origins: ${APP_WEBAUTHN_ALLOWED_ORIGINS:http://localhost:4200,http://localhost:8080}
 
+
 # ===================================================================
 # Direct Google/Apple sign-in (replaces Keycloak IdP brokering).
 # Activated only under the `social-login` profile so dev/test/CI (no client credentials) are unaffected.
@@ -421,7 +422,7 @@ spring:
             client-id: ${APPLE_CLIENT_ID}
             client-authentication-method: private_key_jwt
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/apple"
+            redirect-uri: '{baseUrl}/login/oauth2/code/apple'
             scope: openid,email,name
             client-name: Apple
             provider: apple

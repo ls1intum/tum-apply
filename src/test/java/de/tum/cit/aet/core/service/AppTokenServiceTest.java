@@ -14,6 +14,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import de.tum.cit.aet.core.dto.AppTokenProperties;
 import de.tum.cit.aet.core.exception.UnauthorizedException;
 import de.tum.cit.aet.usermanagement.domain.AppRefreshToken;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -100,11 +101,7 @@ class AppTokenServiceTest {
             refreshTokenRepository,
             userRepository,
             noOpTransactionManager(),
-            ISSUER,
-            KID,
-            "tumapply-internal",
-            300,
-            2_592_000
+            new AppTokenProperties(ISSUER, KID, "tumapply-internal", 300, 2_592_000)
         );
     }
 

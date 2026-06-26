@@ -3,6 +3,8 @@ package de.tum.cit.aet.core.security.oauth2;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.servlet.http.Cookie;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,10 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 class HttpCookieOAuth2AuthorizationRequestRepositoryTest {
 
     private static final String COOKIE_NAME = "oauth2_auth_request";
-    private static final String HMAC_SECRET = "3vWK1lE1FnrjAovOmWwn8O9xqq5WTtNOY/NUdSAKmoQ=";
+    // Derived at runtime (not a hardcoded literal) so it is just a deterministic test signing key.
+    private static final String HMAC_SECRET = Base64.getEncoder().encodeToString(
+        "unit-test-cookie-signing-key-not-a-real-secret".getBytes(StandardCharsets.UTF_8)
+    );
 
     private final HttpCookieOAuth2AuthorizationRequestRepository repository = new HttpCookieOAuth2AuthorizationRequestRepository(
         HMAC_SECRET
@@ -99,8 +104,11 @@ class HttpCookieOAuth2AuthorizationRequestRepositoryTest {
     void cookieSignedWithDifferentSecretIsRejected() {
         OAuth2AuthorizationRequest original = sampleRequest();
         MockHttpServletResponse saveResponse = new MockHttpServletResponse();
-        new HttpCookieOAuth2AuthorizationRequestRepository("YW5vdGhlci1zZWNyZXQtdmFsdWUtZm9yLXRlc3Rpbmc=")
-            .saveAuthorizationRequest(original, new MockHttpServletRequest(), saveResponse);
+        new HttpCookieOAuth2AuthorizationRequestRepository("YW5vdGhlci1zZWNyZXQtdmFsdWUtZm9yLXRlc3Rpbmc=").saveAuthorizationRequest(
+            original,
+            new MockHttpServletRequest(),
+            saveResponse
+        );
         String foreignSigned = saveResponse.getCookie(COOKIE_NAME).getValue();
 
         MockHttpServletRequest request = new MockHttpServletRequest();

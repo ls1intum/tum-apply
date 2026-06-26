@@ -1,6 +1,10 @@
 package de.tum.cit.aet.core.config;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -19,7 +23,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductionSecretsGuard {
 
-    private static final String DEFAULT_OTP_HMAC_SECRET = "3vWK1lE1FnrjAovOmWwn8O9xqq5WTtNOY/NUdSAKmoQ=";
+    /** SHA-256 digest of the committed default {@code security.otp.hmac-secret}; compared by hash so the value itself is not embedded here. */
+    private static final String DEFAULT_OTP_HMAC_DIGEST = "1b3a468a85889caba734e305dddf88d2e4299efd95553d2598a00a25977ae548";
 
     public ProductionSecretsGuard(
         Environment environment,
@@ -30,7 +35,7 @@ public class ProductionSecretsGuard {
             return;
         }
         List<String> problems = new ArrayList<>();
-        if (otpHmacSecret.isBlank() || DEFAULT_OTP_HMAC_SECRET.equals(otpHmacSecret)) {
+        if (otpHmacSecret.isBlank() || DEFAULT_OTP_HMAC_DIGEST.equals(sha256Hex(otpHmacSecret))) {
             problems.add("OTP_HMAC_SECRET must be set to a unique value (not the built-in default)");
         }
         if (webAuthnRpId.isBlank() || "localhost".equalsIgnoreCase(webAuthnRpId)) {
@@ -38,6 +43,15 @@ public class ProductionSecretsGuard {
         }
         if (!problems.isEmpty()) {
             throw new IllegalStateException("Invalid production security configuration: " + String.join("; ", problems));
+        }
+    }
+
+    private static String sha256Hex(String value) {
+        try {
+            byte[] digest = MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(digest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 not available", e);
         }
     }
 }

@@ -112,7 +112,9 @@ class MultiRealmJwtDecoderTest {
     void decodeShouldRejectMalformedToken() {
         MultiRealmJwtDecoder decoder = newDecoder();
 
-        assertThatThrownBy(() -> decoder.decode("not-a-jwt")).isInstanceOf(BadJwtException.class).hasMessageContaining("Invalid JWT");
+        assertThatThrownBy(() -> decoder.decode("not-a-jwt"))
+            .isInstanceOf(BadJwtException.class)
+            .hasMessageContaining("Invalid JWT");
     }
 
     @Test
@@ -120,7 +122,9 @@ class MultiRealmJwtDecoderTest {
         String token = jwtWithoutIssuer();
         MultiRealmJwtDecoder decoder = newDecoder();
 
-        assertThatThrownBy(() -> decoder.decode(token)).isInstanceOf(BadJwtException.class).hasMessageContaining("Missing token issuer");
+        assertThatThrownBy(() -> decoder.decode(token))
+            .isInstanceOf(BadJwtException.class)
+            .hasMessageContaining("Missing token issuer");
     }
 
     private static MultiRealmJwtDecoder newDecoder() {

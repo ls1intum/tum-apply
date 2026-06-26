@@ -8,6 +8,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import de.tum.cit.aet.core.dto.AppTokenProperties;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -66,9 +67,26 @@ public class AppTokenKeyConfiguration {
         if (!StringUtils.hasText(privateKeyPem) && environment.acceptsProfiles(Profiles.of("prod"))) {
             throw new IllegalStateException(
                 "app.token.rsa-private-key (APP_TOKEN_RSA_PRIVATE_KEY) must be set in the prod profile; " +
-                "an ephemeral signing key would invalidate all sessions on restart."
+                    "an ephemeral signing key would invalidate all sessions on restart."
             );
         }
+    }
+
+    /**
+     * Groups the scalar app-token settings into one value object so {@code AppTokenService} can take a single
+     * dependency instead of five individual {@code @Value} constructor parameters.
+     *
+     * @return the resolved app-token properties
+     */
+    @Bean
+    public AppTokenProperties appTokenProperties(
+        @Value("${app.token.issuer}") String tokenIssuer,
+        @Value("${app.token.kid:tumapply}") String tokenKid,
+        @Value("${app.token.azp:tumapply-internal}") String azp,
+        @Value("${app.token.access-ttl-seconds:300}") long accessTtlSeconds,
+        @Value("${app.token.refresh-ttl-seconds:2592000}") long refreshTtlSeconds
+    ) {
+        return new AppTokenProperties(tokenIssuer, tokenKid, azp, accessTtlSeconds, refreshTtlSeconds);
     }
 
     /**
@@ -88,7 +106,7 @@ public class AppTokenKeyConfiguration {
             } else {
                 log.warn(
                     "No app.token RSA keypair configured - generating an EPHEMERAL signing key. " +
-                    "Tokens will not survive a restart. Configure APP_TOKEN_RSA_PRIVATE_KEY/PUBLIC_KEY for any shared environment."
+                        "Tokens will not survive a restart. Configure APP_TOKEN_RSA_PRIVATE_KEY/PUBLIC_KEY for any shared environment."
                 );
                 KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
                 generator.initialize(2048);
@@ -140,7 +158,7 @@ public class AppTokenKeyConfiguration {
      * @return a local decoder that only accepts app access tokens
      * @throws JOSEException if the public key cannot be derived from the JWK
      */
-    @Bean("appJwtDecoder")
+    @Bean(name = "appJwtDecoder", defaultCandidate = false)
     public JwtDecoder appJwtDecoder(RSAKey appSigningRsaKey) throws JOSEException {
         return buildDecoder(appSigningRsaKey, requireTokenType("access"));
     }
@@ -154,7 +172,7 @@ public class AppTokenKeyConfiguration {
      * @return a local decoder for verifying app refresh tokens
      * @throws JOSEException if the public key cannot be derived from the JWK
      */
-    @Bean("appRefreshTokenDecoder")
+    @Bean(name = "appRefreshTokenDecoder", defaultCandidate = false)
     public JwtDecoder appRefreshTokenDecoder(RSAKey appSigningRsaKey) throws JOSEException {
         return buildDecoder(appSigningRsaKey, null);
     }

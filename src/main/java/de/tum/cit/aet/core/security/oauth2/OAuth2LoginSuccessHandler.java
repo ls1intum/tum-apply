@@ -51,7 +51,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             return;
         }
 
-        User user = userService.provisionExternalUser(email, firstName(registrationId, principal, request), lastName(registrationId, principal, request));
+        User user = userService.provisionExternalUser(
+            email,
+            firstName(registrationId, principal, request),
+            lastName(registrationId, principal, request)
+        );
         AuthResponseDTO tokens = appTokenService.issueFor(user);
         CookieUtils.setAuthCookies(response, tokens);
         response.sendRedirect(clientUrl + "/");

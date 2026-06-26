@@ -71,9 +71,7 @@ class LocalAuthenticationServiceTest {
         when(userService.findByEmail("applicant@example.org")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("secret", "$2a$hash")).thenReturn(true);
 
-        assertThatThrownBy(() -> service.loginWithCredentials("applicant@example.org", "secret")).isInstanceOf(
-            UnauthorizedException.class
-        );
+        assertThatThrownBy(() -> service.loginWithCredentials("applicant@example.org", "secret")).isInstanceOf(UnauthorizedException.class);
         verify(appTokenService, never()).issueFor(user);
     }
 
@@ -82,9 +80,7 @@ class LocalAuthenticationServiceTest {
         user.setPasswordHash(null);
         when(userService.findByEmail("applicant@example.org")).thenReturn(Optional.of(user));
 
-        assertThatThrownBy(() -> service.loginWithCredentials("applicant@example.org", "secret")).isInstanceOf(
-            UnauthorizedException.class
-        );
+        assertThatThrownBy(() -> service.loginWithCredentials("applicant@example.org", "secret")).isInstanceOf(UnauthorizedException.class);
     }
 
     @Test

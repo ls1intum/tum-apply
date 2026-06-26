@@ -81,7 +81,7 @@ export class WebAuthnService {
   }
 
   /** Lists the current applicant's registered passkeys. */
-  async list(): Promise<PasskeyCredentialSummary[]> {
+  list(): Promise<PasskeyCredentialSummary[]> {
     return firstValueFrom(this.http.get<PasskeyCredentialSummary[]>('/api/auth/webauthn/passkeys', this.options));
   }
 
@@ -137,10 +137,7 @@ interface PublicKeyCredentialRequestOptionsJSON {
 function base64UrlToBuffer(value: string): ArrayBuffer {
   const padded = value.replace(/-/g, '+').replace(/_/g, '/');
   const binary = atob(padded.padEnd(Math.ceil(padded.length / 4) * 4, '='));
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
+  const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
   return bytes.buffer;
 }
 

@@ -443,11 +443,11 @@ export class KeycloakAuthenticationService {
 
   /** Resolves the configured Keycloak realm name. The external realm is decommissioned, so every kind resolves to TUM. */
   private getRealmName(realmKind: KeycloakRealmKind): string {
-    const realmNamesByKind: Record<KeycloakRealmKind, string> = {
-      [KeycloakRealmKind.Tum]: this.config.keycloak.tumLoginRealm,
-      [KeycloakRealmKind.External]: this.config.keycloak.tumLoginRealm,
-    };
-    return realmNamesByKind[realmKind];
+    const realmNamesByKind = new Map<KeycloakRealmKind, string>([
+      [KeycloakRealmKind.Tum, this.config.keycloak.tumLoginRealm],
+      [KeycloakRealmKind.External, this.config.keycloak.tumLoginRealm],
+    ]);
+    return realmNamesByKind.get(realmKind) ?? this.config.keycloak.tumLoginRealm;
   }
 
   /** Builds normalized issuer URL for the given realm kind. */

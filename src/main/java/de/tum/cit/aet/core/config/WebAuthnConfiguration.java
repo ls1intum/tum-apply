@@ -169,7 +169,9 @@ public class WebAuthnConfiguration {
             )
             // Registration calls are authenticated via the existing app-JWT cookie.
             .oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)).bearerTokenResolver(cookieBearerTokenResolver())
+                oauth2
+                    .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
+                    .bearerTokenResolver(cookieBearerTokenResolver())
             )
             .webAuthn(webauthn ->
                 webauthn
