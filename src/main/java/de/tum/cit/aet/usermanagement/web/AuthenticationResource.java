@@ -12,7 +12,9 @@ import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.PasskeyActionTokenDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.PasskeyDTO;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
+import de.tum.cit.aet.usermanagement.service.LocalAuthenticationService;
 import de.tum.cit.aet.usermanagement.service.OtpFlowService;
+import de.tum.cit.aet.usermanagement.service.TokenRefreshDispatcher;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,6 +41,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationResource {
 
     private final KeycloakAuthenticationService keycloakAuthenticationService;
+    private final LocalAuthenticationService localAuthenticationService;
+    private final TokenRefreshDispatcher tokenRefreshDispatcher;
     private final OtpFlowService otpFlowService;
 
     /**
@@ -52,33 +56,37 @@ public class AuthenticationResource {
     @Public
     @PostMapping("/login")
     public AuthSessionInfoDTO login(@Valid @RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
-        AuthResponseDTO tokens = keycloakAuthenticationService.loginWithCredentials(loginRequest.email(), loginRequest.password());
+        AuthResponseDTO tokens = localAuthenticationService.loginWithCredentials(loginRequest.email(), loginRequest.password());
         CookieUtils.setAuthCookies(response, tokens);
         return new AuthSessionInfoDTO(tokens.expiresIn(), tokens.refreshExpiresIn());
     }
 
     /**
-     * Logs out the user by invalidating the refresh token at Keycloak and clearing authentication cookies.
+     * Logs out the user by revoking the refresh token and clearing authentication cookies.
+     * <p>
+     * Public on purpose: it operates on the refresh-token cookie directly and must still succeed when the
+     * short-lived access token has already expired (the client calls this exactly on session expiry).
      *
      * @param request  the HTTP servlet request containing the refresh_token cookie
      * @param response the HTTP servlet response used to clear authentication cookies
      * @return HTTP 200 OK if logout is successful
-     * @throws UnauthorizedException if the refresh token is missing or logout fails
      */
-    @Authenticated
+    @Public
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        String accessToken = null;
         String refreshToken = null;
         if (request.getCookies() != null) {
             for (Cookie c : request.getCookies()) {
-                if ("refresh_token".equals(c.getName())) {
+                if ("access_token".equals(c.getName())) {
+                    accessToken = c.getValue();
+                } else if ("refresh_token".equals(c.getName())) {
                     refreshToken = c.getValue();
-                    break;
                 }
             }
         }
         if (refreshToken != null && !refreshToken.isBlank()) {
-            keycloakAuthenticationService.invalidateRefreshToken(refreshToken);
+            tokenRefreshDispatcher.logout(accessToken, refreshToken);
         }
 
         CookieUtils.setAuthCookies(response, null);
@@ -121,7 +129,7 @@ public class AuthenticationResource {
         }
 
         try {
-            AuthResponseDTO tokens = keycloakAuthenticationService.refreshTokens(accessToken, refreshToken);
+            AuthResponseDTO tokens = tokenRefreshDispatcher.refresh(accessToken, refreshToken);
             CookieUtils.setAuthCookies(response, tokens);
             return new AuthSessionInfoDTO(tokens.expiresIn(), tokens.refreshExpiresIn());
         } catch (UnauthorizedException ex) {

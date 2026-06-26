@@ -13,6 +13,7 @@ import { IdpProvider, KeycloakAuthenticationService } from './keycloak-authentic
 import { KeycloakRealmKind } from './keycloak-authentication.utils';
 import { AccountService } from './account.service';
 import { AuthOrchestratorService } from './auth-orchestrator.service';
+import { WebAuthnService } from './webauthn.service';
 
 type AuthMethod = 'none' | 'server' | 'keycloak';
 
@@ -50,6 +51,7 @@ export class AuthFacadeService {
   private readonly accountService = inject(AccountService);
   private readonly router = inject(Router);
   private readonly authOrchestrator = inject(AuthOrchestratorService);
+  private readonly webAuthnService = inject(WebAuthnService);
   private readonly documentCache = inject(DocumentCacheService);
   private readonly toastService = inject(ToastService);
   private readonly translate = inject(TranslateService);
@@ -87,6 +89,9 @@ export class AuthFacadeService {
           return true;
         }
         this.authMethod = 'server';
+        // A direct Google/Apple sign-in returns as a server (cookie) session; send the
+        // registration confirmation email here if this round-trip completed a registration.
+        await this.handlePendingIdpRegistration();
         return true;
       }
 
@@ -242,6 +247,31 @@ export class AuthFacadeService {
   }
 
   /**
+   * Logs in an applicant via an in-app WebAuthn passkey (no Keycloak). On success a server (cookie) session
+   * is established, the user profile is loaded, and the auth flow is completed.
+   *
+   * @param redirectUri optional post-login redirect URI
+   */
+  async loginWithInAppPasskey(redirectUri?: string): Promise<void> {
+    if (redirectUri !== undefined && redirectUri.trim() !== '') {
+      this.authOrchestrator.redirectUri.set(redirectUri);
+    }
+    return this.runAuthAction(
+      async () => {
+        await this.webAuthnService.authenticate();
+        this.authMethod = 'server';
+        await this.accountService.loadUser();
+        this.authOrchestrator.authSuccess();
+      },
+      {
+        summary: this.translate.instant(`${this.translationKey}.passkeyLoginFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.passkeyLoginFailed.detail`),
+      },
+      false,
+    );
+  }
+
+  /**
    * Registers a new passkey for the currently logged-in user.
    * Note: This also requires a custom Keycloak SPI endpoint and won't work with a standard Keycloak setup out-of-the-box.
    * After successful registration, a success toast is shown. Any errors during the process will be captured and rethrown.
@@ -261,7 +291,23 @@ export class AuthFacadeService {
 
   // --------------- IdPs ---------------
   /**
-   * Logs in via a Keycloak identity provider.
+   * Starts a direct backend OIDC login for Google/Apple (no Keycloak brokering). Performs a full-page
+   * redirect to the backend authorization endpoint; the backend verifies the identity, provisions the
+   * local user, sets the session cookies and redirects back to the SPA, where `initAuth` resumes the session.
+   *
+   * @param provider the external identity provider (Google or Apple)
+   * @param isRegistration if true, marks the flow so a registration confirmation email is sent on return
+   */
+  loginWithSocialProvider(provider: IdpProvider, isRegistration = false): void {
+    if (isRegistration) {
+      localStorage.setItem(this.REGISTRATION_KEY, 'true');
+    }
+    // provider is a fixed IdpProvider enum value; encode it defensively and navigate via assign().
+    window.location.assign(`/oauth2/authorization/${encodeURIComponent(provider)}`);
+  }
+
+  /**
+   * Logs in via a Keycloak identity provider (TUM SSO).
    * @param provider Google, Apple, Microsoft, etc.
    * @param redirectUri optional post-login redirect
    * @param isRegistration if true, sends a registration email after login

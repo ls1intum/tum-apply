@@ -23,7 +23,6 @@ import { KeycloakPasskeyManager } from './keycloak-passkey-manager';
 
 export enum IdpProvider {
   Google = 'google',
-  Microsoft = 'microsoft',
   Apple = 'apple',
   TUM = 'tum',
 }
@@ -337,10 +336,8 @@ export class KeycloakAuthenticationService {
       pendingRealmStorageKey: KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT,
       keycloakUrl: this.config.keycloak.url,
       tumRealmName: this.config.keycloak.tumLoginRealm,
-      externalRealmName: this.config.keycloak.externalLoginRealm,
       clientId: this.config.keycloak.clientId,
       relyingPartyId: this.config.keycloak.relyingPartyId,
-      externalRelyingPartyId: this.config.keycloak.externalRelyingPartyId,
       getTokenParsed: () => (this.keycloak?.tokenParsed ?? {}) as Record<string, unknown>,
       canManagePasskeys: () => this.canManagePasskeys(),
       getPasskeyUserIdentity: () => this.getPasskeyUserIdentity(),
@@ -444,9 +441,13 @@ export class KeycloakAuthenticationService {
     return provider === IdpProvider.TUM ? KeycloakRealmKind.Tum : KeycloakRealmKind.External;
   }
 
-  /** Resolves configured realm name for a realm kind. */
+  /** Resolves the configured Keycloak realm name. The external realm is decommissioned, so every kind resolves to TUM. */
   private getRealmName(realmKind: KeycloakRealmKind): string {
-    return realmKind === KeycloakRealmKind.Tum ? this.config.keycloak.tumLoginRealm : this.config.keycloak.externalLoginRealm;
+    const realmNamesByKind = new Map<KeycloakRealmKind, string>([
+      [KeycloakRealmKind.Tum, this.config.keycloak.tumLoginRealm],
+      [KeycloakRealmKind.External, this.config.keycloak.tumLoginRealm],
+    ]);
+    return realmNamesByKind.get(realmKind) ?? this.config.keycloak.tumLoginRealm;
   }
 
   /** Builds normalized issuer URL for the given realm kind. */

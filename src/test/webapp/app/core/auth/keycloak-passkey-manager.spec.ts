@@ -57,17 +57,15 @@ describe('KeycloakPasskeyManager', () => {
       pendingRealmStorageKey: 'auth.pendingKeycloakRealm',
       keycloakUrl: 'http://mock-keycloak',
       tumRealmName: 'tumidpldap',
-      externalRealmName: 'external-login',
       clientId: 'mock-client',
       relyingPartyId: '',
-      externalRelyingPartyId: '',
       getTokenParsed: vi.fn(() => tokenParsed),
       canManagePasskeys: vi.fn().mockReturnValue(true),
       getPasskeyUserIdentity: vi.fn().mockReturnValue({ id: 'mock-subject', username: 'mock-user', displayName: 'Mock User' }),
       listPasskeys: vi.fn().mockResolvedValue([]),
       removePasskey: vi.fn().mockResolvedValue(undefined),
       createPasskeyActionToken: vi.fn().mockResolvedValue({
-        realm: 'external-login',
+        realm: 'tumidpldap',
         clientId: 'mock-action-client',
         accessToken: 'mock-action-token',
       }),
@@ -150,45 +148,14 @@ describe('KeycloakPasskeyManager', () => {
     expect(fetchMock).toHaveBeenCalledOnce();
   });
 
-  it('should authenticate against external realm when requested', async () => {
-    deps.externalRelyingPartyId = 'external.apply.example.test';
-    const credentialsGet = vi
-      .fn()
-      .mockResolvedValue(
-        new MockPublicKeyCredential(
-          buffer([4, 5, 6]),
-          new MockAuthenticatorAssertionResponse(buffer([7]), buffer([8]), buffer([9]), buffer([10, 11])),
-        ),
-      );
-    stubWebAuthn({ get: credentialsGet });
-    fetchMock
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: vi.fn().mockResolvedValue({ challenge: 'AQID' }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 204,
-      });
-
-    await manager.loginWithPasskey(KeycloakRealmKind.External);
-
-    const credentialRequest = credentialsGet.mock.calls[0][0] as CredentialRequestOptions;
-    expect(credentialRequest.publicKey?.rpId).toBe('external.apply.example.test');
-    expect(fetchMock).toHaveBeenNthCalledWith(1, 'http://mock-keycloak/realms/external-login/passkey/mock-client/challenge', {
-      credentials: 'include',
-    });
-    expect(fetchMock.mock.calls[1][0]).toBe('http://mock-keycloak/realms/external-login/passkey/mock-client/authenticate');
-  });
-
   it('should register passkeys with the Keycloak subject as WebAuthn user id', async () => {
     tokenParsed = {
       sub: 'subject-123',
       preferred_username: 'jane',
       name: 'Jane Doe',
+      iss: 'http://mock-keycloak/realms/tumidpldap',
     };
-    deps.externalRelyingPartyId = 'apply.example.test';
+    deps.relyingPartyId = 'apply.example.test';
     const credentialsCreate = vi
       .fn()
       .mockResolvedValue(new MockPublicKeyCredential(buffer([12]), new MockAuthenticatorAttestationResponse(buffer([13]), buffer([14]))));
@@ -210,18 +177,18 @@ describe('KeycloakPasskeyManager', () => {
     expect(Array.from(credentialCreation.publicKey?.user.id as Uint8Array)).toEqual(Array.from(new TextEncoder().encode('subject-123')));
     expect(credentialCreation.publicKey?.user.name).toBe('jane');
     expect(credentialCreation.publicKey?.user.displayName).toBe('Jane Doe');
-    expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM Apply', id: 'apply.example.test' });
+    expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM AET', id: 'apply.example.test' });
     expect(credentialCreation.publicKey?.authenticatorSelection).toEqual({
       residentKey: 'required',
       userVerification: 'required',
     });
 
     expect(deps.createPasskeyActionToken).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenNthCalledWith(1, 'http://mock-keycloak/realms/external-login/passkey/mock-action-client/challenge', {
+    expect(fetchMock).toHaveBeenNthCalledWith(1, 'http://mock-keycloak/realms/tumidpldap/passkey/mock-action-client/challenge', {
       credentials: 'include',
     });
     const saveRequest = fetchMock.mock.calls[1][1] as RequestInit;
-    expect(fetchMock.mock.calls[1][0]).toBe('http://mock-keycloak/realms/external-login/passkey/mock-action-client/save');
+    expect(fetchMock.mock.calls[1][0]).toBe('http://mock-keycloak/realms/tumidpldap/passkey/mock-action-client/save');
     expect(saveRequest.credentials).toBe('include');
     expect(saveRequest.headers).toEqual({
       'Content-Type': 'application/json',
@@ -273,34 +240,6 @@ describe('KeycloakPasskeyManager', () => {
 
     const credentialCreation = credentialsCreate.mock.calls[0][0] as CredentialCreationOptions;
     expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM AET', id: 'staging.apply.in.tum.de' });
-  });
-
-  it('should use external relying party id for external realm registration', async () => {
-    tokenParsed = {
-      sub: 'subject-123',
-      preferred_username: 'jane',
-      iss: 'http://mock-keycloak/realms/external-login',
-    };
-    deps.externalRelyingPartyId = 'external.apply.example.test';
-    const credentialsCreate = vi
-      .fn()
-      .mockResolvedValue(new MockPublicKeyCredential(buffer([1]), new MockAuthenticatorAttestationResponse(buffer([2]), buffer([3]))));
-    stubWebAuthn({ create: credentialsCreate });
-    fetchMock
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: vi.fn().mockResolvedValue({ challenge: 'AQID' }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 204,
-      });
-
-    await manager.registerPasskey();
-
-    const credentialCreation = credentialsCreate.mock.calls[0][0] as CredentialCreationOptions;
-    expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM Apply', id: 'external.apply.example.test' });
   });
 
   it('should fall back to the current hostname when relying party id is not configured', async () => {

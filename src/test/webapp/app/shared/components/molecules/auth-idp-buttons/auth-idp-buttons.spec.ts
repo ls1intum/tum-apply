@@ -59,11 +59,10 @@ describe('AuthIdpButtons', () => {
     expect(googleButton.icon).toBe('google');
   });
 
-  it('should call authFacadeService.loginWithProvider for Apple and Google with current origin', () => {
+  it('should call authFacadeService.loginWithSocialProvider for Apple and Google', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
 
-    const origin = window.location.origin;
     const config = component.idpButtons();
 
     expect(config.buttons).toHaveLength(2);
@@ -73,7 +72,7 @@ describe('AuthIdpButtons', () => {
     appleButton.onClick();
     googleButton.onClick();
 
-    expect(authFacadeMock.loginWithProvider).toHaveBeenNthCalledWith(1, IdpProvider.Apple, origin, false);
-    expect(authFacadeMock.loginWithProvider).toHaveBeenLastCalledWith(IdpProvider.Google, origin, false);
+    expect(authFacadeMock.loginWithSocialProvider).toHaveBeenNthCalledWith(1, IdpProvider.Apple, false);
+    expect(authFacadeMock.loginWithSocialProvider).toHaveBeenLastCalledWith(IdpProvider.Google, false);
   });
 });
