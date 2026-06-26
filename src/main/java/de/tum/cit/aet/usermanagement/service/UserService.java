@@ -164,6 +164,26 @@ public class UserService {
     }
 
     /**
+     * Get every professor in the system, regardless of research group. Admin-only.
+     *
+     * @return list of all professors as {@link UserShortDTO}
+     */
+    public List<UserShortDTO> getAllProfessors() {
+        List<UUID> userIds = userRepository.findAllProfessorUserIds();
+        if (userIds.isEmpty()) {
+            return List.of();
+        }
+
+        // Pass null for currentUserId so the result is alphabetically ordered without pinning the admin first.
+        List<User> users = userRepository.findUsersWithRolesByIdsForResearchGroup(userIds, null);
+        return users
+            .stream()
+            .map(UserShortDTO::new)
+            .filter(dto -> dto.getRoles() != null && dto.getRoles().contains(UserRole.PROFESSOR))
+            .toList();
+    }
+
+    /**
      * Retrieves all users that are eligible to be added to a research group.
      *
      * <p>The result excludes any users who are already associated with a research group and

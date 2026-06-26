@@ -166,7 +166,12 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             .findIntervieweesByApplicantUserId(userId)
             .stream()
             .map(interviewee ->
-                new IntervieweeExportDTO(interviewee.getInterviewProcess().getJob().getTitle(), interviewee.getLastInvited())
+                new IntervieweeExportDTO(
+                    interviewee.getInterviewProcess().getJob().getTitle(),
+                    interviewee.getLastInvited(),
+                    interviewee.getRating() != null ? interviewee.getRating().name() : null,
+                    interviewee.getAssessmentNotes()
+                )
             )
             .toList();
     }

@@ -342,7 +342,7 @@
       "back": "Zurück zur Übersicht",
       "rating": {
         "label": "Bewertung",
-        "info": "Bewerte das Gespräch. Dies ist für Bewerbende nicht sichtbar."
+        "info": "Bewerte das Gespräch."
       },
       "notes": {
         "label": "Interview Notiz",

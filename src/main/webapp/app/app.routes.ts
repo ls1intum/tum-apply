@@ -63,6 +63,13 @@ const routes: Routes = [
     loadComponent: () => import('./job/my-positions/my-positions-page.component').then(m => m.MyPositionsPageComponent),
     title: 'global.routes.job.myPositions',
   },
+  {
+    path: 'all-positions',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
+    loadComponent: () => import('./job/all-positions/all-positions-page.component').then(m => m.AllPositionsPageComponent),
+    title: 'global.routes.job.allPositions',
+  },
 
   // ======================================================================================
   // Application
