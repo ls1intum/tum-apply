@@ -1,0 +1,8 @@
+---
+# Codacy configuration.
+# Exclude database seed/test data from static analysis. These files are MySQL fixtures, but Codacy's
+# bundled SQL linter (TSQLLint) targets SQL Server T-SQL and reports false positives on them — e.g.
+# "schema-qualify", a SQL Server convention (dbo.table) that does not apply to MySQL, where the
+# existing fixtures intentionally use unqualified table names.
+exclude_paths:
+  - 'src/main/resources/testdata/**'

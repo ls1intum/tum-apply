@@ -76,6 +76,11 @@ public class AppTokenKeyConfiguration {
      * Groups the scalar app-token settings into one value object so {@code AppTokenService} can take a single
      * dependency instead of five individual {@code @Value} constructor parameters.
      *
+     * @param tokenIssuer       issuer URI embedded in app tokens and trusted by the resource server
+     * @param tokenKid          key id placed in the JWT header (enables future key rotation)
+     * @param azp               authorized-party claim identifying the TUMApply client
+     * @param accessTtlSeconds  access-token lifetime in seconds
+     * @param refreshTtlSeconds refresh-token lifetime in seconds
      * @return the resolved app-token properties
      */
     @Bean
