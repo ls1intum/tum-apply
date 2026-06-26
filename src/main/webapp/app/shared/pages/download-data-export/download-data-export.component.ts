@@ -22,7 +22,7 @@ export class DownloadDataExportComponent {
 
   constructor() {
     const token = this.route.snapshot.paramMap.get('token');
-    if (token) {
+    if (token !== null && token !== '') {
       void this.downloadDataExport(token);
     } else {
       this.toastService.showErrorKey('global.dataExport.error.noToken');
@@ -36,9 +36,9 @@ export class DownloadDataExportComponent {
       const blob = response.body as Blob;
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'data-export.zip';
-      if (contentDisposition) {
+      if (contentDisposition !== null && contentDisposition !== '') {
         const filenameFromHeader = contentDisposition.match(/filename="([^"]+)"/)?.[1];
-        if (filenameFromHeader) {
+        if (filenameFromHeader !== undefined && filenameFromHeader !== '') {
           filename = filenameFromHeader;
         }
       }

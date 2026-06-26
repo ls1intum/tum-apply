@@ -88,7 +88,7 @@ export class AiExtractionBoxComponent {
   // Restores spinner and re-subscribes if an extraction is still in flight from before navigation
   private restoreExtractionState = effect(() => {
     const key = this.extractionKey();
-    if (!key) return;
+    if (key === undefined || key === '') return;
 
     const active$ = activeExtractions.get(key);
     if (active$) {
@@ -103,7 +103,8 @@ export class AiExtractionBoxComponent {
   private consentRequested = false;
   private loadConsentEffect = effect(() => {
     if (this.consentRequested) return;
-    if (!this.applicationId()) return;
+    const aid = this.applicationId();
+    if (aid === undefined || aid === '') return;
     this.consentRequested = true;
     void this.loadAiConsent();
   });
@@ -113,7 +114,8 @@ export class AiExtractionBoxComponent {
   async extractAiData(): Promise<void> {
     // 0) If no applicationId yet, run the auth callback first and bail out on
     //    failure so we don't attempt extraction without a target application.
-    if (!this.applicationId()) {
+    const initialAppId = this.applicationId();
+    if (initialAppId === undefined || initialAppId === '') {
       const trigger = this.requestAuth();
       if (!trigger) return;
       try {
@@ -121,7 +123,8 @@ export class AiExtractionBoxComponent {
       } catch {
         return;
       }
-      if (!this.applicationId()) return;
+      const refreshedAppId = this.applicationId();
+      if (refreshedAppId === undefined || refreshedAppId === '') return;
     }
 
     if (!this.aiSystemEnabled()) {
@@ -133,11 +136,11 @@ export class AiExtractionBoxComponent {
     const key = this.extractionKey();
     const appId = this.applicationId();
 
-    if (!key || !appId) return;
+    if (key === undefined || key === '' || appId === undefined || appId === '') return;
 
     const persistedDocIds = this.documentIds()
       .map(d => d.id)
-      .filter(id => id && !isTemporaryDocumentId(id));
+      .filter(id => id !== '' && !isTemporaryDocumentId(id));
     const queued = this.queuedFiles();
 
     if (persistedDocIds.length === 0 && queued.length === 0) return;
@@ -164,7 +167,7 @@ export class AiExtractionBoxComponent {
    */
   private extractionKey(): string | undefined {
     const appId = this.applicationId();
-    if (!appId) return undefined;
+    if (appId === undefined || appId === '') return undefined;
     return `${appId}_${this.isCv()}`;
   }
 

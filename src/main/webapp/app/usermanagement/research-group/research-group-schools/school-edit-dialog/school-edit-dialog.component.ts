@@ -19,7 +19,10 @@ export class SchoolEditDialogComponent {
   isSubmitting = signal(false);
 
   schoolId = signal<string | undefined>(undefined);
-  isEditMode = computed(() => !!this.schoolId());
+  isEditMode = computed(() => {
+    const id = this.schoolId();
+    return id !== undefined && id !== '';
+  });
 
   form = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -34,8 +37,8 @@ export class SchoolEditDialogComponent {
   private readonly toastService = inject(ToastService);
 
   constructor() {
-    const data = this.config.data;
-    if (data?.school) {
+    const data = this.config.data as { school?: { schoolId?: string; name?: string; abbreviation?: string } } | undefined;
+    if (data?.school !== undefined) {
       this.schoolId.set(data.school.schoolId);
       this.form.patchValue({
         name: data.school.name,
@@ -58,7 +61,7 @@ export class SchoolEditDialogComponent {
 
     try {
       const schoolId = this.schoolId();
-      if (this.isEditMode() && schoolId) {
+      if (this.isEditMode() && schoolId !== undefined && schoolId !== '') {
         await firstValueFrom(this.schoolApi.updateSchool(schoolId, dto));
         this.toastService.showSuccessKey(`${this.translationKey}.success.updated`);
       } else {

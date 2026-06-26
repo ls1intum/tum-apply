@@ -12,7 +12,7 @@ export function dateOrderValidator(startFieldName: string, endFieldName: string)
     const startDate = control.get(startFieldName)?.value as string | undefined;
     const endDate = control.get(endFieldName)?.value as string | undefined;
 
-    if (!startDate || !endDate) {
+    if (startDate === undefined || startDate === '' || endDate === undefined || endDate === '') {
       return null;
     }
 

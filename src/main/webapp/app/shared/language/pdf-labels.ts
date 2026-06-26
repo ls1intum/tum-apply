@@ -132,8 +132,8 @@ function getFooterLabels(translate: TranslateService): Record<string, string> {
 // ----------- Other helper functions related to PDF generation -----------
 
 export function formatGradeDisplay(translate: TranslateService, grade?: string, upperLimit?: string, lowerLimit?: string): string {
-  if (!grade) return '-';
-  if (!upperLimit || !lowerLimit) return grade;
+  if (grade === undefined || grade === '') return '-';
+  if (upperLimit === undefined || upperLimit === '' || lowerLimit === undefined || lowerLimit === '') return grade;
 
   const scale = translate.instant('entity.applicationPage2.helperText.gradingScale', { upperLimit, lowerLimit });
   return `${grade} (${scale})`;

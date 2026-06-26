@@ -136,8 +136,8 @@ export class ResearchGroupSchoolsComponent {
       return;
     }
 
-    const updated = await firstValueFrom(dialogRef.onClose);
-    if (updated) {
+    const updated: unknown = await firstValueFrom(dialogRef.onClose);
+    if (updated === true) {
       await this.loadSchools();
     }
   }
@@ -169,8 +169,8 @@ export class ResearchGroupSchoolsComponent {
       return;
     }
 
-    const created = await firstValueFrom(dialogRef.onClose);
-    if (created) {
+    const created: unknown = await firstValueFrom(dialogRef.onClose);
+    if (created === true) {
       await this.loadSchools();
     }
   }
@@ -178,7 +178,7 @@ export class ResearchGroupSchoolsComponent {
   private getDepartmentsLabel(school: SchoolDTO): string {
     const departmentNames = (school.departments ?? [])
       .map(department => department.name)
-      .filter((departmentName): departmentName is string => !!departmentName)
+      .filter((departmentName): departmentName is string => departmentName !== undefined && departmentName !== '')
       .join(', ');
 
     return departmentNames || this.translate.instant(`${this.translationKey}.noDepartments`);

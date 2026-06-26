@@ -75,7 +75,7 @@ export class FilterMultiselect {
 
     return options.filter(option => {
       if (this.shouldTranslateOptions()) {
-        const translatedValue = this.translateService.instant(option).toLowerCase();
+        const translatedValue = (this.translateService.instant(option) as string).toLowerCase();
         return translatedValue.includes(search);
       } else {
         return option.toLowerCase().includes(search);
@@ -114,7 +114,7 @@ export class FilterMultiselect {
   selectedCount = computed(() => this.selectedValues().length);
   totalCount = computed(() => this.filterOptions().length);
 
-  private readonly elementRef = inject(ElementRef);
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
   private readonly dropdownRef = viewChild<ElementRef<HTMLElement>>('dropdown');
   private readonly translator = injectTranslator();
   private readonly translateService = this.translator.translateService;
@@ -230,7 +230,8 @@ export class FilterMultiselect {
 
   // Close dropdown when clicking outside
   onDocumentClick(event: Event): void {
-    if (!this.elementRef.nativeElement.contains(event.target as Node)) {
+    const nativeEl = this.elementRef.nativeElement as HTMLElement;
+    if (!nativeEl.contains(event.target as Node)) {
       this.closeDropdown();
     }
   }

@@ -362,7 +362,8 @@ export class UploadButtonComponent {
     if (this.uploadTarget() === 'applicantProfile') {
       return true;
     }
-    if (this.applicationId()) {
+    const appId = this.applicationId();
+    if (appId !== undefined && appId !== '') {
       return true;
     }
     const trigger = this.requestAuth();
