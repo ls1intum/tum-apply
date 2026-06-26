@@ -32,9 +32,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
@@ -56,6 +60,7 @@ class AppTokenServiceTest {
     private UserRepository userRepository;
 
     private JwtDecoder decoder;
+    private JwtDecoder accessOnlyDecoder;
     private AppTokenService service;
 
     @BeforeEach
@@ -77,6 +82,17 @@ class AppTokenServiceTest {
         NimbusJwtDecoder nimbusDecoder = NimbusJwtDecoder.withPublicKey(publicKey).signatureAlgorithm(SignatureAlgorithm.RS256).build();
         nimbusDecoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(ISSUER));
         this.decoder = nimbusDecoder;
+
+        // Mirrors the resource-server decoder (appJwtDecoder): issuer + timestamps + typ=access.
+        NimbusJwtDecoder accessDecoder = NimbusJwtDecoder.withPublicKey(publicKey).signatureAlgorithm(SignatureAlgorithm.RS256).build();
+        accessDecoder.setJwtValidator(
+            new DelegatingOAuth2TokenValidator<>(JwtValidators.createDefaultWithIssuer(ISSUER), jwt ->
+                "access".equals(jwt.getClaimAsString("typ"))
+                    ? OAuth2TokenValidatorResult.success()
+                    : OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_token", "Expected typ=access", null))
+            )
+        );
+        this.accessOnlyDecoder = accessDecoder;
 
         this.service = new AppTokenService(
             new NimbusJwtEncoder(jwkSource),
@@ -187,6 +203,35 @@ class AppTokenServiceTest {
         when(refreshTokenRepository.findById(any())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.refresh(issued.refreshToken())).isInstanceOf(UnauthorizedException.class);
+    }
+
+    @Test
+    void refreshTokenCannotBeUsedAsAccessTokenAtResourceServer() {
+        AuthResponseDTO tokens = service.issueFor(user(UUID.randomUUID()));
+
+        // The resource-server (typ=access) decoder accepts the access token...
+        assertThat(accessOnlyDecoder.decode(tokens.accessToken()).getSubject()).isNotBlank();
+        // ...but rejects the refresh token, so it can never be replayed as a bearer credential.
+        assertThatThrownBy(() -> accessOnlyDecoder.decode(tokens.refreshToken())).isInstanceOf(JwtException.class);
+    }
+
+    @Test
+    void losingTheAtomicClaimIsTreatedAsReplay() {
+        UUID id = UUID.randomUUID();
+        AuthResponseDTO issued = service.issueFor(user(id));
+        String refreshJti = decoder.decode(issued.refreshToken()).getId();
+
+        AppRefreshToken record = new AppRefreshToken();
+        record.setJti(refreshJti);
+        record.setUserId(id);
+        record.setExpiresAt(Instant.now().plusSeconds(1000));
+        record.setRevoked(false);
+        when(refreshTokenRepository.findById(refreshJti)).thenReturn(Optional.of(record));
+        // Another request claimed the token first: the atomic UPDATE affects 0 rows.
+        when(refreshTokenRepository.revokeIfActive(refreshJti)).thenReturn(0);
+
+        assertThatThrownBy(() -> service.refresh(issued.refreshToken())).isInstanceOf(UnauthorizedException.class);
+        verify(refreshTokenRepository).revokeAllForUser(id);
     }
 
     @Test
