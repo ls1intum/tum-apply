@@ -1,10 +1,12 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { Comment } from 'app/shared/components/molecules/comment/comment';
 import { InternalCommentResourceApi } from 'app/generated/api/internal-comment-resource-api';
 import { InternalCommentDTO } from 'app/generated/model/internal-comment-dto';
+import { RatingResourceApi } from 'app/generated/api/rating-resource-api';
+import { RatingDTO } from 'app/generated/model/rating-dto';
 
 import TranslateDirective from '../../../language/translate.directive';
 
@@ -15,25 +17,55 @@ import TranslateDirective from '../../../language/translate.directive';
 })
 export class CommentSection {
   commentApi = inject(InternalCommentResourceApi);
+  ratingApi = inject(RatingResourceApi);
   accountService = inject(AccountService);
   toast = inject(ToastService);
 
   applicationId = input.required<string | undefined>();
 
   protected comments = signal<InternalCommentDTO[]>([]);
+  protected otherRatings = signal<RatingDTO[]>([]);
+  protected currentUserRating = signal<number | undefined>(undefined);
   protected createDraft = signal<string>('');
   protected currentUser = this.accountService.loadedUser()?.name ?? '';
   protected editingId = signal<string | undefined>(undefined);
 
-  protected _loadCommentsEffect = effect(() => {
+  protected readonly _loadCommentsEffect = effect(() => {
     const id = this.applicationId();
     this.createDraft.set('');
     if (id !== undefined) {
       void this.loadComments();
+      void this.loadOtherRatings(id);
     } else {
       this.comments.set([]);
+      this.otherRatings.set([]);
+      this.currentUserRating.set(undefined);
     }
   });
+
+  protected readonly ratingByAuthor = computed<Map<string, number>>(() => {
+    const map = new Map<string, number>();
+    const currentRating = this.currentUserRating();
+    if (this.currentUser !== '' && currentRating !== undefined) {
+      map.set(this.currentUser, currentRating);
+    }
+    for (const r of this.otherRatings()) {
+      if (r.from !== undefined && r.rating !== undefined) {
+        map.set(r.from, r.rating);
+      }
+    }
+    return map;
+  });
+
+  async loadOtherRatings(applicationId: string): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.ratingApi.getRatings(applicationId));
+      this.otherRatings.set(data.otherRatings ?? []);
+      this.currentUserRating.set(data.currentUserRating ?? undefined);
+    } catch {
+      this.toast.showErrorKey('evaluation.errors.loadCommentRatings');
+    }
+  }
 
   async loadComments(): Promise<void> {
     const id = this.applicationId();

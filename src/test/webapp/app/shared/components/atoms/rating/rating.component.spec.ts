@@ -50,36 +50,38 @@ describe('RatingComponent', () => {
     expect(component.rating()).toBe(2);
   });
 
-  it.each<[number | undefined, number, string]>([
-    [undefined, 0, 'var(--p-background-surface-alt)'],
-    [-2, 0, 'var(--color-negative-active)'],
-    [-1, 1, 'var(--color-negative-hover)'],
-    [0, 2, 'var(--color-warning-default)'],
-    [1, 3, 'var(--color-positive-hover)'],
-    [2, 4, 'var(--color-positive-active)'],
-    [2, 0, 'var(--p-background-surface-alt)'],
-  ])('should return %s for rating=%s section=%s', (rating, section, expected) => {
+  // ---------------- BUTTON STATES ----------------
+  it.each<[number | undefined, number, string, string | undefined]>([
+    [undefined, 0, 'hover:bg-negative-active/15', undefined],
+    [-2, 0, 'bg-negative-active', 'text-text-on-danger'],
+    [-1, 1, 'bg-negative-hover', 'text-text-on-danger'],
+    [0, 2, 'bg-warning-default', 'text-text-on-warn'],
+    [1, 3, 'bg-positive-hover', 'text-text-on-success'],
+    [2, 4, 'bg-positive-active', 'text-text-on-success'],
+    [2, 0, 'hover:bg-negative-active/15', undefined],
+  ])('should compute classes for rating=%s at index=%i', (rating, index, expectedClass, expectedTextClass) => {
     fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
-    expect(component.getSectionColor(section)).toBe(expected);
+    const classes: string | undefined = component.buttonStates().find((_, i) => i === index)?.classes;
+    expect(classes).toContain(expectedClass);
+    if (expectedTextClass !== undefined) {
+      expect(classes).toContain(expectedTextClass);
+    } else {
+      expect(classes).not.toContain('text-text-on-');
+    }
   });
 
-  // ---------------- TOOLTIP TEXTS ----------------
-  it('should expose translated tooltip text for every likert value', () => {
-    const tooltips = component.tooltipTexts();
-    expect(tooltips[0]).toBe('evaluation.ratings.very_bad');
-    expect(tooltips[1]).toBe('evaluation.ratings.bad');
-    expect(tooltips[2]).toBe('evaluation.ratings.neutral');
-    expect(tooltips[3]).toBe('evaluation.ratings.good');
-    expect(tooltips[4]).toBe('evaluation.ratings.very_good');
-  });
-
-  it.each<[boolean, string]>([
-    [true, 'pointer'],
-    [false, 'default'],
-  ])('should return cursor=%s for selectable=%s', (selectable, expected) => {
-    fixture.componentRef.setInput('selectable', selectable);
+  // ---------------- SELECTED BADGE ----------------
+  it.each<[number | undefined, string | undefined]>([
+    [undefined, undefined],
+    [-2, 'evaluation.ratings.very_bad'],
+    [-1, 'evaluation.ratings.bad'],
+    [0, 'evaluation.ratings.neutral'],
+    [1, 'evaluation.ratings.good'],
+    [2, 'evaluation.ratings.very_good'],
+  ])('should return selectedBadge label %s when rating=%s', (rating, expected) => {
+    fixture.componentRef.setInput('rating', rating);
     fixture.detectChanges();
-    expect(component.getCursor()).toBe(expected);
+    expect(component.selectedBadge()?.label).toBe(expected);
   });
 });

@@ -114,7 +114,7 @@
       "ratingTitle": "Bewertungen",
       "ratingDescription": "Bewerte die Bewerbung und sieh dir an, wie andere sie bewertet haben.",
       "ratingYourRating": "Deine Bewertung",
-      "ratingYourRatingLabel": "Klicke auf ein Feld, um deine Bewertung auszuwählen",
+      "ratingYourRatingLabel": "Wähle deine Bewertung für diese Bewerbung",
       "ratingOtherRatings": "Bewertungen Anderer",
       "interviewRatingTitle": "Interview Bewertung",
       "commentTitle": "Kommentare",
@@ -146,6 +146,10 @@
       "loadInterviewRating": {
         "summary": "Fehler",
         "detail": "Laden der Interview-Bewertung fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      },
+      "loadCommentRatings": {
+        "summary": "Fehler",
+        "detail": "Laden der Kommentar-Bewertungen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   }

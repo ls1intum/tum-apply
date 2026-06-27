@@ -114,7 +114,7 @@
       "ratingTitle": "Ratings",
       "ratingDescription": "Rate the application and view how other reviewers have assessed it.",
       "ratingYourRating": "Your Rating",
-      "ratingYourRatingLabel": "Click a box to select your rating",
+      "ratingYourRatingLabel": "Choose your rating for this application",
       "ratingOtherRatings": "Other Ratings",
       "interviewRatingTitle": "Interview Rating",
       "commentTitle": "Comments",
@@ -146,6 +146,10 @@
       "loadInterviewRating": {
         "summary": "Error",
         "detail": "Failed to load interview rating. Please try refreshing the page, or contact us if the problem persists."
+      },
+      "loadCommentRatings": {
+        "summary": "Error",
+        "detail": "Failed to load comment ratings. Please try refreshing the page, or contact us if the problem persists."
       }
     }
   }
