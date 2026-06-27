@@ -260,7 +260,7 @@
         "declined": "(abgelehnt)"
       },
       "reference_deadline": "Frist",
-      "reference_confidential": "Vertraulich - nur die Betreuer:in kann die eingereichten Schreiben einsehen.",
+      "reference_confidential": "Vertraulich - nur die betreuende Person kann die eingereichten Schreiben einsehen.",
       "reference_shared": "Nicht vertraulich - du kannst die eingereichten Schreiben ebenfalls einsehen.",
       "not_found": "Bewerbung nicht gefunden"
     },
@@ -406,7 +406,7 @@
       "button": {
         "add": "Hinzufügen"
       },
-      "confidentialWaiver": "Ich verzichte darauf, die eingereichten Empfehlungen einzusehen. Nur die Betreuer:in kann sie lesen.",
+      "confidentialWaiver": "Ich verzichte darauf, die eingereichten Empfehlungen einzusehen. Nur die betreuende Person kann sie lesen.",
       "toast": {
         "loadFailed": {
           "summary": "Referenzperson konnten nicht geladen werden",
@@ -625,7 +625,7 @@
     "upload": {
       "confirm": "Bestätigen"
     },
-    "confidentialNote": "Die bewerbende Person hat auf ihr Recht verzichtet, dieses Schreiben einzusehen. Nur die Betreuer:in kann es lesen.",
+    "confidentialNote": "Die bewerbende Person hat auf ihr Recht verzichtet, dieses Schreiben einzusehen. Nur die betreuende Person kann es lesen.",
     "sharedNote": "Die bewerbende Person kann Ihr eingereichtes Schreiben ebenfalls einsehen.",
     "decline": {
       "button": "Ablehnen",
