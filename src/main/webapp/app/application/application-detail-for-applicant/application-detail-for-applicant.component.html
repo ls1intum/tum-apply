@@ -297,7 +297,7 @@
                     {{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}
                     <span class="font-normal text-text-secondary ml-1"> ({{ reference.email }}) </span>
                   </span>
-                  @if (!previewDetailData() && application.applicationState !==  'SAVED') {
+                  @if (!previewDetailData() && application.applicationState !== 'SAVED') {
                     @if (reference.status === 'SUBMITTED') {
                       <span class="text-positive-default" jhiTranslate="entity.application_detail.reference_status.submitted"
                         >Submitted</span
