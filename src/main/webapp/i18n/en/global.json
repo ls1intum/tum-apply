@@ -260,8 +260,8 @@
         "declined": "(declined)"
       },
       "reference_deadline": "Deadline",
-      "reference_confidential": "Confidential — only the supervising professor can view the submitted letters.",
-      "reference_shared": "You can also view the submitted letters.",
+      "reference_confidential": "Confidential - only the supervisor can view the submitted letters.",
+      "reference_shared": "Not confidential - you can also view the submitted letters.",
       "not_found": "Application not found"
     },
     "applicationSteps": {
@@ -406,7 +406,7 @@
       "button": {
         "add": "Add"
       },
-      "confidentialWaiver": "I waive my right to access the submitted recommendation letters. Only the supervising professor will be able to read them.",
+      "confidentialWaiver": "I waive my right to access the submitted recommendation letters. Only the supervisor will be able to read them.",
       "toast": {
         "loadFailed": {
           "summary": "Could not load referees",
@@ -419,10 +419,6 @@
         "removeFailed": {
           "summary": "Could not remove referee",
           "detail": "The referee could not be removed. Please try again."
-        },
-        "confidentialityFailed": {
-          "summary": "Could not update confidentiality",
-          "detail": "Your confidentiality choice could not be saved. Please try again."
         }
       }
     },

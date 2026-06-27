@@ -107,7 +107,7 @@
         "expired": "(expired)",
         "declined": "(declined)"
       },
-      "referenceConfidential": "Confidential — not visible to the applicant",
+      "referenceConfidential": "Confidential - not visible to the applicant",
       "referenceShared": "Visible to the applicant",
       "documentNoUploads": "No documents uploaded",
       "documentView": "View all",
