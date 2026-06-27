@@ -295,9 +295,9 @@
                 <li class="py-1 font-medium items-center gap-2">
                   <span>
                     {{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}
-                    <span class="font-normal text-text-secondary text-sm ml-1"> ({{ reference.email }}) </span>
+                    <span class="font-normal text-text-secondary ml-1"> ({{ reference.email }}) </span>
                   </span>
-                  @if (!previewDetailData()) {
+                  @if (!previewDetailData() && application.applicationState !==  'SAVED') {
                     @if (reference.status === 'SUBMITTED') {
                       <span class="text-positive-default" jhiTranslate="entity.application_detail.reference_status.submitted"
                         >Submitted</span
@@ -308,12 +308,10 @@
                       <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.declined">Declined</span>
                     } @else {
                       <span class="text-text-secondary" jhiTranslate="entity.application_detail.reference_status.requested">Requested</span>
-                      @if (reference.deadline) {
-                        <span class="font-normal text-text-secondary text-sm">
-                          · <span jhiTranslate="entity.application_detail.reference_deadline"></span>:
-                          {{ reference.deadline | localizedDate }}
-                        </span>
-                      }
+                      <span class="font-normal text-text-secondary">
+                        · <span jhiTranslate="entity.application_detail.reference_deadline"></span>:
+                        {{ reference.deadline | localizedDate }}
+                      </span>
                     }
                   }
                 </li>

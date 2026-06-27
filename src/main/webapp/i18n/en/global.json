@@ -406,7 +406,7 @@
       "button": {
         "add": "Add"
       },
-      "confidentialWaiver": "I waive my right to access the submitted recommendation letters. Only the supervisor will be able to read them.",
+      "confidentialWaiver": "I waive my right to access the submitted recommendations. Only the supervisor can read them.",
       "toast": {
         "loadFailed": {
           "summary": "Could not load referees",
