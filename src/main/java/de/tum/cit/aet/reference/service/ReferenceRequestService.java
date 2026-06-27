@@ -223,8 +223,7 @@ public class ReferenceRequestService {
 
     /**
      * Stores the recommendation letter PDF uploaded by an external referee, links it to the
-     * reference request, marks the request {@code SUBMITTED} and — if all required letters are now
-     * in — transitions the application from {@code PENDING} back to {@code SENT}.
+     * reference request and marks the request {@code SUBMITTED}.
      *
      * @param rawToken the plaintext token from the invitation email
      * @param file     the uploaded PDF
@@ -252,28 +251,7 @@ public class ReferenceRequestService {
         entry.setStatus(ReferenceRequestStatus.SUBMITTED);
         ReferenceRequest saved = referenceRequestRepository.save(entry);
 
-        promoteApplicationToSentIfComplete(application);
-
         return ReferenceRequestDTO.fromEntity(saved);
-    }
-
-    /**
-     * Returns true when the application has any unsubmitted reference requests required by the job.
-     * Used at submit time to decide between {@code SENT} and {@code PENDING}.
-     *
-     * @param application the application being submitted
-     * @return true when at least one required letter is still missing
-     */
-    public boolean hasIncompleteReferences(Application application) {
-        int required = application.getJob().getReferenceLettersRequired();
-        if (required <= 0) {
-            return false;
-        }
-        long submitted = referenceRequestRepository.countByApplicationApplicationIdAndStatus(
-            application.getApplicationId(),
-            ReferenceRequestStatus.SUBMITTED
-        );
-        return submitted < required;
     }
 
     /**
@@ -371,28 +349,6 @@ public class ReferenceRequestService {
         }
         if (entry.getTokenExpiresAt() != null && entry.getTokenExpiresAt().isBefore(LocalDateTime.now())) {
             throw new OperationNotAllowedException("This reference letter upload link has expired.");
-        }
-    }
-
-    /**
-     * Transitions the owning application from {@code PENDING} to {@code SENT} once the
-     * number of submitted letters meets the job's requirement. Triggers no additional emails —
-     * the professor was already notified at submit time.
-     *
-     * @param application the application that just received another submitted letter
-     */
-    private void promoteApplicationToSentIfComplete(Application application) {
-        if (application.getState() != ApplicationState.PENDING) {
-            return;
-        }
-        int required = application.getJob().getReferenceLettersRequired();
-        long submitted = referenceRequestRepository.countByApplicationApplicationIdAndStatus(
-            application.getApplicationId(),
-            ReferenceRequestStatus.SUBMITTED
-        );
-        if (submitted >= required) {
-            application.setState(ApplicationState.SENT);
-            applicationRepository.save(application);
         }
     }
 

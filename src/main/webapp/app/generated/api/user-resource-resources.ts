@@ -15,8 +15,8 @@
  */
 import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { Signal } from '@angular/core';
-import { PageResponseDTOKeycloakUserDTO } from '../model/page-response-dto-keycloak-user-dto';
 import { UserShortDTO } from '../model/user-short-dto';
+import { PageResponseDTOKeycloakUserDTO } from '../model/page-response-dto-keycloak-user-dto';
 const BASE_PATH = '';
 
 /**
@@ -27,6 +27,17 @@ const BASE_PATH = '';
 export function getAiConsentResource(): HttpResourceRef<boolean | undefined> {
     return httpResource<boolean>(() => {
         return `${BASE_PATH}/api/users/ai-consent`;
+    });
+}
+
+/**
+ * 
+ * 
+ * Creates a reactive HTTP resource that automatically refetches when signals change.
+ */
+export function getAllProfessorsResource(): HttpResourceRef<Array<UserShortDTO> | undefined> {
+    return httpResource<Array<UserShortDTO>>(() => {
+        return `${BASE_PATH}/api/users/professors`;
     });
 }
 

@@ -11,7 +11,8 @@
         "creation": "TUMApply - Job Creation",
         "edit": "TUMApply - Job Edit",
         "overview": "TUMApply - Job Overview",
-        "myPositions": "TUMApply - My Positions"
+        "myPositions": "TUMApply - My Positions",
+        "allPositions": "TUMApply - All Positions"
       },
       "application": {
         "creation": "TUMApply - Application Creation",
@@ -441,10 +442,11 @@
     },
     "applicationOverview": {
       "header": "Your Applications",
+      "recommendationMissing": "Recommendation missing",
+      "recommendationMissingTooltip": "Some required recommendation letters are still missing.",
       "state": {
         "draft": "Draft",
         "submitted": "Submitted",
-        "pending": "Pending",
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",

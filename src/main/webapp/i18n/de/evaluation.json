@@ -27,7 +27,6 @@
     },
     "statusBadge": {
       "SENT": "Ungelesen",
-      "PENDING": "Ausstehend",
       "ACCEPTED": "Angenommen",
       "REJECTED": "Abgelehnt",
       "IN_REVIEW": "In Bearbeitung",
@@ -35,7 +34,6 @@
       "JOB_CLOSED": "Stelle geschlossen",
       "tooltips": {
         "SENT": "Die Bewerbung wurde noch nicht geöffnet",
-        "PENDING": "Es fehlen noch erforderliche Empfehlungsschreiben",
         "ACCEPTED": "Die Bewerbung wurde angenommen",
         "REJECTED": "Die Bewerbung wurde abgelehnt",
         "IN_REVIEW": "Die Bewerbung wurde geöffnet",
