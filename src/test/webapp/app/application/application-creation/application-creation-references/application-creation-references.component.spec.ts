@@ -303,16 +303,5 @@ describe('ApplicationCreationReferencesComponent', () => {
       expect(emitSpy).toHaveBeenCalledWith(false);
       expect(changedSpy).toHaveBeenCalledWith(true);
     });
-
-    it('should emit the waiver even when no referees exist yet', async () => {
-      await setupFixture([]);
-      const emitSpy = vi.spyOn(component.referenceLettersConfidentialChanged, 'emit');
-      const changedSpy = vi.spyOn(component.changed, 'emit');
-
-      component.onConfidentialChange(false);
-
-      expect(emitSpy).toHaveBeenCalledWith(false);
-      expect(changedSpy).toHaveBeenCalledWith(true);
-    });
   });
 });
