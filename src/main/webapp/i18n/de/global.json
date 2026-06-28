@@ -256,8 +256,12 @@
         "added": "(hinzugefügt)",
         "requested": "(angefragt)",
         "submitted": "(eingereicht)",
-        "expired": "(abgelaufen)"
+        "expired": "(abgelaufen)",
+        "declined": "(abgelehnt)"
       },
+      "reference_deadline": "Frist",
+      "reference_confidential": "Vertraulich - nur die betreuende Person kann die eingereichten Schreiben einsehen.",
+      "reference_shared": "Nicht vertraulich - du kannst die eingereichten Schreiben ebenfalls einsehen.",
       "not_found": "Bewerbung nicht gefunden"
     },
     "applicationSteps": {
@@ -402,6 +406,7 @@
       "button": {
         "add": "Hinzufügen"
       },
+      "confidentialWaiver": "Ich verzichte darauf, die eingereichten Empfehlungen einzusehen. Nur die betreuende Person kann sie lesen.",
       "toast": {
         "loadFailed": {
           "summary": "Referenzperson konnten nicht geladen werden",
@@ -619,6 +624,18 @@
     },
     "upload": {
       "confirm": "Bestätigen"
+    },
+    "confidentialNote": "Die bewerbende Person hat auf ihr Recht verzichtet, dieses Schreiben einzusehen. Nur die betreuende Person kann es lesen.",
+    "sharedNote": "Die bewerbende Person kann Ihr eingereichtes Schreiben ebenfalls einsehen.",
+    "decline": {
+      "button": "Ablehnen",
+      "confirmHeader": "Anfrage ablehnen",
+      "confirmMessage": "Sind Sie sicher, dass Sie kein Empfehlungsschreiben bereitstellen möchten? Dies kann nicht rückgängig gemacht werden.",
+      "failed": "Die Anfrage konnte nicht abgelehnt werden. Bitte versuchen Sie es erneut."
+    },
+    "declined": {
+      "title": "Anfrage abgelehnt",
+      "message": "Sie haben abgelehnt, ein Empfehlungsschreiben bereitzustellen. Sie können diese Seite schließen."
     },
     "summary": {
       "title": "Zusammenfassung",

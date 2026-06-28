@@ -112,7 +112,31 @@
 
           <!-- Documents Section -->
           <jhi-section titleKey="evaluation.details.documentTitle" icon="file-lines">
-            <jhi-document-section [idsDTO]="documentIds()" [applicationId]="applicationId()" />
+            <jhi-document-section #docSection [idsDTO]="documentIds()" [applicationId]="applicationId()" />
+            <ng-container actions>
+              @if (docSection.hasDocuments()) {
+                <div class="flex flex-wrap ml-auto gap-2">
+                  <jhi-button
+                    class="whitespace-nowrap"
+                    label="evaluation.details.documentView"
+                    [shouldTranslate]="true"
+                    icon="eye"
+                    variant="outlined"
+                    size="xs"
+                    (click)="docSection.dialogVisible.set(true)"
+                  />
+                  <jhi-button
+                    class="whitespace-nowrap"
+                    label="evaluation.details.documentDownloadAll"
+                    [shouldTranslate]="true"
+                    icon="download"
+                    variant="outlined"
+                    size="xs"
+                    (click)="docSection.downloadAllDocuments()"
+                  />
+                </div>
+              }
+            </ng-container>
           </jhi-section>
         </div>
       </div>

@@ -474,6 +474,10 @@ public class DocumentService {
                 currentUserService.verifyJobAccess(job);
                 return;
             }
+            // A confidential reference letter stays hidden from the owning applicant; only staff (above) and admins see it.
+            if (!currentUserService.isAdmin() && documentRepository.findReferenceLetterConfidentialByDocumentId(documentId).orElse(false)) {
+                throw new AccessDeniedException("This reference letter is confidential and cannot be accessed by the applicant.");
+            }
             UUID ownerUserId = OptionalUtils.getOrThrow(documentRepository.findApplicationOwnerUserId(documentId), () ->
                 EntityNotFoundException.forId("ApplicationDocument", documentId)
             );
