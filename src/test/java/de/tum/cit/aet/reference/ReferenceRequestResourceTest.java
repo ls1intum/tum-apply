@@ -19,7 +19,7 @@ import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
-import de.tum.cit.aet.reference.dto.CreateReferenceRequestDTO;
+import de.tum.cit.aet.reference.dto.RefereeContactDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
 import de.tum.cit.aet.reference.service.ReferenceRequestService;
@@ -113,8 +113,8 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
         savedApplication = ApplicationTestData.saved(applicationRepository, jobWithReferences, applicant, ApplicationState.SAVED);
     }
 
-    private CreateReferenceRequestDTO defaultPayload() {
-        return new CreateReferenceRequestDTO("Prof. Dr.", "Ada", "Lovelace", "ada@example.com");
+    private RefereeContactDTO defaultPayload() {
+        return new RefereeContactDTO("Prof. Dr.", "Ada", "Lovelace", "ada@example.com");
     }
 
     private List<ReferenceRequestDTO> getReferencesAsApplicant(UUID applicationId) {
@@ -157,7 +157,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldPersistReferenceWithAddedStatus() {
-            CreateReferenceRequestDTO payload = defaultPayload();
+            RefereeContactDTO payload = defaultPayload();
 
             ReferenceRequestDTO created = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -179,7 +179,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldTrimWhitespaceFromNameFieldsOnPersist() {
-            CreateReferenceRequestDTO payload = new CreateReferenceRequestDTO("  Prof.  ", "  Alan  ", "  Turing  ", "alan@example.com");
+            RefereeContactDTO payload = new RefereeContactDTO("  Prof.  ", "  Alan  ", "  Turing  ", "alan@example.com");
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -342,7 +342,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                     ReferenceRequestStatus.ADDED
                 )
             );
-            CreateReferenceRequestDTO payload = new CreateReferenceRequestDTO("Dr.", "Grace", "Hopper", "grace@example.com");
+            RefereeContactDTO payload = new RefereeContactDTO("Dr.", "Grace", "Hopper", "grace@example.com");
 
             ReferenceRequestDTO updated = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -374,7 +374,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
             entry.setStatus(ReferenceRequestStatus.REQUESTED);
             entry.setTokenHash("original-hash");
             entry = referenceRequestRepository.save(entry);
-            CreateReferenceRequestDTO payload = new CreateReferenceRequestDTO("Prof. Dr.", "Ada", "Lovelace", "new@example.com");
+            RefereeContactDTO payload = new RefereeContactDTO("Prof. Dr.", "Ada", "Lovelace", "new@example.com");
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -404,7 +404,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
             entry.setStatus(ReferenceRequestStatus.REQUESTED);
             entry.setTokenHash("keep-hash");
             entry = referenceRequestRepository.save(entry);
-            CreateReferenceRequestDTO payload = new CreateReferenceRequestDTO("Prof. Dr.", "Grace", "Hopper", "keep@example.com");
+            RefereeContactDTO payload = new RefereeContactDTO("Prof. Dr.", "Grace", "Hopper", "keep@example.com");
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -426,7 +426,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
             ReferenceRequest entry = ReferenceRequestTestData.newReferenceRequest(savedApplication, "done@example.com");
             entry.setStatus(ReferenceRequestStatus.SUBMITTED);
             entry = referenceRequestRepository.save(entry);
-            CreateReferenceRequestDTO payload = new CreateReferenceRequestDTO("Dr.", "Grace", "Hopper", "grace@example.com");
+            RefereeContactDTO payload = new RefereeContactDTO("Dr.", "Grace", "Hopper", "grace@example.com");
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -440,7 +440,7 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldReject404WhenReferenceUnknown() {
-            CreateReferenceRequestDTO payload = new CreateReferenceRequestDTO(null, "Grace", "Hopper", "grace@example.com");
+            RefereeContactDTO payload = new RefereeContactDTO(null, "Grace", "Hopper", "grace@example.com");
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))

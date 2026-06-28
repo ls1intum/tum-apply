@@ -17,7 +17,7 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
-import de.tum.cit.aet.reference.dto.CreateReferenceRequestDTO;
+import de.tum.cit.aet.reference.dto.RefereeContactDTO;
 import de.tum.cit.aet.reference.dto.ReferenceLetterUploadContextDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
@@ -117,7 +117,7 @@ public class ReferenceRequestService {
      * @param payload       the referee's title, name and email
      * @return the persisted entry as a DTO
      */
-    public ReferenceRequestDTO addToApplication(UUID applicationId, CreateReferenceRequestDTO payload) {
+    public ReferenceRequestDTO addToApplication(UUID applicationId, RefereeContactDTO payload) {
         Application application = assertOwnsApplication(applicationId);
         assertReferencesManageable(application);
         assertReferenceLettersEnabled(application);
@@ -149,7 +149,7 @@ public class ReferenceRequestService {
      * @param payload       the new title, name and email
      * @return the updated entry as a DTO
      */
-    public ReferenceRequestDTO updateInApplication(UUID applicationId, UUID referenceId, CreateReferenceRequestDTO payload) {
+    public ReferenceRequestDTO updateInApplication(UUID applicationId, UUID referenceId, RefereeContactDTO payload) {
         Application application = assertOwnsApplication(applicationId);
         assertReferencesManageable(application);
 

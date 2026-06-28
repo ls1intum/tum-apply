@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Size;
  * @param email     referee's business email address
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record CreateReferenceRequestDTO(
+public record RefereeContactDTO(
     @Size(max = 32) String title,
     @NotBlank @Size(max = 255) String firstName,
     @NotBlank @Size(max = 255) String lastName,
