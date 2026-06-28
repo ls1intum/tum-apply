@@ -2199,6 +2199,46 @@ paths:
         in: path
         required: true
         schema: {type: string}
+      - name: relationship
+        in: query
+        required: true
+        schema: {$ref: '#/components/schemas/RefereeRelationship'}
+      - name: acquaintanceDuration
+        in: query
+        required: true
+        schema: {$ref: '#/components/schemas/AcquaintanceDuration'}
+      - name: acquaintanceDepth
+        in: query
+        required: true
+        schema: {$ref: '#/components/schemas/AcquaintanceDepth'}
+      - name: ratingIntellectualAbility
+        in: query
+        required: true
+        schema: {$ref: '#/components/schemas/PeerRating'}
+      - name: ratingResearchPotential
+        in: query
+        required: true
+        schema: {$ref: '#/components/schemas/PeerRating'}
+      - name: ratingMotivation
+        in: query
+        required: true
+        schema: {$ref: '#/components/schemas/PeerRating'}
+      - name: ratingCommunication
+        in: query
+        required: true
+        schema: {$ref: '#/components/schemas/PeerRating'}
+      - name: ratingLeadership
+        in: query
+        required: true
+        schema: {$ref: '#/components/schemas/PeerRating'}
+      - name: ratingCollaboration
+        in: query
+        required: true
+        schema: {$ref: '#/components/schemas/PeerRating'}
+      - name: overallRecommendation
+        in: query
+        required: true
+        schema: {$ref: '#/components/schemas/OverallRecommendation'}
       requestBody:
         content:
           multipart/form-data:
@@ -2819,6 +2859,12 @@ components:
         closeJob: {type: boolean}
         message: {type: string, maxLength: 3000, minLength: 0}
         notifyApplicant: {type: boolean}
+    AcquaintanceDepth:
+      type: string
+      enum: [CASUALLY, MODERATELY, WELL, VERY_WELL]
+    AcquaintanceDuration:
+      type: string
+      enum: [LESS_THAN_ONE_YEAR, ONE_TO_TWO_YEARS, THREE_TO_FIVE_YEARS, MORE_THAN_FIVE_YEARS]
     AddIntervieweesDTO:
       type: object
       properties:
@@ -3670,6 +3716,10 @@ components:
         length: {type: integer, format: int32}
         resendCooldownSeconds: {type: integer, format: int32}
         ttlSeconds: {type: integer, format: int32}
+    OverallRecommendation:
+      type: string
+      enum: [HIGHEST_ENTHUSIASM, STRONGLY_RECOMMEND, RECOMMEND, RECOMMEND_WITH_RESERVATIONS,
+        DO_NOT_RECOMMEND]
     PageAdminCreatedJobDTO:
       type: object
       properties:
@@ -3812,6 +3862,10 @@ components:
         createdDate: {type: integer, format: int64}
         id: {type: string}
         label: {type: string}
+    PeerRating:
+      type: string
+      enum: [TOP_ONE_TO_TWO_PERCENT, TOP_FIVE_PERCENT, TOP_TEN_PERCENT, TOP_TWENTY_FIVE_PERCENT,
+        TOP_FIFTY_PERCENT, BELOW_AVERAGE, CANNOT_JUDGE]
     ProfOnboardingDTO:
       type: object
       properties:
@@ -3842,6 +3896,10 @@ components:
           type: array
           items: {$ref: '#/components/schemas/RatingDTO'}
           uniqueItems: true
+    RefereeRelationship:
+      type: string
+      enum: [COURSE_INSTRUCTOR, RESEARCH_SUPERVISOR, THESIS_ADVISOR, EMPLOYER, ACADEMIC_ADVISOR,
+        OTHER]
     ReferenceLetterUploadContextDTO:
       type: object
       properties:
@@ -3856,11 +3914,21 @@ components:
     ReferenceRequestDTO:
       type: object
       properties:
+        acquaintanceDepth: {$ref: '#/components/schemas/AcquaintanceDepth'}
+        acquaintanceDuration: {$ref: '#/components/schemas/AcquaintanceDuration'}
         documentId: {type: string, format: uuid}
         email: {type: string}
         firstName: {type: string}
         lastName: {type: string}
+        overallRecommendation: {$ref: '#/components/schemas/OverallRecommendation'}
+        ratingCollaboration: {$ref: '#/components/schemas/PeerRating'}
+        ratingCommunication: {$ref: '#/components/schemas/PeerRating'}
+        ratingIntellectualAbility: {$ref: '#/components/schemas/PeerRating'}
+        ratingLeadership: {$ref: '#/components/schemas/PeerRating'}
+        ratingMotivation: {$ref: '#/components/schemas/PeerRating'}
+        ratingResearchPotential: {$ref: '#/components/schemas/PeerRating'}
         referenceRequestId: {type: string, format: uuid}
+        relationship: {$ref: '#/components/schemas/RefereeRelationship'}
         status:
           type: string
           enum: [ADDED, REQUESTED, SUBMITTED, EXPIRED]
