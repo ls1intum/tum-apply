@@ -1,7 +1,7 @@
 <div class="filter-multiselect relative inline-block w-full">
   <div
     class="flex items-center justify-between px-3 py-1.5 rounded-md border border-border-default bg-background-default cursor-pointer transition-all text-text-secondary text-[length:var(--p-select-sm-font-size)] hover:border-[var(--p-neutral-hover-color-outlined)]"
-    role="button"
+    jhiClickable
     tabindex="0"
     [attr.aria-expanded]="isOpen()"
     aria-haspopup="listbox"
@@ -76,10 +76,9 @@
             @for (option of selectedOptions(); track option.value; let i = $index) {
               <div
                 class="flex items-center m-1 p-2 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
+                jhiClickable
                 tabindex="0"
-                role="button"
                 (click)="toggleOption(option.value)"
-                (keydown.enter)="toggleOption(option.value)"
               >
                 <p-checkbox [binary]="true" [ngModel]="true" [disabled]="true" />
                 <span class="flex-1 pl-2 break-words hyphens-auto whitespace-normal">{{ option.label }}</span>
@@ -98,10 +97,9 @@
               <div
                 class="flex items-center m-1 p-2 rounded-lg cursor-pointer hover:bg-primary-hover-outlined"
                 [class.bg-primary-hover-outlined]="focusedIndexOptionList() === i"
+                jhiClickable
                 tabindex="0"
-                role="button"
                 (click)="toggleOption(option.value)"
-                (keydown.enter)="toggleOption(option.value)"
               >
                 <p-checkbox [binary]="true" [ngModel]="false" [disabled]="true" />
                 <span class="flex-1 pl-2 break-words hyphens-auto whitespace-normal">{{ option.label }}</span>
