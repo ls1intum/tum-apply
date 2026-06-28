@@ -28,6 +28,9 @@
       "basicInfo": {
         "section1": "Overview",
         "section2": "Position Details"
+      },
+      "employmentTerms": {
+        "section1": "Employment Terms"
       }
     },
     "basicInformationSection": {
