@@ -4,7 +4,7 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="043a_add_assessment_to_reference_requests" author="aniruddh">
+  <changeSet id="043a_add_assessment_to_reference_requests" author="Cathy">
     <addColumn tableName="reference_requests">
       <column name="relationship" type="VARCHAR(32)"/>
       <column name="acquaintance_duration" type="VARCHAR(32)"/>
