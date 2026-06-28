@@ -139,6 +139,24 @@ public class ReferenceRequestService {
     }
 
     /**
+     * Marks the reference request behind the token as {@code DECLINED} when the referee chooses not
+     * to provide a letter. Only a {@code REQUESTED} request with a non-expired token may be declined;
+     * the decision is terminal.
+     *
+     * @param rawToken the plaintext token from the invitation email
+     * @return the updated request as a DTO
+     * @throws EntityNotFoundException      when the token is unknown
+     * @throws OperationNotAllowedException when the request is no longer open for a decision
+     */
+    public ReferenceRequestDTO declineRequest(String rawToken) {
+        ReferenceRequest entry = findByRawToken(rawToken);
+        assertReferenceActionAllowed(entry);
+        entry.setStatus(ReferenceRequestStatus.DECLINED);
+        ReferenceRequest saved = referenceRequestRepository.save(entry);
+        return ReferenceRequestDTO.fromEntity(saved);
+    }
+
+    /**
      * Updates the title, name and email of an existing referee contact. A reference whose letter has
      * already been submitted is immutable. When the application has already been submitted and the email
      * changes, a fresh invitation is issued to the new address (rotating the token so any earlier link
@@ -278,7 +296,8 @@ public class ReferenceRequestService {
             job.getTitle(),
             job.getResearchGroup() != null ? job.getResearchGroup().getName() : null,
             entry.getTokenExpiresAt(),
-            entry.getStatus()
+            entry.getStatus(),
+            application.isReferenceLettersConfidential()
         );
     }
 
@@ -294,7 +313,7 @@ public class ReferenceRequestService {
      */
     public ReferenceRequestDTO uploadLetter(String rawToken, MultipartFile file) {
         ReferenceRequest entry = findByRawToken(rawToken);
-        assertUploadAllowed(entry);
+        assertReferenceActionAllowed(entry);
 
         Application application = entry.getApplication();
         User uploaderForAudit = application.getApplicant().getUser();
@@ -399,20 +418,17 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Guards the upload write path: only {@code REQUESTED} requests with a non-expired token may
-     * accept a new file. Already-submitted or expired requests are immutable.
+     * Guards token-backed referee actions: only {@code REQUESTED} requests with a non-expired token may
+     * be changed. Already-submitted, expired or already-declined requests are immutable.
      *
-     * @param entry the reference request being uploaded against
+     * @param entry the reference request being changed
      */
-    private void assertUploadAllowed(ReferenceRequest entry) {
-        if (entry.getStatus() == ReferenceRequestStatus.EXPIRED) {
-            throw new OperationNotAllowedException("This reference letter upload link has expired.");
+    private void assertReferenceActionAllowed(ReferenceRequest entry) {
+        if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
+            throw new OperationNotAllowedException("This reference request is no longer accepting changes.");
         }
         if (entry.getTokenExpiresAt() != null && entry.getTokenExpiresAt().isBefore(LocalDateTime.now())) {
             throw new OperationNotAllowedException("This reference letter upload link has expired.");
-        }
-        if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
-            throw new OperationNotAllowedException("This reference letter upload link is no longer accepting files.");
         }
     }
 

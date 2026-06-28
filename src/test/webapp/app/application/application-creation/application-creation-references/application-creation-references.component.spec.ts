@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { throwError } from 'rxjs';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
@@ -13,6 +12,7 @@ import {
 import ApplicationCreationReferencesComponent from 'app/application/application-creation/application-creation-references/application-creation-references.component';
 import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
 import { SelectOption } from 'app/shared/components/atoms/select/select.component';
+import { throwError } from 'rxjs';
 
 describe('ApplicationCreationReferencesComponent', () => {
   const APPLICATION_ID = '11111111-0000-0000-0000-000000000001';
@@ -22,7 +22,7 @@ describe('ApplicationCreationReferencesComponent', () => {
   let referenceApi: ReferenceRequestResourceApiMock;
   let toast: ToastServiceMock;
 
-  const setupFixture = async (initial: ReferenceRequestDTO[] = [], requiredCount = 2) => {
+  const setupFixture = async (initial: ReferenceRequestDTO[] = [], requiredCount = 2, referenceLettersConfidential = true) => {
     referenceApi = createReferenceRequestResourceApiMock(initial);
     toast = createToastServiceMock();
 
@@ -40,6 +40,7 @@ describe('ApplicationCreationReferencesComponent', () => {
     component = fixture.componentInstance;
     fixture.componentRef.setInput('applicationId', APPLICATION_ID);
     fixture.componentRef.setInput('requiredCount', requiredCount);
+    fixture.componentRef.setInput('referenceLettersConfidential', referenceLettersConfidential);
     fixture.detectChanges();
     await fixture.whenStable();
   };
@@ -365,6 +366,25 @@ describe('ApplicationCreationReferencesComponent', () => {
 
       expect(referenceApi.add).toHaveBeenCalledOnce();
       expect(referenceApi.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('confidentiality waiver', () => {
+    it('should mirror the loaded waiver value onto the checkbox control', async () => {
+      await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a' })], 2, false);
+
+      expect(component.confidentialControl.value).toBe(false);
+    });
+
+    it('should emit the waiver when toggled', async () => {
+      await setupFixture([createMockReferenceRequestDTO({ referenceRequestId: 'a' })]);
+      const emitSpy = vi.spyOn(component.referenceLettersConfidentialChanged, 'emit');
+      const changedSpy = vi.spyOn(component.changed, 'emit');
+
+      component.onConfidentialChange(false);
+
+      expect(emitSpy).toHaveBeenCalledWith(false);
+      expect(changedSpy).toHaveBeenCalledWith(true);
     });
   });
 });

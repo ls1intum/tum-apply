@@ -470,7 +470,8 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                 ApplicationState.SENT,
                 null,
                 null,
-                null
+                null,
+                true
             );
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))

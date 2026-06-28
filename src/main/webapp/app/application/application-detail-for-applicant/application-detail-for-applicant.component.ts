@@ -91,6 +91,9 @@ export default class ApplicationDetailForApplicantComponent {
     return this.application()?.references ?? [];
   });
 
+  /** The application's setting for whether reference letters should be confidential. */
+  readonly referenceLettersConfidential = computed(() => this.application()?.referenceLettersConfidential ?? true);
+
   /**
    * Whether the applicant may still add, edit or remove referees: the job requires reference letters,
    * the application is in a non-terminal state, and this is the live detail page (not a creation preview).
