@@ -278,16 +278,13 @@
           </div>
           <div class="section-card-body">
             <p class="flex mb-3">
-              <fa-icon
-                [icon]="referenceLettersConfidential() ? 'lock' : 'circle-info'"
-                class="text-primary mt-0.5 mr-1 w-5 shrink-0"
-              />
+              <fa-icon [icon]="referenceLettersConfidential() ? 'lock' : 'circle-info'" class="text-primary mt-0.5 mr-1 w-5 shrink-0" />
               <span
                 [jhiTranslate]="
-                    referenceLettersConfidential()
-                      ? 'entity.application_detail.reference_confidential'
-                      : 'entity.application_detail.reference_shared'
-                  "
+                  referenceLettersConfidential()
+                    ? 'entity.application_detail.reference_confidential'
+                    : 'entity.application_detail.reference_shared'
+                "
               ></span>
             </p>
             @if (canManageReferences()) {
@@ -314,9 +311,13 @@
                       } @else if (reference.status === 'EXPIRED') {
                         <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.expired">Expired</span>
                       } @else if (reference.status === 'DECLINED') {
-                        <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.declined">Declined</span>
+                        <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.declined"
+                          >Declined</span
+                        >
                       } @else {
-                        <span class="text-text-secondary" jhiTranslate="entity.application_detail.reference_status.requested">Requested</span>
+                        <span class="text-text-secondary" jhiTranslate="entity.application_detail.reference_status.requested"
+                          >Requested</span
+                        >
                         <span class="font-normal text-text-secondary">
                           · <span jhiTranslate="entity.application_detail.reference_deadline"></span>:
                           {{ reference.deadline | localizedDate }}
