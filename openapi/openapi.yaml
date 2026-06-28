@@ -1878,6 +1878,57 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/UpcomingInterviewDTO'}
+  /api/jobs/all:
+    get:
+      tags: [job-resource]
+      operationId: getAllJobs
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: states
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: researchGroupIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string, format: uuid}
+      - name: supervisingProfessorIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string, format: uuid}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageAdminCreatedJobDTO'}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -2148,46 +2199,6 @@ paths:
         in: path
         required: true
         schema: {type: string}
-      - name: relationship
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/RefereeRelationship'}
-      - name: acquaintanceDuration
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/AcquaintanceDuration'}
-      - name: acquaintanceDepth
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/AcquaintanceDepth'}
-      - name: ratingIntellectualAbility
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PeerRating'}
-      - name: ratingResearchPotential
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PeerRating'}
-      - name: ratingMotivation
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PeerRating'}
-      - name: ratingCommunication
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PeerRating'}
-      - name: ratingLeadership
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PeerRating'}
-      - name: ratingCollaboration
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PeerRating'}
-      - name: overallRecommendation
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/OverallRecommendation'}
       requestBody:
         content:
           multipart/form-data:
@@ -2788,6 +2799,18 @@ paths:
         required: true
       responses:
         '200': {description: OK}
+  /api/users/professors:
+    get:
+      tags: [user-resource]
+      operationId: getAllProfessors
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/UserShortDTO'}
 components:
   schemas:
     AcceptDTO:
@@ -2796,12 +2819,6 @@ components:
         closeJob: {type: boolean}
         message: {type: string, maxLength: 3000, minLength: 0}
         notifyApplicant: {type: boolean}
-    AcquaintanceDepth:
-      type: string
-      enum: [CASUALLY, MODERATELY, WELL, VERY_WELL]
-    AcquaintanceDuration:
-      type: string
-      enum: [LESS_THAN_ONE_YEAR, ONE_TO_TWO_YEARS, THREE_TO_FIVE_YEARS, MORE_THAN_FIVE_YEARS]
     AddIntervieweesDTO:
       type: object
       properties:
@@ -2818,6 +2835,23 @@ components:
           minItems: 1
         researchGroupId: {type: string, format: uuid}
       required: [keycloakUsers]
+    AdminCreatedJobDTO:
+      type: object
+      properties:
+        avatar: {type: string}
+        createdAt: {type: string, format: date-time}
+        jobId: {type: string, format: uuid}
+        lastModifiedAt: {type: string, format: date-time}
+        professorId: {type: string, format: uuid}
+        professorName: {type: string}
+        researchGroupId: {type: string, format: uuid}
+        researchGroupName: {type: string}
+        startDate: {type: string, format: date}
+        state:
+          type: string
+          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        title: {type: string}
+      required: [jobId, title]
     AdminExportTaskDTO:
       type: object
       properties:
@@ -2898,7 +2932,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
@@ -2961,7 +2995,7 @@ components:
         name: {type: string}
         state:
           type: string
-          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
     ApplicationEvaluationOverviewListDTO:
       type: object
@@ -2977,7 +3011,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         job: {$ref: '#/components/schemas/JobCardDTO'}
@@ -2991,11 +3025,12 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         createdAt: {type: string, format: date-time}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
+        recommendationMissing: {type: boolean}
         researchGroup: {type: string}
     ApplicationPDFRequest:
       type: object
@@ -3379,7 +3414,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         avatar: {type: string}
         contractDuration: {type: integer, format: int32}
@@ -3466,7 +3501,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         contractDuration: {type: integer, format: int32}
         createdAt: {type: string, format: date-time}
@@ -3635,10 +3670,22 @@ components:
         length: {type: integer, format: int32}
         resendCooldownSeconds: {type: integer, format: int32}
         ttlSeconds: {type: integer, format: int32}
-    OverallRecommendation:
-      type: string
-      enum: [HIGHEST_ENTHUSIASM, STRONGLY_RECOMMEND, RECOMMEND, RECOMMEND_WITH_RESERVATIONS,
-        DO_NOT_RECOMMEND]
+    PageAdminCreatedJobDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/AdminCreatedJobDTO'}
+        empty: {type: boolean}
+        first: {type: boolean}
+        last: {type: boolean}
+        number: {type: integer, format: int32}
+        numberOfElements: {type: integer, format: int32}
+        pageable: {$ref: '#/components/schemas/PageableObject'}
+        size: {type: integer, format: int32}
+        sort: {$ref: '#/components/schemas/SortObject'}
+        totalElements: {type: integer, format: int64}
+        totalPages: {type: integer, format: int32}
     PageApplicationOverviewDTO:
       type: object
       properties:
@@ -3765,10 +3812,6 @@ components:
         createdDate: {type: integer, format: int64}
         id: {type: string}
         label: {type: string}
-    PeerRating:
-      type: string
-      enum: [TOP_ONE_TO_TWO_PERCENT, TOP_FIVE_PERCENT, TOP_TEN_PERCENT, TOP_TWENTY_FIVE_PERCENT,
-        TOP_FIFTY_PERCENT, BELOW_AVERAGE, CANNOT_JUDGE]
     ProfOnboardingDTO:
       type: object
       properties:
@@ -3799,10 +3842,6 @@ components:
           type: array
           items: {$ref: '#/components/schemas/RatingDTO'}
           uniqueItems: true
-    RefereeRelationship:
-      type: string
-      enum: [COURSE_INSTRUCTOR, RESEARCH_SUPERVISOR, THESIS_ADVISOR, EMPLOYER, ACADEMIC_ADVISOR,
-        OTHER]
     ReferenceLetterUploadContextDTO:
       type: object
       properties:
@@ -3817,21 +3856,11 @@ components:
     ReferenceRequestDTO:
       type: object
       properties:
-        acquaintanceDepth: {$ref: '#/components/schemas/AcquaintanceDepth'}
-        acquaintanceDuration: {$ref: '#/components/schemas/AcquaintanceDuration'}
         documentId: {type: string, format: uuid}
         email: {type: string}
         firstName: {type: string}
         lastName: {type: string}
-        overallRecommendation: {$ref: '#/components/schemas/OverallRecommendation'}
-        ratingCollaboration: {$ref: '#/components/schemas/PeerRating'}
-        ratingCommunication: {$ref: '#/components/schemas/PeerRating'}
-        ratingIntellectualAbility: {$ref: '#/components/schemas/PeerRating'}
-        ratingLeadership: {$ref: '#/components/schemas/PeerRating'}
-        ratingMotivation: {$ref: '#/components/schemas/PeerRating'}
-        ratingResearchPotential: {$ref: '#/components/schemas/PeerRating'}
         referenceRequestId: {type: string, format: uuid}
-        relationship: {$ref: '#/components/schemas/RefereeRelationship'}
         status:
           type: string
           enum: [ADDED, REQUESTED, SUBMITTED, EXPIRED]
@@ -3997,7 +4026,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, PENDING, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
         motivation: {type: string}

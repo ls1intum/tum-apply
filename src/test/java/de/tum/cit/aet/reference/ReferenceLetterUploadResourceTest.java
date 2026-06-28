@@ -101,7 +101,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
         jobWithReferences.setReferenceLettersRequired(1);
         jobWithReferences = jobRepository.save(jobWithReferences);
 
-        application = ApplicationTestData.saved(applicationRepository, jobWithReferences, applicant, ApplicationState.PENDING);
+        application = ApplicationTestData.saved(applicationRepository, jobWithReferences, applicant, ApplicationState.SENT);
     }
 
     private ReferenceRequest savedRequestedEntry(String rawToken) {
@@ -173,6 +173,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldStoreLetterWithAssessmentTransitionRequestToSubmittedAndPromoteApplication() {
+        void shouldStoreLetterAndTransitionRequestToSubmitted() {
             savedRequestedEntry("upload-token");
 
             ReferenceRequestDTO updated = api.multipartPostAndRead(
@@ -198,11 +199,6 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
             assertThat(persisted.getRatingIntellectualAbility()).isEqualTo(PeerRating.TOP_FIVE_PERCENT);
             assertThat(persisted.getRatingCollaboration()).isEqualTo(PeerRating.CANNOT_JUDGE);
             assertThat(persisted.getOverallRecommendation()).isEqualTo(OverallRecommendation.STRONGLY_RECOMMEND);
-
-            // The job required exactly 1 letter and we just uploaded the only request, so the
-            // application should have been promoted from PENDING back to SENT.
-            Application promoted = applicationRepository.findById(application.getApplicationId()).orElseThrow();
-            assertThat(promoted.getState()).isEqualTo(ApplicationState.SENT);
         }
 
         @Test

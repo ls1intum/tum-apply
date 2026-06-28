@@ -11,7 +11,8 @@
         "creation": "TUMApply - Stellenerstellung",
         "edit": "TUMApply - Stellenbearbeitung",
         "overview": "TUMApply - Stellenübersicht",
-        "myPositions": "TUMApply - Stellen"
+        "myPositions": "TUMApply - Stellen",
+        "allPositions": "TUMApply - Alle Stellen"
       },
       "application": {
         "creation": "TUMApply - Bewerbungserstellung",
@@ -432,10 +433,11 @@
     },
     "applicationOverview": {
       "header": "Deine Bewerbungen",
+      "recommendationMissing": "Empfehlung fehlt",
+      "recommendationMissingTooltip": "Es fehlen noch erforderliche Empfehlungsschreiben.",
       "state": {
         "draft": "Entwurf",
         "submitted": "Eingereicht",
-        "pending": "Ausstehend",
         "accepted": "Angenommen",
         "rejected": "Abgelehnt",
         "withdrawn": "Zurückgezogen",
