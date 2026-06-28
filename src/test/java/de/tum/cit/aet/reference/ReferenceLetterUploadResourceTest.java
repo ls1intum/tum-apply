@@ -172,8 +172,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
     class UploadLetter {
 
         @Test
-        void shouldStoreLetterWithAssessmentTransitionRequestToSubmittedAndPromoteApplication() {
-        void shouldStoreLetterAndTransitionRequestToSubmitted() {
+        void shouldStoreLetterWithAssessmentTransitionRequestToSubmitted() {
             savedRequestedEntry("upload-token");
 
             ReferenceRequestDTO updated = api.multipartPostAndRead(
