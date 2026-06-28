@@ -22,6 +22,7 @@ export interface ApplicationDetailDTO {
     readonly motivation?: string;
     readonly projects?: string;
     readonly referenceLettersConfidential?: boolean;
+    readonly referenceLettersRequired?: number;
     readonly references?: Array<ReferenceRequestDTO>;
     readonly researchGroup: string;
     readonly specialSkills?: string;

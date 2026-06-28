@@ -32,6 +32,7 @@ public record ApplicationDetailDTO(
     String projects,
     String specialSkills,
     String motivation,
+    int referenceLettersRequired,
     boolean referenceLettersConfidential,
     List<ReferenceRequestDTO> references
 ) {
@@ -74,6 +75,7 @@ public record ApplicationDetailDTO(
             HtmlSanitizer.sanitize(application.getProjects()),
             HtmlSanitizer.sanitize(application.getSpecialSkills()),
             HtmlSanitizer.sanitize(application.getMotivation()),
+            job.getReferenceLettersRequired(),
             application.isReferenceLettersConfidential(),
             mapReferences(application.getReferenceRequests(), includeReferenceLetterDocumentIds)
         );
