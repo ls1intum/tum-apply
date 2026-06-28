@@ -146,7 +146,7 @@
                 class="whitespace-nowrap transition-all duration-200"
                 [class.blur-[3px]]="!sensitiveInfoVisible()"
                 [class.select-none]="!sensitiveInfoVisible()"
-              >{{
+                >{{
                   application.applicationDetailDTO.applicant?.user?.nationality
                     ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
                     : '—'
@@ -158,7 +158,7 @@
                 class="whitespace-nowrap transition-all duration-200"
                 [class.blur-[3px]]="!sensitiveInfoVisible()"
                 [class.select-none]="!sensitiveInfoVisible()"
-              >{{
+                >{{
                   application.applicationDetailDTO.applicant?.user?.gender
                     ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
                     : '—'
@@ -302,7 +302,7 @@
                       <span class="font-normal text-text-secondary text-sm ml-1"> ({{ reference.email }}) </span>
                       @if (reference.status === 'SUBMITTED') {
                         <span class="text-positive-default ml-1" jhiTranslate="evaluation.details.referenceStatus.submitted"
-                        >Submitted</span
+                          >Submitted</span
                         >
                       } @else if (reference.status === 'EXPIRED') {
                         <span class="text-negative-default ml-1" jhiTranslate="evaluation.details.referenceStatus.expired">Expired</span>

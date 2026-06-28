@@ -414,12 +414,12 @@ export class ApplicationDetailComponent {
       apps.map(app =>
         app.applicationDetailDTO.applicationId === id
           ? {
-            ...app,
-            applicationDetailDTO: {
-              ...app.applicationDetailDTO,
-              applicationState: newState,
-            },
-          }
+              ...app,
+              applicationDetailDTO: {
+                ...app.applicationDetailDTO,
+                applicationState: newState,
+              },
+            }
           : app,
       ),
     );
@@ -500,12 +500,12 @@ export class ApplicationDetailComponent {
           application.applicationDetailDTO.applicationState === ApplicationDetailDTOApplicationStateEnum.InReview ||
           application.applicationDetailDTO.applicationState === ApplicationDetailDTOApplicationStateEnum.Interview)
           ? {
-            ...application,
-            applicationDetailDTO: {
-              ...application.applicationDetailDTO,
-              applicationState: ApplicationDetailDTOApplicationStateEnum.Rejected,
-            },
-          }
+              ...application,
+              applicationDetailDTO: {
+                ...application.applicationDetailDTO,
+                applicationState: ApplicationDetailDTOApplicationStateEnum.Rejected,
+              },
+            }
           : application,
       ),
     );

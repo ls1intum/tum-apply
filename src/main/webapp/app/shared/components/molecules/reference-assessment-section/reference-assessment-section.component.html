@@ -4,7 +4,11 @@
       <div class="flex items-start justify-between gap-2 mb-2">
         <span class="font-medium text-text-primary">{{ refereeName(reference) }}</span>
         @if (overallLabelKey(reference); as key) {
-          <span class="text-xs font-semibold uppercase whitespace-nowrap" [class]="overallSeverityClass(reference)" [jhiTranslate]="key"></span>
+          <span
+            class="text-xs font-semibold uppercase whitespace-nowrap"
+            [class]="overallSeverityClass(reference)"
+            [jhiTranslate]="key"
+          ></span>
         }
       </div>
 
