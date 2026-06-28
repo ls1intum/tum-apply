@@ -47,6 +47,7 @@ export default class ApplicationCreationReferencesComponent {
   applicationId = input.required<string>();
   requiredCount = input<number>(0);
   descriptionKey = input<string>('entity.applicationReferences.description');
+  applicationCreation = input<boolean>(true);
   referenceLettersConfidential = input<boolean>(true);
 
   valid = output<boolean>();
