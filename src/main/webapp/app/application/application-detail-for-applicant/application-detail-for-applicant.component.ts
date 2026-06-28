@@ -25,6 +25,7 @@ import { ApplicationDetailDTO } from '../../generated/model/application-detail-d
 import { ApplicationDocumentIdsDTO } from '../../generated/model/application-document-ids-dto';
 import { ReferenceRequestDTO } from '../../generated/model/reference-request-dto';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
+import { ReferenceAssessmentSectionComponent } from '../../shared/components/molecules/reference-assessment-section/reference-assessment-section.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 
 @Component({
@@ -41,6 +42,7 @@ import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
     TranslateDirective,
     LocalizedDatePipe,
     MenuComponent,
+    ReferenceAssessmentSectionComponent,
   ],
   templateUrl: './application-detail-for-applicant.component.html',
 })
@@ -86,6 +88,8 @@ export default class ApplicationDetailForApplicantComponent {
     }
     return this.application()?.references ?? [];
   });
+
+  hasReferenceAssessments = computed(() => this.references().some(reference => reference.overallRecommendation !== undefined));
 
   /** The application's setting for whether reference letters should be confidential. */
   readonly referenceLettersConfidential = computed(() => this.application()?.referenceLettersConfidential ?? true);

@@ -615,6 +615,74 @@
   },
   "reference": {
     "title": "Empfehlungsschreiben hochladen",
+    "assessment": {
+      "title": "Bewertungen der Referenzgeber"
+    },
+    "questions": {
+      "relationship": {
+        "title": "Ihr Verhältnis zur bewerbenden Person",
+        "capacity": {
+          "label": "In welcher Funktion kennen Sie die bewerbende Person?",
+          "options": {
+            "courseInstructor": "Lehrkraft einer Lehrveranstaltung",
+            "researchSupervisor": "Forschungsbetreuung",
+            "thesisAdvisor": "Betreuung der Abschlussarbeit",
+            "employer": "Arbeitgebende bzw. Vorgesetzte",
+            "academicAdvisor": "Studienberatung",
+            "other": "Sonstiges"
+          }
+        },
+        "duration": {
+          "label": "Wie lange kennen Sie die bewerbende Person bereits?",
+          "options": {
+            "lessThanOneYear": "Weniger als 1 Jahr",
+            "oneToTwoYears": "1–2 Jahre",
+            "threeToFiveYears": "3–5 Jahre",
+            "moreThanFiveYears": "Mehr als 5 Jahre"
+          }
+        },
+        "depth": {
+          "label": "Wie gut kennen Sie die bewerbende Person?",
+          "options": {
+            "casually": "Flüchtig",
+            "moderately": "Mäßig gut",
+            "well": "Gut",
+            "veryWell": "Sehr gut"
+          }
+        }
+      },
+      "rating": {
+        "title": "Einschätzung im Vergleich zur Vergleichsgruppe",
+        "description": "Wie schätzen Sie die bewerbende Person im Vergleich zu anderen einer ähnlichen Vergleichsgruppe (von Ihnen unterrichtete oder betreute Personen) ein?",
+        "rows": {
+          "intellectualAbility": "Intellektuelle Fähigkeiten",
+          "researchPotential": "Forschungspotenzial",
+          "motivation": "Motivation & Engagement",
+          "communication": "Kommunikationsfähigkeit",
+          "leadership": "Führungsqualitäten",
+          "collaboration": "Teamfähigkeit"
+        },
+        "options": {
+          "top1to2": "Top 1–2 % (herausragend)",
+          "top5": "Top 5 % (außergewöhnlich)",
+          "top10": "Top 10 % (exzellent)",
+          "top25": "Top 25 % (sehr gut)",
+          "top50": "Top 50 % (gut)",
+          "belowAverage": "Unterdurchschnittlich",
+          "cannotJudge": "Keine Einschätzung möglich"
+        }
+      },
+      "overall": {
+        "label": "Gesamtempfehlung",
+        "options": {
+          "highestEnthusiasm": "Empfehlung mit höchstem Nachdruck",
+          "stronglyRecommend": "Nachdrückliche Empfehlung",
+          "recommend": "Empfehlung",
+          "recommendWithReservations": "Empfehlung mit Vorbehalten",
+          "doNotRecommend": "Keine Empfehlung"
+        }
+      }
+    },
     "loading": "Lädt...",
     "requestedFor": {
       "title": "Angefragt für",

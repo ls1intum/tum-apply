@@ -1,0 +1,41 @@
+<div class="grid gap-4 grid-cols-1 md:grid-cols-2">
+  @for (reference of submitted(); track reference.referenceRequestId) {
+    <div class="border border-border-default rounded-lg p-4 bg-background-surface">
+      <div class="flex items-start justify-between gap-2 mb-2">
+        <span class="font-medium text-text-primary">{{ refereeName(reference) }}</span>
+        @if (overallLabelKey(reference); as key) {
+          <span
+            class="text-xs font-semibold uppercase whitespace-nowrap"
+            [class]="overallSeverityClass(reference)"
+            [jhiTranslate]="key"
+          ></span>
+        }
+      </div>
+
+      <div class="text-sm text-text-secondary mb-3 flex flex-wrap gap-x-1">
+        @if (relationshipLabelKey(reference); as key) {
+          <span [jhiTranslate]="key"></span>
+        }
+        @if (durationLabelKey(reference); as key) {
+          <span>&middot;</span>
+          <span [jhiTranslate]="key"></span>
+        }
+        @if (depthLabelKey(reference); as key) {
+          <span>&middot;</span>
+          <span [jhiTranslate]="key"></span>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        @for (row of ratingRows; track row.key) {
+          <div class="flex items-center justify-between gap-2 text-sm">
+            <span class="text-text-secondary" [jhiTranslate]="row.labelKey"></span>
+            @if (ratingLabelKey(reference, row.key); as key) {
+              <span class="font-medium text-text-primary text-right" [jhiTranslate]="key"></span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
+import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
@@ -14,14 +15,28 @@ import {
   DocumentInformationHolderDTODocumentTypeEnum,
 } from 'app/generated/model/document-information-holder-dto';
 import { ReferenceRequestDTOStatusEnum } from 'app/generated/model/reference-request-dto';
+import { RefereeRelationship } from 'app/generated/model/referee-relationship';
+import { AcquaintanceDuration } from 'app/generated/model/acquaintance-duration';
+import { AcquaintanceDepth } from 'app/generated/model/acquaintance-depth';
+import { PeerRating } from 'app/generated/model/peer-rating';
+import { OverallRecommendation } from 'app/generated/model/overall-recommendation';
+import {
+  DEPTH_OPTIONS,
+  DURATION_OPTIONS,
+  OVERALL_OPTIONS,
+  RATING_OPTIONS,
+  RATING_ROWS,
+  RELATIONSHIP_OPTIONS,
+} from 'app/reference/reference-assessment.constants';
 
 /**
- * Public landing page for external referees to upload a recommendation letter.
+ * Public landing page for external referees to fill in a structured assessment and upload a
+ * recommendation letter.
  */
 @Component({
   selector: 'jhi-reference-letter-upload',
   standalone: true,
-  imports: [FontAwesomeModule, TranslateDirective, ButtonComponent, UploadButtonComponent, ConfirmDialog],
+  imports: [FontAwesomeModule, TranslateDirective, ButtonComponent, UploadButtonComponent, SelectComponent, ConfirmDialog],
   templateUrl: './reference-letter-upload.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -37,6 +52,22 @@ export class ReferenceLetterUploadComponent {
   protected uploadedDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
   protected readonly queuedFile = signal<File | undefined>(undefined);
   protected readonly hasQueuedFile = computed(() => !!this.queuedFile());
+
+  protected readonly relationshipOptions = RELATIONSHIP_OPTIONS;
+  protected readonly durationOptions = DURATION_OPTIONS;
+  protected readonly depthOptions = DEPTH_OPTIONS;
+  protected readonly ratingOptions = RATING_OPTIONS;
+  protected readonly overallOptions = OVERALL_OPTIONS;
+  protected readonly ratingRows = RATING_ROWS;
+
+  protected readonly answers = signal<Record<string, string | undefined>>({});
+
+  protected readonly allAnswered = computed(() => {
+    const a = this.answers();
+    return this.requiredKeys.every(key => a[key] !== undefined);
+  });
+
+  protected readonly canSubmit = computed(() => this.hasQueuedFile() && this.allAnswered() && !this.uploading());
 
   protected readonly expired = computed(() => this.context()?.status === ReferenceRequestDTOStatusEnum.Expired);
 
@@ -57,6 +88,19 @@ export class ReferenceLetterUploadComponent {
     () => this.context()?.status === ReferenceRequestDTOStatusEnum.Submitted || this.justUploaded(),
   );
 
+  private readonly requiredKeys = [
+    'relationship',
+    'acquaintanceDuration',
+    'acquaintanceDepth',
+    'ratingIntellectualAbility',
+    'ratingResearchPotential',
+    'ratingMotivation',
+    'ratingCommunication',
+    'ratingLeadership',
+    'ratingCollaboration',
+    'overallRecommendation',
+  ];
+
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(ReferenceLetterUploadResourceApi);
   private readonly toastService = inject(ToastService);
@@ -76,17 +120,55 @@ export class ReferenceLetterUploadComponent {
   }
 
   /**
-   * Sends the staged file to the upload endpoint and switches to the success view.
-   * Stays on the upload view on failure so the referee can retry.
+   * Records the referee's choice for a single structured question.
+   *
+   * @param key    the answer key (matches the upload request parameter name)
+   * @param option the selected dropdown option
+   */
+  protected onAnswerSelected(key: string, option: SelectOption | undefined): void {
+    this.answers.update(prev => ({ ...prev, [key]: option?.value as string | undefined }));
+  }
+
+  /**
+   * Resolves the currently selected option for a question so the dropdown can render it.
+   *
+   * @param key     the answer key
+   * @param options the option list the question is drawn from
+   * @returns the matching option, or undefined when unanswered
+   */
+  protected selectedOption(key: string, options: SelectOption[]): SelectOption | undefined {
+    const value = this.answers()[key];
+    return options.find(option => option.value === value);
+  }
+
+  /**
+   * Sends the staged file and structured answers to the upload endpoint and switches to the success
+   * view. Stays on the upload view on failure so the referee can retry.
    */
   protected async confirmUpload(): Promise<void> {
     const file = this.queuedFile();
-    if (!file) {
+    if (!file || !this.allAnswered()) {
       return;
     }
+    const a = this.answers();
     this.uploading.set(true);
     try {
-      await firstValueFrom(this.api.upload(this.token, file));
+      await firstValueFrom(
+        this.api.upload(
+          this.token,
+          a.relationship as RefereeRelationship,
+          a.acquaintanceDuration as AcquaintanceDuration,
+          a.acquaintanceDepth as AcquaintanceDepth,
+          a.ratingIntellectualAbility as PeerRating,
+          a.ratingResearchPotential as PeerRating,
+          a.ratingMotivation as PeerRating,
+          a.ratingCommunication as PeerRating,
+          a.ratingLeadership as PeerRating,
+          a.ratingCollaboration as PeerRating,
+          a.overallRecommendation as OverallRecommendation,
+          file,
+        ),
+      );
       this.justUploaded.set(true);
       this.toastService.showSuccessKey(`reference.uploadSuccess`);
     } catch {

@@ -322,6 +322,20 @@
       </section>
     }
 
+    @if (hasReferenceAssessments()) {
+      <section>
+        <div class="section-detail-card">
+          <div class="section-card-header">
+            <fa-icon [icon]="['fas', 'clipboard-check']" class="icon" />
+            <h3 class="section-card-title" jhiTranslate="reference.assessment.title"></h3>
+          </div>
+          <div class="section-card-body">
+            <jhi-reference-assessment-section [assessments]="references()" />
+          </div>
+        </div>
+      </section>
+    }
+
     <!-- Documents Section -->
     @if (documentIds(); as documentIds) {
       <section>

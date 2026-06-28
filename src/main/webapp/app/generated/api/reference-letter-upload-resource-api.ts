@@ -17,6 +17,11 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ReferenceRequestDTO } from '../model/reference-request-dto';
 import { ReferenceLetterUploadContextDTO } from '../model/reference-letter-upload-context-dto';
+import { PeerRating } from '../model/peer-rating';
+import { RefereeRelationship } from '../model/referee-relationship';
+import { AcquaintanceDuration } from '../model/acquaintance-duration';
+import { OverallRecommendation } from '../model/overall-recommendation';
+import { AcquaintanceDepth } from '../model/acquaintance-depth';
 
 @Injectable({ providedIn: 'root' })
 export class ReferenceLetterUploadResourceApi {
@@ -49,11 +54,53 @@ export class ReferenceLetterUploadResourceApi {
      * 
      * 
      * @param token 
+     * @param relationship 
+     * @param acquaintanceDuration 
+     * @param acquaintanceDepth 
+     * @param ratingIntellectualAbility 
+     * @param ratingResearchPotential 
+     * @param ratingMotivation 
+     * @param ratingCommunication 
+     * @param ratingLeadership 
+     * @param ratingCollaboration 
+     * @param overallRecommendation 
      * @param file 
      */
-    upload(token: string, file: Blob): Observable<ReferenceRequestDTO> {
+    upload(token: string, relationship: RefereeRelationship, acquaintanceDuration: AcquaintanceDuration, acquaintanceDepth: AcquaintanceDepth, ratingIntellectualAbility: PeerRating, ratingResearchPotential: PeerRating, ratingMotivation: PeerRating, ratingCommunication: PeerRating, ratingLeadership: PeerRating, ratingCollaboration: PeerRating, overallRecommendation: OverallRecommendation, file: Blob): Observable<ReferenceRequestDTO> {
         const tokenPath = encodeURIComponent(String(token));
-        const url = `${this.basePath}/api/reference-letters/${tokenPath}`;
+        const queryParams = new URLSearchParams();
+        if (relationship !== undefined && relationship !== null) {
+            queryParams.set('relationship', String(relationship));
+        }
+        if (acquaintanceDuration !== undefined && acquaintanceDuration !== null) {
+            queryParams.set('acquaintanceDuration', String(acquaintanceDuration));
+        }
+        if (acquaintanceDepth !== undefined && acquaintanceDepth !== null) {
+            queryParams.set('acquaintanceDepth', String(acquaintanceDepth));
+        }
+        if (ratingIntellectualAbility !== undefined && ratingIntellectualAbility !== null) {
+            queryParams.set('ratingIntellectualAbility', String(ratingIntellectualAbility));
+        }
+        if (ratingResearchPotential !== undefined && ratingResearchPotential !== null) {
+            queryParams.set('ratingResearchPotential', String(ratingResearchPotential));
+        }
+        if (ratingMotivation !== undefined && ratingMotivation !== null) {
+            queryParams.set('ratingMotivation', String(ratingMotivation));
+        }
+        if (ratingCommunication !== undefined && ratingCommunication !== null) {
+            queryParams.set('ratingCommunication', String(ratingCommunication));
+        }
+        if (ratingLeadership !== undefined && ratingLeadership !== null) {
+            queryParams.set('ratingLeadership', String(ratingLeadership));
+        }
+        if (ratingCollaboration !== undefined && ratingCollaboration !== null) {
+            queryParams.set('ratingCollaboration', String(ratingCollaboration));
+        }
+        if (overallRecommendation !== undefined && overallRecommendation !== null) {
+            queryParams.set('overallRecommendation', String(overallRecommendation));
+        }
+        const queryString = queryParams.toString();
+        const url = `${this.basePath}/api/reference-letters/${tokenPath}${queryString ? `?${queryString}` : ''}`;
         const formData = new FormData();
         if (file !== undefined && file !== null) {
             formData.append('file', file);
