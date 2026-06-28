@@ -102,6 +102,20 @@ public class ReferenceLetterUploadResource {
     }
 
     /**
+     * Marks the request as declined when the referee chooses not to provide a letter. Returns 400
+     * when the request is no longer open for a decision (already submitted, declined or expired).
+     *
+     * @param token the raw token from the invitation email
+     * @return the updated reference request DTO
+     */
+    @Public
+    @PostMapping("/{token}/decline")
+    public ResponseEntity<ReferenceRequestDTO> decline(@PathVariable String token) {
+        log.info("POST /api/reference-letters/{}/decline - Declining request", maskToken(token));
+        return ResponseEntity.ok(referenceRequestService.declineRequest(token));
+    }
+
+    /**
      * Returns a short prefix of the token so logs remain useful for debugging without leaking the full credential.
      *
      * @param token the raw token to mask

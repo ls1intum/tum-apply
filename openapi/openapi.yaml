@@ -2253,6 +2253,21 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ReferenceRequestDTO'}
+  /api/reference-letters/{token}/decline:
+    post:
+      tags: [reference-letter-upload-resource]
+      operationId: decline
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferenceRequestDTO'}
   /api/research-groups:
     get:
       tags: [research-group-resource]
@@ -2989,6 +3004,7 @@ components:
         jobTitle: {type: string}
         motivation: {type: string}
         projects: {type: string}
+        referenceLettersConfidential: {type: boolean}
         references:
           type: array
           items: {$ref: '#/components/schemas/ReferenceRequestDTO'}
@@ -3063,6 +3079,7 @@ components:
         job: {$ref: '#/components/schemas/JobCardDTO'}
         motivation: {type: string}
         projects: {type: string}
+        referenceLettersConfidential: {type: boolean}
         specialSkills: {type: string}
       required: [applicationState, job]
     ApplicationOverviewDTO:
@@ -3905,17 +3922,19 @@ components:
       properties:
         applicantFirstName: {type: string}
         applicantLastName: {type: string}
+        confidential: {type: boolean}
         deadline: {type: string, format: date-time}
         jobTitle: {type: string}
         researchGroupName: {type: string}
         status:
           type: string
-          enum: [ADDED, REQUESTED, SUBMITTED, EXPIRED]
+          enum: [ADDED, REQUESTED, SUBMITTED, EXPIRED, DECLINED]
     ReferenceRequestDTO:
       type: object
       properties:
         acquaintanceDepth: {$ref: '#/components/schemas/AcquaintanceDepth'}
         acquaintanceDuration: {$ref: '#/components/schemas/AcquaintanceDuration'}
+        deadline: {type: string, format: date-time}
         documentId: {type: string, format: uuid}
         email: {type: string}
         firstName: {type: string}
@@ -3931,7 +3950,7 @@ components:
         relationship: {$ref: '#/components/schemas/RefereeRelationship'}
         status:
           type: string
-          enum: [ADDED, REQUESTED, SUBMITTED, EXPIRED]
+          enum: [ADDED, REQUESTED, SUBMITTED, EXPIRED, DECLINED]
         title: {type: string}
     RejectDTO:
       type: object
@@ -4099,6 +4118,7 @@ components:
         desiredDate: {type: string, format: date}
         motivation: {type: string}
         projects: {type: string}
+        referenceLettersConfidential: {type: boolean}
         specialSkills: {type: string}
       required: [applicant, applicationId, applicationState]
     UpdateAssessmentDTO:

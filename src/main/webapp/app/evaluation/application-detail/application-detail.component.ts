@@ -85,6 +85,7 @@ export class ApplicationDetailComponent {
   hasReferenceAssessments = computed(() =>
     this.currentReferenceRequests().some(reference => reference.overallRecommendation !== undefined),
   );
+  referenceLettersConfidential = computed(() => this.currentApplication()?.applicationDetailDTO.referenceLettersConfidential ?? true);
   sortBy = signal<string>('appliedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 

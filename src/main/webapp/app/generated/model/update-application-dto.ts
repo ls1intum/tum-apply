@@ -17,6 +17,7 @@ export interface UpdateApplicationDTO {
     readonly desiredDate?: string;
     readonly motivation?: string;
     readonly projects?: string;
+    readonly referenceLettersConfidential?: boolean;
     readonly specialSkills?: string;
 }
 

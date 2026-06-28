@@ -256,8 +256,12 @@
         "added": "(added)",
         "requested": "(requested)",
         "submitted": "(submitted)",
-        "expired": "(expired)"
+        "expired": "(expired)",
+        "declined": "(declined)"
       },
+      "reference_deadline": "Deadline",
+      "reference_confidential": "Confidential - only the supervisor can view the submitted letters.",
+      "reference_shared": "Not confidential - you can also view the submitted letters.",
       "not_found": "Application not found"
     },
     "applicationSteps": {
@@ -402,6 +406,7 @@
       "button": {
         "add": "Add"
       },
+      "confidentialWaiver": "I waive my right to access the submitted recommendations. Only the supervisor can read them.",
       "toast": {
         "loadFailed": {
           "summary": "Could not load referees",
@@ -687,6 +692,18 @@
     },
     "upload": {
       "confirm": "Confirm"
+    },
+    "confidentialNote": "The applicant has waived their right to access this letter. Only the supervising professor will be able to read it.",
+    "sharedNote": "The applicant will also be able to view your submitted letter.",
+    "decline": {
+      "button": "Decline",
+      "confirmHeader": "Decline request",
+      "confirmMessage": "Are you sure you do not want to provide a recommendation letter? This cannot be undone.",
+      "failed": "The request could not be declined. Please try again."
+    },
+    "declined": {
+      "title": "Request declined",
+      "message": "You have declined to provide a recommendation letter. You may close this page."
     },
     "summary": {
       "title": "Summary",

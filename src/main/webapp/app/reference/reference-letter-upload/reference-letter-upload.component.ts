@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ReferenceLetterUploadResourceApi } from 'app/generated/api/reference-letter-upload-resource-api';
@@ -35,7 +36,7 @@ import {
 @Component({
   selector: 'jhi-reference-letter-upload',
   standalone: true,
-  imports: [FontAwesomeModule, TranslateDirective, ButtonComponent, UploadButtonComponent, SelectComponent],
+  imports: [FontAwesomeModule, TranslateDirective, ButtonComponent, UploadButtonComponent, SelectComponent, ConfirmDialog],
   templateUrl: './reference-letter-upload.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -45,6 +46,7 @@ export class ReferenceLetterUploadComponent {
   protected readonly uploading = signal<boolean>(false);
   protected readonly errorKey = signal<string | undefined>(undefined);
   protected readonly justUploaded = signal<boolean>(false);
+  protected readonly justDeclined = signal<boolean>(false);
 
   protected readonly context = signal<ReferenceLetterUploadContextDTO | undefined>(undefined);
   protected uploadedDocuments = signal<DocumentInformationHolderDTO[] | undefined>(undefined);
@@ -68,6 +70,11 @@ export class ReferenceLetterUploadComponent {
   protected readonly canSubmit = computed(() => this.hasQueuedFile() && this.allAnswered() && !this.uploading());
 
   protected readonly expired = computed(() => this.context()?.status === ReferenceRequestDTOStatusEnum.Expired);
+
+  protected readonly declined = computed(() => this.context()?.status === ReferenceRequestDTOStatusEnum.Declined || this.justDeclined());
+
+  /** True unless the applicant explicitly shared access; controls which confidentiality note is shown. */
+  protected readonly confidential = computed(() => this.context()?.confidential !== false);
 
   protected readonly applicantFullName = computed(() => {
     const ctx = this.context();
@@ -168,6 +175,19 @@ export class ReferenceLetterUploadComponent {
       this.toastService.showErrorKey(`reference.uploadFailed`);
     } finally {
       this.uploading.set(false);
+    }
+  }
+
+  /**
+   * Marks the request as declined on the server and switches to the declined view. Stays on the
+   * upload view on failure so the referee can retry.
+   */
+  protected async confirmDecline(): Promise<void> {
+    try {
+      await firstValueFrom(this.api.decline(this.token));
+      this.justDeclined.set(true);
+    } catch {
+      this.toastService.showErrorKey(`reference.decline.failed`);
     }
   }
 

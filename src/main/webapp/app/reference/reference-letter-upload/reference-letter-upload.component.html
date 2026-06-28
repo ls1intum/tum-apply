@@ -11,6 +11,15 @@
         <h2 class="text-xl font-bold mb-2 text-text-primary" jhiTranslate="reference.error.title">Link not valid</h2>
         <p class="text-text-secondary" [jhiTranslate]="key"></p>
       </div>
+    } @else if (declined()) {
+      <!-- Declined view -->
+      <div class="border border-border-default rounded-lg p-8 text-center bg-background-surface">
+        <div class="text-text-secondary mb-4 inline-flex items-center justify-center">
+          <fa-icon icon="ban" class="text-5xl" />
+        </div>
+        <h2 class="text-xl font-bold mb-2 text-text-primary" jhiTranslate="reference.declined.title">Request declined</h2>
+        <p class="text-text-secondary" jhiTranslate="reference.declined.message">You have declined to provide a recommendation letter.</p>
+      </div>
     } @else if (alreadySubmitted()) {
       <!-- Success / already-submitted view -->
       <div class="flex flex-col items-center text-center">
@@ -150,6 +159,16 @@
         />
       </div>
 
+      <!-- Confidentiality note -->
+      <div class="flex items-start gap-2 mb-6 text-sm text-text-secondary">
+        <fa-icon [icon]="confidential() ? 'lock' : 'circle-info'" class="text-primary mt-0.5 w-4" />
+        @if (confidential()) {
+          <span jhiTranslate="reference.confidentialNote"></span>
+        } @else {
+          <span jhiTranslate="reference.sharedNote"></span>
+        }
+      </div>
+
       <!-- Upload control -->
       <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 bg-background-surface">
         <jhi-upload-button
@@ -159,18 +178,29 @@
           [(documentIds)]="uploadedDocuments"
           (queuedFilesChange)="onQueuedFilesChanged($event)"
         />
+      </div>
 
-        <div class="flex justify-center">
-          <jhi-button
-            severity="primary"
-            icon="check"
-            label="reference.upload.confirm"
-            [shouldTranslate]="true"
-            [disabled]="!canSubmit()"
-            [loading]="uploading()"
-            (click)="confirmUpload()"
-          />
-        </div>
+      <!-- Actions -->
+      <div class="mt-4 flex items-center justify-center gap-3">
+        <jhi-confirm-dialog
+          label="reference.decline.button"
+          severity="danger"
+          variant="outlined"
+          confirmIcon="xmark"
+          header="reference.decline.confirmHeader"
+          message="reference.decline.confirmMessage"
+          [showOpenButton]="true"
+          (confirmed)="confirmDecline()"
+        />
+        <jhi-button
+          severity="success"
+          icon="check"
+          label="reference.upload.confirm"
+          [shouldTranslate]="true"
+          [disabled]="!canSubmit()"
+          [loading]="uploading()"
+          (click)="confirmUpload()"
+        />
       </div>
     }
   </div>

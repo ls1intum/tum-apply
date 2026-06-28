@@ -105,6 +105,7 @@ function getPersonalStatementsLabel(translate: TranslateService): Record<string,
     referenceStatusRequested: translate.instant('entity.application_detail.reference_status.requested'),
     referenceStatusSubmitted: translate.instant('entity.application_detail.reference_status.submitted'),
     referenceStatusExpired: translate.instant('entity.application_detail.reference_status.expired'),
+    referenceStatusDeclined: translate.instant('entity.application_detail.reference_status.declined'),
   };
 }
 
