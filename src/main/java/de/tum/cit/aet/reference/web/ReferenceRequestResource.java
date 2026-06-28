@@ -48,10 +48,7 @@ public class ReferenceRequestResource {
      */
     @ApplicantOrAdmin
     @PostMapping
-    public ResponseEntity<ReferenceRequestDTO> add(
-        @PathVariable UUID applicationId,
-        @Valid @RequestBody RefereeContactDTO payload
-    ) {
+    public ResponseEntity<ReferenceRequestDTO> add(@PathVariable UUID applicationId, @Valid @RequestBody RefereeContactDTO payload) {
         log.info("POST /api/applications/{}/references - Adding reference {}", applicationId, payload.toString());
         return ResponseEntity.status(HttpStatus.CREATED).body(referenceRequestService.addToApplication(applicationId, payload));
     }
