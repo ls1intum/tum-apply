@@ -410,7 +410,7 @@
         },
         "addFailed": {
           "summary": "Could not add referee",
-          "detail": "The referee could not be added. Please check the entered data and try again."
+          "detail": "Please check the entered data and try again."
         },
         "removeFailed": {
           "summary": "Could not remove referee",
@@ -418,7 +418,7 @@
         },
         "updateFailed": {
           "summary": "Could not update referee",
-          "detail": "The referee could not be updated. Please check the entered data and try again."
+          "detail": "Please check the entered data and try again."
         }
       }
     },
