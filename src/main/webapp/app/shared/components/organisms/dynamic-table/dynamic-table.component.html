@@ -5,6 +5,7 @@
   [scrollable]="true"
   [first]="page() * rows()"
   [rows]="rows()"
+  [rowsPerPageOptions]="rowsPerPageOptions()"
   [lazy]="lazy()"
   (onLazyLoad)="emitLazy($event)"
   [tableStyle]="{ width: '100%' }"
