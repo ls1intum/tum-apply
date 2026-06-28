@@ -22,6 +22,7 @@ import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.core.util.PageUtil;
+import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
@@ -371,6 +372,54 @@ public class ApplicationService {
         UUID userId = currentUserService.getUserId();
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.APPLICANT_APPLICATIONS, true);
         return applicationRepository.findApplicationsByApplicant(userId, pageable);
+    }
+
+    /**
+     * Returns a paginated list of applications across every research group for admin views.
+     * Supports optional filters for state, research group, supervising professor, and job,
+     * plus a search string matching applicant full name or job title.
+     *
+     * @param pageDTO     pagination configuration
+     * @param adminFilter DTO containing all optionally filterable fields
+     * @param sortDTO     sorting configuration
+     * @param searchQuery search string for applicant name or job title
+     * @return a page of {@link AdminApplicationOverviewDTO} matching the criteria
+     */
+    public Page<AdminApplicationOverviewDTO> getAllApplicationsForAdmin(
+        PageDTO pageDTO,
+        AdminApplicationsFilterDTO adminFilter,
+        SortDTO sortDTO,
+        String searchQuery
+    ) {
+        Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.APPLICANT_APPLICATIONS, true);
+        return applicationRepository.findAllApplicationsForAdmin(
+            mapStateFilter(adminFilter.states()),
+            nullIfEmpty(adminFilter.researchGroupIds()),
+            nullIfEmpty(adminFilter.supervisingProfessorIds()),
+            nullIfEmpty(adminFilter.jobIds()),
+            StringUtil.normalizeSearchQuery(searchQuery),
+            pageable
+        );
+    }
+
+    /**
+     * Maps a list of {@link ApplicationState} string values to enum values.
+     * Returns {@code null} when the input is {@code null} or empty so the calling
+     * JPQL query can short-circuit the {@code IS NULL} branch.
+     */
+    private static List<ApplicationState> mapStateFilter(List<String> states) {
+        if (states == null || states.isEmpty()) {
+            return null;
+        }
+        return states.stream().map(ApplicationState::valueOf).filter(Objects::nonNull).toList();
+    }
+
+    /**
+     * Returns {@code null} when the list is {@code null} or empty, otherwise the list itself.
+     * Used to feed empty filters to JPQL queries that compare against {@code :param IS NULL}.
+     */
+    private static <T> List<T> nullIfEmpty(List<T> list) {
+        return (list == null || list.isEmpty()) ? null : list;
     }
 
     /**

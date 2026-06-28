@@ -55,6 +55,7 @@ api/user-resource-resources.ts
 model/accept-dto.ts
 model/add-interviewees-dto.ts
 model/add-members-to-research-group-dto.ts
+model/admin-application-overview-dto.ts
 model/admin-created-job-dto.ts
 model/admin-export-task-dto.ts
 model/ai-feature-status-dto.ts
@@ -119,6 +120,7 @@ model/keycloak-user-dto.ts
 model/login-request-dto.ts
 model/otp-complete-dto.ts
 model/otp-config.ts
+model/page-admin-application-overview-dto.ts
 model/page-admin-created-job-dto.ts
 model/page-application-overview-dto.ts
 model/page-created-job-dto.ts
