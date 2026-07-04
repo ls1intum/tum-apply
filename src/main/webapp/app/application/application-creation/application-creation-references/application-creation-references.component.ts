@@ -112,7 +112,8 @@ export default class ApplicationCreationReferencesComponent {
    * Submits the form: saves edits to the referee currently being edited, or adds a new one.
    */
   async onSubmit(): Promise<void> {
-    if (this.editingId()) {
+    const currentId = this.editingId();
+    if (currentId !== undefined && currentId !== '') {
       await this.onUpdate();
     } else {
       await this.onAdd();
@@ -147,7 +148,7 @@ export default class ApplicationCreationReferencesComponent {
    */
   async onUpdate(): Promise<void> {
     const id = this.editingId();
-    if (!id) return;
+    if (id === undefined || id === '') return;
     if (this.addForm.invalid) {
       this.addForm.markAllAsTouched();
       return;
@@ -171,7 +172,7 @@ export default class ApplicationCreationReferencesComponent {
    * @param reference the referee entry to edit
    */
   onEdit(reference: ReferenceRequestDTO): void {
-    if (!reference.referenceRequestId) return;
+    if (reference.referenceRequestId === undefined || reference.referenceRequestId === '') return;
     this.selectedTitleOption.set(this.titleOptions.find(option => option.value === reference.title));
     this.addForm.reset({
       title: reference.title ?? '',
