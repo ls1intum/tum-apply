@@ -39,10 +39,11 @@ import org.springframework.util.StringUtils;
 /**
  * Wires the signing material that lets TUMApply mint its own JWTs for applicants.
  * <p>
- * The RSA keypair is loaded from configuration (PEM via environment/secret). When no key is configured
- * an ephemeral keypair is generated at startup — acceptable for local development only; the production
- * profile fails fast if {@code app.token.rsa-private-key} is missing, because an ephemeral key would
- * invalidate every session on restart and break a multi-instance deployment.
+ * The RSA keypair is loaded from configuration (PEM via environment/secret). When the keypair is not fully
+ * configured an ephemeral keypair is generated at startup — acceptable for local development only; the
+ * production profile fails fast unless BOTH {@code app.token.rsa-private-key} and
+ * {@code app.token.rsa-public-key} are set, because an ephemeral key would invalidate every session on
+ * restart and break a multi-instance deployment.
  */
 @Slf4j
 @Configuration
@@ -64,10 +65,12 @@ public class AppTokenKeyConfiguration {
         this.publicKeyPem = publicKeyPem;
         this.kid = kid;
         this.issuer = issuer;
-        if (!StringUtils.hasText(privateKeyPem) && environment.acceptsProfiles(Profiles.of("prod"))) {
+        boolean keypairComplete = StringUtils.hasText(privateKeyPem) && StringUtils.hasText(publicKeyPem);
+        if (!keypairComplete && environment.acceptsProfiles(Profiles.of("prod"))) {
             throw new IllegalStateException(
-                "app.token.rsa-private-key (APP_TOKEN_RSA_PRIVATE_KEY) must be set in the prod profile; " +
-                    "an ephemeral signing key would invalidate all sessions on restart."
+                "Both app.token.rsa-private-key (APP_TOKEN_RSA_PRIVATE_KEY) and app.token.rsa-public-key " +
+                    "(APP_TOKEN_RSA_PUBLIC_KEY) must be set in the prod profile; without the complete keypair the " +
+                    "signing key falls back to an ephemeral one, which would invalidate all sessions on restart."
             );
         }
     }

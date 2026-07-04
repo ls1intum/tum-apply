@@ -24,14 +24,18 @@ export class WebAuthnService {
       this.http.post<PublicKeyCredentialCreationOptionsJSON>('/webauthn/register/options', {}, this.options),
     );
 
-    const created = (await navigator.credentials.create({
-      publicKey: this.toCreationOptions(optionsJson),
-    })) as PublicKeyCredential | null;
-    if (created === null) {
+    const created =
+      (await navigator.credentials.create({
+        publicKey: this.toCreationOptions(optionsJson),
+      })) ?? undefined;
+    if (!(created instanceof PublicKeyCredential)) {
       throw new Error('Passkey creation was cancelled');
     }
 
-    const response = created.response as AuthenticatorAttestationResponse;
+    const response = created.response;
+    if (!(response instanceof AuthenticatorAttestationResponse)) {
+      throw new Error('Unexpected passkey registration response');
+    }
     const credential = {
       id: created.id,
       rawId: bufferToBase64Url(created.rawId),
@@ -55,14 +59,18 @@ export class WebAuthnService {
       this.http.post<PublicKeyCredentialRequestOptionsJSON>('/webauthn/authenticate/options', {}, this.options),
     );
 
-    const assertion = (await navigator.credentials.get({
-      publicKey: this.toRequestOptions(optionsJson),
-    })) as PublicKeyCredential | null;
-    if (assertion === null) {
+    const assertion =
+      (await navigator.credentials.get({
+        publicKey: this.toRequestOptions(optionsJson),
+      })) ?? undefined;
+    if (!(assertion instanceof PublicKeyCredential)) {
       throw new Error('Passkey authentication was cancelled');
     }
 
-    const response = assertion.response as AuthenticatorAssertionResponse;
+    const response = assertion.response;
+    if (!(response instanceof AuthenticatorAssertionResponse)) {
+      throw new Error('Unexpected passkey authentication response');
+    }
     const credential = {
       id: assertion.id,
       rawId: bufferToBase64Url(assertion.rawId),
@@ -98,40 +106,58 @@ export class WebAuthnService {
 
   private toCreationOptions(json: PublicKeyCredentialCreationOptionsJSON): PublicKeyCredentialCreationOptions {
     return {
-      ...json,
+      rp: json.rp,
+      user: { id: base64UrlToBuffer(json.user.id), name: json.user.name, displayName: json.user.displayName },
       challenge: base64UrlToBuffer(json.challenge),
-      user: { ...json.user, id: base64UrlToBuffer(json.user.id) },
+      pubKeyCredParams: json.pubKeyCredParams,
+      timeout: json.timeout,
       excludeCredentials: (json.excludeCredentials ?? []).map(credential => ({
-        ...credential,
         id: base64UrlToBuffer(credential.id),
+        type: credential.type,
+        transports: credential.transports,
       })),
-    } as PublicKeyCredentialCreationOptions;
+      authenticatorSelection: json.authenticatorSelection,
+      attestation: json.attestation,
+      extensions: json.extensions,
+    };
   }
 
   private toRequestOptions(json: PublicKeyCredentialRequestOptionsJSON): PublicKeyCredentialRequestOptions {
     return {
-      ...json,
       challenge: base64UrlToBuffer(json.challenge),
+      timeout: json.timeout,
+      rpId: json.rpId,
       allowCredentials: (json.allowCredentials ?? []).map(credential => ({
-        ...credential,
         id: base64UrlToBuffer(credential.id),
+        type: credential.type,
+        transports: credential.transports,
       })),
-    } as PublicKeyCredentialRequestOptions;
+      userVerification: json.userVerification,
+      extensions: json.extensions,
+    };
   }
 }
 
 /** Minimal shapes of Spring's option JSON (binary fields are base64url strings). */
 interface PublicKeyCredentialCreationOptionsJSON {
-  challenge: string;
+  rp: PublicKeyCredentialRpEntity;
   user: { id: string; name: string; displayName: string };
-  excludeCredentials?: { id: string; type: string; transports?: string[] }[];
-  [key: string]: unknown;
+  challenge: string;
+  pubKeyCredParams: PublicKeyCredentialParameters[];
+  timeout?: number;
+  excludeCredentials?: { id: string; type: PublicKeyCredentialType; transports?: AuthenticatorTransport[] }[];
+  authenticatorSelection?: AuthenticatorSelectionCriteria;
+  attestation?: AttestationConveyancePreference;
+  extensions?: AuthenticationExtensionsClientInputs;
 }
 
 interface PublicKeyCredentialRequestOptionsJSON {
   challenge: string;
-  allowCredentials?: { id: string; type: string; transports?: string[] }[];
-  [key: string]: unknown;
+  timeout?: number;
+  rpId?: string;
+  allowCredentials?: { id: string; type: PublicKeyCredentialType; transports?: AuthenticatorTransport[] }[];
+  userVerification?: UserVerificationRequirement;
+  extensions?: AuthenticationExtensionsClientInputs;
 }
 
 function base64UrlToBuffer(value: string): ArrayBuffer {

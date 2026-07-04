@@ -184,7 +184,7 @@ describe('PasskeySettingsComponent', () => {
       keycloakAuthenticationServiceMock.isLoggedIn.mockReturnValue(false);
     });
 
-    it('loads, creates, and removes passkeys via the in-app WebAuthn service (not Keycloak)', async () => {
+    it('should load, create, and remove passkeys via the in-app WebAuthn service (not Keycloak)', async () => {
       webAuthnServiceMock.list.mockResolvedValueOnce(existingPasskeys).mockResolvedValueOnce(existingPasskeys);
 
       await createComponent();

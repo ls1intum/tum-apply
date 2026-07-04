@@ -12,6 +12,45 @@ function bytes(values: number[]): ArrayBuffer {
   return new Uint8Array(values).buffer;
 }
 
+/**
+ * Minimal stand-ins for the WebAuthn DOM classes. The service narrows the credential/response with
+ * `instanceof`, so the mocked ceremony results must be real instances of the stubbed globals.
+ */
+class MockAuthenticatorAttestationResponse {
+  constructor(
+    readonly attestationObject: ArrayBuffer,
+    readonly clientDataJSON: ArrayBuffer,
+    private readonly transports: string[] = [],
+  ) {}
+
+  getTransports(): string[] {
+    return this.transports;
+  }
+}
+
+class MockAuthenticatorAssertionResponse {
+  constructor(
+    readonly authenticatorData: ArrayBuffer,
+    readonly clientDataJSON: ArrayBuffer,
+    readonly signature: ArrayBuffer,
+    readonly userHandle?: ArrayBuffer,
+  ) {}
+}
+
+class MockPublicKeyCredential {
+  constructor(
+    readonly id: string,
+    readonly rawId: ArrayBuffer,
+    readonly response: MockAuthenticatorAttestationResponse | MockAuthenticatorAssertionResponse,
+    readonly type: string = 'public-key',
+    readonly authenticatorAttachment: string | undefined = 'platform',
+  ) {}
+
+  getClientExtensionResults(): Record<string, unknown> {
+    return {};
+  }
+}
+
 describe('WebAuthnService', () => {
   let service: WebAuthnService;
   let httpMock: HttpTestingController;
@@ -27,7 +66,9 @@ describe('WebAuthnService', () => {
     credentialsGet = vi.fn();
     // The service guards on a secure context with WebAuthn support before calling navigator.credentials.
     Object.defineProperty(window, 'isSecureContext', { value: true, configurable: true });
-    (window as unknown as { PublicKeyCredential: unknown }).PublicKeyCredential = function (): void {};
+    vi.stubGlobal('PublicKeyCredential', MockPublicKeyCredential);
+    vi.stubGlobal('AuthenticatorAttestationResponse', MockAuthenticatorAttestationResponse);
+    vi.stubGlobal('AuthenticatorAssertionResponse', MockAuthenticatorAssertionResponse);
     Object.defineProperty(navigator, 'credentials', {
       value: { create: credentialsCreate, get: credentialsGet },
       configurable: true,
@@ -36,22 +77,18 @@ describe('WebAuthnService', () => {
 
   afterEach(() => {
     httpMock.verify();
+    vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
-  it('runs the registration ceremony and posts a base64url-encoded credential', async () => {
-    credentialsCreate.mockResolvedValue({
-      id: 'cred-id',
-      rawId: bytes([7, 8]),
-      type: 'public-key',
-      authenticatorAttachment: 'platform',
-      response: {
-        attestationObject: bytes([9]),
-        clientDataJSON: bytes([10]),
-        getTransports: () => ['internal'],
-      },
-      getClientExtensionResults: () => ({}),
-    });
+  it('should run the registration ceremony and post a base64url-encoded credential', async () => {
+    credentialsCreate.mockResolvedValue(
+      new MockPublicKeyCredential(
+        'cred-id',
+        bytes([7, 8]),
+        new MockAuthenticatorAttestationResponse(bytes([9]), bytes([10]), ['internal']),
+      ),
+    );
 
     const promise = service.register('My MacBook');
 
@@ -99,20 +136,14 @@ describe('WebAuthnService', () => {
     await expect(promise).resolves.toBeUndefined();
   });
 
-  it('runs the authentication ceremony and posts the assertion to /login/webauthn', async () => {
-    credentialsGet.mockResolvedValue({
-      id: 'cred-id',
-      rawId: bytes([7, 8]),
-      type: 'public-key',
-      authenticatorAttachment: 'platform',
-      response: {
-        authenticatorData: bytes([11]),
-        clientDataJSON: bytes([12]),
-        signature: bytes([13]),
-        userHandle: bytes([14]),
-      },
-      getClientExtensionResults: () => ({}),
-    });
+  it('should run the authentication ceremony and post the assertion to /login/webauthn', async () => {
+    credentialsGet.mockResolvedValue(
+      new MockPublicKeyCredential(
+        'cred-id',
+        bytes([7, 8]),
+        new MockAuthenticatorAssertionResponse(bytes([11]), bytes([12]), bytes([13]), bytes([14])),
+      ),
+    );
 
     const promise = service.authenticate();
 
@@ -147,7 +178,7 @@ describe('WebAuthnService', () => {
     await expect(promise).resolves.toBeUndefined();
   });
 
-  it('lists and removes passkeys via the management endpoints', async () => {
+  it('should list and remove passkeys via the management endpoints', async () => {
     const listPromise = service.list();
     const listReq = httpMock.expectOne('/api/auth/webauthn/passkeys');
     expect(listReq.request.method).toBe('GET');
@@ -162,7 +193,7 @@ describe('WebAuthnService', () => {
     await expect(removePromise).resolves.toBeUndefined();
   });
 
-  it('rejects the ceremony in an insecure / unsupported context', async () => {
+  it('should reject the ceremony in an insecure / unsupported context', async () => {
     Object.defineProperty(window, 'isSecureContext', { value: false, configurable: true });
 
     await expect(service.register('x')).rejects.toThrow();
