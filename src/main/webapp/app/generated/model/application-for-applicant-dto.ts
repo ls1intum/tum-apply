@@ -19,6 +19,7 @@ export interface ApplicationForApplicantDTO {
     readonly job: JobCardDTO;
     readonly motivation?: string;
     readonly projects?: string;
+    readonly referenceLettersConfidential?: boolean;
     readonly specialSkills?: string;
 }
 

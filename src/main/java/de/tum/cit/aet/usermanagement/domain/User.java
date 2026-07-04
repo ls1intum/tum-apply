@@ -31,10 +31,6 @@ public class User extends AbstractAuditingEntity {
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
-    @ManyToOne
-    @JoinColumn(name = "research_group_id")
-    private ResearchGroup researchGroup;
-
     @Column(name = "email", nullable = false)
     private String email;
 

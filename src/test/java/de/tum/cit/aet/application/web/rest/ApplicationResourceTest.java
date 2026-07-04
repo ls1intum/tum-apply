@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.domain.dto.AdminApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
@@ -20,6 +21,7 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
+import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -271,7 +273,8 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 ApplicationState.SENT,
                 "Updated projects description",
                 "Java, Kotlin, Spring Boot",
-                "I want to update my motivation"
+                "I want to update my motivation",
+                false
             );
 
             ApplicationForApplicantDTO returnedApp = api
@@ -289,6 +292,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             assertThat(updated.getProjects()).isEqualTo("Updated projects description");
             assertThat(updated.getSpecialSkills()).isEqualTo("Java, Kotlin, Spring Boot");
             assertThat(updated.getMotivation()).isEqualTo("I want to update my motivation");
+            assertThat(updated.isReferenceLettersConfidential()).isFalse();
         }
 
         @Test
@@ -317,7 +321,8 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 ApplicationState.SENT,
                 null,
                 null,
-                null
+                null,
+                true
             );
 
             api
@@ -364,7 +369,8 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 ApplicationState.SENT,
                 null,
                 null,
-                null
+                null,
+                true
             );
 
             api
@@ -390,7 +396,8 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 ApplicationState.SENT,
                 "Updated projects",
                 "Updated skills",
-                "Updated motivation"
+                "Updated motivation",
+                true
             );
 
             Void response = api.putAndRead("/api/applications", updatePayload, Void.class, 403);
@@ -608,6 +615,44 @@ class ApplicationResourceTest extends AbstractResourceTest {
     class ApplicationDetailTests {
 
         @Test
+        void getApplicationDetailOmitsConfidentialReferenceLetterDocumentIdForApplicant() throws Exception {
+            ReferenceRequest referenceRequest = createSubmittedReferenceLetter(true);
+
+            ApplicationDetailDTO detail = api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .getAndRead(
+                    "/api/applications/" + referenceRequest.getApplication().getApplicationId() + "/detail",
+                    null,
+                    ApplicationDetailDTO.class,
+                    200
+                );
+
+            assertThat(detail.referenceLettersConfidential()).isTrue();
+            assertThat(detail.references())
+                .singleElement()
+                .satisfies(reference -> assertThat(reference.documentId()).isNull());
+        }
+
+        @Test
+        void getApplicationDetailIncludesSharedReferenceLetterDocumentIdForApplicant() throws Exception {
+            ReferenceRequest referenceRequest = createSubmittedReferenceLetter(false);
+
+            ApplicationDetailDTO detail = api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .getAndRead(
+                    "/api/applications/" + referenceRequest.getApplication().getApplicationId() + "/detail",
+                    null,
+                    ApplicationDetailDTO.class,
+                    200
+                );
+
+            assertThat(detail.referenceLettersConfidential()).isFalse();
+            assertThat(detail.references())
+                .singleElement()
+                .satisfies(reference -> assertThat(reference.documentId()).isEqualTo(referenceRequest.getDocumentId()));
+        }
+
+        @Test
         void getApplicationDetailNonexistentThrowsNotFound() {
             Void response = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -621,6 +666,35 @@ class ApplicationResourceTest extends AbstractResourceTest {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
             Void response = api.getAndRead("/api/applications/" + application.getApplicationId() + "/detail", null, Void.class, 403);
             assertThat(response).isNull();
+        }
+
+        private ReferenceRequest createSubmittedReferenceLetter(boolean confidential) throws Exception {
+            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SENT);
+            application.setReferenceLettersConfidential(confidential);
+            application = applicationRepository.saveAndFlush(application);
+
+            Document document = DocumentTestData.savedDocumentWithFile(
+                storageRootConfig,
+                documentRepository,
+                applicant.getUser(),
+                application,
+                null,
+                "/testdocs/test-doc1.pdf",
+                "application-detail-reference-letter-" + confidential + ".pdf",
+                DocumentType.REFERENCE_LETTER,
+                "reference-letter.pdf"
+            );
+
+            ReferenceRequest referenceRequest = ReferenceRequestTestData.newReferenceRequest(
+                application,
+                "Prof. Dr.",
+                "Ada",
+                "Lovelace",
+                "ada@example.com",
+                ReferenceRequestStatus.SUBMITTED
+            );
+            referenceRequest.setDocumentId(document.getDocumentId());
+            return referenceRequestRepository.saveAndFlush(referenceRequest);
         }
     }
 
@@ -873,6 +947,36 @@ class ApplicationResourceTest extends AbstractResourceTest {
                     new TypeReference<Void>() {},
                     400
                 );
+
+            assertThat(response).isNull();
+        }
+    }
+
+    // ===== GET ALL APPLICATIONS (ADMIN) =====
+    @Nested
+    class GetAllApplications {
+
+        @Test
+        void shouldReturnAllApplicationsForAdmin() {
+            ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+            ApplicationTestData.savedAccepted(applicationRepository, publishedJob, applicant);
+
+            User adminUser = UserTestData.saveAdmin(userRepository);
+
+            PageResponse<AdminApplicationOverviewDTO> response = api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .getAndRead("/api/applications/all?pageSize=10&pageNumber=0", null, new TypeReference<>() {}, 200);
+
+            assertThat(response).isNotNull();
+            assertThat(response.content()).isNotNull();
+            assertThat(response.content().size()).isEqualTo(2);
+        }
+
+        @Test
+        void shouldRejectProfessorOnAdminEndpoint() {
+            Void response = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/applications/all?pageSize=10&pageNumber=0", null, Void.class, 403);
 
             assertThat(response).isNull();
         }
