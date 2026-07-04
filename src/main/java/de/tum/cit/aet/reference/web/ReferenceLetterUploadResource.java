@@ -1,21 +1,16 @@
 package de.tum.cit.aet.reference.web;
 
 import de.tum.cit.aet.core.security.annotations.Public;
-import de.tum.cit.aet.reference.constants.AcquaintanceDepth;
-import de.tum.cit.aet.reference.constants.AcquaintanceDuration;
-import de.tum.cit.aet.reference.constants.OverallRecommendation;
-import de.tum.cit.aet.reference.constants.PeerRating;
-import de.tum.cit.aet.reference.constants.RefereeRelationship;
 import de.tum.cit.aet.reference.dto.ReferenceLetterSubmissionDTO;
 import de.tum.cit.aet.reference.dto.ReferenceLetterUploadContextDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.reference.service.ReferenceRequestService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Public endpoints used by external referees to open their tokenized invitation link and upload
@@ -58,7 +53,7 @@ public class ReferenceLetterUploadResource {
     @PostMapping(value = "/{token}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReferenceRequestDTO> upload(
         @PathVariable String token,
-        @ModelAttribute ReferenceLetterSubmissionDTO recommendation
+        @Valid @ModelAttribute ReferenceLetterSubmissionDTO recommendation
     ) {
         log.info(
             "POST /api/reference-letters/{} - Submitting recommendation {}",

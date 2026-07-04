@@ -124,7 +124,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
     }
 
     private static MockMultipartFile pdf(String filename) {
-        return new MockMultipartFile("file", filename, "application/pdf", "%PDF-1.4 test".getBytes(StandardCharsets.UTF_8));
+        return new MockMultipartFile("letter", filename, "application/pdf", "%PDF-1.4 test".getBytes(StandardCharsets.UTF_8));
     }
 
     private static Map<String, String> assessmentParams() {
@@ -187,7 +187,6 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
 
             assertThat(updated.status()).isEqualTo(ReferenceRequestStatus.SUBMITTED);
             assertThat(updated.documentId()).isNotNull();
-            // The returned DTO exposes the assessment so the professor evaluation view can render it.
             assertThat(updated.relationship()).isEqualTo(RefereeRelationship.RESEARCH_SUPERVISOR);
             assertThat(updated.ratingIntellectualAbility()).isEqualTo(PeerRating.TOP_FIVE_PERCENT);
             assertThat(updated.overallRecommendation()).isEqualTo(OverallRecommendation.STRONGLY_RECOMMEND);
