@@ -446,7 +446,8 @@ public class ReferenceRequestService {
     }
 
     private void assertReferencesManageable(Application application) {
-        if (!REFERENCE_MANAGEABLE_STATES.contains(application.getState()) || application.getJob().getEndDate().isBefore(LocalDate.now())) {
+        LocalDate jobEndDate = application.getJob().getEndDate();
+        if (!REFERENCE_MANAGEABLE_STATES.contains(application.getState()) || (jobEndDate != null && jobEndDate.isBefore(LocalDate.now()))) {
             throw new OperationNotAllowedException("References can no longer be modified for this application.");
         }
     }
