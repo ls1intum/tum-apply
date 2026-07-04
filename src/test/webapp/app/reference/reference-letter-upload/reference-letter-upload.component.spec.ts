@@ -121,8 +121,8 @@ describe('ReferenceLetterUploadComponent', () => {
       expect(api.upload).toHaveBeenCalledOnce();
       const call = api.upload.mock.calls[0];
       expect(call[0]).toBe(TOKEN);
-      expect(call[1]).toBe(REQUIRED_ANSWERS.relationship);
-      expect(call.at(-1)).toBeInstanceOf(File);
+      expect(call[1]).toBe(REQUIRED_ANSWERS.acquaintanceDepth);
+      expect(call.at(3)).toBeInstanceOf(File);
       expect(toast.showSuccessKey).toHaveBeenCalledOnce();
     });
 
