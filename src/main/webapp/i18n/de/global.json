@@ -396,7 +396,7 @@
       "requiredCount": "Benötigt: {count} · Hinzugefügt: ",
       "empty": "Noch keine Referenzpersonen hinzugefügt.",
       "section": {
-        "required": "Benötigte Referenzpersonen"
+        "required": "Referenzpersonen"
       },
       "label": {
         "title": "Titel",

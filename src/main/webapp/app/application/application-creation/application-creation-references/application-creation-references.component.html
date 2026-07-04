@@ -66,6 +66,7 @@
 
 @if (references().length === 0) {
   <p class="text-text-disabled text-sm mb-3" jhiTranslate="entity.applicationReferences.empty"></p>
+  <p-divider layout="horizontal"/>
 } @else {
   <ul class="list-none p-0 mb-4">
     @for (reference of references(); track reference.referenceRequestId) {
@@ -97,7 +98,7 @@
 }
 
 @if (applicationCreation()) {
-  <div class="mt-4">
+  <div class="mt-6">
     <jhi-checkbox
       [control]="confidentialControl"
       label="entity.applicationReferences.confidentialWaiver"

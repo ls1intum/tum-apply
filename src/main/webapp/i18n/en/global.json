@@ -396,7 +396,7 @@
       "requiredCount": "Required: {count} · Added: ",
       "empty": "No referees added yet.",
       "section": {
-        "required": "Required Referees"
+        "required": "Referees"
       },
       "label": {
         "title": "Title",
