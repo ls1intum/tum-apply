@@ -424,6 +424,63 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
+  /api/applications/all:
+    get:
+      tags: [application-resource]
+      operationId: getAllApplications
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: states
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: researchGroupIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string, format: uuid}
+      - name: supervisingProfessorIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string, format: uuid}
+      - name: jobIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string, format: uuid}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageAdminApplicationOverviewDTO'}
   /api/applications/create/{jobId}:
     post:
       tags: [application-resource]
@@ -2326,6 +2383,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/admin/professors:
+    get:
+      tags: [research-group-resource]
+      operationId: getAllProfessorsForAdmin
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/UserShortDTO'}
   /api/research-groups/detail/{researchGroupId}:
     get:
       tags: [research-group-resource]
@@ -2727,6 +2796,10 @@ paths:
         in: query
         required: false
         schema: {type: string}
+      - name: researchGroupId
+        in: query
+        required: false
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -2873,6 +2946,25 @@ components:
           minItems: 1
         researchGroupId: {type: string, format: uuid}
       required: [keycloakUsers]
+    AdminApplicationOverviewDTO:
+      type: object
+      properties:
+        applicantAvatar: {type: string}
+        applicantName: {type: string}
+        applicantUserId: {type: string, format: uuid}
+        applicationId: {type: string, format: uuid}
+        createdAt: {type: string, format: date-time}
+        jobId: {type: string, format: uuid}
+        jobTitle: {type: string}
+        researchGroupId: {type: string, format: uuid}
+        researchGroupName: {type: string}
+        state:
+          type: string
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+            JOB_CLOSED_DRAFT, INTERVIEW]
+        supervisingProfessorId: {type: string, format: uuid}
+        supervisingProfessorName: {type: string}
+      required: [applicantUserId, applicationId, jobId]
     AdminCreatedJobDTO:
       type: object
       properties:
@@ -3707,6 +3799,22 @@ components:
         length: {type: integer, format: int32}
         resendCooldownSeconds: {type: integer, format: int32}
         ttlSeconds: {type: integer, format: int32}
+    PageAdminApplicationOverviewDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/AdminApplicationOverviewDTO'}
+        empty: {type: boolean}
+        first: {type: boolean}
+        last: {type: boolean}
+        number: {type: integer, format: int32}
+        numberOfElements: {type: integer, format: int32}
+        pageable: {$ref: '#/components/schemas/PageableObject'}
+        size: {type: integer, format: int32}
+        sort: {$ref: '#/components/schemas/SortObject'}
+        totalElements: {type: integer, format: int64}
+        totalPages: {type: integer, format: int32}
     PageAdminCreatedJobDTO:
       type: object
       properties:
@@ -4230,7 +4338,9 @@ components:
         email: {type: string}
         firstName: {type: string}
         lastName: {type: string}
-        researchGroup: {$ref: '#/components/schemas/ResearchGroupShortDTO'}
+        memberships:
+          type: array
+          items: {$ref: '#/components/schemas/ResearchGroupShortDTO'}
         roles:
           type: array
           items:

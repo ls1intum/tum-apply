@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.domain.dto.AdminApplicationOverviewDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
@@ -946,6 +947,36 @@ class ApplicationResourceTest extends AbstractResourceTest {
                     new TypeReference<Void>() {},
                     400
                 );
+
+            assertThat(response).isNull();
+        }
+    }
+
+    // ===== GET ALL APPLICATIONS (ADMIN) =====
+    @Nested
+    class GetAllApplications {
+
+        @Test
+        void shouldReturnAllApplicationsForAdmin() {
+            ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+            ApplicationTestData.savedAccepted(applicationRepository, publishedJob, applicant);
+
+            User adminUser = UserTestData.saveAdmin(userRepository);
+
+            PageResponse<AdminApplicationOverviewDTO> response = api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .getAndRead("/api/applications/all?pageSize=10&pageNumber=0", null, new TypeReference<>() {}, 200);
+
+            assertThat(response).isNotNull();
+            assertThat(response.content()).isNotNull();
+            assertThat(response.content().size()).isEqualTo(2);
+        }
+
+        @Test
+        void shouldRejectProfessorOnAdminEndpoint() {
+            Void response = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/applications/all?pageSize=10&pageNumber=0", null, Void.class, 403);
 
             assertThat(response).isNull();
         }

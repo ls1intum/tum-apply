@@ -50,8 +50,9 @@ export class UserResourceApi {
      * @param pageSize 
      * @param pageNumber 
      * @param searchQuery 
+     * @param researchGroupId 
      */
-    getAvailableUsersForResearchGroup(pageSize?: number, pageNumber?: number, searchQuery?: string): Observable<PageResponseDTOKeycloakUserDTO> {
+    getAvailableUsersForResearchGroup(pageSize?: number, pageNumber?: number, searchQuery?: string, researchGroupId?: string): Observable<PageResponseDTOKeycloakUserDTO> {
         const queryParams = new URLSearchParams();
         if (pageSize !== undefined && pageSize !== null) {
             queryParams.set('pageSize', String(pageSize));
@@ -61,6 +62,9 @@ export class UserResourceApi {
         }
         if (searchQuery !== undefined && searchQuery !== null) {
             queryParams.set('searchQuery', String(searchQuery));
+        }
+        if (researchGroupId !== undefined && researchGroupId !== null) {
+            queryParams.set('researchGroupId', String(researchGroupId));
         }
         const queryString = queryParams.toString();
         const url = `${this.basePath}/api/users/available-for-research-group${queryString ? `?${queryString}` : ''}`;
