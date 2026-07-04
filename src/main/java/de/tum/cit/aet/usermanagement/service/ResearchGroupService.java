@@ -232,17 +232,6 @@ public class ResearchGroupService {
     }
 
     /**
-     * Returns the research group entity, used by callers that need the JPA object
-     * rather than a DTO (e.g. CurrentUserService resolving the active group).
-     *
-     * @param researchGroupId the ID of the research group
-     * @return the entity if present
-     */
-    public Optional<ResearchGroup> findById(UUID researchGroupId) {
-        return researchGroupRepository.findById(researchGroupId);
-    }
-
-    /**
      * Retrieves the details of a research group by its ID.
      * Only users belonging to the research group can access its details.
      * @param researchGroupId the unique identifier of the research group

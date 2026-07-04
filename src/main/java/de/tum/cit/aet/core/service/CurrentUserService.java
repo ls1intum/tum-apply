@@ -11,14 +11,14 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import de.tum.cit.aet.usermanagement.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.context.annotation.Lazy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.core.Authentication;
@@ -31,25 +31,16 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@RequiredArgsConstructor
 public class CurrentUserService {
 
     // UserRepository is kept here for the bootstrap user-lookup only. Domain operations on the
-    // user (e.g. recording AI consent) go through UserService, and research-group lookups go
-    // through ResearchGroupService — both with @Lazy to break the construction-time cycle
-    // (ResearchGroupService itself injects CurrentUserService).
+    // user (e.g. recording AI consent) are delegated to UserService, while research-group lookups
+    // go directly through ResearchGroupRepository — depending on ResearchGroupService here would
+    // create a construction-time cycle, as it injects CurrentUserService.
     private final UserRepository userRepository;
     private final UserService userService;
-    private final ResearchGroupService researchGroupService;
-
-    public CurrentUserService(
-        UserRepository userRepository,
-        @Lazy UserService userService,
-        @Lazy ResearchGroupService researchGroupService
-    ) {
-        this.userRepository = userRepository;
-        this.userService = userService;
-        this.researchGroupService = researchGroupService;
-    }
+    private final ResearchGroupRepository researchGroupRepository;
 
     private User user;
 
@@ -231,7 +222,7 @@ public class CurrentUserService {
      */
     public ResearchGroup getResearchGroupIfProfessor() {
         UUID activeId = getResearchGroupIdIfProfessor();
-        return researchGroupService.findById(activeId).orElseThrow(() -> new AccessDeniedException("Active research group not found"));
+        return researchGroupRepository.findById(activeId).orElseThrow(() -> new AccessDeniedException("Active research group not found"));
     }
 
     /**
@@ -243,7 +234,7 @@ public class CurrentUserService {
      */
     public ResearchGroup getResearchGroupIfMember() {
         UUID activeId = getResearchGroupIdIfMember();
-        return researchGroupService.findById(activeId).orElseThrow(() -> new AccessDeniedException("Active research group not found"));
+        return researchGroupRepository.findById(activeId).orElseThrow(() -> new AccessDeniedException("Active research group not found"));
     }
 
     private UUID readActiveResearchGroupIdHeader() {
