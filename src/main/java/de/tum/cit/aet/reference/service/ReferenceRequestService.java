@@ -223,42 +223,6 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Stores the recommendation letter PDF uploaded by an external referee together with the
-     * structured assessment answers, links the document to the reference request and marks the request
-     * {@code SUBMITTED}.
-     *
-     * @param rawToken   the plaintext token from the invitation email
-     * @param file       the uploaded PDF
-     * @param assessment the structured answers the referee filled in on the upload page
-     * @return the updated request as a DTO
-     * @throws EntityNotFoundException      when the token is unknown
-     * @throws OperationNotAllowedException when the request is already submitted or the deadline has passed
-     */
-    public ReferenceRequestDTO uploadLetter(String rawToken, MultipartFile file, ReferenceLetterSubmissionDTO assessment) {
-        ReferenceRequest entry = findByRawToken(rawToken);
-        assertReferenceActionAllowed(entry);
-
-        Application application = entry.getApplication();
-        User uploaderForAudit = application.getApplicant().getUser();
-        String displayName = "Reference letter — " + entry.getFirstName() + " " + entry.getLastName();
-
-        ApplicationDocument document = documentService.uploadApplicationDocument(
-            file,
-            DocumentType.REFERENCE_LETTER,
-            displayName,
-            application,
-            uploaderForAudit
-        );
-
-        entry.setDocumentId(document.getDocumentId());
-        applyAssessment(entry, assessment);
-        entry.setStatus(ReferenceRequestStatus.SUBMITTED);
-        ReferenceRequest saved = referenceRequestRepository.save(entry);
-
-        return ReferenceRequestDTO.fromEntity(saved);
-    }
-
-    /**
      * Copies the structured assessment answers onto the reference request entity.
      *
      * @param entry      the reference request being submitted
@@ -278,12 +242,44 @@ public class ReferenceRequestService {
     }
 
     /**
+     * Stores the recommendation letter PDF uploaded by an external referee together with the
+     * structured assessment answers, links the document to the reference request and marks the request
+     * {@code SUBMITTED}.
+     *
+     * @param rawToken          the plaintext token from the invitation email
+     * @param recommendation    the answer the referee submitted
+     * @return the updated request as a DTO
+     */
+    public ReferenceRequestDTO uploadLetter(String rawToken, ReferenceLetterSubmissionDTO recommendation) {
+        ReferenceRequest entry = findByRawToken(rawToken);
+        assertReferenceActionAllowed(entry);
+
+        Application application = entry.getApplication();
+        User uploaderForAudit = application.getApplicant().getUser();
+        String displayName = "Reference letter — " + entry.getFirstName() + " " + entry.getLastName();
+
+        ApplicationDocument document = documentService.uploadApplicationDocument(
+            recommendation.letter(),
+            DocumentType.REFERENCE_LETTER,
+            displayName,
+            application,
+            uploaderForAudit
+        );
+
+        entry.setDocumentId(document.getDocumentId());
+        applyAssessment(entry, recommendation);
+        entry.setStatus(ReferenceRequestStatus.SUBMITTED);
+        ReferenceRequest saved = referenceRequestRepository.save(entry);
+
+        return ReferenceRequestDTO.fromEntity(saved);
+    }
+
+    /**
      * Utility method to fetch all reference requests for a list of application IDs, grouped by application ID.
      *
      * @param applicationIds the list of application IDs to fetch reference requests for
      * @return a map with application IDs as keys and a set of reference requests associated with that application as values
      */
-
     public Map<UUID, Set<ReferenceRequest>> getReferencesForApplicationIds(List<UUID> applicationIds) {
         return referenceRequestRepository
             .findByApplicationIds(applicationIds)

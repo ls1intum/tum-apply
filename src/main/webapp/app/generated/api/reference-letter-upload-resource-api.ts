@@ -54,56 +54,54 @@ export class ReferenceLetterUploadResourceApi {
      * 
      * 
      * @param token 
-     * @param relationship 
-     * @param acquaintanceDuration 
      * @param acquaintanceDepth 
-     * @param ratingIntellectualAbility 
-     * @param ratingResearchPotential 
-     * @param ratingMotivation 
-     * @param ratingCommunication 
-     * @param ratingLeadership 
-     * @param ratingCollaboration 
+     * @param acquaintanceDuration 
+     * @param letter 
      * @param overallRecommendation 
-     * @param file 
+     * @param ratingCollaboration 
+     * @param ratingCommunication 
+     * @param ratingIntellectualAbility 
+     * @param ratingLeadership 
+     * @param ratingMotivation 
+     * @param ratingResearchPotential 
+     * @param relationship 
      */
-    upload(token: string, relationship: RefereeRelationship, acquaintanceDuration: AcquaintanceDuration, acquaintanceDepth: AcquaintanceDepth, ratingIntellectualAbility: PeerRating, ratingResearchPotential: PeerRating, ratingMotivation: PeerRating, ratingCommunication: PeerRating, ratingLeadership: PeerRating, ratingCollaboration: PeerRating, overallRecommendation: OverallRecommendation, file: Blob): Observable<ReferenceRequestDTO> {
+    upload(token: string, acquaintanceDepth: AcquaintanceDepth, acquaintanceDuration: AcquaintanceDuration, letter: Blob, overallRecommendation: OverallRecommendation, ratingCollaboration: PeerRating, ratingCommunication: PeerRating, ratingIntellectualAbility: PeerRating, ratingLeadership: PeerRating, ratingMotivation: PeerRating, ratingResearchPotential: PeerRating, relationship: RefereeRelationship): Observable<ReferenceRequestDTO> {
         const tokenPath = encodeURIComponent(String(token));
-        const queryParams = new URLSearchParams();
-        if (relationship !== undefined && relationship !== null) {
-            queryParams.set('relationship', String(relationship));
+        const url = `${this.basePath}/api/reference-letters/${tokenPath}`;
+        const formData = new FormData();
+        if (acquaintanceDepth !== undefined && acquaintanceDepth !== null) {
+            formData.append('acquaintanceDepth', acquaintanceDepth);
         }
         if (acquaintanceDuration !== undefined && acquaintanceDuration !== null) {
-            queryParams.set('acquaintanceDuration', String(acquaintanceDuration));
+            formData.append('acquaintanceDuration', acquaintanceDuration);
         }
-        if (acquaintanceDepth !== undefined && acquaintanceDepth !== null) {
-            queryParams.set('acquaintanceDepth', String(acquaintanceDepth));
-        }
-        if (ratingIntellectualAbility !== undefined && ratingIntellectualAbility !== null) {
-            queryParams.set('ratingIntellectualAbility', String(ratingIntellectualAbility));
-        }
-        if (ratingResearchPotential !== undefined && ratingResearchPotential !== null) {
-            queryParams.set('ratingResearchPotential', String(ratingResearchPotential));
-        }
-        if (ratingMotivation !== undefined && ratingMotivation !== null) {
-            queryParams.set('ratingMotivation', String(ratingMotivation));
-        }
-        if (ratingCommunication !== undefined && ratingCommunication !== null) {
-            queryParams.set('ratingCommunication', String(ratingCommunication));
-        }
-        if (ratingLeadership !== undefined && ratingLeadership !== null) {
-            queryParams.set('ratingLeadership', String(ratingLeadership));
-        }
-        if (ratingCollaboration !== undefined && ratingCollaboration !== null) {
-            queryParams.set('ratingCollaboration', String(ratingCollaboration));
+        if (letter !== undefined && letter !== null) {
+            formData.append('letter', letter);
         }
         if (overallRecommendation !== undefined && overallRecommendation !== null) {
-            queryParams.set('overallRecommendation', String(overallRecommendation));
+            formData.append('overallRecommendation', overallRecommendation);
         }
-        const queryString = queryParams.toString();
-        const url = `${this.basePath}/api/reference-letters/${tokenPath}${queryString ? `?${queryString}` : ''}`;
-        const formData = new FormData();
-        if (file !== undefined && file !== null) {
-            formData.append('file', file);
+        if (ratingCollaboration !== undefined && ratingCollaboration !== null) {
+            formData.append('ratingCollaboration', ratingCollaboration);
+        }
+        if (ratingCommunication !== undefined && ratingCommunication !== null) {
+            formData.append('ratingCommunication', ratingCommunication);
+        }
+        if (ratingIntellectualAbility !== undefined && ratingIntellectualAbility !== null) {
+            formData.append('ratingIntellectualAbility', ratingIntellectualAbility);
+        }
+        if (ratingLeadership !== undefined && ratingLeadership !== null) {
+            formData.append('ratingLeadership', ratingLeadership);
+        }
+        if (ratingMotivation !== undefined && ratingMotivation !== null) {
+            formData.append('ratingMotivation', ratingMotivation);
+        }
+        if (ratingResearchPotential !== undefined && ratingResearchPotential !== null) {
+            formData.append('ratingResearchPotential', ratingResearchPotential);
+        }
+        if (relationship !== undefined && relationship !== null) {
+            formData.append('relationship', relationship);
         }
         return this.http.post<ReferenceRequestDTO>(url, formData);
     }

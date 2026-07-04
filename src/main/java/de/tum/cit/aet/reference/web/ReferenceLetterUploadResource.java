@@ -14,12 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -55,50 +50,22 @@ public class ReferenceLetterUploadResource {
      * results in a 400. Returns 400 too when the request is no longer accepting uploads (already
      * submitted or expired).
      *
-     * @param token                     the raw token from the invitation email
-     * @param file                      the PDF the referee selected
-     * @param relationship              capacity in which the referee knows the applicant
-     * @param acquaintanceDuration      how long the referee has known the applicant
-     * @param acquaintanceDepth         how well the referee knows the applicant
-     * @param ratingIntellectualAbility peer-group rating of intellectual ability
-     * @param ratingResearchPotential   peer-group rating of research potential
-     * @param ratingMotivation          peer-group rating of motivation and drive
-     * @param ratingCommunication       peer-group rating of communication skills
-     * @param ratingLeadership          peer-group rating of leadership
-     * @param ratingCollaboration       peer-group rating of ability to collaborate
-     * @param overallRecommendation     the referee's overall endorsement
+     * @param token             the raw token from the invitation email
+     * @param recommendation    the DTO containing the  structured assessment and the uploaded PDF file
      * @return the updated reference request DTO
      */
     @Public
     @PostMapping(value = "/{token}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReferenceRequestDTO> upload(
         @PathVariable String token,
-        @RequestParam("file") MultipartFile file,
-        @RequestParam RefereeRelationship relationship,
-        @RequestParam AcquaintanceDuration acquaintanceDuration,
-        @RequestParam AcquaintanceDepth acquaintanceDepth,
-        @RequestParam PeerRating ratingIntellectualAbility,
-        @RequestParam PeerRating ratingResearchPotential,
-        @RequestParam PeerRating ratingMotivation,
-        @RequestParam PeerRating ratingCommunication,
-        @RequestParam PeerRating ratingLeadership,
-        @RequestParam PeerRating ratingCollaboration,
-        @RequestParam OverallRecommendation overallRecommendation
+        @ModelAttribute ReferenceLetterSubmissionDTO recommendation
     ) {
-        log.info("POST /api/reference-letters/{} - Uploading letter {}", maskToken(token), file.getOriginalFilename());
-        ReferenceLetterSubmissionDTO assessment = new ReferenceLetterSubmissionDTO(
-            relationship,
-            acquaintanceDuration,
-            acquaintanceDepth,
-            ratingIntellectualAbility,
-            ratingResearchPotential,
-            ratingMotivation,
-            ratingCommunication,
-            ratingLeadership,
-            ratingCollaboration,
-            overallRecommendation
+        log.info(
+            "POST /api/reference-letters/{} - Submitting recommendation {}",
+            maskToken(token),
+            recommendation.letter().getOriginalFilename()
         );
-        return ResponseEntity.ok(referenceRequestService.uploadLetter(token, file, assessment));
+        return ResponseEntity.ok(referenceRequestService.uploadLetter(token, recommendation));
     }
 
     /**

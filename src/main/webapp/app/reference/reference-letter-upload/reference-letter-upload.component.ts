@@ -156,17 +156,17 @@ export class ReferenceLetterUploadComponent {
       await firstValueFrom(
         this.api.upload(
           this.token,
-          a.relationship as RefereeRelationship,
-          a.acquaintanceDuration as AcquaintanceDuration,
           a.acquaintanceDepth as AcquaintanceDepth,
-          a.ratingIntellectualAbility as PeerRating,
-          a.ratingResearchPotential as PeerRating,
-          a.ratingMotivation as PeerRating,
-          a.ratingCommunication as PeerRating,
-          a.ratingLeadership as PeerRating,
-          a.ratingCollaboration as PeerRating,
-          a.overallRecommendation as OverallRecommendation,
+          a.acquaintanceDuration as AcquaintanceDuration,
           file,
+          a.overallRecommendation as OverallRecommendation,
+          a.ratingCollaboration as PeerRating,
+          a.ratingCommunication as PeerRating,
+          a.ratingIntellectualAbility as PeerRating,
+          a.ratingLeadership as PeerRating,
+          a.ratingMotivation as PeerRating,
+          a.ratingResearchPotential as PeerRating,
+          a.relationship as RefereeRelationship,
         ),
       );
       this.justUploaded.set(true);

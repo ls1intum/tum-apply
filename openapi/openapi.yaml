@@ -2256,54 +2256,10 @@ paths:
         in: path
         required: true
         schema: {type: string}
-      - name: relationship
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/RefereeRelationship'}
-      - name: acquaintanceDuration
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/AcquaintanceDuration'}
-      - name: acquaintanceDepth
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/AcquaintanceDepth'}
-      - name: ratingIntellectualAbility
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PeerRating'}
-      - name: ratingResearchPotential
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PeerRating'}
-      - name: ratingMotivation
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PeerRating'}
-      - name: ratingCommunication
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PeerRating'}
-      - name: ratingLeadership
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PeerRating'}
-      - name: ratingCollaboration
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PeerRating'}
-      - name: overallRecommendation
-        in: query
-        required: true
-        schema: {$ref: '#/components/schemas/OverallRecommendation'}
       requestBody:
         content:
           multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file: {type: string, format: binary}
-              required: [file]
+            schema: {$ref: '#/components/schemas/ReferenceLetterSubmissionDTO'}
       responses:
         '200':
           description: OK
@@ -4021,6 +3977,23 @@ components:
       type: string
       enum: [COURSE_INSTRUCTOR, RESEARCH_SUPERVISOR, THESIS_ADVISOR, EMPLOYER, ACADEMIC_ADVISOR,
         OTHER]
+    ReferenceLetterSubmissionDTO:
+      type: object
+      properties:
+        acquaintanceDepth: {$ref: '#/components/schemas/AcquaintanceDepth'}
+        acquaintanceDuration: {$ref: '#/components/schemas/AcquaintanceDuration'}
+        letter: {type: string, format: binary}
+        overallRecommendation: {$ref: '#/components/schemas/OverallRecommendation'}
+        ratingCollaboration: {$ref: '#/components/schemas/PeerRating'}
+        ratingCommunication: {$ref: '#/components/schemas/PeerRating'}
+        ratingIntellectualAbility: {$ref: '#/components/schemas/PeerRating'}
+        ratingLeadership: {$ref: '#/components/schemas/PeerRating'}
+        ratingMotivation: {$ref: '#/components/schemas/PeerRating'}
+        ratingResearchPotential: {$ref: '#/components/schemas/PeerRating'}
+        relationship: {$ref: '#/components/schemas/RefereeRelationship'}
+      required: [acquaintanceDepth, acquaintanceDuration, letter, overallRecommendation,
+        ratingCollaboration, ratingCommunication, ratingIntellectualAbility, ratingLeadership,
+        ratingMotivation, ratingResearchPotential, relationship]
     ReferenceLetterUploadContextDTO:
       type: object
       properties:

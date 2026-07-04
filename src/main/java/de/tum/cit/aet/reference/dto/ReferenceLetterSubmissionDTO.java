@@ -6,11 +6,11 @@ import de.tum.cit.aet.reference.constants.OverallRecommendation;
 import de.tum.cit.aet.reference.constants.PeerRating;
 import de.tum.cit.aet.reference.constants.RefereeRelationship;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
- * The structured assessment a referee submits alongside the recommendation letter PDF. Every field is
- * mandatory: the upload page does not let a referee submit until all questions are answered, and
- * {@link PeerRating#CANNOT_JUDGE} is the escape hatch for a dimension they cannot rate.
+ * The structured assessment a referee submits with the PDF recommendation letter PDF.
+ * Every field is mandatory.
  *
  * @param relationship             capacity in which the referee knows the applicant
  * @param acquaintanceDuration     how long the referee has known the applicant
@@ -22,6 +22,7 @@ import jakarta.validation.constraints.NotNull;
  * @param ratingLeadership         peer-group rating of leadership
  * @param ratingCollaboration      peer-group rating of ability to collaborate
  * @param overallRecommendation    the referee's overall endorsement
+ * @param letter                   the recommendation letter PDF file
  */
 public record ReferenceLetterSubmissionDTO(
     @NotNull RefereeRelationship relationship,
@@ -33,5 +34,6 @@ public record ReferenceLetterSubmissionDTO(
     @NotNull PeerRating ratingCommunication,
     @NotNull PeerRating ratingLeadership,
     @NotNull PeerRating ratingCollaboration,
-    @NotNull OverallRecommendation overallRecommendation
+    @NotNull OverallRecommendation overallRecommendation,
+    @NotNull MultipartFile letter
 ) {}
