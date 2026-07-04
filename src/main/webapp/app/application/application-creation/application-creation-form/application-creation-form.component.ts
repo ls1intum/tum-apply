@@ -141,19 +141,12 @@ export default class ApplicationCreationFormComponent {
   personalInfoDataValid = signal<boolean>(false);
   educationDataValid = signal<boolean>(false);
   applicationDetailsDataValid = signal<boolean>(false);
-  referencesValid = signal<boolean>(true);
   references = signal<ReferenceRequestDTO[]>([]);
   referenceLettersConfidential = signal<boolean>(true);
   referenceLettersRequired = signal<number>(0);
   referenceLettersEnabled = computed(() => this.referenceLettersRequired() > 0);
   savingTick = signal<number>(0);
-  allPagesValid = computed(
-    () =>
-      this.personalInfoDataValid() &&
-      this.educationDataValid() &&
-      this.applicationDetailsDataValid() &&
-      (!this.referenceLettersEnabled() || this.referencesValid()),
-  );
+  allPagesValid = computed(() => this.personalInfoDataValid() && this.educationDataValid() && this.applicationDetailsDataValid());
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
   readonly formbuilder = inject(FormBuilder);
 
@@ -193,10 +186,8 @@ export default class ApplicationCreationFormComponent {
     const educationDataValid = this.educationDataValid();
     const applicationDetailsDataValid = this.applicationDetailsDataValid();
     const referencesEnabled = this.referenceLettersEnabled();
-    const referencesValid = this.referencesValid();
     const personalInfoAndEducationDataValid = personalInfoDataValid && educationDataValid;
-    const referencesGate = !referencesEnabled || referencesValid;
-    const allDataValid = personalInfoDataValid && educationDataValid && applicationDetailsDataValid && referencesGate;
+    const allDataValid = personalInfoDataValid && educationDataValid && applicationDetailsDataValid;
     const allPagesValid = this.allPagesValid();
     const location = this.location;
     const flushAutoSave: () => Promise<void> = () => this.autoSave.flush();
@@ -342,7 +333,7 @@ export default class ApplicationCreationFormComponent {
             onClick() {
               updateDocumentInformation();
             },
-            disabled: !referencesValid,
+            disabled: false,
             label: 'button.next',
             shouldTranslate: true,
             changePanel: true,
@@ -439,7 +430,6 @@ export default class ApplicationCreationFormComponent {
         }
         const required = application.job.referenceLettersRequired ?? 0;
         this.referenceLettersRequired.set(required);
-        this.referencesValid.set(required === 0);
 
         this.applicationState.set(application.applicationState);
         this.useLocalStorage.set(false);
@@ -614,10 +604,6 @@ export default class ApplicationCreationFormComponent {
 
   onApplicationDetailsDataValidityChanged(isValid: boolean): void {
     this.applicationDetailsDataValid.set(isValid);
-  }
-
-  onReferencesValidityChanged(isValid: boolean): void {
-    this.referencesValid.set(isValid);
   }
 
   onReferencesChanged(list: ReferenceRequestDTO[]): void {

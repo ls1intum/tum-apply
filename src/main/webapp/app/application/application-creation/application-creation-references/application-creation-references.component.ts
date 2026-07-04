@@ -50,7 +50,6 @@ export default class ApplicationCreationReferencesComponent {
   applicationCreation = input<boolean>(true);
   referenceLettersConfidential = input<boolean>(true);
 
-  valid = output<boolean>();
   changed = output<boolean>();
   referencesChanged = output<ReferenceRequestDTO[]>();
   referenceLettersConfidentialChanged = output<boolean>();
@@ -74,9 +73,6 @@ export default class ApplicationCreationReferencesComponent {
   /** Whether the applicant waives access to the submitted letters (only the professor sees them). */
   readonly confidentialControl = this.formBuilder.nonNullable.control(true);
 
-  /** Has the applicant added at least the required number of referees? */
-  readonly stepValid = computed(() => this.references().length >= this.requiredCount());
-
   private readonly initialized = signal<boolean>(false);
   private readonly toastService = inject(ToastService);
   private readonly referenceApi = inject(ReferenceRequestResourceApi);
@@ -91,10 +87,6 @@ export default class ApplicationCreationReferencesComponent {
     this.initialized.set(true);
     this.confidentialControl.setValue(this.referenceLettersConfidential(), { emitEvent: false });
     void this.refresh();
-  });
-
-  private readonly emitValidEffect = effect(() => {
-    this.valid.emit(this.stepValid());
   });
 
   /**
