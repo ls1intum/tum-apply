@@ -392,7 +392,7 @@
     },
     "applicationReferences": {
       "description": "Please list your referees below. Upon submission, they will be emailed a secure link to upload their recommendation letter.",
-      "manageDescription": "Edit, add, or remove your referees below. Changing a referee's email sends a fresh invitation to the new address. Referees who have already submitted their letter can no longer be changed.",
+      "manageDescription": "Edit, add, or remove your referees below until the application deadline. Changing a referee's email sends a fresh invitation to the new address. Referees who have already submitted their letter can no longer be changed.",
       "requiredCount": "Required: {count} · Added: ",
       "empty": "No referees added yet.",
       "section": {

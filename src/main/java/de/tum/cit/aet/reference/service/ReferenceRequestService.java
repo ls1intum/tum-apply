@@ -248,7 +248,6 @@ public class ReferenceRequestService {
      * Issues a fresh token for a single referee, marks the entry {@code REQUESTED}, resets its reminder
      * bookkeeping and sends the invitation email. Used both for the bulk dispatch at submission time and
      * when a referee is added or re-pointed to a new email after the application was already submitted.
-     * Must run inside a transaction so the lazily loaded {@code job.researchGroup} stays attached.
      *
      * @param application the owning application
      * @param entry       the referee entry to (re-)invite
@@ -447,7 +446,7 @@ public class ReferenceRequestService {
     }
 
     private void assertReferencesManageable(Application application) {
-        if (!REFERENCE_MANAGEABLE_STATES.contains(application.getState())) {
+        if (!REFERENCE_MANAGEABLE_STATES.contains(application.getState()) || application.getJob().getEndDate().isBefore(LocalDate.now())) {
             throw new OperationNotAllowedException("References can no longer be modified for this application.");
         }
     }

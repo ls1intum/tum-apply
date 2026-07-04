@@ -2973,6 +2973,7 @@ components:
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             JOB_CLOSED_DRAFT, INTERVIEW]
         desiredDate: {type: string, format: date}
+        jobEndDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
         jobLocation:
           type: string

@@ -102,6 +102,13 @@ export default class ApplicationDetailForApplicantComponent {
     if (this.previewDetailData()) return false;
     const app = this.application();
     if (!app || (app.referenceLettersRequired ?? 0) <= 0) return false;
+    if (app.jobEndDate) {
+      const endDate = new Date(app.jobEndDate);
+      endDate.setHours(23, 59, 59, 999);
+      if (endDate < new Date()) {
+        return false;
+      }
+    }
     return REFERENCE_MANAGEABLE_STATES.includes(app.applicationState);
   });
 

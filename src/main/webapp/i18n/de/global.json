@@ -392,7 +392,7 @@
     },
     "applicationReferences": {
       "description": "Bitte gib unten deine Referenzpersonen an. Nach dem Absenden erhalten diese einen sicheren Link per E-Mail, um ihr Empfehlungsschreiben hochzuladen.",
-      "manageDescription": "Bearbeite, ergänze oder entferne unten deine Referenzpersonen. Wenn du die E-Mail-Adresse einer Referenzperson änderst, wird eine neue Einladung an die neue Adresse gesendet. Referenzpersonen, die ihr Schreiben bereits eingereicht haben, können nicht mehr geändert werden.",
+      "manageDescription": "Bearbeite, ergänze oder entferne deine Referenzpersonen unten bis zur Bewerbungsfrist. Das Ändern der E-Mail-Adresse einer Referenzperson führt zum Versand einer neuen Einladung an die neue Adresse. Referenzpersonen, die ihr Schreiben bereits eingereicht haben, können nicht mehr geändert werden.",
       "requiredCount": "Benötigt: {count} · Hinzugefügt: ",
       "empty": "Noch keine Referenzpersonen hinzugefügt.",
       "section": {

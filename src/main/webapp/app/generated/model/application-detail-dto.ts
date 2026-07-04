@@ -16,6 +16,7 @@ export interface ApplicationDetailDTO {
     readonly applicationId: string;
     readonly applicationState: ApplicationDetailDTOApplicationStateEnum;
     readonly desiredDate?: string;
+    readonly jobEndDate?: string;
     readonly jobId: string;
     readonly jobLocation?: ApplicationDetailDTOJobLocationEnum;
     readonly jobTitle?: string;
