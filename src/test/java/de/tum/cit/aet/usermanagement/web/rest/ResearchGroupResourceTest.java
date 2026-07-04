@@ -641,6 +641,30 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Nested
+    class GetAllProfessorsForAdmin {
+
+        @Test
+        void getAllProfessorsForAdminReturnsEveryProfessor() {
+            UUID adminUserId = UUID.randomUUID();
+            List<UserShortDTO> result = api
+                .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
+                .getAndRead(API_BASE_PATH + "/admin/professors", Map.of(), new TypeReference<List<UserShortDTO>>() {}, 200);
+
+            assertThat(result).isNotNull();
+            assertThat(result).hasSize(2);
+            assertThat(result).anyMatch(u -> u.getUserId().equals(researchGroupUser.getUserId()));
+            assertThat(result).anyMatch(u -> u.getUserId().equals(secondResearchGroupUser.getUserId()));
+        }
+
+        @Test
+        void getAllProfessorsForAdminWithoutAdminRoleReturns403() {
+            api
+                .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(API_BASE_PATH + "/admin/professors", Map.of(), Void.class, 403);
+        }
+    }
+
+    @Nested
     class GetDraftResearchGroups {
 
         @Test

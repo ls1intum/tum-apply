@@ -2,6 +2,7 @@ package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.core.service.AuthenticationService;
@@ -17,6 +18,7 @@ import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
 import de.tum.cit.aet.usermanagement.service.KeycloakUserService.PagedResult;
 import de.tum.cit.aet.usermanagement.service.UserService;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -140,6 +142,18 @@ public class UserResource {
         log.info("PUT /api/users/ai-consent - Updating AI features for subject={} to {}", jwt.getSubject(), aiFeaturesEnabled);
         userService.updateAiConsent(jwt.getSubject(), aiFeaturesEnabled);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Returns every professor in the system, for admin filter dropdowns.
+     *
+     * @return list of professors
+     */
+    @Admin
+    @GetMapping("/professors")
+    public ResponseEntity<List<UserShortDTO>> getAllProfessors() {
+        log.info("GET /api/users/professors");
+        return ResponseEntity.ok(userService.getAllProfessors());
     }
 
     /**

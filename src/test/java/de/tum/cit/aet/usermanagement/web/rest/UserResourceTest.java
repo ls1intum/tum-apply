@@ -266,6 +266,41 @@ public class UserResourceTest extends AbstractResourceTest {
     }
 
     @Nested
+    class GetAllProfessors {
+
+        @Test
+        void shouldReturnAllProfessorsForAdmin() {
+            UserShortDTO firstProfessor = new UserShortDTO();
+            firstProfessor.setUserId(UUID.randomUUID());
+            firstProfessor.setFirstName("Alice");
+            firstProfessor.setLastName("Smith");
+            UserShortDTO secondProfessor = new UserShortDTO();
+            secondProfessor.setUserId(UUID.randomUUID());
+            secondProfessor.setFirstName("Bob");
+            secondProfessor.setLastName("Doe");
+            when(userService.getAllProfessors()).thenReturn(List.of(firstProfessor, secondProfessor));
+
+            UUID adminUserId = UUID.randomUUID();
+            List<UserShortDTO> result = api
+                .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
+                .getAndRead(API_BASE_PATH + "/professors", Map.of(), new TypeReference<List<UserShortDTO>>() {}, 200);
+
+            assertThat(result).isNotNull();
+            assertThat(result).hasSize(2);
+            assertThat(result).anyMatch(u -> u.getUserId().equals(firstProfessor.getUserId()));
+            assertThat(result).anyMatch(u -> u.getUserId().equals(secondProfessor.getUserId()));
+            verify(userService).getAllProfessors();
+        }
+
+        @Test
+        void shouldRejectNonAdminOnAllProfessors() {
+            api
+                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(API_BASE_PATH + "/professors", Map.of(), Void.class, 403);
+        }
+    }
+
+    @Nested
     class GetAvailableUsersForResearchGroup {
 
         @Test

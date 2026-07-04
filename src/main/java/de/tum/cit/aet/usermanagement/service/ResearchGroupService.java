@@ -114,6 +114,16 @@ public class ResearchGroupService {
     }
 
     /**
+     * Get every professor across all research groups. Intended for admin views that need a global
+     * professor picker (e.g. the All Applications filter dropdown).
+     *
+     * @return list of all users with the PROFESSOR role
+     */
+    public List<UserShortDTO> getAllProfessorsForAdmin() {
+        return userRepository.findAllProfessors().stream().map(UserShortDTO::new).toList();
+    }
+
+    /**
      * Get all members of the research group by id.
      *
      * @param researchGroupId the ID of the research group

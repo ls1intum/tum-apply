@@ -63,6 +63,13 @@ const routes: Routes = [
     loadComponent: () => import('./job/my-positions/my-positions-page.component').then(m => m.MyPositionsPageComponent),
     title: 'global.routes.job.myPositions',
   },
+  {
+    path: 'all-positions',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
+    loadComponent: () => import('./job/all-positions/all-positions-page.component').then(m => m.AllPositionsPageComponent),
+    title: 'global.routes.job.allPositions',
+  },
 
   // ======================================================================================
   // Application
@@ -105,6 +112,13 @@ const routes: Routes = [
     data: { authorities: [UserShortDTORolesEnum.Admin, UserShortDTORolesEnum.Applicant] },
     loadComponent: () => import('./application/application-detail-for-applicant/application-detail-for-applicant.component'),
     title: 'global.routes.application.detail',
+  },
+  {
+    path: 'applications',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTORolesEnum.Admin] },
+    loadComponent: () => import('./application/all-applications/all-applications-page.component').then(m => m.AllApplicationsPageComponent),
+    title: 'global.routes.application.allApplications',
   },
 
   // ======================================================================================
