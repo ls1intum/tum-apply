@@ -172,7 +172,7 @@ export default class ApplicationCreationReferencesComponent {
    * @param reference the referee entry to edit
    */
   onEdit(reference: ReferenceRequestDTO): void {
-    if (reference.referenceRequestId === undefined || reference.referenceRequestId === '') return;
+    if (reference.referenceRequestId === null || reference.referenceRequestId === undefined || reference.referenceRequestId === '') return;
     this.selectedTitleOption.set(this.titleOptions.find(option => option.value === reference.title));
     this.addForm.reset({
       title: reference.title ?? '',
@@ -197,7 +197,7 @@ export default class ApplicationCreationReferencesComponent {
    * @param reference the referee entry to remove
    */
   async onRemove(reference: ReferenceRequestDTO): Promise<void> {
-    if (reference.referenceRequestId === undefined || reference.referenceRequestId === '') return;
+    if (reference.referenceRequestId === null || reference.referenceRequestId === undefined || reference.referenceRequestId === '') return;
     this.loading.set(true);
     try {
       await firstValueFrom(this.referenceApi.remove(this.applicationId(), reference.referenceRequestId));
