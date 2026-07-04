@@ -2769,6 +2769,10 @@ paths:
         in: query
         required: false
         schema: {type: string}
+      - name: researchGroupId
+        in: query
+        required: false
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -4347,7 +4351,9 @@ components:
         email: {type: string}
         firstName: {type: string}
         lastName: {type: string}
-        researchGroup: {$ref: '#/components/schemas/ResearchGroupShortDTO'}
+        memberships:
+          type: array
+          items: {$ref: '#/components/schemas/ResearchGroupShortDTO'}
         roles:
           type: array
           items:
