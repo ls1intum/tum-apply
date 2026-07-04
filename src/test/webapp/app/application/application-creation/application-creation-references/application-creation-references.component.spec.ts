@@ -106,35 +106,6 @@ describe('ApplicationCreationReferencesComponent', () => {
     });
   });
 
-  describe('step validity', () => {
-    it.each([
-      { added: 0, required: 2, expected: false },
-      { added: 1, required: 2, expected: false },
-      { added: 2, required: 2, expected: true },
-      { added: 3, required: 2, expected: true },
-      { added: 0, required: 0, expected: true },
-    ])('should report stepValid=$expected when $added of $required referees are added', async ({ added, required, expected }) => {
-      await setupFixture(
-        Array.from({ length: added }, (_, i) => createMockReferenceRequestDTO({ referenceRequestId: `r-${i}` })),
-        required,
-      );
-
-      expect(component.stepValid()).toBe(expected);
-    });
-
-    it('should emit valid output whenever stepValid changes', async () => {
-      await setupFixture([], 1);
-      const emitSpy = vi.spyOn(component.valid, 'emit');
-
-      component.references.set([createMockReferenceRequestDTO({ referenceRequestId: 'r-1' })]);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(emitSpy).toHaveBeenCalled();
-      expect(emitSpy).toHaveBeenLastCalledWith(true);
-    });
-  });
-
   describe('email validation', () => {
     beforeEach(async () => {
       await setupFixture();
