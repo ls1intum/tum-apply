@@ -3059,6 +3059,9 @@ components:
         motivation: {type: string}
         projects: {type: string}
         referenceLettersConfidential: {type: boolean}
+        references:
+          type: array
+          items: {$ref: '#/components/schemas/ReferenceRequestDTO'}
         specialSkills: {type: string}
       required: [applicationState, job]
     ApplicationOverviewDTO:

@@ -50,6 +50,9 @@ export default class ApplicationCreationReferencesComponent {
   applicationCreation = input<boolean>(true);
   referenceLettersConfidential = input<boolean>(true);
 
+  /** References the parent already loaded (e.g. inlined in the ApplicationDetailDTO on the detail page). */
+  preloadedReferences = input<ReferenceRequestDTO[] | undefined>(undefined);
+
   changed = output<boolean>();
   referencesChanged = output<ReferenceRequestDTO[]>();
   referenceLettersConfidentialChanged = output<boolean>();
@@ -78,14 +81,22 @@ export default class ApplicationCreationReferencesComponent {
   private readonly referenceApi = inject(ReferenceRequestResourceApi);
 
   /**
-   * Reload the list whenever the active applicationId becomes available.
-   * Independent of auto-save: each add/remove is persisted directly.
+   * Seeds the list once the active applicationId becomes available: reuses the references passed in
+   * via {@link preloadedReferences} when the parent already loaded them, otherwise fetches them from
+   * the server. Independent of auto-save: each add/remove is persisted directly.
    */
   private readonly loadEffect = effect(() => {
     const id = this.applicationId();
     if (!id || this.initialized()) return;
     this.initialized.set(true);
     this.confidentialControl.setValue(this.referenceLettersConfidential(), { emitEvent: false });
+
+    const preloaded = this.preloadedReferences();
+    if (preloaded !== undefined) {
+      this.references.set(preloaded);
+      this.referencesChanged.emit(preloaded);
+      return;
+    }
     void this.refresh();
   });
 

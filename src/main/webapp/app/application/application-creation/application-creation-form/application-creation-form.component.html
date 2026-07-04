@@ -63,6 +63,7 @@
         [applicationId]="applicationId()"
         [requiredCount]="referenceLettersRequired()"
         [referenceLettersConfidential]="referenceLettersConfidential()"
+        [preloadedReferences]="references()"
         (changed)="onValueChanged()"
         (referencesChanged)="onReferencesChanged($event)"
         (referenceLettersConfidentialChanged)="onReferenceLettersConfidentialChanged($event)"

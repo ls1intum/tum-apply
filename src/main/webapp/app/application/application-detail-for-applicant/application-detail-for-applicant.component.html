@@ -292,6 +292,7 @@
                 [applicationId]="applicationId()"
                 [requiredCount]="application.referenceLettersRequired ?? 0"
                 [referenceLettersConfidential]="application.referenceLettersConfidential ?? true"
+                [preloadedReferences]="application.references ?? []"
                 descriptionKey="entity.applicationReferences.manageDescription"
                 [applicationCreation]="false"
               />

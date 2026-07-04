@@ -439,6 +439,7 @@ export default class ApplicationCreationFormComponent {
         this.educationData.set(getPage2FromApplication(application));
         this.applicationDetailsData.set(getPage3FromApplication(application));
         this.referenceLettersConfidential.set(application.referenceLettersConfidential ?? true);
+        this.references.set(application.references ?? []);
 
         this.updateDocumentInformation();
       } catch (error) {
@@ -729,6 +730,7 @@ export default class ApplicationCreationFormComponent {
       const application = await this.initPageCreateApplication(jobId);
       this.useLocalStorage.set(false);
       this.applicationId.set(application.applicationId ?? this.applicationId());
+      this.references.set(application.references ?? []);
       this.autoSave.setState(SavingStates.SAVING);
       const saved = await this.sendCreateApplicationData(this.applicationState(), false);
       this.autoSave.setState(saved ? SavingStates.SAVED : SavingStates.FAILED);
