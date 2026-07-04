@@ -21,14 +21,19 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import * as DropDownOptions from '../../job/dropdown-options';
 import { ApplicationResourceApi } from '../../generated/api/application-resource-api';
-import { ApplicationDetailDTO } from '../../generated/model/application-detail-dto';
+import { ApplicationDetailDTO, ApplicationDetailDTOApplicationStateEnum } from '../../generated/model/application-detail-dto';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/application-document-ids-dto';
 import { ReferenceRequestDTO } from '../../generated/model/reference-request-dto';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import ApplicationCreationReferencesComponent from '../application-creation/application-creation-references/application-creation-references.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 
-const REFERENCE_MANAGEABLE_STATES = ['SAVED', 'SENT', 'PENDING', 'IN_REVIEW', 'INTERVIEW'];
+const REFERENCE_MANAGEABLE_STATES: ApplicationDetailDTOApplicationStateEnum[] = [
+  ApplicationDetailDTOApplicationStateEnum.Saved,
+  ApplicationDetailDTOApplicationStateEnum.Sent,
+  ApplicationDetailDTOApplicationStateEnum.InReview,
+  ApplicationDetailDTOApplicationStateEnum.Interview,
+];
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
