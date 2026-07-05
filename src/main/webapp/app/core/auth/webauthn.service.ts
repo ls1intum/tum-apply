@@ -2,19 +2,22 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { PasskeyCredentialSummary } from 'app/core/auth/models/auth.model';
+import { WebAuthnPasskeyResourceApi } from 'app/generated/api/web-authn-passkey-resource-api';
 
 /**
  * Drives the in-app WebAuthn (passkey) ceremonies for applicants against Spring Security's built-in
  * endpoints (`/webauthn/register/options`, `/webauthn/register`, `/webauthn/authenticate/options`,
- * `/login/webauthn`) and manages credentials via `/api/auth/webauthn/passkeys`.
+ * `/login/webauthn`), which are not part of the OpenAPI spec and so are called directly. Passkey management
+ * (`/api/auth/webauthn/passkeys`) is a normal application endpoint and goes through the generated client.
  *
  * TUM staff passkeys are handled separately through Keycloak; this service is only for the application's own
- * (applicant) sessions. All calls include credentials so the session cookie (carrying the ceremony challenge)
- * and the app access-token cookie are sent.
+ * (applicant) sessions. The ceremony calls include credentials so the session cookie carrying the challenge
+ * is sent.
  */
 @Injectable({ providedIn: 'root' })
 export class WebAuthnService {
   private readonly http = inject(HttpClient);
+  private readonly passkeyApi = inject(WebAuthnPasskeyResourceApi);
   private readonly options = { withCredentials: true } as const;
 
   /** Registers a new passkey for the currently authenticated applicant. */
@@ -89,13 +92,14 @@ export class WebAuthnService {
   }
 
   /** Lists the current applicant's registered passkeys. */
-  list(): Promise<PasskeyCredentialSummary[]> {
-    return firstValueFrom(this.http.get<PasskeyCredentialSummary[]>('/api/auth/webauthn/passkeys', this.options));
+  async list(): Promise<PasskeyCredentialSummary[]> {
+    const passkeys = await firstValueFrom(this.passkeyApi.listPasskeys());
+    return passkeys.map(passkey => ({ id: passkey.id ?? '', label: passkey.label, createdDate: passkey.createdDate }));
   }
 
   /** Removes one of the current applicant's passkeys by credential id. */
   async remove(credentialId: string): Promise<void> {
-    await firstValueFrom(this.http.delete(`/api/auth/webauthn/passkeys/${encodeURIComponent(credentialId)}`, this.options));
+    await firstValueFrom(this.passkeyApi.removePasskey(credentialId));
   }
 
   private assertSupported(): void {

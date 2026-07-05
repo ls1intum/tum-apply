@@ -182,7 +182,6 @@ describe('WebAuthnService', () => {
     const listPromise = service.list();
     const listReq = httpMock.expectOne('/api/auth/webauthn/passkeys');
     expect(listReq.request.method).toBe('GET');
-    expect(listReq.request.withCredentials).toBe(true);
     listReq.flush([{ id: 'p1', label: 'Phone', createdDate: 1 }]);
     await expect(listPromise).resolves.toEqual([{ id: 'p1', label: 'Phone', createdDate: 1 }]);
 
