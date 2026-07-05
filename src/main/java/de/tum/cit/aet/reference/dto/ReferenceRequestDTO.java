@@ -12,11 +12,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Read model for a reference request. Carries the referee contact details and, once the letter has
- * been submitted, the structured assessment the referee filled in on the upload page. The assessment
- * fields are null until submission. When the owning application keeps its reference letters
- * confidential, the confidential content (the uploaded letter and the structured assessment) is
- * withheld from the applicant while the referee contact details and status remain visible.
+ * A DTO representing a reference request, including the referee's contact details, the status of the request,
+ * and, when available, the linked uploaded letter id and the structured assessment answers.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ReferenceRequestDTO(

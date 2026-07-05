@@ -704,7 +704,7 @@
       },
       "rating": {
         "title": "Assessment compared to peer group",
-        "description": "Compared to others in a similar peer group (students you have taught or supervised), how do you rate the applicant?",
+        "description": "How do you rate the applicant compared to peers you have supervised, taught, or worked with?",
         "rows": {
           "intellectualAbility": "Intellectual ability",
           "researchPotential": "Research potential",

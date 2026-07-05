@@ -126,7 +126,11 @@ export class ReferenceLetterUploadComponent {
    * @param option the selected dropdown option
    */
   protected onAnswerSelected(key: string, option: SelectOption | undefined): void {
-    this.answers.update(prev => ({ ...prev, [key]: option?.value as string | undefined }));
+    this.answers.update(prev => {
+      const next = Object.assign({}, prev);
+      next[key] = option?.value as string | undefined;
+      return next;
+    });
   }
 
   /**

@@ -703,8 +703,8 @@
         }
       },
       "rating": {
-        "title": "Einschätzung im Vergleich zur Vergleichsgruppe",
-        "description": "Wie schätzen Sie die bewerbende Person im Vergleich zu anderen einer ähnlichen Vergleichsgruppe (von Ihnen unterrichtete oder betreute Personen) ein?",
+        "title": "Bewertung im Vergleich zur Peergroup",
+        "description": "Wie bewerten Sie die bewerbende Person im Vergleich zu anderen, die Sie betreut, unterrichtet oder mit denen Sie zusammengearbeitet haben?",
         "rows": {
           "intellectualAbility": "Intellektuelle Fähigkeiten",
           "researchPotential": "Forschungspotenzial",
