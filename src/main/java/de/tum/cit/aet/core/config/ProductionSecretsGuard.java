@@ -13,12 +13,10 @@ import org.springframework.stereotype.Component;
 
 /**
  * Fails fast at startup (production profile only) when security-critical secrets are left at their built-in
- * development defaults. Mirrors the RSA-key guard in {@code AppTokenKeyConfiguration}.
- * <ul>
- *   <li>{@code security.otp.hmac-secret} also signs the OAuth2 authorization-request cookie; if it kept its
- *       committed default an attacker could forge that cookie.</li>
- *   <li>{@code app.webauthn.rp-id} left at {@code localhost} silently breaks passkeys in production.</li>
- * </ul>
+ * development defaults, mirroring the RSA-key guard in {@code AppTokenKeyConfiguration}. It rejects a default
+ * OTP HMAC secret (which also signs the OAuth2 authorization-request cookie, so a shared default would let an
+ * attacker forge it), a {@code localhost} WebAuthn relying-party id (which silently breaks passkeys), and the
+ * built-in Keycloak admin credentials (which would leave the admin API reachable with well-known defaults).
  */
 @Component
 public class ProductionSecretsGuard {
@@ -26,10 +24,18 @@ public class ProductionSecretsGuard {
     /** SHA-256 digest of the committed default {@code security.otp.hmac-secret}; compared by hash so the value itself is not embedded here. */
     private static final String DEFAULT_OTP_HMAC_DIGEST = "1b3a468a85889caba734e305dddf88d2e4299efd95553d2598a00a25977ae548";
 
+    /** Committed default {@code keycloak.admin.tum.client-secret} that must be overridden in production. */
+    private static final String DEFAULT_KEYCLOAK_ADMIN_CLIENT_SECRET = "tumapply-admin-api-secret";
+
+    /** Committed default {@code keycloak.users.admin.password} that must be overridden in production. */
+    private static final String DEFAULT_KEYCLOAK_USERS_ADMIN_PASSWORD = "admin";
+
     public ProductionSecretsGuard(
         Environment environment,
         @Value("${security.otp.hmac-secret:}") String otpHmacSecret,
-        @Value("${app.webauthn.rp-id:localhost}") String webAuthnRpId
+        @Value("${app.webauthn.rp-id:localhost}") String webAuthnRpId,
+        @Value("${keycloak.admin.tum.client-secret:}") String keycloakAdminClientSecret,
+        @Value("${keycloak.users.admin.password:}") String keycloakUsersAdminPassword
     ) {
         if (!environment.acceptsProfiles(Profiles.of("prod"))) {
             return;
@@ -40,6 +46,12 @@ public class ProductionSecretsGuard {
         }
         if (webAuthnRpId.isBlank() || "localhost".equalsIgnoreCase(webAuthnRpId)) {
             problems.add("APP_WEBAUTHN_RP_ID must be set to the production relying-party domain");
+        }
+        if (keycloakAdminClientSecret.isBlank() || DEFAULT_KEYCLOAK_ADMIN_CLIENT_SECRET.equals(keycloakAdminClientSecret)) {
+            problems.add("KEYCLOAK_ADMIN_TUM_CLIENT_SECRET must be set to a unique value (not the built-in default)");
+        }
+        if (keycloakUsersAdminPassword.isBlank() || DEFAULT_KEYCLOAK_USERS_ADMIN_PASSWORD.equals(keycloakUsersAdminPassword)) {
+            problems.add("KEYCLOAK_USERS_ADMIN_PASSWORD must be set to a unique value (not the built-in default)");
         }
         if (!problems.isEmpty()) {
             throw new IllegalStateException("Invalid production security configuration: " + String.join("; ", problems));
