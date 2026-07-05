@@ -79,7 +79,7 @@ public record ApplicationDetailDTO(
             HtmlSanitizer.sanitize(application.getMotivation()),
             job.getReferenceLettersRequired(),
             application.isReferenceLettersConfidential(),
-            mapReferences(application.getReferenceRequests(), includeConfidentialReferenceContent)
+            mapReferences(application.getReferenceRequests(), includeConfidentialReferenceContent),
             job.getEndDate()
         );
     }
