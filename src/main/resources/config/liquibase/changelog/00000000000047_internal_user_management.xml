@@ -9,7 +9,7 @@
     - users.password_hash / users.email_verified: local credential + verification state
     - app_refresh_token: tracks issued refresh-token JTIs so logout/rotation can revoke them
   -->
-  <changeSet id="046a_add_local_credentials_to_users" author="krusche">
+  <changeSet id="047a_add_local_credentials_to_users" author="krusche">
     <addColumn tableName="users">
       <column name="password_hash" type="VARCHAR(255)">
         <constraints nullable="true"/>
@@ -20,7 +20,7 @@
     </addColumn>
   </changeSet>
 
-  <changeSet id="046b_add_app_refresh_token" author="krusche">
+  <changeSet id="047b_add_app_refresh_token" author="krusche">
     <createTable tableName="app_refresh_token">
       <column name="jti" type="VARCHAR(36)">
         <constraints primaryKey="true" nullable="false"/>

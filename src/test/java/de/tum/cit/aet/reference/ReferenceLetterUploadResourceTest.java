@@ -9,6 +9,10 @@ import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.reference.constants.AcquaintanceDepth;
+import de.tum.cit.aet.reference.constants.OverallRecommendation;
+import de.tum.cit.aet.reference.constants.PeerRating;
+import de.tum.cit.aet.reference.constants.RefereeRelationship;
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.reference.dto.ReferenceLetterUploadContextDTO;
@@ -35,7 +39,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -118,7 +124,22 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
     }
 
     private static MockMultipartFile pdf(String filename) {
-        return new MockMultipartFile("file", filename, "application/pdf", "%PDF-1.4 test".getBytes(StandardCharsets.UTF_8));
+        return new MockMultipartFile("letter", filename, "application/pdf", "%PDF-1.4 test".getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static Map<String, String> assessmentParams() {
+        Map<String, String> params = new HashMap<>();
+        params.put("relationship", "RESEARCH_SUPERVISOR");
+        params.put("acquaintanceDuration", "THREE_TO_FIVE_YEARS");
+        params.put("acquaintanceDepth", "VERY_WELL");
+        params.put("ratingIntellectualAbility", "TOP_FIVE_PERCENT");
+        params.put("ratingResearchPotential", "TOP_TEN_PERCENT");
+        params.put("ratingMotivation", "TOP_ONE_TO_TWO_PERCENT");
+        params.put("ratingCommunication", "TOP_TWENTY_FIVE_PERCENT");
+        params.put("ratingLeadership", "TOP_FIFTY_PERCENT");
+        params.put("ratingCollaboration", "CANNOT_JUDGE");
+        params.put("overallRecommendation", "STRONGLY_RECOMMEND");
+        return params;
     }
 
     @Nested
@@ -153,22 +174,46 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
     class UploadLetter {
 
         @Test
-        void shouldStoreLetterAndTransitionRequestToSubmitted() {
+        void shouldStoreLetterWithAssessmentTransitionRequestToSubmitted() {
             savedRequestedEntry("upload-token");
 
             ReferenceRequestDTO updated = api.multipartPostAndRead(
                 String.format(CONTEXT_URL, "upload-token"),
                 List.of(pdf("letter.pdf")),
+                assessmentParams(),
                 new TypeReference<>() {},
                 200
             );
 
             assertThat(updated.status()).isEqualTo(ReferenceRequestStatus.SUBMITTED);
             assertThat(updated.documentId()).isNotNull();
+            assertThat(updated.relationship()).isEqualTo(RefereeRelationship.RESEARCH_SUPERVISOR);
+            assertThat(updated.ratingIntellectualAbility()).isEqualTo(PeerRating.TOP_FIVE_PERCENT);
+            assertThat(updated.overallRecommendation()).isEqualTo(OverallRecommendation.STRONGLY_RECOMMEND);
 
             ReferenceRequest persisted = referenceRequestRepository.findById(updated.referenceRequestId()).orElseThrow();
             assertThat(persisted.getStatus()).isEqualTo(ReferenceRequestStatus.SUBMITTED);
             assertThat(persisted.getDocumentId()).isEqualTo(updated.documentId());
+            assertThat(persisted.getRelationship()).isEqualTo(RefereeRelationship.RESEARCH_SUPERVISOR);
+            assertThat(persisted.getAcquaintanceDepth()).isEqualTo(AcquaintanceDepth.VERY_WELL);
+            assertThat(persisted.getRatingIntellectualAbility()).isEqualTo(PeerRating.TOP_FIVE_PERCENT);
+            assertThat(persisted.getRatingCollaboration()).isEqualTo(PeerRating.CANNOT_JUDGE);
+            assertThat(persisted.getOverallRecommendation()).isEqualTo(OverallRecommendation.STRONGLY_RECOMMEND);
+        }
+
+        @Test
+        void shouldReject400WhenAssessmentIsIncomplete() {
+            savedRequestedEntry("missing-answers-token");
+            Map<String, String> incomplete = assessmentParams();
+            incomplete.remove("overallRecommendation");
+
+            api.multipartPostAndRead(
+                String.format(CONTEXT_URL, "missing-answers-token"),
+                List.of(pdf("letter.pdf")),
+                incomplete,
+                new TypeReference<>() {},
+                400
+            );
         }
 
         @Test
@@ -177,7 +222,13 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
             entry.setStatus(ReferenceRequestStatus.SUBMITTED);
             referenceRequestRepository.save(entry);
 
-            api.multipartPostAndRead(String.format(CONTEXT_URL, "once-token"), List.of(pdf("letter.pdf")), new TypeReference<>() {}, 400);
+            api.multipartPostAndRead(
+                String.format(CONTEXT_URL, "once-token"),
+                List.of(pdf("letter.pdf")),
+                assessmentParams(),
+                new TypeReference<>() {},
+                400
+            );
         }
 
         @Test
@@ -189,6 +240,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
             api.multipartPostAndRead(
                 String.format(CONTEXT_URL, "expired-token"),
                 List.of(pdf("letter.pdf")),
+                assessmentParams(),
                 new TypeReference<>() {},
                 400
             );

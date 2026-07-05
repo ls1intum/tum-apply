@@ -18,12 +18,30 @@ const TOKEN = 'sample-token';
 
 interface ReferenceLetterUploadComponentInternals {
   onQueuedFilesChanged(files: File[]): void;
+  onAnswerSelected(key: string, option: { name: string; value: string } | undefined): void;
   confirmUpload(): Promise<void>;
   confirmDecline(): Promise<void>;
 }
 
 const internals = (component: ReferenceLetterUploadComponent): ReferenceLetterUploadComponentInternals =>
   component as unknown as ReferenceLetterUploadComponentInternals;
+
+const REQUIRED_ANSWERS: Record<string, string> = {
+  relationship: 'RESEARCH_SUPERVISOR',
+  acquaintanceDuration: 'THREE_TO_FIVE_YEARS',
+  acquaintanceDepth: 'VERY_WELL',
+  ratingIntellectualAbility: 'TOP_FIVE_PERCENT',
+  ratingResearchPotential: 'TOP_TEN_PERCENT',
+  ratingMotivation: 'TOP_ONE_TO_TWO_PERCENT',
+  ratingCommunication: 'TOP_TWENTY_FIVE_PERCENT',
+  ratingLeadership: 'TOP_FIFTY_PERCENT',
+  ratingCollaboration: 'CANNOT_JUDGE',
+  overallRecommendation: 'STRONGLY_RECOMMEND',
+};
+
+const fillAnswers = (component: ReferenceLetterUploadComponent): void => {
+  Object.entries(REQUIRED_ANSWERS).forEach(([key, value]) => internals(component).onAnswerSelected(key, { name: '', value }));
+};
 
 describe('ReferenceLetterUploadComponent', () => {
   let fixture: ComponentFixture<ReferenceLetterUploadComponent>;
@@ -89,21 +107,37 @@ describe('ReferenceLetterUploadComponent', () => {
 
     it('should not call the API until the user confirms after picking a file', () => {
       internals(component).onQueuedFilesChanged([fakePdf()]);
+      fillAnswers(component);
 
       expect(api.upload).not.toHaveBeenCalled();
     });
 
-    it('should POST the queued file and switch to the success view on confirm', async () => {
+    it('should POST the queued file with the assessment answers and switch to the success view on confirm', async () => {
       internals(component).onQueuedFilesChanged([fakePdf()]);
+      fillAnswers(component);
 
       await internals(component).confirmUpload();
 
       expect(api.upload).toHaveBeenCalledOnce();
-      expect(api.upload).toHaveBeenCalledWith(TOKEN, expect.any(File));
+      const call = api.upload.mock.calls[0];
+      expect(call[0]).toBe(TOKEN);
+      expect(call[1]).toBe(REQUIRED_ANSWERS.acquaintanceDepth);
+      expect(call.at(3)).toBeInstanceOf(File);
       expect(toast.showSuccessKey).toHaveBeenCalledOnce();
     });
 
     it('should be a no-op when confirm is pressed with nothing queued', async () => {
+      fillAnswers(component);
+
+      await internals(component).confirmUpload();
+
+      expect(api.upload).not.toHaveBeenCalled();
+    });
+
+    it('should not submit until every structured question is answered', async () => {
+      internals(component).onQueuedFilesChanged([fakePdf()]);
+      internals(component).onAnswerSelected('relationship', { name: '', value: 'RESEARCH_SUPERVISOR' });
+
       await internals(component).confirmUpload();
 
       expect(api.upload).not.toHaveBeenCalled();
@@ -112,6 +146,7 @@ describe('ReferenceLetterUploadComponent', () => {
     it('should toast on upload failure and stay on the upload view', async () => {
       api.upload.mockReturnValueOnce(throwError(() => new Error('boom')));
       internals(component).onQueuedFilesChanged([fakePdf()]);
+      fillAnswers(component);
 
       await internals(component).confirmUpload();
 

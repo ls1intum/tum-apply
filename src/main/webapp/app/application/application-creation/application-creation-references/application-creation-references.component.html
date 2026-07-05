@@ -78,18 +78,19 @@
         <div class="flex items-center gap-2">
           @switch (reference.status) {
             @case ('SUBMITTED') {
-              <span class="text-positive-default text-sm" jhiTranslate="entity.application_detail.reference_status.submitted"></span>
+              <span class="text-positive-default" jhiTranslate="entity.application_detail.reference_status.submitted">Submitted</span>
             }
             @case ('EXPIRED') {
-              <span class="text-negative-default text-sm" jhiTranslate="entity.application_detail.reference_status.expired"></span>
+              <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.expired">Expired</span>
             }
             @case ('REQUESTED') {
-              <span class="text-text-secondary text-sm" jhiTranslate="entity.application_detail.reference_status.requested"></span>
+              <span class="text-text-secondary" jhiTranslate="entity.application_detail.reference_status.requested">Requested</span>
+              <jhi-button severity="primary" variant="text" icon="pencil" [disabled]="loading()" (click)="onEdit(reference)" />
+              <jhi-button severity="danger" variant="text" icon="trash" [disabled]="loading()" (click)="onRemove(reference)" />
             }
-          }
-          @if (reference.status !== 'SUBMITTED') {
-            <jhi-button severity="primary" variant="text" icon="pencil" [disabled]="loading()" (click)="onEdit(reference)" />
-            <jhi-button severity="danger" variant="text" icon="trash" [disabled]="loading()" (click)="onRemove(reference)" />
+            @case ('DECLINED') {
+              <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.declined">Declined</span>
+            }
           }
         </div>
       </li>

@@ -18,6 +18,7 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.reference.dto.RefereeContactDTO;
+import de.tum.cit.aet.reference.dto.ReferenceLetterSubmissionDTO;
 import de.tum.cit.aet.reference.dto.ReferenceLetterUploadContextDTO;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
 import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
@@ -301,16 +302,34 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Stores the recommendation letter PDF uploaded by an external referee, links it to the
-     * reference request and marks the request {@code SUBMITTED}.
+     * Copies the structured assessment answers onto the reference request entity.
      *
-     * @param rawToken the plaintext token from the invitation email
-     * @param file     the uploaded PDF
-     * @return the updated request as a DTO
-     * @throws EntityNotFoundException      when the token is unknown
-     * @throws OperationNotAllowedException when the request is already submitted or the deadline has passed
+     * @param entry      the reference request being submitted
+     * @param assessment the answers the referee provided
      */
-    public ReferenceRequestDTO uploadLetter(String rawToken, MultipartFile file) {
+    private void applyAssessment(ReferenceRequest entry, ReferenceLetterSubmissionDTO assessment) {
+        entry.setRelationship(assessment.relationship());
+        entry.setAcquaintanceDuration(assessment.acquaintanceDuration());
+        entry.setAcquaintanceDepth(assessment.acquaintanceDepth());
+        entry.setRatingIntellectualAbility(assessment.ratingIntellectualAbility());
+        entry.setRatingResearchPotential(assessment.ratingResearchPotential());
+        entry.setRatingMotivation(assessment.ratingMotivation());
+        entry.setRatingCommunication(assessment.ratingCommunication());
+        entry.setRatingLeadership(assessment.ratingLeadership());
+        entry.setRatingCollaboration(assessment.ratingCollaboration());
+        entry.setOverallRecommendation(assessment.overallRecommendation());
+    }
+
+    /**
+     * Stores the recommendation letter PDF uploaded by an external referee together with the
+     * structured assessment answers, links the document to the reference request and marks the request
+     * {@code SUBMITTED}.
+     *
+     * @param rawToken          the plaintext token from the invitation email
+     * @param recommendation    the answer the referee submitted
+     * @return the updated request as a DTO
+     */
+    public ReferenceRequestDTO uploadLetter(String rawToken, ReferenceLetterSubmissionDTO recommendation) {
         ReferenceRequest entry = findByRawToken(rawToken);
         assertReferenceActionAllowed(entry);
 
@@ -319,7 +338,7 @@ public class ReferenceRequestService {
         String displayName = "Reference letter — " + entry.getFirstName() + " " + entry.getLastName();
 
         ApplicationDocument document = documentService.uploadApplicationDocument(
-            file,
+            recommendation.letter(),
             DocumentType.REFERENCE_LETTER,
             displayName,
             application,
@@ -327,6 +346,7 @@ public class ReferenceRequestService {
         );
 
         entry.setDocumentId(document.getDocumentId());
+        applyAssessment(entry, recommendation);
         entry.setStatus(ReferenceRequestStatus.SUBMITTED);
         ReferenceRequest saved = referenceRequestRepository.save(entry);
 
@@ -339,7 +359,6 @@ public class ReferenceRequestService {
      * @param applicationIds the list of application IDs to fetch reference requests for
      * @return a map with application IDs as keys and a set of reference requests associated with that application as values
      */
-
     public Map<UUID, Set<ReferenceRequest>> getReferencesForApplicationIds(List<UUID> applicationIds) {
         return referenceRequestRepository
             .findByApplicationIds(applicationIds)
