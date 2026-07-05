@@ -43,6 +43,7 @@ public class WebAuthnPasskeyResource {
     @Authenticated
     @GetMapping
     public List<PasskeyDTO> listPasskeys(@AuthenticationPrincipal Jwt jwt) {
+        log.info("GET /api/auth/webauthn/passkeys - Listing passkeys for subject={}", jwt.getSubject());
         PublicKeyCredentialUserEntity userEntity = userEntityRepository.findByUsername(jwt.getSubject());
         if (userEntity == null) {
             return List.of();
@@ -60,6 +61,7 @@ public class WebAuthnPasskeyResource {
     @Authenticated
     @DeleteMapping("/{credentialId}")
     public ResponseEntity<Void> removePasskey(@AuthenticationPrincipal Jwt jwt, @PathVariable String credentialId) {
+        log.info("DELETE /api/auth/webauthn/passkeys/{} - Removing passkey for subject={}", credentialId, jwt.getSubject());
         PublicKeyCredentialUserEntity userEntity = userEntityRepository.findByUsername(jwt.getSubject());
         if (userEntity == null) {
             return ResponseEntity.notFound().build();
