@@ -269,14 +269,14 @@
     @if (canManageReferences() || references().length > 0) {
       <section>
         @if (!previewDetailData()) {
-          <h2 class="section-title" jhiTranslate="entity.application_detail.reference_letters"></h2>
+          <h2 class="section-title" jhiTranslate="entity.application_detail.references"></h2>
         }
         <div class="section-detail-card">
           <div class="section-card-header">
             <fa-icon [icon]="['fas', 'envelope']" class="icon" />
-            <h3 class="section-card-title" jhiTranslate="entity.application_detail.reference_letters"></h3>
+            <h3 class="section-card-title" jhiTranslate="entity.application_detail.reference_requests"></h3>
           </div>
-          <div class="section-card-body">
+          <div class="section-card-body ml-2">
             <p class="flex mb-3">
               <fa-icon [icon]="referenceLettersConfidential() ? 'lock' : 'circle-info'" class="text-primary mr-1 w-5 shrink-0" />
               <span
