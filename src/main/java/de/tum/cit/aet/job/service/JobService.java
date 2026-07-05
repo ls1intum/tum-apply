@@ -406,7 +406,7 @@ public class JobService {
     }
 
     private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {
-        User supervisingProfessor = userRepository.findByIdElseThrow(dto.supervisingProfessor());
+        User supervisingProfessor = userRepository.findWithResearchGroupRolesByUserIdElseThrow(dto.supervisingProfessor());
         // Ensure that the current user is either an admin or a research group member of
         // the supervising professor
         currentUserService.isAdminOrMemberOfResearchGroupOfProfessor(supervisingProfessor);
