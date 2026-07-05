@@ -56,12 +56,7 @@ public class KeycloakAuthenticationService {
      * @return list of passkey credentials projected as DTOs
      */
     public List<PasskeyDTO> listPasskeys(Jwt jwt) {
-        return keycloakUserService
-            .getCredentials(jwt.getSubject())
-            .stream()
-            .filter(this::isPasskeyCredential)
-            .map(PasskeyDTO::of)
-            .toList();
+        return keycloakUserService.getCredentials(jwt.getSubject()).stream().filter(this::isPasskeyCredential).map(PasskeyDTO::of).toList();
     }
 
     /**
