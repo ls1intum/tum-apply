@@ -5,6 +5,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ResearchGroupInfoComponent } from 'app/usermanagement/research-group/research-group-info/research-group-info.component';
 import { User } from 'app/core/auth/account.service';
 import { ResearchGroupDTO } from 'app/generated/model/research-group-dto';
+import { SavingStates } from 'app/shared/constants/saving-states';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -39,13 +40,22 @@ describe('ResearchGroupInfoComponent', () => {
     id: 'user-1',
     email: 'john.doe@example.com',
     name: 'John Doe',
-    researchGroup: {
-      researchGroupId: 'rg-1',
-      name: 'Test Research Group',
-    },
+    memberships: [
+      {
+        researchGroupId: 'rg-1',
+        name: 'Test Research Group',
+      },
+    ],
+  };
+
+  const setActiveUser = (activeResearchGroupId: string | undefined) => {
+    mockAccountService.user.set(mockUser);
+    mockAccountService.activeResearchGroupId.set(activeResearchGroupId);
   };
 
   beforeEach(async () => {
+    vi.useFakeTimers();
+
     mockResearchGroupApi = createResearchGroupResourceApiMock();
     mockToastService = createToastServiceMock();
     mockAccountService = createAccountServiceMock();
@@ -68,6 +78,7 @@ describe('ResearchGroupInfoComponent', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.clearAllMocks();
   });
 
@@ -98,10 +109,26 @@ describe('ResearchGroupInfoComponent', () => {
     });
   });
 
+  describe('User and Research Group ID', () => {
+    it('should compute researchGroupId from active research group', () => {
+      setActiveUser('rg-1');
+      fixture.detectChanges();
+
+      expect(component.researchGroupId()).toBe('rg-1');
+    });
+
+    it('should return undefined researchGroupId when no active research group', () => {
+      setActiveUser(undefined);
+      fixture.detectChanges();
+
+      expect(component.researchGroupId()).toBeUndefined();
+    });
+  });
+
   describe('Data Loading', () => {
     it('should load research group data and populate form when user is available', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
+      setActiveUser('rg-1');
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -121,13 +148,10 @@ describe('ResearchGroupInfoComponent', () => {
     });
 
     it.each([
-      { description: 'no research group', user: () => Object.assign({}, mockUser, { researchGroup: undefined }) },
-      {
-        description: 'empty research group id',
-        user: () => Object.assign({}, mockUser, { researchGroup: Object.assign({}, mockUser.researchGroup, { researchGroupId: '' }) }),
-      },
-    ])('should not initialize when user has $description', async ({ user }) => {
-      mockAccountService.user.set(user());
+      { description: 'no active research group id', active: undefined },
+      { description: 'an empty active research group id', active: '' },
+    ])('should not initialize when user has $description', async ({ active }) => {
+      setActiveUser(active);
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -137,7 +161,7 @@ describe('ResearchGroupInfoComponent', () => {
 
     it('should show error toast when loading fails', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
-      mockAccountService.user.set(mockUser);
+      setActiveUser('rg-1');
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -151,7 +175,7 @@ describe('ResearchGroupInfoComponent', () => {
     it('should only initialize once even if effect runs multiple times', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
 
-      mockAccountService.user.set(mockUser);
+      setActiveUser('rg-1');
       fixture.detectChanges();
       await fixture.whenStable();
 
@@ -163,20 +187,36 @@ describe('ResearchGroupInfoComponent', () => {
 
       expect(mockResearchGroupApi.getResearchGroup).toHaveBeenCalledOnce();
     });
-  });
 
-  describe('Save', () => {
-    it('should save research group data successfully', async () => {
+    it('should not trigger an auto-save while the form is being populated from the API', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockAccountService.user.set(mockUser);
 
       fixture.detectChanges();
       await fixture.whenStable();
 
-      component.form.patchValue({ name: 'Updated Name', head: 'Updated Head' });
+      // Run any pending debounce timer; nothing should be scheduled.
+      await vi.runAllTimersAsync();
 
-      await component.onSave();
+      expect(mockResearchGroupApi.updateResearchGroup).not.toHaveBeenCalled();
+      expect(component.savingState()).toBe(SavingStates.SAVED);
+    });
+  });
+
+  describe('Auto-save', () => {
+    it('should auto-save after a debounced user edit and settle the badge on SAVED', async () => {
+      mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
+      mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
+      setActiveUser('rg-1');
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      component.form.patchValue({ name: 'Updated Name', head: 'Updated Head' });
+      expect(component.savingState()).toBe(SavingStates.SAVING);
+
+      await vi.runAllTimersAsync();
+      await component.autoSave.flush();
 
       expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith(
         'rg-1',
@@ -186,74 +226,47 @@ describe('ResearchGroupInfoComponent', () => {
           abbreviation: mockResearchGroupData.abbreviation,
         }),
       );
-      expect(mockToastService.showSuccess).toHaveBeenCalledWith({ detail: 'researchGroup.groupInfo.toasts.updated' });
-      expect(component.isSaving()).toBe(false);
+      expect(component.savingState()).toBe(SavingStates.SAVED);
     });
 
-    it('should not save when form is invalid', async () => {
+    it('should leave the badge on SAVING while the form is invalid', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
+      setActiveUser('rg-1');
 
       fixture.detectChanges();
       await fixture.whenStable();
 
       component.form.patchValue({ name: '', head: '' });
-
-      await component.onSave();
+      await vi.runAllTimersAsync();
 
       expect(mockResearchGroupApi.updateResearchGroup).not.toHaveBeenCalled();
     });
 
-    it('should set isSaving to true during save operation', async () => {
+    it('should settle the badge on FAILED and toast when the save request errors', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockResearchGroupApi.updateResearchGroup.mockReturnValue(
-        new Promise(resolve => setTimeout(() => resolve(mockResearchGroupData), 100)),
-      );
-      mockAccountService.user.set(mockUser);
+      mockResearchGroupApi.updateResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
+      setActiveUser('rg-1');
 
       fixture.detectChanges();
       await fixture.whenStable();
 
       component.form.patchValue({ name: 'Updated Name', head: 'Updated Head' });
+      await component.autoSave.flush();
 
-      const savePromise = component.onSave();
-      expect(component.isSaving()).toBe(true);
-
-      await savePromise;
-      expect(component.isSaving()).toBe(false);
+      expect(component.savingState()).toBe(SavingStates.FAILED);
+      expect(mockToastService.showError).toHaveBeenCalledWith({ detail: 'researchGroup.groupInfo.toasts.saveFailed' });
     });
 
-    it('should show error when saving without research group id', async () => {
+    it('should not call the API when there is no research group id', async () => {
       mockAccountService.user.set(Object.assign({}, mockUser, { researchGroup: undefined }));
 
       fixture.detectChanges();
       await fixture.whenStable();
 
       component.form.patchValue({ name: 'Test Name', head: 'Test Head' });
-
-      await component.onSave();
+      await component.autoSave.flush();
 
       expect(mockResearchGroupApi.updateResearchGroup).not.toHaveBeenCalled();
-      expect(mockToastService.showError).toHaveBeenCalledWith({
-        summary: 'researchGroup.groupInfo.toasts.saveFailed',
-        detail: 'researchGroup.groupInfo.toasts.noId',
-      });
-    });
-
-    it('should show error toast when save fails', async () => {
-      mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockResearchGroupApi.updateResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
-      mockAccountService.user.set(mockUser);
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      component.form.patchValue({ name: 'Updated Name', head: 'Updated Head' });
-
-      await component.onSave();
-
-      expect(mockToastService.showError).toHaveBeenCalledWith({ detail: 'researchGroup.groupInfo.toasts.saveFailed' });
-      expect(component.isSaving()).toBe(false);
     });
   });
 
@@ -261,7 +274,7 @@ describe('ResearchGroupInfoComponent', () => {
     it('should map street field between form address and DTO street', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(Object.assign({}, mockResearchGroupData, { street: 'Test Street' })));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
+      setActiveUser('rg-1');
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -269,51 +282,26 @@ describe('ResearchGroupInfoComponent', () => {
       expect(component.form.value.address).toBe('Test Street');
 
       component.form.patchValue({ address: 'New Street' });
-
-      await component.onSave();
+      await component.autoSave.flush();
 
       expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith('rg-1', expect.objectContaining({ street: 'New Street' }));
-    });
-
-    it('should default undefined optional fields to empty strings on save', async () => {
-      mockResearchGroupApi.getResearchGroup.mockReturnValue(of({ name: 'Test', head: 'Test Head' }));
-      mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      await component.onSave();
-
-      expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith(
-        'rg-1',
-        expect.objectContaining({
-          abbreviation: '',
-          website: '',
-          email: '',
-          city: '',
-          postalCode: '',
-          street: '',
-          description: '',
-        }),
-      );
     });
 
     it('should default null name and head to empty strings on save', async () => {
       mockResearchGroupApi.getResearchGroup.mockReturnValue(of(mockResearchGroupData));
       mockResearchGroupApi.updateResearchGroup.mockReturnValue(of(mockResearchGroupData));
-      mockAccountService.user.set(mockUser);
+      setActiveUser('rg-1');
 
       fixture.detectChanges();
       await fixture.whenStable();
 
-      component.form.patchValue({ name: null, head: null });
       component.form.controls.name.clearValidators();
       component.form.controls.head.clearValidators();
       component.form.controls.name.updateValueAndValidity();
       component.form.controls.head.updateValueAndValidity();
+      component.form.patchValue({ name: null, head: null });
 
-      await component.onSave();
+      await component.autoSave.flush();
 
       expect(mockResearchGroupApi.updateResearchGroup).toHaveBeenCalledWith('rg-1', expect.objectContaining({ name: '', head: '' }));
     });

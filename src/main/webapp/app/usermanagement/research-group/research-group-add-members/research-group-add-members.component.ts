@@ -113,7 +113,9 @@ export class ResearchGroupAddMembersComponent {
     const requestId = ++this.latestRequestId;
 
     try {
-      const response = await lastValueFrom(this.userApi.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), query));
+      const response = await lastValueFrom(
+        this.userApi.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), query, this.researchGroupId()),
+      );
       // If another newer request has been started, ignore the response of this (stale) one
       if (requestId !== this.latestRequestId) {
         return;

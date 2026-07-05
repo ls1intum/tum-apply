@@ -13,7 +13,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
 import { TranslateService } from '@ngx-translate/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, map } from 'rxjs';
@@ -23,6 +23,7 @@ import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 import { KeycloakRealmKind } from 'app/core/auth/keycloak-authentication.utils';
 import { ThemeService } from 'app/service/theme.service';
+import { MobileSidebarService } from 'app/service/mobile-sidebar.service';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -30,11 +31,21 @@ import { SelectOption } from '../../atoms/select/select.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { JhiMenuItem, MenuComponent } from '../../atoms/menu/menu.component';
 import { UserAvatarComponent } from '../../atoms/user-avatar/user-avatar.component';
+import { DrawerComponent } from '../../molecules/drawer/drawer.component';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, FontAwesomeModule, DynamicDialogModule, TranslateDirective, MenuComponent, UserAvatarComponent],
+  imports: [
+    CommonModule,
+    ButtonComponent,
+    FontAwesomeModule,
+    DynamicDialogModule,
+    DrawerComponent,
+    TranslateDirective,
+    MenuComponent,
+    UserAvatarComponent,
+  ],
   templateUrl: './header.component.html',
   encapsulation: ViewEncapsulation.None,
 })
@@ -68,6 +79,14 @@ export class HeaderComponent {
   profileMenuAriaLabel = computed(() => {
     this.langChange();
     return this.translateService.instant('header.profileMenu');
+  });
+  mobileMenuLabel = computed(() => {
+    this.langChange();
+    return this.translateService.instant('header.menuToggle');
+  });
+  sidebarToggleLabel = computed(() => {
+    this.langChange();
+    return this.translateService.instant('header.sidebarToggle');
   });
   themeOptions: SelectOption[] = [
     { name: 'Light', value: 'light' },
@@ -111,6 +130,42 @@ export class HeaderComponent {
 
   profileMenu = viewChild<MenuComponent>('profileMenu');
   isProfileMenuOpen = signal(false);
+  mobileMenuOpen = signal(false);
+
+  readonly mobileSidebarService = inject(MobileSidebarService);
+  readonly mobileSidebarOpen = this.mobileSidebarService.open;
+
+  groupSwitcherMenu = viewChild<MenuComponent>('groupSwitcherMenu');
+  isGroupSwitcherOpen = signal(false);
+  hasMultipleMemberships = this.accountService.hasMultipleMemberships;
+  activeResearchGroup = this.accountService.activeResearchGroup;
+  activeResearchGroupLabel = computed(() => {
+    this.langChange();
+    return this.activeResearchGroup()?.name ?? this.translateService.instant('header.activeResearchGroup');
+  });
+  activeResearchGroupAriaLabel = computed(() => {
+    this.langChange();
+    return this.translateService.instant('header.activeResearchGroup');
+  });
+
+  groupSwitcherItems = computed<JhiMenuItem[]>(() => {
+    const memberships = this.accountService.memberships();
+    if (memberships.length < 2) {
+      return [];
+    }
+    const activeId = this.accountService.activeResearchGroupId();
+    return memberships.map(m => ({
+      label: m.name ?? '',
+      icon: activeId === m.researchGroupId ? 'check' : 'circle',
+      severity: 'primary',
+      command: () => {
+        if (m.researchGroupId !== undefined && m.researchGroupId !== activeId) {
+          this.accountService.setActiveResearchGroup(m.researchGroupId);
+          void this.router.navigateByUrl(this.router.url, { onSameUrlNavigation: 'reload', skipLocationChange: false });
+        }
+      },
+    }));
+  });
 
   profileMenuItems = computed<JhiMenuItem[]>(() => {
     this.currentLanguage();
@@ -149,7 +204,19 @@ export class HeaderComponent {
       this.setupBannerObserver();
     });
 
-    // Re-setup on navigation
+    // Close the mobile drawers the moment navigation starts so the modal mask animates away
+    // in parallel with the new route loading instead of waiting for it to finish.
+    this.router.events
+      .pipe(
+        filter(e => e instanceof NavigationStart),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.mobileMenuOpen.set(false);
+        this.mobileSidebarService.close();
+      });
+
+    // Re-setup the banner observer once the destination page has actually rendered.
     this.router.events
       .pipe(
         filter(e => e instanceof NavigationEnd),
@@ -175,6 +242,7 @@ export class HeaderComponent {
   }
 
   login(): void {
+    this.closeMobileMenu();
     if (this.isProfessorPage()) {
       void this.onTUMSSOLogin();
     } else {
@@ -189,10 +257,12 @@ export class HeaderComponent {
   }
 
   redirectToProfessorLandingPage(): void {
+    this.closeMobileMenu();
     void this.router.navigate(['/professor']);
   }
 
   redirectToApplicantLandingPage(): void {
+    this.closeMobileMenu();
     void this.router.navigate(['/']);
   }
 
@@ -201,14 +271,17 @@ export class HeaderComponent {
   }
 
   async onProfessorPasskeyLogin(): Promise<void> {
+    this.closeMobileMenu();
     await this.authFacadeService.loginWithPasskey(KeycloakRealmKind.Tum, this.router.url);
   }
 
   async onApplicantPasskeyLogin(): Promise<void> {
+    this.closeMobileMenu();
     await this.authFacadeService.loginWithPasskey(KeycloakRealmKind.External, this.router.url);
   }
 
   logout(): void {
+    this.closeMobileMenu();
     void this.authFacadeService.logout();
   }
 
@@ -229,6 +302,7 @@ export class HeaderComponent {
   }
 
   navigateToSettings(): void {
+    this.closeMobileMenu();
     void this.router.navigate(['/settings']);
   }
 
@@ -245,6 +319,25 @@ export class HeaderComponent {
 
   toggleProfileMenu(event: Event): void {
     this.profileMenu()?.toggle(event);
+  }
+
+  toggleGroupSwitcher(event: Event): void {
+    this.groupSwitcherMenu()?.toggle(event);
+  }
+
+  openMobileSidebar(): void {
+    this.mobileSidebarService.open.set(true);
+  }
+
+  /**
+   * Eagerly closes the mobile drawer so its modal scroll lock (overflow: hidden on body)
+   * is released before navigation starts; otherwise the new page renders behind the drawer's
+   * exit animation and the user can't scroll for the duration of that animation.
+   */
+  private closeMobileMenu(): void {
+    if (this.mobileMenuOpen()) {
+      this.mobileMenuOpen.set(false);
+    }
   }
 
   private setupBannerObserver(): void {

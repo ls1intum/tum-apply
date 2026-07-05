@@ -1,25 +1,17 @@
 <p-confirmdialog [class]="dialogStyleClass()">
   <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
-    <div class="confirm-dialog bg-background-default rounded-[var(--p-button-border-radius)] p-6">
-      <h2 class="confirm-title text-2xl font-semibold mb-4 text-left">
+    <div class="bg-background-default rounded-[var(--p-button-border-radius)] p-6">
+      <h2 class="text-2xl font-semibold mb-4 text-left">
         {{ message.header }}
       </h2>
 
-      <p class="confirm-message text-left mb-6">
+      <p class="text-left mb-6">
         {{ message.message }}
       </p>
 
-      <div class="confirm-buttons flex justify-end items-center gap-3">
+      <div class="flex justify-end items-center gap-3">
+        <jhi-button [shouldTranslate]="true" label="entity.action.cancel" (click)="onReject()" variant="outlined" [size]="size()" />
         <jhi-button
-          class="cancel"
-          [shouldTranslate]="true"
-          label="entity.action.cancel"
-          (click)="onReject()"
-          variant="outlined"
-          [size]="size()"
-        />
-        <jhi-button
-          class="confirm"
           [label]="label()"
           [icon]="confirmIcon()"
           (click)="onAccept()"
