@@ -252,7 +252,8 @@
       "personal_statements": "Persönliche Angaben",
       "personal_information": "Persönliche Informationen",
       "personal_documents": "Persönliche Dokumente",
-      "reference_letters": "Empfehlungsschreiben Anfragen",
+      "recommendations": "Empfehlungsschreiben",
+      "recommendation_requests": "Anfragen",
       "reference_status": {
         "added": "(hinzugefügt)",
         "requested": "(angefragt)",
@@ -261,8 +262,8 @@
         "declined": "(abgelehnt)"
       },
       "reference_deadline": "Frist",
-      "reference_confidential": "Vertraulich - nur die betreuende Person kann die eingereichten Schreiben einsehen.",
-      "reference_shared": "Nicht vertraulich - du kannst die eingereichten Schreiben ebenfalls einsehen.",
+      "reference_confidential": "Vertraulich - nur die betreuende Person kann die eingereichten Empfehlungen einsehen.",
+      "reference_shared": "Nicht vertraulich - du kannst die eingereichten Empfehlungen ebenfalls einsehen.",
       "not_found": "Bewerbung nicht gefunden"
     },
     "applicationSteps": {
