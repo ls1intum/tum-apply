@@ -494,6 +494,7 @@ describe('ApplicationForm', () => {
       expect(result.specialSkills).toBe('<p>Java, TypeScript, Angular</p>');
       expect(result.desiredDate).toBe('2025-06-01');
       expect(result.projects).toBe('<p>Built multiple apps</p>');
+      expect(result.referenceLettersConfidential).toBe(true);
     });
 
     it('should return DTO without address fields when state is undefined', () => {
