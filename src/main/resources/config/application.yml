@@ -318,12 +318,6 @@ keycloak:
     admin:
       username: ${KEYCLOAK_USERS_ADMIN_USERNAME:admin}
       password: ${KEYCLOAK_USERS_ADMIN_PASSWORD:admin}
-  server:
-    tum:
-      # TUM realm (`keycloak.tum-login-realm`) confidential client used by server auth flows
-      client-id: ${KEYCLOAK_SERVER_TUM_CLIENT_ID:tumapply-server-client}
-      # Secret for the TUM realm server client above
-      client-secret: ${KEYCLOAK_SERVER_TUM_CLIENT_SECRET:tumapply-server-secret}
   admin:
     tum:
       # TUM realm (`keycloak.tum-login-realm`) admin service-account client used by server Admin API calls

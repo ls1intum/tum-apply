@@ -12,7 +12,6 @@ public class KeycloakProperties {
     private String clientId;
     private String relyingPartyId;
     private Users users = new Users();
-    private Server server = new Server();
     private Admin admin = new Admin();
 
     @Data
@@ -26,12 +25,6 @@ public class KeycloakProperties {
 
         private String username;
         private String password;
-    }
-
-    @Data
-    public static class Server {
-
-        private RealmClient tum = new RealmClient();
     }
 
     @Data

@@ -108,10 +108,6 @@ keycloak:
     admin:
       username: admin
       password: admin
-  server:
-    tum:
-      client-id: tumapply-server-client
-      client-secret: tumapply-server-secret
   admin:
     tum:
       client-id: tumapply-admin-api
