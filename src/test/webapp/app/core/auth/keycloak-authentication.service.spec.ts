@@ -115,16 +115,7 @@ describe('KeycloakAuthenticationService', () => {
   });
 
   describe('login with providers', () => {
-    it.each([
-      [IdpProvider.Google, 'google'],
-      [IdpProvider.Apple, 'apple'],
-    ])('should login with %s provider using idpHint %s', async (provider, hint) => {
-      await service.loginWithProvider(provider);
-      expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ idpHint: hint }));
-      expect(keycloakInstance.login).toHaveBeenCalledOnce();
-    });
-
-    it('should login with TUM provider without idpHint', async () => {
+    it('should login without an idpHint (provider brokering moved to social login)', async () => {
       await service.loginWithProvider(IdpProvider.TUM);
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.not.objectContaining({ idpHint: expect.anything() }));
       expect(keycloakInstance.login).toHaveBeenCalledOnce();

@@ -134,7 +134,6 @@ export class KeycloakAuthenticationService {
       await this.initializeKeycloakForLogin(keycloak);
       await keycloak.login({
         redirectUri: buildRedirectUri(redirectUri),
-        idpHint: provider !== IdpProvider.TUM ? provider : undefined,
       });
     } catch (err) {
       clearPendingRealm(KeycloakAuthenticationService.PENDING_REALM_STORAGE_SLOT);
