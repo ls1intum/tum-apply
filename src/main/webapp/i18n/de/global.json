@@ -11,12 +11,14 @@
         "creation": "TUMApply - Stellenerstellung",
         "edit": "TUMApply - Stellenbearbeitung",
         "overview": "TUMApply - Stellenübersicht",
-        "myPositions": "TUMApply - Stellen"
+        "myPositions": "TUMApply - Stellen",
+        "allPositions": "TUMApply - Alle Stellen"
       },
       "application": {
         "creation": "TUMApply - Bewerbungserstellung",
         "overview": "TUMApply - Bewerbungsübersicht",
-        "detail": "TUMApply - Bewerbungsdetail"
+        "detail": "TUMApply - Bewerbungsdetail",
+        "allApplications": "TUMApply - Alle Bewerbungen"
       },
       "evaluation": {
         "overview": "TUMApply - Evaluierungsübersicht",
@@ -255,8 +257,12 @@
         "added": "(hinzugefügt)",
         "requested": "(angefragt)",
         "submitted": "(eingereicht)",
-        "expired": "(abgelaufen)"
+        "expired": "(abgelaufen)",
+        "declined": "(abgelehnt)"
       },
+      "reference_deadline": "Frist",
+      "reference_confidential": "Vertraulich - nur die betreuende Person kann die eingereichten Schreiben einsehen.",
+      "reference_shared": "Nicht vertraulich - du kannst die eingereichten Schreiben ebenfalls einsehen.",
       "not_found": "Bewerbung nicht gefunden"
     },
     "applicationSteps": {
@@ -401,6 +407,7 @@
       "button": {
         "add": "Hinzufügen"
       },
+      "confidentialWaiver": "Ich verzichte darauf, die eingereichten Empfehlungen einzusehen. Nur die betreuende Person kann sie lesen.",
       "toast": {
         "loadFailed": {
           "summary": "Referenzperson konnten nicht geladen werden",
@@ -432,10 +439,11 @@
     },
     "applicationOverview": {
       "header": "Deine Bewerbungen",
+      "recommendationMissing": "Empfehlung fehlt",
+      "recommendationMissingTooltip": "Es fehlen noch erforderliche Empfehlungsschreiben.",
       "state": {
         "draft": "Entwurf",
         "submitted": "Eingereicht",
-        "pending": "Ausstehend",
         "accepted": "Angenommen",
         "rejected": "Abgelehnt",
         "withdrawn": "Zurückgezogen",
@@ -461,6 +469,56 @@
         "description1": "Du hast noch keine Bewerbung eingereicht.",
         "description2": "Schau dir die verfügbaren Stellen an und reiche deine erste Bewerbung ein.",
         "browsePositions": "Stellen durchsuchen"
+      }
+    },
+    "allApplicationsPage": {
+      "header": {
+        "title": "Alle Bewerbungen"
+      },
+      "searchFilterSortBar": {
+        "searchText": "Nach Name der Bewerbenden oder Stellentitel suchen",
+        "filterOptions": {
+          "stateSearchPlaceholder": "Status suchen",
+          "researchGroupSearchPlaceholder": "Forschungsgruppen suchen",
+          "professorSearchPlaceholder": "Professoren suchen",
+          "jobSearchPlaceholder": "Stellen suchen"
+        }
+      },
+      "tableColumn": {
+        "applicant": "Bewerbende",
+        "job": "Stelle",
+        "researchGroup": "Forschungsgruppe",
+        "supervisingProfessor": "Betreuender Professor",
+        "status": "Status",
+        "created": "Erstellt"
+      },
+      "filters": {
+        "statusLabel": "Status",
+        "researchGroupLabel": "Forschungsgruppe",
+        "professorLabel": "Betreuender Professor",
+        "jobLabel": "Stelle"
+      },
+      "confirmDialog": {
+        "deleteHeader": "Bewerbung löschen",
+        "deleteMessage": "Möchtest du diese Bewerbung wirklich löschen?",
+        "withdrawHeader": "Bewerbung zurückziehen",
+        "withdrawMessage": "Möchtest du diese Bewerbung wirklich zurückziehen?"
+      },
+      "errors": {
+        "loadJobs": {
+          "summary": "Bewerbungen konnten nicht geladen werden",
+          "detail": ""
+        },
+        "loadFilters": {
+          "summary": "Filteroptionen konnten nicht geladen werden",
+          "detail": ""
+        }
+      },
+      "toastMessages": {
+        "deleteSuccess": "Bewerbung gelöscht.",
+        "deleteFailed": "Bewerbung konnte nicht gelöscht werden: {detail}",
+        "withdrawSuccess": "Bewerbung zurückgezogen.",
+        "withdrawFailed": "Bewerbung konnte nicht zurückgezogen werden: {detail}"
       }
     },
     "applicationDetail": {
@@ -617,6 +675,18 @@
     },
     "upload": {
       "confirm": "Bestätigen"
+    },
+    "confidentialNote": "Die bewerbende Person hat auf ihr Recht verzichtet, dieses Schreiben einzusehen. Nur die betreuende Person kann es lesen.",
+    "sharedNote": "Die bewerbende Person kann Ihr eingereichtes Schreiben ebenfalls einsehen.",
+    "decline": {
+      "button": "Ablehnen",
+      "confirmHeader": "Anfrage ablehnen",
+      "confirmMessage": "Sind Sie sicher, dass Sie kein Empfehlungsschreiben bereitstellen möchten? Dies kann nicht rückgängig gemacht werden.",
+      "failed": "Die Anfrage konnte nicht abgelehnt werden. Bitte versuchen Sie es erneut."
+    },
+    "declined": {
+      "title": "Anfrage abgelehnt",
+      "message": "Sie haben abgelehnt, ein Empfehlungsschreiben bereitzustellen. Sie können diese Seite schließen."
     },
     "summary": {
       "title": "Zusammenfassung",

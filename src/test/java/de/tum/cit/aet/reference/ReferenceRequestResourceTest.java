@@ -299,7 +299,8 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                 ApplicationState.SENT,
                 null,
                 null,
-                null
+                null,
+                true
             );
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -321,27 +322,6 @@ class ReferenceRequestResourceTest extends AbstractResourceTest {
                     assertThat(entry.getTokenExpiresAt()).isNotNull();
                 });
             verify(mockSender, times(2)).sendAsync(any());
-        }
-
-        @Test
-        void shouldHoldApplicationInPendingStateWhenReferenceLettersAreStillMissing() {
-            saveAddedReference("waiting@example.com");
-
-            submitApplication();
-
-            Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
-            assertThat(reloaded.getState()).isEqualTo(ApplicationState.PENDING);
-        }
-
-        @Test
-        void shouldPromoteToSentWhenJobRequiresNoReferenceLetters() {
-            jobWithReferences.setReferenceLettersRequired(0);
-            jobRepository.save(jobWithReferences);
-
-            submitApplication();
-
-            Application reloaded = applicationRepository.findById(savedApplication.getApplicationId()).orElseThrow();
-            assertThat(reloaded.getState()).isEqualTo(ApplicationState.SENT);
         }
     }
 }

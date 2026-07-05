@@ -161,12 +161,17 @@ export class AuthFacadeService {
   }
 
   /** Request an OTP to be sent to the user's email. */
-  async requestOtp(registration = false): Promise<void> {
+  async requestOtp(registration = false, resend = false): Promise<void> {
+    this.authOrchestrator.resetOtpAttempts();
     const email = this.authOrchestrator.email();
     return this.runAuthAction(
       async () => {
         await this.serverAuthenticationService.sendOtp(email, registration);
-        this.authOrchestrator.nextStep(!registration ? 'otp' : undefined);
+        if (resend) {
+          this.authOrchestrator.startOtpRefreshCooldown();
+        } else {
+          this.authOrchestrator.nextStep(!registration ? 'otp' : undefined);
+        }
       },
       {
         summary: this.translate.instant(`${this.translationKey}.otpSendFailed.summary`),
@@ -185,24 +190,29 @@ export class AuthFacadeService {
           lastName: this.authOrchestrator.lastName(),
         }
       : undefined;
-    return this.runAuthAction(
-      async () => {
-        const response: AuthSessionInfoDTO = await this.serverAuthenticationService.verifyOtp(email, code, purpose, profile);
-        await this.accountService.loadUser();
-        if (response.profileRequired === false) {
-          this.authOrchestrator.authSuccess();
-        } else if (registration) {
-          this.authOrchestrator.nextStep();
-        }
-        this.authMethod = 'server';
-        return true;
-      },
-      {
-        summary: this.translate.instant(`${this.translationKey}.otpInvalid.summary`),
-        detail: this.translate.instant(`${this.translationKey}.otpInvalid.detail`),
-      },
-      !registration,
-    );
+    try {
+      return await this.runAuthAction(
+        async () => {
+          const response: AuthSessionInfoDTO = await this.serverAuthenticationService.verifyOtp(email, code, purpose, profile);
+          await this.accountService.loadUser();
+          if (response.profileRequired === false) {
+            this.authOrchestrator.authSuccess();
+          } else if (registration) {
+            this.authOrchestrator.nextStep();
+          }
+          this.authMethod = 'server';
+          return true;
+        },
+        {
+          summary: this.translate.instant(`${this.translationKey}.otpInvalid.summary`),
+          detail: this.translate.instant(`${this.translationKey}.otpInvalid.detail`),
+        },
+        !registration,
+      );
+    } catch (e) {
+      this.authOrchestrator.recordFailedOtpAttempt();
+      throw e;
+    }
   }
 
   // --------------- Passkey ---------------
@@ -355,6 +365,7 @@ export class AuthFacadeService {
   private handlePostLogoutState(sessionExpired: boolean): void {
     this.accountService.user.set(undefined);
     this.accountService.loaded.set(true);
+    this.accountService.clearActiveResearchGroup();
 
     if (sessionExpired) {
       this.toastService.showWarnKey('auth.common.toast.logout.sessionExpired');

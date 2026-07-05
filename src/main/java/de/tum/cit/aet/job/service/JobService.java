@@ -9,6 +9,7 @@ import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.ImageService;
@@ -30,6 +31,7 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupSummaryDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +51,7 @@ public class JobService {
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
     private final ApplicantRepository applicantRepository;
+    private final ResearchGroupRepository researchGroupRepository;
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
     private final EmailSettingService emailSettingService;
@@ -374,6 +377,34 @@ public class JobService {
         return jobRepository.findAllJobsByResearchGroup(researchGroupId, enumStates, normalizedSearchQuery, pageable);
     }
 
+    /**
+     * Returns a paginated list of jobs across every research group for admin views.
+     * Supports optional filters for state, research group, and supervising professor,
+     * plus a search string matching job title or professor full name.
+     *
+     * @param pageDTO          pagination configuration
+     * @param adminFilter      DTO containing all optionally filterable fields
+     * @param sortDTO          sorting configuration
+     * @param searchQuery      search string for supervising professor or job title
+     * @return a page of {@link AdminCreatedJobDTO} matching the criteria
+     */
+    public Page<AdminCreatedJobDTO> getAllJobs(PageDTO pageDTO, AdminJobsFilterDTO adminFilter, SortDTO sortDTO, String searchQuery) {
+        Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
+        List<JobState> enumStates = null;
+        if (adminFilter.states() != null && !adminFilter.states().isEmpty()) {
+            enumStates = adminFilter.states().stream().map(JobState::fromValue).filter(Objects::nonNull).toList();
+        }
+        List<UUID> researchGroupIds = (adminFilter.researchGroupIds() == null || adminFilter.researchGroupIds().isEmpty())
+            ? null
+            : adminFilter.researchGroupIds();
+        List<UUID> supervisingProfessorIds = (adminFilter.supervisingProfessorIds() == null ||
+            adminFilter.supervisingProfessorIds().isEmpty())
+            ? null
+            : adminFilter.supervisingProfessorIds();
+        String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
+        return jobRepository.findAllJobsForAdmin(enumStates, researchGroupIds, supervisingProfessorIds, normalizedSearchQuery, pageable);
+    }
+
     private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {
         User supervisingProfessor = userRepository.findByIdElseThrow(dto.supervisingProfessor());
         // Ensure that the current user is either an admin or a research group member of
@@ -381,8 +412,27 @@ public class JobService {
         currentUserService.isAdminOrMemberOfResearchGroupOfProfessor(supervisingProfessor);
         JobState oldState = job.getState();
 
+        // 1. Resolve the active research group of the editor: a job belongs to the group
+        //    the user is currently acting on behalf of, not to some implicit "primary" group.
+        UUID activeResearchGroupId = currentUserService.getActiveResearchGroupId();
+
+        // 2. The supervising professor must be a member of that same active group.
+        boolean professorIsMember = supervisingProfessor
+            .getResearchGroupRoles()
+            .stream()
+            .anyMatch(
+                role -> role.getResearchGroup() != null && activeResearchGroupId.equals(role.getResearchGroup().getResearchGroupId())
+            );
+        if (!professorIsMember) {
+            throw new AccessDeniedException("Supervising professor is not a member of the active research group");
+        }
+
         job.setSupervisingProfessor(supervisingProfessor);
-        job.setResearchGroup(supervisingProfessor.getResearchGroup());
+        job.setResearchGroup(
+            researchGroupRepository
+                .findById(activeResearchGroupId)
+                .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", activeResearchGroupId))
+        );
         job.setTitle(dto.title());
         job.setResearchArea(dto.researchArea());
         job.setSubjectArea(dto.subjectArea());
