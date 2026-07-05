@@ -1,14 +1,9 @@
 import { Component, computed, effect, inject, input, model, signal } from '@angular/core';
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TooltipModule } from 'primeng/tooltip';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslateService } from '@ngx-translate/core';
 
 import { DocumentViewerComponent } from '../../atoms/document-viewer/document-viewer.component';
 import { SubSection } from '../../atoms/sub-section/sub-section';
-import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { ToastService } from '../../../../service/toast-service';
 import { ApplicationDocumentIdsDTO } from '../../../../generated/model/application-document-ids-dto';
@@ -18,7 +13,7 @@ import type { DocumentHolder } from '../../../models/document-holder';
 import { DocumentDialog } from '../../molecules/document-dialog/document-dialog';
 @Component({
   selector: 'jhi-document-section',
-  imports: [DocumentViewerComponent, SubSection, FontAwesomeModule, ButtonComponent, TranslateDirective, TooltipModule, DocumentDialog],
+  imports: [DocumentViewerComponent, SubSection, TranslateDirective, DocumentDialog],
   templateUrl: './document-section.html',
 })
 export class DocumentSection {
@@ -41,19 +36,8 @@ export class DocumentSection {
 
   evaluationApi = inject(ApplicationEvaluationResourceApi);
   toastService = inject(ToastService);
-  translate = inject(TranslateService);
-
-  currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.getCurrentLang() });
 
   hasDocuments = computed(() => this.documents().length > 0);
-
-  allDocumentsTooltip = computed(() => {
-    this.currentLang();
-
-    return this.extraDocuments()
-      .map(doc => this.translate.instant(doc.label, doc.labelParams))
-      .join(', ');
-  });
 
   idChangeEffect = effect(() => {
     const dto = this.idsDTO();
@@ -93,6 +77,7 @@ export class DocumentSection {
         result.push({
           label: 'evaluation.details.documentTypeReferenceLetter',
           labelParams: { name: refereeName },
+          shouldTranslateLabel: true,
           document: { id: letter.documentId, name: refereeName, size: 0 },
         });
       });

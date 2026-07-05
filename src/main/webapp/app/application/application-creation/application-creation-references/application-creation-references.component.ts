@@ -8,6 +8,7 @@ import { SelectModule } from 'primeng/select';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ReferenceRequestResourceApi } from 'app/generated/api/reference-request-resource-api';
@@ -37,15 +38,19 @@ const TOAST_PREFIX = 'entity.applicationReferences';
     ButtonComponent,
     StringInputComponent,
     SelectComponent,
+    CheckboxComponent,
   ],
   templateUrl: './application-creation-references.component.html',
 })
 export default class ApplicationCreationReferencesComponent {
   applicationId = input.required<string>();
   requiredCount = input<number>(0);
+  referenceLettersConfidential = input<boolean>(true);
 
   valid = output<boolean>();
+  changed = output<boolean>();
   referencesChanged = output<ReferenceRequestDTO[]>();
+  referenceLettersConfidentialChanged = output<boolean>();
 
   references = signal<ReferenceRequestDTO[]>([]);
   loading = signal<boolean>(false);
@@ -62,6 +67,9 @@ export default class ApplicationCreationReferencesComponent {
     email: this.formBuilder.nonNullable.control('', [Validators.required, Validators.email, Validators.pattern(/.+\..{2,}$/)]),
   });
 
+  /** Whether the applicant waives access to the submitted letters (only the professor sees them). */
+  readonly confidentialControl = this.formBuilder.nonNullable.control(true);
+
   /** Has the applicant added at least the required number of referees? */
   readonly stepValid = computed(() => this.references().length >= this.requiredCount());
 
@@ -77,6 +85,7 @@ export default class ApplicationCreationReferencesComponent {
     const id = this.applicationId();
     if (!id || this.initialized()) return;
     this.initialized.set(true);
+    this.confidentialControl.setValue(this.referenceLettersConfidential(), { emitEvent: false });
     void this.refresh();
   });
 
@@ -143,6 +152,11 @@ export default class ApplicationCreationReferencesComponent {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  onConfidentialChange(confidential: boolean): void {
+    this.referenceLettersConfidentialChanged.emit(confidential);
+    this.changed.emit(true);
   }
 
   /**

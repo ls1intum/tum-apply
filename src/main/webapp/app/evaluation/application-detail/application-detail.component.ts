@@ -80,6 +80,7 @@ export class ApplicationDetailComponent {
   currentApplication = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
   currentDocumentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
   currentReferenceRequests = computed(() => this.currentApplication()?.applicationDetailDTO.references ?? []);
+  referenceLettersConfidential = computed(() => this.currentApplication()?.applicationDetailDTO.referenceLettersConfidential ?? true);
   sortBy = signal<string>('appliedAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 

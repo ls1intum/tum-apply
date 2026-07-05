@@ -143,6 +143,7 @@ export default class ApplicationCreationFormComponent {
   applicationDetailsDataValid = signal<boolean>(false);
   referencesValid = signal<boolean>(true);
   references = signal<ReferenceRequestDTO[]>([]);
+  referenceLettersConfidential = signal<boolean>(true);
   referenceLettersRequired = signal<number>(0);
   referenceLettersEnabled = computed(() => this.referenceLettersRequired() > 0);
   savingTick = signal<number>(0);
@@ -379,7 +380,7 @@ export default class ApplicationCreationFormComponent {
               this.showSendDialog.set(true);
             },
             disabled: !allPagesValid,
-            label: 'button.send',
+            label: 'button.submit',
             shouldTranslate: true,
             changePanel: false,
           },
@@ -447,6 +448,7 @@ export default class ApplicationCreationFormComponent {
         this.personalInfoData.set(getPage1FromApplication(application));
         this.educationData.set(getPage2FromApplication(application));
         this.applicationDetailsData.set(getPage3FromApplication(application));
+        this.referenceLettersConfidential.set(application.referenceLettersConfidential ?? true);
 
         this.updateDocumentInformation();
       } catch (error) {
@@ -622,6 +624,10 @@ export default class ApplicationCreationFormComponent {
     this.references.set(list);
   }
 
+  onReferenceLettersConfidentialChanged(confidential: boolean): void {
+    this.referenceLettersConfidential.set(confidential);
+  }
+
   // Authenticates the current visitor (OTP) and ensures a server-side application exists.
   // Resolves once `applicationId` is populated, or earlier (no-op) when validation
   // failed and the user needs to fill in missing fields before retrying.
@@ -780,6 +786,7 @@ export default class ApplicationCreationFormComponent {
       projects: p3.experiences,
       jobTitle: this.title(),
       references: this.references(),
+      referenceLettersConfidential: this.referenceLettersConfidential(),
     };
 
     if (state !== undefined) {
