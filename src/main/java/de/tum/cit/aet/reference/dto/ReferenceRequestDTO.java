@@ -3,10 +3,12 @@ package de.tum.cit.aet.reference.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.reference.constants.ReferenceRequestStatus;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Read model exposed to the applicant in the application creation form.
+ * Read model exposed to the applicant in the application creation form and to professors on the
+ * evaluation page. Application-level confidentiality is exposed by the owning application DTO.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ReferenceRequestDTO(
@@ -16,13 +18,23 @@ public record ReferenceRequestDTO(
     String lastName,
     String email,
     ReferenceRequestStatus status,
-    UUID documentId
+    UUID documentId,
+    LocalDateTime deadline
 ) {
     /**
      * @param entity the persisted reference request
      * @return a DTO mirroring the entity, including the linked document id when a letter was uploaded
      */
     public static ReferenceRequestDTO fromEntity(ReferenceRequest entity) {
+        return fromEntity(entity, true);
+    }
+
+    /**
+     * @param entity            the persisted reference request
+     * @param includeDocumentId whether to include the linked uploaded letter id
+     * @return a DTO mirroring the entity, optionally omitting the linked document id
+     */
+    public static ReferenceRequestDTO fromEntity(ReferenceRequest entity, boolean includeDocumentId) {
         return new ReferenceRequestDTO(
             entity.getReferenceRequestId(),
             entity.getTitle(),
@@ -30,7 +42,8 @@ public record ReferenceRequestDTO(
             entity.getLastName(),
             entity.getEmail(),
             entity.getStatus(),
-            entity.getDocumentId()
+            includeDocumentId ? entity.getDocumentId() : null,
+            entity.getTokenExpiresAt()
         );
     }
 }
