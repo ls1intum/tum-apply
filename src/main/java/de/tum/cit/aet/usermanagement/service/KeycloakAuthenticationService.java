@@ -57,7 +57,7 @@ public class KeycloakAuthenticationService {
      */
     public List<PasskeyDTO> listPasskeys(Jwt jwt) {
         return keycloakUserService
-            .getCredentials(jwt.getSubject(), jwt.getIssuer())
+            .getCredentials(jwt.getSubject())
             .stream()
             .filter(this::isPasskeyCredential)
             .map(PasskeyDTO::of)
@@ -71,7 +71,7 @@ public class KeycloakAuthenticationService {
      * @param credentialId the ID of the credential to remove
      */
     public void removePasskey(Jwt jwt, String credentialId) {
-        keycloakUserService.removeCredential(jwt.getSubject(), jwt.getIssuer(), credentialId);
+        keycloakUserService.removeCredential(jwt.getSubject(), credentialId);
     }
 
     private String getPasskeyClientId(Jwt jwt) {

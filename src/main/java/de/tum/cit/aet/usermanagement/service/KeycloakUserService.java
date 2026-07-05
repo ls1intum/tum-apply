@@ -5,7 +5,6 @@ import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -222,33 +221,31 @@ public class KeycloakUserService {
     }
 
     /**
-     * Lists Keycloak credentials for the user in the realm that issued the current token.
+     * Lists Keycloak credentials for the user in the TUM realm.
      *
      * @param userId the Keycloak user ID
-     * @param issuer the token issuer used to select the realm
      * @return credentials registered for the user, or an empty list when the user cannot be resolved
      */
-    public List<CredentialRepresentation> getCredentials(String userId, URL issuer) {
+    public List<CredentialRepresentation> getCredentials(String userId) {
         if (userId == null || userId.isBlank()) {
             return List.of();
         }
-        RealmAdminContext adminContext = resolveAdminContext(issuer);
+        RealmAdminContext adminContext = resolveAdminContext();
         List<CredentialRepresentation> credentials = adminContext.keycloak().realm(adminContext.realm()).users().get(userId).credentials();
         return credentials != null ? credentials : List.of();
     }
 
     /**
-     * Removes one Keycloak credential for the user in the realm that issued the current token.
+     * Removes one Keycloak credential for the user in the TUM realm.
      *
      * @param userId       the Keycloak user ID
-     * @param issuer       the token issuer used to select the realm
      * @param credentialId the Keycloak credential ID to remove
      */
-    public void removeCredential(String userId, URL issuer, String credentialId) {
+    public void removeCredential(String userId, String credentialId) {
         if (userId == null || userId.isBlank() || credentialId == null || credentialId.isBlank()) {
             return;
         }
-        RealmAdminContext adminContext = resolveAdminContext(issuer);
+        RealmAdminContext adminContext = resolveAdminContext();
         adminContext.keycloak().realm(adminContext.realm()).users().get(userId).removeCredential(credentialId);
     }
 
@@ -266,7 +263,7 @@ public class KeycloakUserService {
      * All Keycloak credential operations target the TUM realm; applicant passkeys are handled in-app and no
      * longer use Keycloak.
      */
-    private RealmAdminContext resolveAdminContext(URL issuer) {
+    private RealmAdminContext resolveAdminContext() {
         return new RealmAdminContext(tumKeycloak, tumRealm);
     }
 
