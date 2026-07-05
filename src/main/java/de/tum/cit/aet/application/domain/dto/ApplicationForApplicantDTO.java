@@ -20,7 +20,8 @@ public record ApplicationForApplicantDTO(
     LocalDate desiredDate,
     String projects,
     String specialSkills,
-    String motivation
+    String motivation,
+    boolean referenceLettersConfidential
 ) {
     /**
      * Converts an Application entity to a DTO for the applicant view.
@@ -58,7 +59,8 @@ public record ApplicationForApplicantDTO(
             application.getDesiredStartDate(),
             HtmlSanitizer.sanitize(application.getProjects()),
             HtmlSanitizer.sanitize(application.getSpecialSkills()),
-            HtmlSanitizer.sanitize(application.getMotivation())
+            HtmlSanitizer.sanitize(application.getMotivation()),
+            application.isReferenceLettersConfidential()
         );
     }
 }

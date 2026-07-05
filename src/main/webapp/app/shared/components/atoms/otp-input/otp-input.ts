@@ -5,7 +5,6 @@ import { map } from 'rxjs';
 import { InputOtpChangeEvent, InputOtpModule } from 'primeng/inputotp';
 import { ButtonModule } from 'primeng/button';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
@@ -25,7 +24,6 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   readonly config = inject(ApplicationConfigService);
   readonly authFacade = inject(AuthFacadeService);
   readonly authOrchestratorService = inject(AuthOrchestratorService);
-  readonly translateService = inject(TranslateService);
   readonly breakpointObserver = inject(BreakpointObserver);
   readonly dynamicDialogConfig = inject(DynamicDialogConfig);
 
@@ -45,8 +43,13 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   readonly otpValue = signal<string>('');
   // disable resend if busy or in cooldown
   readonly disableResend: Signal<boolean> = computed(() => this.isBusy() || this.onCooldown());
+  // attempt cooldown after too many failed submissions
+  readonly isAttemptCooldown = computed(() => this.authOrchestratorService.isOtpAttemptCooldown());
+  readonly attemptCooldownSeconds = computed(() => this.authOrchestratorService.otpAttemptCooldownSeconds());
   // derived states
-  readonly disabledSubmit = computed(() => this.showError() || this.isBusy() || this.otpValue().length !== this.length);
+  readonly disabledSubmit = computed(
+    () => this.isAttemptCooldown() || this.showError() || this.isBusy() || this.otpValue().length !== this.length,
+  );
   // determine size of the OTP input based on screen size
   readonly otpSize = toSignal<'small' | 'large' | null>(
     this.breakpointObserver
@@ -54,6 +57,9 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
       .pipe(map(r => (r.breakpoints[Breakpoints.XLarge] ? 'large' : r.breakpoints[Breakpoints.XSmall] ? 'small' : null))),
     { initialValue: null },
   );
+
+  readonly resendLabelKey = computed(() => (this.onCooldown() ? 'auth.common.otp.resendCooldown' : 'auth.common.otp.resend'));
+  readonly resendLabelParams = computed<Record<string, unknown>>(() => (this.onCooldown() ? { seconds: this.cooldownSeconds() } : {}));
 
   private readonly registrationOverride = signal<boolean | null>(null);
   private readonly isRegistration = computed(() => {
@@ -67,13 +73,6 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     if (typeof registration === 'boolean') {
       this.registrationOverride.set(registration);
     }
-  }
-
-  // Localized instruction including TTL
-  get resendLabel(): string {
-    return this.onCooldown()
-      ? this.translateService.instant('auth.common.otp.resendCooldown', { seconds: this.cooldownSeconds() })
-      : this.translateService.instant('auth.common.otp.resend');
   }
 
   public getRegistrationFlag(): boolean {
@@ -113,7 +112,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     if (!this.disableResend()) {
       this.authOrchestratorService.clearError();
       this.setValue('');
-      void this.authFacade.requestOtp(this.isRegistration());
+      void this.authFacade.requestOtp(this.isRegistration(), true);
     }
   }
 
