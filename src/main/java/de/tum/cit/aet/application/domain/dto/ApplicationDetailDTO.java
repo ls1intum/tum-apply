@@ -51,12 +51,13 @@ public record ApplicationDetailDTO(
      * Rich-text fields (projects, specialSkills, motivation) are sanitized on read
      * as defense-in-depth before sending to the client.
      *
-     * @param application                       the application entity
-     * @param job                               the associated job entity
-     * @param includeReferenceLetterDocumentIds whether linked uploaded reference-letter ids should be exposed
+     * @param application                        the application entity
+     * @param job                                the associated job entity
+     * @param includeConfidentialReferenceContent whether the referee's confidential content (uploaded letter
+     *                                           ids and structured assessment answers) should be exposed
      * @return the detail DTO
      */
-    public static ApplicationDetailDTO getFromEntity(Application application, Job job, boolean includeReferenceLetterDocumentIds) {
+    public static ApplicationDetailDTO getFromEntity(Application application, Job job, boolean includeConfidentialReferenceContent) {
         if (application == null) {
             throw new EntityNotFoundException("Application Entity should not be null");
         }
@@ -75,7 +76,7 @@ public record ApplicationDetailDTO(
             HtmlSanitizer.sanitize(application.getSpecialSkills()),
             HtmlSanitizer.sanitize(application.getMotivation()),
             application.isReferenceLettersConfidential(),
-            mapReferences(application.getReferenceRequests(), includeReferenceLetterDocumentIds)
+            mapReferences(application.getReferenceRequests(), includeConfidentialReferenceContent)
         );
     }
 
@@ -89,7 +90,7 @@ public record ApplicationDetailDTO(
      */
     private static List<ReferenceRequestDTO> mapReferences(
         Set<ReferenceRequest> referenceRequests,
-        boolean includeReferenceLetterDocumentIds
+        boolean includeConfidentialReferenceContent
     ) {
         if (referenceRequests == null || !Hibernate.isInitialized(referenceRequests) || referenceRequests.isEmpty()) {
             return List.of();
@@ -97,7 +98,7 @@ public record ApplicationDetailDTO(
         return referenceRequests
             .stream()
             .sorted(Comparator.comparing(ReferenceRequest::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())))
-            .map(referenceRequest -> ReferenceRequestDTO.fromEntity(referenceRequest, includeReferenceLetterDocumentIds))
+            .map(referenceRequest -> ReferenceRequestDTO.fromEntity(referenceRequest, includeConfidentialReferenceContent))
             .toList();
     }
 }

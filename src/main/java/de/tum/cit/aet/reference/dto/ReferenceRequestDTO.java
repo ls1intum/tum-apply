@@ -14,8 +14,9 @@ import java.util.UUID;
 /**
  * Read model for a reference request. Carries the referee contact details and, once the letter has
  * been submitted, the structured assessment the referee filled in on the upload page. The assessment
- * fields are null until submission. Application-level confidentiality is exposed by the owning
- * application DTO.
+ * fields are null until submission. When the owning application keeps its reference letters
+ * confidential, the confidential content (the uploaded letter and the structured assessment) is
+ * withheld from the applicant while the referee contact details and status remain visible.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ReferenceRequestDTO(
@@ -48,11 +49,14 @@ public record ReferenceRequestDTO(
     }
 
     /**
-     * @param entity            the persisted reference request
-     * @param includeDocumentId whether to include the linked uploaded letter id
-     * @return a DTO mirroring the entity, optionally omitting the linked document id
+     * @param entity                    the persisted reference request
+     * @param includeConfidentialContent whether to include the referee's confidential content, namely the
+     *                                   linked uploaded letter id and the structured assessment answers
+     * @return a DTO mirroring the entity; when {@code includeConfidentialContent} is {@code false} the
+     *         letter id and every assessment field are left null (and thus omitted from the response),
+     *         while the referee contact details and status stay visible
      */
-    public static ReferenceRequestDTO fromEntity(ReferenceRequest entity, boolean includeDocumentId) {
+    public static ReferenceRequestDTO fromEntity(ReferenceRequest entity, boolean includeConfidentialContent) {
         return new ReferenceRequestDTO(
             entity.getReferenceRequestId(),
             entity.getTitle(),
@@ -60,17 +64,17 @@ public record ReferenceRequestDTO(
             entity.getLastName(),
             entity.getEmail(),
             entity.getStatus(),
-            includeDocumentId ? entity.getDocumentId() : null,
-            entity.getRelationship(),
-            entity.getAcquaintanceDuration(),
-            entity.getAcquaintanceDepth(),
-            entity.getRatingIntellectualAbility(),
-            entity.getRatingResearchPotential(),
-            entity.getRatingMotivation(),
-            entity.getRatingCommunication(),
-            entity.getRatingLeadership(),
-            entity.getRatingCollaboration(),
-            entity.getOverallRecommendation(),
+            includeConfidentialContent ? entity.getDocumentId() : null,
+            includeConfidentialContent ? entity.getRelationship() : null,
+            includeConfidentialContent ? entity.getAcquaintanceDuration() : null,
+            includeConfidentialContent ? entity.getAcquaintanceDepth() : null,
+            includeConfidentialContent ? entity.getRatingIntellectualAbility() : null,
+            includeConfidentialContent ? entity.getRatingResearchPotential() : null,
+            includeConfidentialContent ? entity.getRatingMotivation() : null,
+            includeConfidentialContent ? entity.getRatingCommunication() : null,
+            includeConfidentialContent ? entity.getRatingLeadership() : null,
+            includeConfidentialContent ? entity.getRatingCollaboration() : null,
+            includeConfidentialContent ? entity.getOverallRecommendation() : null,
             entity.getTokenExpiresAt()
         );
     }
