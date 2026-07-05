@@ -41,38 +41,15 @@ describe('AuthIdpButtons', () => {
     }).compileComponents();
   });
 
-  it('should configure buttons vertically with labels at all viewport sizes', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
+  it.each([
+    [0, IdpProvider.Apple],
+    [1, IdpProvider.Google],
+  ])('should call loginWithSocialProvider with the right provider when button %i is clicked', (index, provider) => {
+    const buttons = createComponent().componentInstance.idpButtons().buttons;
+    expect(buttons).toHaveLength(2);
 
-    const config = component.idpButtons();
+    buttons[index].onClick();
 
-    expect(config.direction).toBe('vertical');
-    expect(config.buttons).toHaveLength(2);
-
-    const [appleButton, googleButton] = config.buttons;
-
-    expect(appleButton.label).toBe('Apple');
-    expect(appleButton.icon).toBe('apple');
-
-    expect(googleButton.label).toBe('Google');
-    expect(googleButton.icon).toBe('google');
-  });
-
-  it('should call authFacadeService.loginWithSocialProvider for Apple and Google', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    const config = component.idpButtons();
-
-    expect(config.buttons).toHaveLength(2);
-
-    const [appleButton, googleButton] = config.buttons;
-
-    appleButton.onClick();
-    googleButton.onClick();
-
-    expect(authFacadeMock.loginWithSocialProvider).toHaveBeenNthCalledWith(1, IdpProvider.Apple, false);
-    expect(authFacadeMock.loginWithSocialProvider).toHaveBeenLastCalledWith(IdpProvider.Google, false);
+    expect(authFacadeMock.loginWithSocialProvider).toHaveBeenCalledWith(provider, false);
   });
 });

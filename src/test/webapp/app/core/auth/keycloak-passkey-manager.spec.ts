@@ -212,13 +212,22 @@ describe('KeycloakPasskeyManager', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('should use the configured relying party id for passkey registration', async () => {
-    tokenParsed = {
-      sub: 'subject-123',
-      preferred_username: 'jane',
-      iss: 'http://mock-keycloak/realms/tumidpldap',
-    };
-    deps.relyingPartyId = 'staging.apply.in.tum.de';
+  it.each([
+    {
+      description: 'the configured relying party id and TUM AET name for a TUM realm session',
+      iss: 'http://mock-keycloak/realms/tumidpldap' as string | undefined,
+      relyingPartyId: 'staging.apply.in.tum.de',
+      expectedRp: { name: 'TUM AET', id: 'staging.apply.in.tum.de' },
+    },
+    {
+      description: 'the current hostname and TUM Apply name when the relying party id and issuer are absent',
+      iss: undefined,
+      relyingPartyId: '   ',
+      expectedRp: { name: 'TUM Apply', id: window.location.hostname },
+    },
+  ])('should register the passkey with $description', async ({ iss, relyingPartyId, expectedRp }) => {
+    tokenParsed = { sub: 'subject-123', preferred_username: 'jane', iss };
+    deps.relyingPartyId = relyingPartyId;
     const credentialsCreate = vi
       .fn()
       .mockResolvedValue(new MockPublicKeyCredential(buffer([1]), new MockAuthenticatorAttestationResponse(buffer([2]), buffer([3]))));
@@ -237,34 +246,7 @@ describe('KeycloakPasskeyManager', () => {
     await manager.registerPasskey();
 
     const credentialCreation = credentialsCreate.mock.calls[0][0] as CredentialCreationOptions;
-    expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM AET', id: 'staging.apply.in.tum.de' });
-  });
-
-  it('should fall back to the current hostname when relying party id is not configured', async () => {
-    tokenParsed = {
-      sub: 'subject-123',
-      preferred_username: 'jane',
-    };
-    deps.relyingPartyId = '   ';
-    const credentialsCreate = vi
-      .fn()
-      .mockResolvedValue(new MockPublicKeyCredential(buffer([1]), new MockAuthenticatorAttestationResponse(buffer([2]), buffer([3]))));
-    stubWebAuthn({ create: credentialsCreate });
-    fetchMock
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: vi.fn().mockResolvedValue({ challenge: 'AQID' }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 204,
-      });
-
-    await manager.registerPasskey();
-
-    const credentialCreation = credentialsCreate.mock.calls[0][0] as CredentialCreationOptions;
-    expect(credentialCreation.publicKey?.rp).toEqual({ name: 'TUM Apply', id: window.location.hostname });
+    expect(credentialCreation.publicKey?.rp).toEqual(expectedRp);
   });
 
   it('should list passkeys returned by the server', async () => {

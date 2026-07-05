@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -134,108 +135,120 @@ class AppTokenServiceTest {
         return user;
     }
 
-    @Test
-    void issueForMintsAccessTokenWithExpectedClaims() {
-        UUID id = UUID.randomUUID();
+    @Nested
+    class IssueFor {
 
-        AuthResponseDTO tokens = service.issueFor(user(id));
+        @Test
+        void shouldMintAccessTokenWithExpectedClaims() {
+            UUID id = UUID.randomUUID();
 
-        Jwt access = decoder.decode(tokens.accessToken());
-        assertThat(access.getSubject()).isEqualTo(id.toString());
-        assertThat(access.getClaimAsString("email")).isEqualTo("applicant@example.org");
-        assertThat(access.getClaimAsString("given_name")).isEqualTo("Ada");
-        assertThat(access.getClaimAsString("family_name")).isEqualTo("Lovelace");
-        assertThat(access.getClaimAsString("typ")).isEqualTo("access");
-        assertThat(access.getClaimAsString("azp")).isEqualTo("tumapply-internal");
-        assertThat(tokens.expiresIn()).isEqualTo(300);
-        assertThat(tokens.refreshExpiresIn()).isEqualTo(2_592_000);
-        // The refresh token id must be persisted so it can later be revoked.
-        verify(refreshTokenRepository).save(any(AppRefreshToken.class));
+            AuthResponseDTO tokens = service.issueFor(user(id));
+
+            Jwt access = decoder.decode(tokens.accessToken());
+            assertThat(access.getSubject()).isEqualTo(id.toString());
+            assertThat(access.getClaimAsString("email")).isEqualTo("applicant@example.org");
+            assertThat(access.getClaimAsString("given_name")).isEqualTo("Ada");
+            assertThat(access.getClaimAsString("family_name")).isEqualTo("Lovelace");
+            assertThat(access.getClaimAsString("typ")).isEqualTo("access");
+            assertThat(access.getClaimAsString("azp")).isEqualTo("tumapply-internal");
+            assertThat(tokens.expiresIn()).isEqualTo(300);
+            assertThat(tokens.refreshExpiresIn()).isEqualTo(2_592_000);
+            // The refresh token id must be persisted so it can later be revoked.
+            verify(refreshTokenRepository).save(any(AppRefreshToken.class));
+        }
     }
 
-    @Test
-    void refreshRotatesTokenAndRevokesPrevious() {
-        UUID id = UUID.randomUUID();
-        User user = user(id);
-        AuthResponseDTO issued = service.issueFor(user);
-        String refreshJti = decoder.decode(issued.refreshToken()).getId();
+    @Nested
+    class Refresh {
 
-        AppRefreshToken record = new AppRefreshToken();
-        record.setJti(refreshJti);
-        record.setUserId(id);
-        record.setExpiresAt(Instant.now().plusSeconds(1000));
-        record.setRevoked(false);
-        when(refreshTokenRepository.findById(refreshJti)).thenReturn(Optional.of(record));
-        when(refreshTokenRepository.revokeIfActive(refreshJti)).thenReturn(1);
-        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+        @Test
+        void shouldRotateTokenAndRevokePreviousWhenRefreshTokenIsValid() {
+            UUID id = UUID.randomUUID();
+            User user = user(id);
+            AuthResponseDTO issued = service.issueFor(user);
+            String refreshJti = decoder.decode(issued.refreshToken()).getId();
 
-        AuthResponseDTO refreshed = service.refresh(issued.refreshToken());
+            AppRefreshToken record = new AppRefreshToken();
+            record.setJti(refreshJti);
+            record.setUserId(id);
+            record.setExpiresAt(Instant.now().plusSeconds(1000));
+            record.setRevoked(false);
+            when(refreshTokenRepository.findById(refreshJti)).thenReturn(Optional.of(record));
+            when(refreshTokenRepository.revokeIfActive(refreshJti)).thenReturn(1);
+            when(userRepository.findById(id)).thenReturn(Optional.of(user));
 
-        assertThat(decoder.decode(refreshed.accessToken()).getSubject()).isEqualTo(id.toString());
-        verify(refreshTokenRepository).revokeIfActive(refreshJti);
-        verify(refreshTokenRepository, never()).revokeAllForUser(any());
+            AuthResponseDTO refreshed = service.refresh(issued.refreshToken());
+
+            assertThat(decoder.decode(refreshed.accessToken()).getSubject()).isEqualTo(id.toString());
+            verify(refreshTokenRepository).revokeIfActive(refreshJti);
+            verify(refreshTokenRepository, never()).revokeAllForUser(any());
+        }
+
+        @Test
+        void shouldRevokeAllWhenRefreshingARevokedToken() {
+            UUID id = UUID.randomUUID();
+            AuthResponseDTO issued = service.issueFor(user(id));
+            String refreshJti = decoder.decode(issued.refreshToken()).getId();
+
+            AppRefreshToken record = new AppRefreshToken();
+            record.setJti(refreshJti);
+            record.setUserId(id);
+            record.setExpiresAt(Instant.now().plusSeconds(1000));
+            record.setRevoked(true);
+            when(refreshTokenRepository.findById(refreshJti)).thenReturn(Optional.of(record));
+
+            assertThatThrownBy(() -> service.refresh(issued.refreshToken())).isInstanceOf(UnauthorizedException.class);
+            verify(refreshTokenRepository).revokeAllForUser(id);
+        }
+
+        @Test
+        void shouldRejectWhenRefreshTokenIsUnknown() {
+            UUID id = UUID.randomUUID();
+            AuthResponseDTO issued = service.issueFor(user(id));
+            when(refreshTokenRepository.findById(any())).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> service.refresh(issued.refreshToken())).isInstanceOf(UnauthorizedException.class);
+        }
+
+        @Test
+        void shouldRevokeAllWhenTheAtomicClaimIsLost() {
+            UUID id = UUID.randomUUID();
+            AuthResponseDTO issued = service.issueFor(user(id));
+            String refreshJti = decoder.decode(issued.refreshToken()).getId();
+
+            AppRefreshToken record = new AppRefreshToken();
+            record.setJti(refreshJti);
+            record.setUserId(id);
+            record.setExpiresAt(Instant.now().plusSeconds(1000));
+            record.setRevoked(false);
+            when(refreshTokenRepository.findById(refreshJti)).thenReturn(Optional.of(record));
+            // Another request claimed the token first: the atomic UPDATE affects 0 rows.
+            when(refreshTokenRepository.revokeIfActive(refreshJti)).thenReturn(0);
+
+            assertThatThrownBy(() -> service.refresh(issued.refreshToken())).isInstanceOf(UnauthorizedException.class);
+            verify(refreshTokenRepository).revokeAllForUser(id);
+        }
     }
 
-    @Test
-    void refreshOfRevokedTokenIsTreatedAsReplayAndRevokesAll() {
-        UUID id = UUID.randomUUID();
-        AuthResponseDTO issued = service.issueFor(user(id));
-        String refreshJti = decoder.decode(issued.refreshToken()).getId();
+    @Nested
+    class TokenTypeSeparation {
 
-        AppRefreshToken record = new AppRefreshToken();
-        record.setJti(refreshJti);
-        record.setUserId(id);
-        record.setExpiresAt(Instant.now().plusSeconds(1000));
-        record.setRevoked(true);
-        when(refreshTokenRepository.findById(refreshJti)).thenReturn(Optional.of(record));
+        @Test
+        void shouldRejectRefreshTokenAtTheResourceServerDecoder() {
+            AuthResponseDTO tokens = service.issueFor(user(UUID.randomUUID()));
 
-        assertThatThrownBy(() -> service.refresh(issued.refreshToken())).isInstanceOf(UnauthorizedException.class);
-        verify(refreshTokenRepository).revokeAllForUser(id);
-    }
+            // The resource-server (typ=access) decoder accepts the access token...
+            assertThat(accessOnlyDecoder.decode(tokens.accessToken()).getSubject()).isNotBlank();
+            // ...but rejects the refresh token, so it can never be replayed as a bearer credential.
+            assertThatThrownBy(() -> accessOnlyDecoder.decode(tokens.refreshToken())).isInstanceOf(JwtException.class);
+        }
 
-    @Test
-    void refreshOfUnknownTokenIsRejected() {
-        UUID id = UUID.randomUUID();
-        AuthResponseDTO issued = service.issueFor(user(id));
-        when(refreshTokenRepository.findById(any())).thenReturn(Optional.empty());
+        @Test
+        void shouldRejectAccessTokenOnTheRefreshPath() {
+            AuthResponseDTO issued = service.issueFor(user(UUID.randomUUID()));
 
-        assertThatThrownBy(() -> service.refresh(issued.refreshToken())).isInstanceOf(UnauthorizedException.class);
-    }
-
-    @Test
-    void refreshTokenCannotBeUsedAsAccessTokenAtResourceServer() {
-        AuthResponseDTO tokens = service.issueFor(user(UUID.randomUUID()));
-
-        // The resource-server (typ=access) decoder accepts the access token...
-        assertThat(accessOnlyDecoder.decode(tokens.accessToken()).getSubject()).isNotBlank();
-        // ...but rejects the refresh token, so it can never be replayed as a bearer credential.
-        assertThatThrownBy(() -> accessOnlyDecoder.decode(tokens.refreshToken())).isInstanceOf(JwtException.class);
-    }
-
-    @Test
-    void losingTheAtomicClaimIsTreatedAsReplay() {
-        UUID id = UUID.randomUUID();
-        AuthResponseDTO issued = service.issueFor(user(id));
-        String refreshJti = decoder.decode(issued.refreshToken()).getId();
-
-        AppRefreshToken record = new AppRefreshToken();
-        record.setJti(refreshJti);
-        record.setUserId(id);
-        record.setExpiresAt(Instant.now().plusSeconds(1000));
-        record.setRevoked(false);
-        when(refreshTokenRepository.findById(refreshJti)).thenReturn(Optional.of(record));
-        // Another request claimed the token first: the atomic UPDATE affects 0 rows.
-        when(refreshTokenRepository.revokeIfActive(refreshJti)).thenReturn(0);
-
-        assertThatThrownBy(() -> service.refresh(issued.refreshToken())).isInstanceOf(UnauthorizedException.class);
-        verify(refreshTokenRepository).revokeAllForUser(id);
-    }
-
-    @Test
-    void accessTokenCannotBeUsedAsRefreshToken() {
-        AuthResponseDTO issued = service.issueFor(user(UUID.randomUUID()));
-
-        // The access token has typ=access; the refresh path must reject it.
-        assertThatThrownBy(() -> service.refresh(issued.accessToken())).isInstanceOf(UnauthorizedException.class);
+            // The access token has typ=access; the refresh path must reject it.
+            assertThatThrownBy(() -> service.refresh(issued.accessToken())).isInstanceOf(UnauthorizedException.class);
+        }
     }
 }
