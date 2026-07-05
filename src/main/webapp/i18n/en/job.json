@@ -133,7 +133,7 @@
       },
       "referenceLettersRequired": {
         "label": "Required Recommendation Letters",
-        "toolTipText": "Number of external recommendation letters applicants must collect for this position. Letters are uploaded by the referees themselves through a link directly on TUMApply."
+        "toolTipText": "Number of external recommendation letters applicants must collect for this position. Letters are uploaded by the recommenders themselves through a link directly on TUMApply."
       },
       "positionOptions": {
         "title": "Position Options",
@@ -506,7 +506,7 @@
       "contractDuration": "Contract Duration",
       "fundingType": "Funding Type",
       "tvlGrade": "TV-L Grade",
-      "referenceLetters": "Required References",
+      "referenceLetters": "Required Recommendations",
       "startDate": "Start Date",
       "applicationEndDate": "Application End Date"
     },

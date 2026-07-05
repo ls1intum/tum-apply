@@ -21,11 +21,19 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import * as DropDownOptions from '../../job/dropdown-options';
 import { ApplicationResourceApi } from '../../generated/api/application-resource-api';
-import { ApplicationDetailDTO } from '../../generated/model/application-detail-dto';
+import { ApplicationDetailDTO, ApplicationDetailDTOApplicationStateEnum } from '../../generated/model/application-detail-dto';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/application-document-ids-dto';
 import { ReferenceRequestDTO } from '../../generated/model/reference-request-dto';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
+import ApplicationCreationReferencesComponent from '../application-creation/application-creation-references/application-creation-references.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
+
+const REFERENCE_MANAGEABLE_STATES: ApplicationDetailDTOApplicationStateEnum[] = [
+  ApplicationDetailDTOApplicationStateEnum.Saved,
+  ApplicationDetailDTOApplicationStateEnum.Sent,
+  ApplicationDetailDTOApplicationStateEnum.InReview,
+  ApplicationDetailDTOApplicationStateEnum.Interview,
+];
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
@@ -34,6 +42,7 @@ import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
     BackButtonComponent,
     FontAwesomeModule,
     ApplicationStateForApplicantsComponent,
+    ApplicationCreationReferencesComponent,
     DocumentViewerComponent,
     ConfirmDialogModule,
     ConfirmDialog,
@@ -89,6 +98,24 @@ export default class ApplicationDetailForApplicantComponent {
 
   /** The application's setting for whether reference letters should be confidential. */
   readonly referenceLettersConfidential = computed(() => this.application()?.referenceLettersConfidential ?? true);
+
+  /**
+   * Whether the applicant may still add, edit or remove referees: the job requires reference letters,
+   * the application is in a non-terminal state, and this is the live detail page (not a creation preview).
+   */
+  readonly canManageReferences = computed<boolean>(() => {
+    if (this.previewDetailData()) return false;
+    const app = this.application();
+    if (!app || (app.referenceLettersRequired ?? 0) <= 0) return false;
+    if (app.jobEndDate) {
+      const endDate = new Date(app.jobEndDate);
+      endDate.setHours(23, 59, 59, 999);
+      if (endDate < new Date()) {
+        return false;
+      }
+    }
+    return REFERENCE_MANAGEABLE_STATES.includes(app.applicationState);
+  });
 
   /**
    * Reference requests with an uploaded letter, mapped to a viewer-friendly shape.

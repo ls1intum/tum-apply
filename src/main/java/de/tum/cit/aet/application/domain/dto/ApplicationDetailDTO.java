@@ -32,8 +32,10 @@ public record ApplicationDetailDTO(
     String projects,
     String specialSkills,
     String motivation,
+    int referenceLettersRequired,
     boolean referenceLettersConfidential,
-    List<ReferenceRequestDTO> references
+    List<ReferenceRequestDTO> references,
+    LocalDate jobEndDate
 ) {
     /**
      * Converts an Application entity to a detail DTO for the evaluation view, including reference letters.
@@ -74,8 +76,10 @@ public record ApplicationDetailDTO(
             HtmlSanitizer.sanitize(application.getProjects()),
             HtmlSanitizer.sanitize(application.getSpecialSkills()),
             HtmlSanitizer.sanitize(application.getMotivation()),
+            job.getReferenceLettersRequired(),
             application.isReferenceLettersConfidential(),
-            mapReferences(application.getReferenceRequests(), includeReferenceLetterDocumentIds)
+            mapReferences(application.getReferenceRequests(), includeReferenceLetterDocumentIds),
+            job.getEndDate()
         );
     }
 

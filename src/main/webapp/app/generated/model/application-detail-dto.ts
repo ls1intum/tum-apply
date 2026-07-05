@@ -16,12 +16,14 @@ export interface ApplicationDetailDTO {
     readonly applicationId: string;
     readonly applicationState: ApplicationDetailDTOApplicationStateEnum;
     readonly desiredDate?: string;
+    readonly jobEndDate?: string;
     readonly jobId: string;
     readonly jobLocation?: ApplicationDetailDTOJobLocationEnum;
     readonly jobTitle?: string;
     readonly motivation?: string;
     readonly projects?: string;
     readonly referenceLettersConfidential?: boolean;
+    readonly referenceLettersRequired?: number;
     readonly references?: Array<ReferenceRequestDTO>;
     readonly researchGroup: string;
     readonly specialSkills?: string;
