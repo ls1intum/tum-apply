@@ -105,7 +105,6 @@ public class AppTokenService {
      * @param user the local user to authenticate; must have a {@code userId}
      * @return tokens and their lifetimes, shaped for {@code CookieUtils.setAuthCookies}
      */
-    @Transactional
     public AuthResponseDTO issueFor(User user) {
         Instant now = Instant.now();
         String accessToken = mintAccessToken(user, now);

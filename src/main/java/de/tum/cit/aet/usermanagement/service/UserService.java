@@ -78,7 +78,6 @@ public class UserService {
      * @param rawPassword the new plaintext password
      * @return {@code true} if the password was updated, {@code false} if the input was blank
      */
-    @Transactional
     public boolean setLocalPassword(String userId, String rawPassword) {
         if (rawPassword == null || rawPassword.isBlank()) {
             return false;
