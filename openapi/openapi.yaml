@@ -829,7 +829,7 @@ paths:
   /api/auth/passkeys:
     get:
       tags: [authentication-resource]
-      operationId: listPasskeys
+      operationId: listPasskeys_1
       responses:
         '200':
           description: OK
@@ -851,7 +851,7 @@ paths:
   /api/auth/passkeys/{credentialId}:
     delete:
       tags: [authentication-resource]
-      operationId: removePasskey
+      operationId: removePasskey_1
       parameters:
       - name: credentialId
         in: path
@@ -889,6 +889,29 @@ paths:
           application/json:
             schema: {$ref: '#/components/schemas/SendCodeRequest'}
         required: true
+      responses:
+        '200': {description: OK}
+  /api/auth/webauthn/passkeys:
+    get:
+      tags: [web-authn-passkey-resource]
+      operationId: listPasskeys
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/PasskeyDTO'}
+  /api/auth/webauthn/passkeys/{credentialId}:
+    delete:
+      tags: [web-authn-passkey-resource]
+      operationId: removePasskey
+      parameters:
+      - name: credentialId
+        in: path
+        required: true
+        schema: {type: string}
       responses:
         '200': {description: OK}
   /api/comments/{commentId}:
@@ -3761,8 +3784,6 @@ components:
       type: object
       properties:
         clientId: {type: string}
-        externalLoginRealm: {type: string}
-        externalRelyingPartyId: {type: string}
         relyingPartyId: {type: string}
         tumLoginRealm: {type: string}
         url: {type: string}
@@ -4243,7 +4264,7 @@ components:
     UpdatePasswordDTO:
       type: object
       properties:
-        newPassword: {type: string, minLength: 1}
+        newPassword: {type: string, maxLength: 128, minLength: 8}
       required: [newPassword]
     UpdateSlotLocationDTO:
       type: object

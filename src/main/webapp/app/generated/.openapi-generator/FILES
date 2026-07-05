@@ -52,6 +52,8 @@ api/user-data-export-resource-api.ts
 api/user-data-export-resource-resources.ts
 api/user-resource-api.ts
 api/user-resource-resources.ts
+api/web-authn-passkey-resource-api.ts
+api/web-authn-passkey-resource-resources.ts
 model/accept-dto.ts
 model/acquaintance-depth.ts
 model/acquaintance-duration.ts
