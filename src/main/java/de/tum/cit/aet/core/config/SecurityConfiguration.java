@@ -165,9 +165,7 @@ public class SecurityConfiguration {
             )
             .oauth2ResourceServer(oauth2 ->
                 oauth2
-                    // A 401 must not clear the auth cookies: an expired access token is recoverable via the
-                    // refresh cookie at POST /api/auth/refresh. Clearing them here would destroy a still-valid
-                    // session on any transient 401. Cookie lifecycle lives solely in the auth endpoints.
+                    // Don't clear cookies on a 401: an expired access token stays recoverable via the refresh cookie.
                     .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                     .bearerTokenResolver(bearerTokenResolver())
                     .jwt(jwt -> jwt.jwtAuthenticationConverter(customJwtAuthenticationConverter))
@@ -178,7 +176,7 @@ public class SecurityConfiguration {
     /**
      * Resolves the bearer token read-only: it returns the 'access_token' cookie value (app-issued applicant
      * sessions) and otherwise falls back to the Authorization header (TUM staff Keycloak tokens).
-     * <p>
+     *
      * It intentionally never refreshes here. Refresh-token rotation is single-use with replay detection, so
      * performing it during request resolution races the concurrent requests a page reload fires and trips
      * replay detection, revoking the whole session. Refreshing an expired app session is handled solely by

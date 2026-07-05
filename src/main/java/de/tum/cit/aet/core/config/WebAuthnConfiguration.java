@@ -41,7 +41,7 @@ import tools.jackson.databind.ObjectMapper;
 /**
  * In-app WebAuthn (passkeys) for applicants, replacing the Keycloak passkey flow for the external-login realm.
  * Uses Spring Security's built-in WebAuthn support backed by JDBC credential storage (migration 045).
- * <p>
+ *
  * WebAuthn runs on its own filter chain (matched before the stateless resource-server chain) which permits a
  * session so the two-step ceremony's challenge is persisted between the {@code /options} and finish calls.
  * Registration endpoints are protected by the same app-JWT cookie used elsewhere; on a successful passkey

@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Wires the signing material that lets TUMApply mint its own JWTs for applicants.
- * <p>
+ *
  * The RSA keypair is loaded from configuration (PEM via environment/secret). When the keypair is not fully
  * configured an ephemeral keypair is generated at startup — acceptable for local development only; the
  * production profile fails fast unless BOTH {@code app.token.rsa-private-key} and

@@ -34,7 +34,7 @@ import tools.jackson.databind.ObjectMapper;
  * Security chain that lets TUMApply perform Google/Apple sign-in directly (replacing Keycloak IdP
  * brokering for the decommissioned external-login realm). It is a separate, higher-priority filter chain
  * matching only the OAuth2 endpoints, so the stateless resource-server chain ({@code /api/**}) is untouched.
- * <p>
+ *
  * Activated only under the {@code social-login} profile: this keeps the {@code ClientRegistrationRepository}
  * auto-configuration (and this chain) out of dev/test/CI, where no OAuth2 client credentials are configured.
  * Enable in deployments via {@code SPRING_PROFILES_ACTIVE=...,social-login} together with the Google and

@@ -38,7 +38,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * for the external-login realm). Access and refresh tokens are RS256-signed with the application's own
  * key; refresh tokens are additionally tracked in {@link AppRefreshTokenRepository} so they can be
  * revoked on logout and rotated (with replay detection) on use.
- * <p>
+ *
  * Access-token claims are kept compatible with the existing resource-server pipeline: {@code sub} is the
  * local {@link User#getUserId()} (consumed by {@code CurrentUserService} and {@code AuthenticationService}),
  * plus {@code email}, {@code given_name}, {@code family_name} and {@code azp}.
@@ -126,7 +126,7 @@ public class AppTokenService {
      * Validates a refresh token and rotates it: the presented token is atomically revoked and a new pair is
      * issued. Reuse of an already-revoked token (or losing the atomic claim) is treated as theft and revokes
      * every active token for that user.
-     * <p>
+     *
      * A successful rotation is cached per token for {@link #ROTATION_REPLAY_GRACE_SECONDS}, so any further use
      * of the SAME token within that window returns the identical successor pair rather than tripping replay
      * detection. This de-duplicates both truly concurrent calls and the common browser race where a client
@@ -146,8 +146,7 @@ public class AppTokenService {
         try {
             AuthResponseDTO result = transactionTemplate.execute(status -> rotate(refreshToken));
             pending.complete(result);
-            // Keep the successful result cached for the grace window, then evict; a failure is not cached so
-            // the entry is dropped immediately below.
+            // Cache the successful result for the grace window; a failure is dropped immediately in the catch.
             rotationCacheEvictor.schedule(
                 () -> inFlightRefreshes.remove(refreshToken, pending),
                 ROTATION_REPLAY_GRACE_SECONDS,
@@ -173,8 +172,7 @@ public class AppTokenService {
 
         AppRefreshToken record = refreshTokenRepository.findById(jti).orElseThrow(() -> new UnauthorizedException("Unknown refresh token"));
 
-        // Atomically claim the token; if it was already revoked (or another request claimed it first), treat
-        // the reuse as theft and revoke the whole family.
+        // Atomically claim the token; an already-revoked token or a lost claim is treated as theft.
         if (record.isRevoked() || refreshTokenRepository.revokeIfActive(jti) == 0) {
             refreshTokenRepository.revokeAllForUser(userId);
             log.warn("Refresh token replay detected for user {}; revoked all sessions", userId);
