@@ -7,6 +7,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
 import de.tum.cit.aet.usermanagement.repository.AppRefreshTokenRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import jakarta.annotation.PreDestroy;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -14,6 +15,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
@@ -48,11 +52,24 @@ public class AppTokenService {
     private static final String TYPE_ACCESS = "access";
     private static final String TYPE_REFRESH = "refresh";
 
+    /**
+     * How long a successful rotation stays cached so a second use of the just-rotated token returns the same
+     * successor instead of being treated as replay. Absorbs browser races (a refresh cancelled by a page
+     * reload, or focus/visibility refreshes firing before the new cookie is stored) without weakening genuine
+     * theft detection, which still fires once the window elapses.
+     */
+    private static final long ROTATION_REPLAY_GRACE_SECONDS = 30;
+
     private final JwtEncoder appJwtEncoder;
     private final JwtDecoder appRefreshTokenDecoder;
     private final AppRefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
     private final ConcurrentMap<String, CompletableFuture<AuthResponseDTO>> inFlightRefreshes = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService rotationCacheEvictor = Executors.newSingleThreadScheduledExecutor(runnable -> {
+        Thread thread = new Thread(runnable, "app-token-rotation-evictor");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private final TransactionTemplate transactionTemplate;
     private final String issuer;
@@ -110,9 +127,11 @@ public class AppTokenService {
      * issued. Reuse of an already-revoked token (or losing the atomic claim) is treated as theft and revokes
      * every active token for that user.
      * <p>
-     * Concurrent calls with the SAME refresh token are de-duplicated and share a single rotation result, so
-     * legitimate parallel requests (e.g. the cookie {@code BearerTokenResolver} auto-refresh firing on several
-     * in-flight requests at access-token expiry) do not trip replay detection and log the user out.
+     * A successful rotation is cached per token for {@link #ROTATION_REPLAY_GRACE_SECONDS}, so any further use
+     * of the SAME token within that window returns the identical successor pair rather than tripping replay
+     * detection. This de-duplicates both truly concurrent calls and the common browser race where a client
+     * rotates but fails to persist the new token (a refresh cancelled by a page reload, or a focus/visibility
+     * refresh firing before the new cookie is stored). Genuine reuse after the window still revokes the family.
      *
      * @param refreshToken the refresh token from the client's cookie
      * @return a freshly issued token pair
@@ -127,13 +146,24 @@ public class AppTokenService {
         try {
             AuthResponseDTO result = transactionTemplate.execute(status -> rotate(refreshToken));
             pending.complete(result);
+            // Keep the successful result cached for the grace window, then evict; a failure is not cached so
+            // the entry is dropped immediately below.
+            rotationCacheEvictor.schedule(
+                () -> inFlightRefreshes.remove(refreshToken, pending),
+                ROTATION_REPLAY_GRACE_SECONDS,
+                TimeUnit.SECONDS
+            );
             return result;
         } catch (RuntimeException ex) {
             pending.completeExceptionally(ex);
-            throw ex;
-        } finally {
             inFlightRefreshes.remove(refreshToken, pending);
+            throw ex;
         }
+    }
+
+    @PreDestroy
+    void shutdownRotationCacheEvictor() {
+        rotationCacheEvictor.shutdownNow();
     }
 
     private AuthResponseDTO rotate(String refreshToken) {

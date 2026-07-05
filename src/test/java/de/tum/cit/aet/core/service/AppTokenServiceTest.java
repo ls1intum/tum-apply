@@ -228,6 +228,31 @@ class AppTokenServiceTest {
             assertThatThrownBy(() -> service.refresh(issued.refreshToken())).isInstanceOf(UnauthorizedException.class);
             verify(refreshTokenRepository).revokeAllForUser(id);
         }
+
+        @Test
+        void shouldReturnTheSameSuccessorWhenTheSameTokenIsRefreshedTwiceWithinGrace() {
+            UUID id = UUID.randomUUID();
+            User user = user(id);
+            AuthResponseDTO issued = service.issueFor(user);
+            String refreshJti = decoder.decode(issued.refreshToken()).getId();
+
+            AppRefreshToken record = new AppRefreshToken();
+            record.setJti(refreshJti);
+            record.setUserId(id);
+            record.setExpiresAt(Instant.now().plusSeconds(1000));
+            record.setRevoked(false);
+            when(refreshTokenRepository.findById(refreshJti)).thenReturn(Optional.of(record));
+            when(refreshTokenRepository.revokeIfActive(refreshJti)).thenReturn(1);
+            when(userRepository.findById(id)).thenReturn(Optional.of(user));
+
+            AuthResponseDTO first = service.refresh(issued.refreshToken());
+            AuthResponseDTO second = service.refresh(issued.refreshToken());
+
+            // The second use of the same token returns the cached successor, so it never reaches replay detection.
+            assertThat(second).isSameAs(first);
+            verify(refreshTokenRepository).revokeIfActive(refreshJti);
+            verify(refreshTokenRepository, never()).revokeAllForUser(any());
+        }
     }
 
     @Nested
