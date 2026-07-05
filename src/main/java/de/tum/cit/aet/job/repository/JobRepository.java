@@ -68,6 +68,51 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     );
 
     /**
+     * Finds all jobs across every research group, with optional filters for state, research group,
+     * supervising professor, and a search string matching either job title or professor name.
+     * Used by the admin "All Positions" page.
+     *
+     * @param states                  optional list of job states to include
+     * @param researchGroupIds        optional list of research-group ids to include
+     * @param supervisingProfessorIds optional list of supervising-professor user ids to include
+     * @param searchQuery             optional search string for job title or professor full name
+     * @param pageable                the pagination configuration
+     * @return a page of matching jobs as {@link de.tum.cit.aet.job.dto.AdminCreatedJobDTO}
+     */
+    @Query(
+        """
+          SELECT new de.tum.cit.aet.job.dto.AdminCreatedJobDTO(
+            j.jobId,
+            j.supervisingProfessor.avatar,
+            CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+            j.supervisingProfessor.userId,
+            j.researchGroup.researchGroupId,
+            j.researchGroup.name,
+            j.state,
+            j.title,
+            j.startDate,
+            j.createdAt,
+            j.lastModifiedAt
+          )
+          FROM Job j
+          WHERE (:states IS NULL OR j.state IN :states)
+          AND (:researchGroupIds IS NULL OR j.researchGroup.researchGroupId IN :researchGroupIds)
+          AND (:supervisingProfessorIds IS NULL OR j.supervisingProfessor.userId IN :supervisingProfessorIds)
+          AND (:searchQuery IS NULL OR
+             j.title LIKE CONCAT('%', :searchQuery, '%') OR
+             CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) LIKE CONCAT('%', :searchQuery, '%')
+          )
+        """
+    )
+    Page<de.tum.cit.aet.job.dto.AdminCreatedJobDTO> findAllJobsForAdmin(
+        @Param("states") List<JobState> states,
+        @Param("researchGroupIds") List<UUID> researchGroupIds,
+        @Param("supervisingProfessorIds") List<UUID> supervisingProfessorIds,
+        @Param("searchQuery") String searchQuery,
+        Pageable pageable
+    );
+
+    /**
      * Finds all available job postings with optional filtering and custom sorting
      * by professor name.
      * Sorting is applied manually for the computed professor name field.

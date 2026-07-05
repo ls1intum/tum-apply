@@ -1,0 +1,16 @@
+<p-drawer
+  [visible]="open()"
+  (visibleChange)="open.set($event)"
+  [position]="position()"
+  [class]="panelClass()"
+  [showCloseIcon]="showCloseIcon()"
+  [dismissible]="dismissible()"
+  [modal]="modal()"
+  [motionOptions]="motionOptions"
+  [maskStyle]="maskStyle"
+>
+  <ng-template #header>
+    <ng-content select="[drawer-header]" />
+  </ng-template>
+  <ng-content />
+</p-drawer>

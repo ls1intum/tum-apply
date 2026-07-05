@@ -40,20 +40,31 @@ describe('ToastService', () => {
   });
 
   it.each([
-    ['showSuccessKey', 'success'],
-    ['showErrorKey', 'error'],
-    ['showInfoKey', 'info'],
-    ['showWarnKey', 'warn'],
-  ] as const)('should translate base key and show %s toast', (method, severity) => {
+    ['showSuccessKey', 'success', 3000],
+    ['showErrorKey', 'error', 6000],
+    ['showInfoKey', 'info', 3000],
+    ['showWarnKey', 'warn', 5000],
+  ] as const)('should translate base key and show %s toast', (method, severity, life) => {
     const params = { name: 'John' };
     service[method]('app.message.x', params);
     expect(messageService.add).toHaveBeenCalledWith({
       severity,
+      life,
       summary: 'app.message.x.summary',
       detail: 'app.message.x.detail',
     });
     expect(translateMock.instant).toHaveBeenCalledWith('app.message.x.summary', params);
     expect(translateMock.instant).toHaveBeenCalledWith('app.message.x.detail', params);
+  });
+
+  it('should give errors a longer default life so users can read them', () => {
+    service.showError({ summary: 'Boom' });
+    expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', life: 6000, summary: 'Boom' });
+  });
+
+  it('should respect an explicit life override on the message', () => {
+    service.showError({ summary: 'Boom', life: 1000 });
+    expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', life: 1000, summary: 'Boom' });
   });
 
   it('should handle multiple toast messages in sequence', () => {
@@ -62,8 +73,8 @@ describe('ToastService', () => {
     service.showInfo({ summary: 'Third' });
 
     expect(messageService.add).toHaveBeenCalledTimes(3);
-    expect(messageService.add).toHaveBeenNthCalledWith(1, { severity: 'success', summary: 'First' });
-    expect(messageService.add).toHaveBeenNthCalledWith(2, { severity: 'error', summary: 'Second' });
-    expect(messageService.add).toHaveBeenNthCalledWith(3, { severity: 'info', summary: 'Third' });
+    expect(messageService.add).toHaveBeenNthCalledWith(1, { severity: 'success', life: 3000, summary: 'First' });
+    expect(messageService.add).toHaveBeenNthCalledWith(2, { severity: 'error', life: 6000, summary: 'Second' });
+    expect(messageService.add).toHaveBeenNthCalledWith(3, { severity: 'info', life: 3000, summary: 'Third' });
   });
 });

@@ -53,7 +53,7 @@
     />
   </div>
   <div class="my-positions-container">
-    <div class="body">
+    <div>
       <jhi-search-filter-sort-bar
         [searchText]="'myPositionsPage.searchFilterSortBar.searchText' | translate"
         [totalRecords]="totalRecords()"
@@ -79,7 +79,7 @@
         ]"
         [sortableFields]="sortableFields"
       />
-      <div class="table-wrapper">
+      <div>
         <jhi-dynamic-table
           [columns]="columns()"
           [data]="jobs()"

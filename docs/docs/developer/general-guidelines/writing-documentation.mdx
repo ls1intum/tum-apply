@@ -94,20 +94,27 @@ import loginForm from '../images/login/login-form.png';
 
 ---
 
-## 5. Embed Videos with iframe
+## 5. Embed Videos with the VideoEmbed Component
 
-If you're including videos, always use an `<iframe>` for embedding to maintain compatibility and layout consistency:
+For screen recordings and other embedded videos, use the custom `<VideoEmbed>` component instead of writing an `<iframe>` by hand. The component renders a responsive iframe (capped at 900px wide, with a 900/520 aspect ratio) inside a semantically correct `<figure>` / `<figcaption>` so the video scales gracefully on narrow viewports.
 
-```html
-<iframe
-  width="560"
-  height="315"
-  src="https://www.youtube.com/embed/example"
-  title="Video title"
-  frameBorder="0"
-  allowFullScreen
-></iframe>
+```tsx
+import VideoEmbed from "../../src/components/VideoEmbed/VideoEmbed";
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/74607?video_only=1&t=0"
+  title="Applying for a position in TUMApply"
+  caption="Complete application flow from creating an application to submission"
+/>
 ```
+
+**Props:**
+
+| Prop | Required | Notes |
+|---|---|---|
+| `src` | Yes | Embed URL. For `live.rbg.tum.de` videos, append `?video_only=1&t=0` to hide page chrome. |
+| `title` | Yes | Accessible title for the iframe. |
+| `caption` | No | Rendered as `<figcaption>` below the video. |
 
 ---
 

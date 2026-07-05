@@ -37,6 +37,19 @@ public class RatingService {
     }
 
     /**
+     * Retrieves all raw {@link Rating} entities for the specified application,
+     * skipping the permission check used by {@link #getRatingOverview(UUID)}.
+     * Intended for internal callers such as data export that have already
+     * authorised the surrounding operation.
+     *
+     * @param applicationId the unique ID of the application; must not be {@code null}
+     * @return the set of ratings attached to the application
+     */
+    public Set<Rating> findAllByApplicationId(UUID applicationId) {
+        return ratingRepository.findByApplicationApplicationId(applicationId);
+    }
+
+    /**
      * Creates, updates, or deletes the current user's rating for the specified application,
      * and returns the updated {@link RatingOverviewDTO}.
      *

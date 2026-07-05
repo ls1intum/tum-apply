@@ -10,6 +10,13 @@ export type ToastMessageInput = {
   life?: number;
 };
 
+const DEFAULT_LIFE_BY_SEVERITY: Record<ToastSeverity, number> = {
+  success: 3000,
+  info: 3000,
+  warn: 5000,
+  error: 6000,
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -65,7 +72,7 @@ export class ToastService {
   }
 
   private show(message: ToastMessageInput, severity: ToastSeverity): void {
-    this.messageService.add({ severity, ...message });
+    this.messageService.add(Object.assign({ severity, life: DEFAULT_LIFE_BY_SEVERITY[severity] }, message));
   }
 
   private createGlobalToast(): void {

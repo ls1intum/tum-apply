@@ -2,6 +2,7 @@
   "header": {
     "login": "Anmelden",
     "professorTitle": "Professor:in",
+    "activeResearchGroup": "Aktive Forschungsgruppe",
     "professor": "Bist du Professor:in?",
     "professorShort": "Professor:in?",
     "applicant": "Bist du Bewerber:in?",
@@ -12,6 +13,11 @@
     "universityName": "Technische Universität München",
     "lightMode": "Helles Theme",
     "darkMode": "Dunkles Theme",
-    "systemMode": "System Theme"
+    "systemMode": "System Theme",
+    "menu": "Menü",
+    "menuToggle": "Menü öffnen",
+    "sidebarToggle": "Navigation öffnen",
+    "language": "Sprache",
+    "theme": "Theme"
   }
 }

@@ -11,15 +11,24 @@
     [length]="length"
     [size]="$any(otpSize())"
     inputmode="latin"
-    class="otp-input"
   />
   <div class="text-negative-default">
-    @if (showError()) {
+    @if (isAttemptCooldown()) {
+      <span [translateValues]="{ seconds: attemptCooldownSeconds() }" jhiTranslate="auth.common.otp.attemptCooldown"></span>
+    } @else if (showError()) {
       <span jhiTranslate="auth.common.otp.error"></span>
     }
   </div>
   <div class="flex justify-between w-full gap-8">
-    <jhi-button (click)="onResend()" [disabled]="disableResend()" [fullWidth]="true" [label]="resendLabel" variant="text" />
+    <jhi-button
+      (click)="onResend()"
+      [disabled]="disableResend()"
+      [fullWidth]="true"
+      [label]="resendLabelKey()"
+      [shouldTranslate]="true"
+      [translationParams]="resendLabelParams()"
+      variant="text"
+    />
     <jhi-button
       (click)="onSubmit()"
       [disabled]="disabledSubmit()"
