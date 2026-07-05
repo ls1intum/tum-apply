@@ -2,8 +2,6 @@ package de.tum.cit.aet.usermanagement.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -18,11 +16,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
 
 /**
  * Integration tests for {@link de.tum.cit.aet.usermanagement.web.AuthenticationResource#login} that exercise
@@ -39,12 +34,6 @@ public class AuthenticationResourceTest extends AbstractResourceTest {
 
     @Autowired
     MvcTestClient api;
-
-    @Autowired
-    MockMvc mockMvc;
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -73,18 +62,10 @@ public class AuthenticationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void issuesSessionCookiesOnValidCredentials() throws Exception {
+    void issuesSessionCookiesOnValidCredentials() {
         when(userService.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
-        MockHttpServletResponse response = mockMvc
-            .perform(
-                post(LOGIN_PATH)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(new LoginRequestDTO(EMAIL, PASSWORD)))
-            )
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse();
+        MockHttpServletResponse response = api.postAndReturnResponse(LOGIN_PATH, new LoginRequestDTO(EMAIL, PASSWORD), 200);
 
         List<String> setCookies = response.getHeaders("Set-Cookie");
         assertThat(setCookies).anyMatch(header -> header.startsWith("access_token="));

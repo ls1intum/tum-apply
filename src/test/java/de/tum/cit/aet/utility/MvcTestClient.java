@@ -260,6 +260,41 @@ public class MvcTestClient {
     }
 
     /**
+     * Performs a POST with a JSON body and asserts the given status, then returns the full servlet response.
+     * Useful for asserting response headers such as {@code Set-Cookie}.
+     *
+     * @param url            the target URL
+     * @param body           the request body serialized to JSON
+     * @param expectedStatus the expected HTTP status code
+     * @param accepts        optional accept media types
+     * @return the full servlet response
+     */
+    public MockHttpServletResponse postAndReturnResponse(String url, Object body, int expectedStatus, MediaType... accepts) {
+        try {
+            ResultActions action = mockMvc.perform(
+                applyDefaults(post(url), accepts).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(body))
+            );
+
+            return switch (expectedStatus) {
+                case 200 -> action.andExpect(status().isOk()).andReturn().getResponse();
+                case 201 -> action.andExpect(status().isCreated()).andReturn().getResponse();
+                case 202 -> action.andExpect(status().isAccepted()).andReturn().getResponse();
+                case 204 -> action.andExpect(status().isNoContent()).andReturn().getResponse();
+                case 400 -> action.andExpect(status().isBadRequest()).andReturn().getResponse();
+                case 401 -> action.andExpect(status().isUnauthorized()).andReturn().getResponse();
+                case 403 -> action.andExpect(status().isForbidden()).andReturn().getResponse();
+                case 404 -> action.andExpect(status().isNotFound()).andReturn().getResponse();
+                case 409 -> action.andExpect(status().isConflict()).andReturn().getResponse();
+                case 429 -> action.andExpect(status().isTooManyRequests()).andReturn().getResponse();
+                case 500 -> action.andExpect(status().isInternalServerError()).andReturn().getResponse();
+                default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+            };
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with status " + expectedStatus, e);
+        }
+    }
+
+    /**
      * Performs a POST with a JSON body and asserts 200 OK, then deserializes to the
      * given class.
      * If type is Void, only the assertion is performed.
