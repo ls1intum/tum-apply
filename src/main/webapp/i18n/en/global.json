@@ -672,6 +672,74 @@
   },
   "reference": {
     "title": "Upload your recommendation letter",
+    "assessment": {
+      "title": "Recommenders' assessments"
+    },
+    "questions": {
+      "relationship": {
+        "title": "Your relationship to the applicant",
+        "capacity": {
+          "label": "In what capacity do you know the applicant?",
+          "options": {
+            "courseInstructor": "Course instructor",
+            "researchSupervisor": "Research supervisor",
+            "thesisAdvisor": "Thesis advisor",
+            "employer": "Employer / manager",
+            "academicAdvisor": "Academic advisor",
+            "other": "Other"
+          }
+        },
+        "duration": {
+          "label": "How long have you known the applicant?",
+          "options": {
+            "lessThanOneYear": "Less than 1 year",
+            "oneToTwoYears": "1–2 years",
+            "threeToFiveYears": "3–5 years",
+            "moreThanFiveYears": "More than 5 years"
+          }
+        },
+        "depth": {
+          "label": "How well do you know the applicant?",
+          "options": {
+            "casually": "Casually",
+            "moderately": "Moderately well",
+            "well": "Well",
+            "veryWell": "Very well"
+          }
+        }
+      },
+      "rating": {
+        "title": "Assessment compared to peer group",
+        "description": "How do you rate the applicant compared to peers you have supervised, taught, or worked with?",
+        "rows": {
+          "intellectualAbility": "Intellectual ability",
+          "researchPotential": "Research potential",
+          "motivation": "Motivation & drive",
+          "communication": "Communication skills",
+          "leadership": "Leadership",
+          "collaboration": "Ability to collaborate"
+        },
+        "options": {
+          "top1to2": "Top 1–2% (truly exceptional)",
+          "top5": "Top 5% (outstanding)",
+          "top10": "Top 10% (excellent)",
+          "top25": "Top 25% (very good)",
+          "top50": "Top 50% (good)",
+          "belowAverage": "Below average",
+          "cannotJudge": "Cannot judge"
+        }
+      },
+      "overall": {
+        "label": "Overall recommendation",
+        "options": {
+          "highestEnthusiasm": "Recommend with the highest enthusiasm",
+          "stronglyRecommend": "Strongly recommend",
+          "recommend": "Recommend",
+          "recommendWithReservations": "Recommend with reservations",
+          "doNotRecommend": "Do not recommend"
+        }
+      }
+    },
     "loading": "Loading...",
     "requestedFor": {
       "title": "Requested for",

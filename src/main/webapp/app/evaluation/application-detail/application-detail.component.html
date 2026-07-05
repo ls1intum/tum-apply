@@ -360,6 +360,12 @@
           </div>
         </div>
         <p-divider />
+        @if (hasReferenceAssessments()) {
+          <jhi-section titleKey="reference.assessment.title" icon="clipboard-check">
+            <jhi-reference-assessment-section [assessments]="currentReferenceRequests()" />
+          </jhi-section>
+          <p-divider />
+        }
         <div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
           <div>
             <jhi-section titleKey="evaluation.details.ratingTitle" icon="star">

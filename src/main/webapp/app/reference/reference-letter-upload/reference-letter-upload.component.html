@@ -106,6 +106,69 @@
         }
       </div>
 
+      <!-- Structured assessment -->
+      <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
+        <div class="text-sm text-text-secondary uppercase font-semibold" jhiTranslate="reference.questions.relationship.title">
+          Your relationship to the applicant
+        </div>
+        <jhi-select
+          label="reference.questions.relationship.capacity.label"
+          [required]="true"
+          [translateItems]="true"
+          [items]="relationshipOptions"
+          [selected]="selectedOptions()['relationship']"
+          (selectedChange)="onAnswerSelected('relationship', $event)"
+        />
+        <jhi-select
+          label="reference.questions.relationship.duration.label"
+          [required]="true"
+          [translateItems]="true"
+          [items]="durationOptions"
+          [selected]="selectedOptions()['acquaintanceDuration']"
+          (selectedChange)="onAnswerSelected('acquaintanceDuration', $event)"
+        />
+        <jhi-select
+          label="reference.questions.relationship.depth.label"
+          [required]="true"
+          [translateItems]="true"
+          [items]="depthOptions"
+          [selected]="selectedOptions()['acquaintanceDepth']"
+          (selectedChange)="onAnswerSelected('acquaintanceDepth', $event)"
+        />
+      </div>
+
+      <!-- Peer-group rating grid -->
+      <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
+        <div class="text-sm text-text-secondary uppercase font-semibold" jhiTranslate="reference.questions.rating.title">
+          Assessment compared to peer group
+        </div>
+        <p class="text-sm text-text-secondary" jhiTranslate="reference.questions.rating.description">
+          Compared to others in a similar peer group, how do you rate the applicant?
+        </p>
+        @for (row of ratingRows; track row.key) {
+          <jhi-select
+            [label]="row.labelKey"
+            [required]="true"
+            [translateItems]="true"
+            [items]="ratingOptions"
+            [selected]="selectedOptions()[row.key]"
+            (selectedChange)="onAnswerSelected(row.key, $event)"
+          />
+        }
+      </div>
+
+      <!-- Overall recommendation -->
+      <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
+        <jhi-select
+          label="reference.questions.overall.label"
+          [required]="true"
+          [translateItems]="true"
+          [items]="overallOptions"
+          [selected]="selectedOptions()['overallRecommendation']"
+          (selectedChange)="onAnswerSelected('overallRecommendation', $event)"
+        />
+      </div>
+
       <!-- Upload control -->
       <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 bg-background-surface">
         <jhi-upload-button
@@ -134,7 +197,7 @@
           icon="check"
           label="reference.upload.confirm"
           [shouldTranslate]="true"
-          [disabled]="!hasQueuedFile() || uploading()"
+          [disabled]="!canSubmit()"
           [loading]="uploading()"
           (click)="confirmUpload()"
         />
