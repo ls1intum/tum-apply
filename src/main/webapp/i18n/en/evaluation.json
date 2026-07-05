@@ -98,7 +98,7 @@
       "documentTypeBachelor": "Bachelor Transcript",
       "documentTypeMaster": "Master Transcript",
       "documentTypeCV": "Curriculum Vitae",
-      "documentTypeReference": "Reference Letter",
+      "documentTypeReference": "Recommendation Letter",
       "documentTypeReferenceLetter": "Recommendation Letter - {name}",
       "referenceLetterStatus": "Recommendation Letter Status",
       "referenceStatus": {
