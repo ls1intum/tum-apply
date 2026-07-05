@@ -9,7 +9,9 @@ import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.AdminUserDetailDTO;
 import de.tum.cit.aet.usermanagement.dto.AdminUserOverviewDTO;
 import de.tum.cit.aet.usermanagement.dto.CreateUserDTO;
@@ -19,9 +21,14 @@ import de.tum.cit.aet.usermanagement.dto.UpdateUserDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -58,11 +65,66 @@ public class UserAdminService {
         String searchQuery
     ) {
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.USERS_ADMIN, true);
-        return userRepository.findAllUsersForAdmin(
+
+        // 1) Page the matching user ids (sorting is on User columns only, so it can be applied here).
+        Page<UUID> idPage = userRepository.findUserIdsForAdmin(
             (roles == null || roles.isEmpty()) ? null : roles,
             (researchGroupIds == null || researchGroupIds.isEmpty()) ? null : researchGroupIds,
             StringUtil.normalizeSearchQuery(searchQuery),
             pageable
+        );
+        List<UUID> ids = idPage.getContent();
+        if (ids.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, idPage.getTotalElements());
+        }
+
+        // 2) Fetch the full role/group graph, then build each row in the paged order (the fetch query
+        //    does not preserve it) — a user may belong to several groups, hence the two-query approach.
+        Map<UUID, User> usersById = userRepository
+            .findUsersWithRolesAndGroupsByIds(ids)
+            .stream()
+            .collect(Collectors.toMap(User::getUserId, Function.identity(), (first, second) -> first));
+        List<AdminUserOverviewDTO> content = ids
+            .stream()
+            .map(usersById::get)
+            .filter(Objects::nonNull)
+            .map(UserAdminService::toOverviewDTO)
+            .toList();
+        return new PageImpl<>(content, pageable, idPage.getTotalElements());
+    }
+
+    /**
+     * Maps a user (with roles and groups initialised) to an {@link AdminUserOverviewDTO}, deriving the
+     * highest-privilege role and the primary (first PROFESSOR/EMPLOYEE) research group.
+     *
+     * @param user the user to map; its research-group roles and groups must be initialised
+     * @return the overview row
+     */
+    private static AdminUserOverviewDTO toOverviewDTO(User user) {
+        List<UserResearchGroupRole> roles = user.getResearchGroupRoles() == null ? List.of() : List.copyOf(user.getResearchGroupRoles());
+        UserRole primaryRole = roles
+            .stream()
+            .map(UserResearchGroupRole::getRole)
+            .max(Comparator.comparingInt(UserAdminService::priority))
+            .orElse(null);
+        ResearchGroup researchGroup = roles
+            .stream()
+            .filter(r -> r.getRole() == UserRole.PROFESSOR || r.getRole() == UserRole.EMPLOYEE)
+            .map(UserResearchGroupRole::getResearchGroup)
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null);
+        return new AdminUserOverviewDTO(
+            user.getUserId(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getEmail(),
+            user.getAvatar(),
+            user.getUniversityId(),
+            primaryRole,
+            researchGroup == null ? null : researchGroup.getResearchGroupId(),
+            researchGroup == null ? null : researchGroup.getName(),
+            user.getLastActivityAt()
         );
     }
 
@@ -86,8 +148,21 @@ public class UserAdminService {
                       .map(r -> r.getRole())
                       .max(Comparator.comparingInt(UserAdminService::priority))
                       .orElse(null);
-        UUID rgId = user.getResearchGroup() == null ? null : user.getResearchGroup().getResearchGroupId();
-        String rgName = user.getResearchGroup() == null ? null : user.getResearchGroup().getName();
+        // Derive the primary research group from the group-bound (PROFESSOR/EMPLOYEE) roles; the legacy
+        // User.researchGroup column was replaced by the user_research_group_roles join table.
+        ResearchGroup researchGroup =
+            user.getResearchGroupRoles() == null
+                ? null
+                : user
+                      .getResearchGroupRoles()
+                      .stream()
+                      .filter(r -> r.getRole() == UserRole.PROFESSOR || r.getRole() == UserRole.EMPLOYEE)
+                      .map(r -> r.getResearchGroup())
+                      .filter(rg -> rg != null)
+                      .findFirst()
+                      .orElse(null);
+        UUID rgId = researchGroup == null ? null : researchGroup.getResearchGroupId();
+        String rgName = researchGroup == null ? null : researchGroup.getName();
         return new AdminUserDetailDTO(
             user.getUserId(),
             user.getFirstName(),

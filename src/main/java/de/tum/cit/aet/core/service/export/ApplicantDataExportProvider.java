@@ -1,7 +1,8 @@
 package de.tum.cit.aet.core.service.export;
 
 import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.application.service.ApplicantService;
+import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.documents.service.DocumentService;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantDataExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantInternalCommentExportDTO;
@@ -11,14 +12,13 @@ import de.tum.cit.aet.core.dto.exportdata.ApplicantReviewExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicationExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.DocumentExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.IntervieweeExportDTO;
-import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
-import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
-import de.tum.cit.aet.evaluation.repository.RatingRepository;
-import de.tum.cit.aet.interview.repository.IntervieweeRepository;
+import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
+import de.tum.cit.aet.evaluation.service.InternalCommentService;
+import de.tum.cit.aet.evaluation.service.RatingService;
+import de.tum.cit.aet.interview.service.InterviewService;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
-import de.tum.cit.aet.reference.repository.ReferenceRequestRepository;
+import de.tum.cit.aet.reference.service.ReferenceRequestService;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
-import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
@@ -31,25 +31,25 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ApplicantDataExportProvider implements UserDataSectionProvider {
 
-    private final ApplicantRepository applicantRepository;
+    private final ApplicantService applicantService;
+    private final ApplicationService applicationService;
     private final DocumentService documentService;
-    private final ApplicationRepository applicationRepository;
-    private final IntervieweeRepository intervieweeRepository;
-    private final ApplicationReviewRepository applicationReviewRepository;
-    private final RatingRepository ratingRepository;
-    private final InternalCommentRepository internalCommentRepository;
-    private final ReferenceRequestRepository referenceRequestRepository;
+    private final InterviewService interviewService;
+    private final ApplicationEvaluationService applicationEvaluationService;
+    private final RatingService ratingService;
+    private final InternalCommentService internalCommentService;
+    private final ReferenceRequestService referenceRequestService;
 
     @Override
     public void contribute(ExportContext context, UserDataExportBuilder builder) {
-        if (!context.hasApplicantRole() || !applicantRepository.existsById(context.user().getUserId())) {
+        if (!context.hasApplicantRole() || !applicantService.existsByUserId(context.user().getUserId())) {
             return;
         }
         builder.withApplicantData(buildApplicantData(context.user().getUserId()));
     }
 
     private ApplicantDataExportDTO buildApplicantData(UUID userId) {
-        Applicant applicant = applicantRepository.findById(userId).orElseThrow();
+        Applicant applicant = applicantService.findByUserId(userId).orElseThrow();
 
         Set<DocumentExportDTO> documents = documentService
             .listForApplicant(applicant)
@@ -59,8 +59,8 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
             )
             .collect(Collectors.toSet());
 
-        List<ApplicationExportDTO> applications = applicationRepository
-            .findAllByApplicantId(userId)
+        List<ApplicationExportDTO> applications = applicationService
+            .findAllByApplicantUserId(userId)
             .stream()
             .map(application ->
                 new ApplicationExportDTO(
@@ -105,12 +105,12 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
     }
 
     private List<ApplicantReferenceRequestExportDTO> getReferenceRequests(UUID applicantUserId) {
-        return applicationRepository
-            .findAllByApplicantId(applicantUserId)
+        return applicationService
+            .findAllByApplicantUserId(applicantUserId)
             .stream()
             .flatMap(application ->
-                referenceRequestRepository
-                    .findByApplicationApplicationIdOrderByCreatedAtAsc(application.getApplicationId())
+                referenceRequestService
+                    .findAllByApplicationIdOrdered(application.getApplicationId())
                     .stream()
                     .map(entry -> toReferenceRequestExportDto(application, entry))
             )
@@ -129,15 +129,15 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
     }
 
     private ApplicantReviewExportDTO getReview(UUID applicationId) {
-        return applicationReviewRepository
-            .findByApplicationApplicationId(applicationId)
+        return applicationEvaluationService
+            .findReviewByApplicationId(applicationId)
             .map(review -> new ApplicantReviewExportDTO(review.getReason(), review.getReviewedAt()))
             .orElse(null);
     }
 
     private List<ApplicantRatingExportDTO> getRatings(UUID applicationId) {
-        return ratingRepository
-            .findByApplicationApplicationId(applicationId)
+        return ratingService
+            .findAllByApplicationId(applicationId)
             .stream()
             .map(rating ->
                 new ApplicantRatingExportDTO(
@@ -149,8 +149,8 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
     }
 
     private List<ApplicantInternalCommentExportDTO> getInternalComments(UUID applicationId) {
-        return internalCommentRepository
-            .findAllByApplicationApplicationIdOrderByCreatedAtAsc(applicationId)
+        return internalCommentService
+            .findAllByApplicationIdOrdered(applicationId)
             .stream()
             .map(comment ->
                 new ApplicantInternalCommentExportDTO(
@@ -162,11 +162,16 @@ public class ApplicantDataExportProvider implements UserDataSectionProvider {
     }
 
     private List<IntervieweeExportDTO> getInterviewees(UUID userId) {
-        return intervieweeRepository
-            .findByApplicantUserIdWithDetails(userId)
+        return interviewService
+            .findIntervieweesByApplicantUserId(userId)
             .stream()
             .map(interviewee ->
-                new IntervieweeExportDTO(interviewee.getInterviewProcess().getJob().getTitle(), interviewee.getLastInvited())
+                new IntervieweeExportDTO(
+                    interviewee.getInterviewProcess().getJob().getTitle(),
+                    interviewee.getLastInvited(),
+                    interviewee.getRating() != null ? interviewee.getRating().name() : null,
+                    interviewee.getAssessmentNotes()
+                )
             )
             .toList();
     }

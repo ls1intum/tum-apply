@@ -64,6 +64,18 @@ public class ReferenceRequestService {
     private String clientUrl;
 
     /**
+     * Retrieves the raw {@link ReferenceRequest} entities attached to the given application,
+     * ordered by creation time. Intended for callers that need the domain entity
+     * (e.g. data export) rather than the DTO returned by {@link #getReferences(UUID)}.
+     *
+     * @param applicationId the owning application id
+     * @return list of reference requests ordered ascending by creation time
+     */
+    public List<ReferenceRequest> findAllByApplicationIdOrdered(UUID applicationId) {
+        return referenceRequestRepository.findByApplicationApplicationIdOrderByCreatedAtAsc(applicationId);
+    }
+
+    /**
      * Lists all referee contacts attached to the given application, ordered by creation time.
      * Checks that the current user owns the application or is an admin or a research group member of the job.
      *
@@ -104,7 +116,26 @@ public class ReferenceRequestService {
         entry.setLastName(payload.lastName().trim());
         entry.setEmail(payload.email().trim());
         entry.setStatus(ReferenceRequestStatus.ADDED);
-        return ReferenceRequestDTO.fromEntity(referenceRequestRepository.save(entry));
+        ReferenceRequest saved = referenceRequestRepository.save(entry);
+        return ReferenceRequestDTO.fromEntity(saved);
+    }
+
+    /**
+     * Marks the reference request behind the token as {@code DECLINED} when the referee chooses not
+     * to provide a letter. Only a {@code REQUESTED} request with a non-expired token may be declined;
+     * the decision is terminal.
+     *
+     * @param rawToken the plaintext token from the invitation email
+     * @return the updated request as a DTO
+     * @throws EntityNotFoundException      when the token is unknown
+     * @throws OperationNotAllowedException when the request is no longer open for a decision
+     */
+    public ReferenceRequestDTO declineRequest(String rawToken) {
+        ReferenceRequest entry = findByRawToken(rawToken);
+        assertReferenceActionAllowed(entry);
+        entry.setStatus(ReferenceRequestStatus.DECLINED);
+        ReferenceRequest saved = referenceRequestRepository.save(entry);
+        return ReferenceRequestDTO.fromEntity(saved);
     }
 
     /**
@@ -185,14 +216,14 @@ public class ReferenceRequestService {
             job.getTitle(),
             job.getResearchGroup() != null ? job.getResearchGroup().getName() : null,
             entry.getTokenExpiresAt(),
-            entry.getStatus()
+            entry.getStatus(),
+            application.isReferenceLettersConfidential()
         );
     }
 
     /**
      * Stores the recommendation letter PDF uploaded by an external referee, links it to the
-     * reference request, marks the request {@code SUBMITTED} and — if all required letters are now
-     * in — transitions the application from {@code PENDING} back to {@code SENT}.
+     * reference request and marks the request {@code SUBMITTED}.
      *
      * @param rawToken the plaintext token from the invitation email
      * @param file     the uploaded PDF
@@ -202,7 +233,7 @@ public class ReferenceRequestService {
      */
     public ReferenceRequestDTO uploadLetter(String rawToken, MultipartFile file) {
         ReferenceRequest entry = findByRawToken(rawToken);
-        assertUploadAllowed(entry);
+        assertReferenceActionAllowed(entry);
 
         Application application = entry.getApplication();
         User uploaderForAudit = application.getApplicant().getUser();
@@ -220,28 +251,7 @@ public class ReferenceRequestService {
         entry.setStatus(ReferenceRequestStatus.SUBMITTED);
         ReferenceRequest saved = referenceRequestRepository.save(entry);
 
-        promoteApplicationToSentIfComplete(application);
-
         return ReferenceRequestDTO.fromEntity(saved);
-    }
-
-    /**
-     * Returns true when the application has any unsubmitted reference requests required by the job.
-     * Used at submit time to decide between {@code SENT} and {@code PENDING}.
-     *
-     * @param application the application being submitted
-     * @return true when at least one required letter is still missing
-     */
-    public boolean hasIncompleteReferences(Application application) {
-        int required = application.getJob().getReferenceLettersRequired();
-        if (required <= 0) {
-            return false;
-        }
-        long submitted = referenceRequestRepository.countByApplicationApplicationIdAndStatus(
-            application.getApplicationId(),
-            ReferenceRequestStatus.SUBMITTED
-        );
-        return submitted < required;
     }
 
     /**
@@ -328,42 +338,17 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Guards the upload write path: only {@code REQUESTED} requests with a non-expired token may
-     * accept a new file. Already-submitted or expired requests are immutable.
+     * Guards token-backed referee actions: only {@code REQUESTED} requests with a non-expired token may
+     * be changed. Already-submitted, expired or already-declined requests are immutable.
      *
-     * @param entry the reference request being uploaded against
+     * @param entry the reference request being changed
      */
-    private void assertUploadAllowed(ReferenceRequest entry) {
-        if (entry.getStatus() == ReferenceRequestStatus.EXPIRED) {
-            throw new OperationNotAllowedException("This reference letter upload link has expired.");
+    private void assertReferenceActionAllowed(ReferenceRequest entry) {
+        if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
+            throw new OperationNotAllowedException("This reference request is no longer accepting changes.");
         }
         if (entry.getTokenExpiresAt() != null && entry.getTokenExpiresAt().isBefore(LocalDateTime.now())) {
             throw new OperationNotAllowedException("This reference letter upload link has expired.");
-        }
-        if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
-            throw new OperationNotAllowedException("This reference letter upload link is no longer accepting files.");
-        }
-    }
-
-    /**
-     * Transitions the owning application from {@code PENDING} to {@code SENT} once the
-     * number of submitted letters meets the job's requirement. Triggers no additional emails —
-     * the professor was already notified at submit time.
-     *
-     * @param application the application that just received another submitted letter
-     */
-    private void promoteApplicationToSentIfComplete(Application application) {
-        if (application.getState() != ApplicationState.PENDING) {
-            return;
-        }
-        int required = application.getJob().getReferenceLettersRequired();
-        long submitted = referenceRequestRepository.countByApplicationApplicationIdAndStatus(
-            application.getApplicationId(),
-            ReferenceRequestStatus.SUBMITTED
-        );
-        if (submitted >= required) {
-            application.setState(ApplicationState.SENT);
-            applicationRepository.save(application);
         }
     }
 

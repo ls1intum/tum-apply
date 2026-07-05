@@ -716,6 +716,7 @@ public class PDFExportService {
             case REQUESTED -> labels.getOrDefault("referenceStatusRequested", "(requested)");
             case SUBMITTED -> labels.getOrDefault("referenceStatusSubmitted", "(submitted)");
             case EXPIRED -> labels.getOrDefault("referenceStatusExpired", "(expired)");
+            case DECLINED -> labels.getOrDefault("referenceStatusDeclined", "(declined)");
         };
     }
 }

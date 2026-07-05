@@ -67,17 +67,19 @@ public class KeycloakUserService {
      * Retrieves users eligible to be added to a research group by merging
      * Keycloak LDAP users with locally registered (non-TUM) users.
      *
-     * @param searchKey search key for user query
-     * @param pageDTO   pagination parameters
+     * @param searchKey       search key for user query
+     * @param pageDTO         pagination parameters
+     * @param researchGroupId target research group; when {@code null}, the per-group exclusion is
+     *                        skipped (admin flows that have no target group yet)
      * @return paginated list of available users and the total count before pagination
      */
-    public PagedResult<KeycloakUserDTO> getAvailableUsersForResearchGroup(String searchKey, PageDTO pageDTO) {
+    public PagedResult<KeycloakUserDTO> getAvailableUsersForResearchGroup(String searchKey, PageDTO pageDTO, UUID researchGroupId) {
         // 1) Search Keycloak for TUM/LDAP users
         List<KeycloakUserDTO> keycloakUsers = searchTumUsers(searchKey, true);
 
         // 2) Search local DB for available users (including non-TUM)
         List<KeycloakUserDTO> localUsers = userRepository
-            .searchAvailableUsersForResearchGroup(searchKey)
+            .searchAvailableUsersForResearchGroup(searchKey, researchGroupId)
             .stream()
             .filter(user -> !currentUserService.isCurrentUser(user.getUserId()))
             .map(KeycloakUserDTO::fromUser)
@@ -86,8 +88,8 @@ public class KeycloakUserService {
         // 3) Merge and deduplicate (Keycloak results take priority)
         List<KeycloakUserDTO> merged = mergeAndDeduplicate(keycloakUsers, localUsers);
 
-        // 4) Filter out users already assigned to a research group
-        List<KeycloakUserDTO> availableUsers = filterOutAssignedUsers(merged);
+        // 4) Filter out users already assigned to the target research group (if any)
+        List<KeycloakUserDTO> availableUsers = filterOutAssignedUsers(merged, researchGroupId);
 
         // 5) Paginate
         return new PagedResult<>(paginate(pageDTO, availableUsers), availableUsers.size());
@@ -166,10 +168,16 @@ public class KeycloakUserService {
     }
 
     /**
-     * Filters out users that are already assigned to a research group.
+     * Filters out users that are already assigned to the given research group.
      * Uses universityId for TUM users and userId for non-TUM users.
+     * When {@code researchGroupId} is {@code null}, no users are excluded (the repository
+     * queries return empty sets so the lookup is effectively a no-op).
      */
-    private List<KeycloakUserDTO> filterOutAssignedUsers(List<KeycloakUserDTO> users) {
+    private List<KeycloakUserDTO> filterOutAssignedUsers(List<KeycloakUserDTO> users, UUID researchGroupId) {
+        if (researchGroupId == null) {
+            return users;
+        }
+
         // 1) Collect and check universityId-based assignments (TUM users)
         List<String> candidateUniversityIds = users
             .stream()
@@ -181,7 +189,7 @@ public class KeycloakUserService {
 
         Set<String> assignedUniversityIds = candidateUniversityIds.isEmpty()
             ? Set.of()
-            : new HashSet<>(userRepository.findAssignedUniversityIdsIn(candidateUniversityIds));
+            : new HashSet<>(userRepository.findAssignedUniversityIdsIn(candidateUniversityIds, researchGroupId));
 
         // 2) Collect and check userId-based assignments (non-TUM users)
         List<UUID> candidateUserIds = users
@@ -193,7 +201,7 @@ public class KeycloakUserService {
 
         Set<UUID> assignedUserIds = candidateUserIds.isEmpty()
             ? Set.of()
-            : new HashSet<>(userRepository.findAssignedUserIdsIn(candidateUserIds));
+            : new HashSet<>(userRepository.findAssignedUserIdsIn(candidateUserIds, researchGroupId));
 
         // 3) Filter out assigned users
         return users

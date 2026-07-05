@@ -218,7 +218,7 @@ describe('OtpInput', () => {
     expect(ctrl.value).toBe('');
     expect(ctrl.pristine).toBe(true);
     expect(clearSpy).toHaveBeenCalledOnce();
-    expect(authFacadeMock.requestOtp).toHaveBeenCalledWith(registrationFlagBefore);
+    expect(authFacadeMock.requestOtp).toHaveBeenCalledWith(registrationFlagBefore, true);
   });
 
   it('should derive disableResend and disabledSubmit from busy state', () => {

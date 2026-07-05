@@ -26,7 +26,7 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         return getArbitraryValueElseThrow(findById(userId));
     }
 
-    @EntityGraph(attributePaths = { "researchGroupRoles", "researchGroupRoles.role", "researchGroupRoles.researchGroup", "researchGroup" })
+    @EntityGraph(attributePaths = { "researchGroupRoles", "researchGroupRoles.role", "researchGroupRoles.researchGroup" })
     Optional<User> findWithResearchGroupRolesByUserId(UUID userId);
 
     /**
@@ -77,6 +77,19 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     List<UUID> findUserIdsByResearchGroupId(@Param("researchGroupId") UUID researchGroupId);
 
     /**
+     * Returns the user ids of every user that holds the PROFESSOR role in any research group.
+     *
+     * @return list of professor user ids across all research groups
+     */
+    @Query(
+        """
+            SELECT DISTINCT rgr.user.userId FROM UserResearchGroupRole rgr
+            WHERE rgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+        """
+    )
+    List<UUID> findAllProfessorUserIds();
+
+    /**
      * Finds users by their IDs with eagerly loaded research group roles and research group.
      * If a currentUserId is provided (non-null), the result will order that user first
      * and then the rest alphabetically by first and last name. If currentUserId is null,
@@ -90,7 +103,6 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         """
             SELECT u FROM User u
             LEFT JOIN FETCH u.researchGroupRoles
-            LEFT JOIN FETCH u.researchGroup
             WHERE u.userId IN :userIds
             ORDER BY
             CASE WHEN :currentUserId IS NOT NULL AND u.userId = :currentUserId THEN 0 ELSE 1 END,
@@ -153,7 +165,13 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         """
             SELECT u.userId FROM User u
             LEFT JOIN u.researchGroupRoles rgr ON rgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
-            WHERE u.researchGroup IS NULL
+            WHERE NOT EXISTS (
+                SELECT 1 FROM UserResearchGroupRole r
+                WHERE r.user = u
+                  AND r.researchGroup IS NOT NULL
+                  AND (r.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+                       OR r.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
+            )
             AND rgr.id IS NULL
             AND u.email LIKE '%@%tum%'
             AND (:searchQuery IS NULL OR
@@ -188,34 +206,55 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     Page<UUID> findInactiveNonAdminUserIdsForRetention(@Param("cutoff") LocalDateTime cutoff, Pageable pageable);
 
     /**
-     * Returns lower-cased university IDs that are already assigned to any research group.
+     * Returns lower-cased university IDs that are already assigned to the given research group.
+     * When {@code researchGroupId} is {@code null}, returns an empty list so no users are excluded.
      *
-     * @param universityIds lower-cased university IDs to check
-     * @return subset of IDs that belong to users with a non-null research group
+     * @param universityIds   lower-cased university IDs to check
+     * @param researchGroupId target research group, or {@code null} to skip the filter
+     * @return subset of IDs that hold PROFESSOR/EMPLOYEE in the target group
      */
     @Query(
         """
             SELECT LOWER(u.universityId)
             FROM User u
-            WHERE u.researchGroup IS NOT NULL
+            WHERE :researchGroupId IS NOT NULL
+              AND EXISTS (
+                SELECT 1 FROM UserResearchGroupRole r
+                WHERE r.user = u
+                  AND r.researchGroup.researchGroupId = :researchGroupId
+                  AND (r.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+                       OR r.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
+              )
               AND u.universityId IS NOT NULL
               AND LOWER(u.universityId) IN :universityIds
         """
     )
-    List<String> findAssignedUniversityIdsIn(@Param("universityIds") List<String> universityIds);
+    List<String> findAssignedUniversityIdsIn(
+        @Param("universityIds") List<String> universityIds,
+        @Param("researchGroupId") UUID researchGroupId
+    );
 
     /**
      * Searches for users available to be added to a research group, including non-TUM users.
-     * Excludes users already assigned to a research group and users with an ADMIN role.
+     * Excludes users with an ADMIN role. When {@code researchGroupId} is provided, also excludes
+     * users already holding PROFESSOR/EMPLOYEE in that specific group; when {@code null}, applies
+     * no group-membership filter (used by admin flows that have no target group yet).
      *
-     * @param searchQuery optional search query to filter by name or email
+     * @param searchQuery     optional search query to filter by name or email
+     * @param researchGroupId target research group, or {@code null} to skip the per-group filter
      * @return list of users matching the criteria
      */
     @Query(
         """
             SELECT u FROM User u
             LEFT JOIN u.researchGroupRoles rgr ON rgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
-            WHERE u.researchGroup IS NULL
+            WHERE (:researchGroupId IS NULL OR NOT EXISTS (
+                SELECT 1 FROM UserResearchGroupRole r
+                WHERE r.user = u
+                  AND r.researchGroup.researchGroupId = :researchGroupId
+                  AND (r.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+                       OR r.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
+            ))
             AND rgr.id IS NULL
             AND (:searchQuery IS NULL OR
                  LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
@@ -223,16 +262,34 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
             )
         """
     )
-    List<User> searchAvailableUsersForResearchGroup(@Param("searchQuery") String searchQuery);
+    List<User> searchAvailableUsersForResearchGroup(
+        @Param("searchQuery") String searchQuery,
+        @Param("researchGroupId") UUID researchGroupId
+    );
 
     /**
-     * Returns user IDs that are already assigned to any research group.
+     * Returns user IDs that are already assigned to the given research group.
+     * When {@code researchGroupId} is {@code null}, returns an empty list so no users are excluded.
      *
-     * @param userIds user IDs to check
-     * @return subset of IDs that belong to users with a non-null research group
+     * @param userIds         user IDs to check
+     * @param researchGroupId target research group, or {@code null} to skip the filter
+     * @return subset of IDs that hold PROFESSOR/EMPLOYEE in the target group
      */
-    @Query("SELECT u.userId FROM User u WHERE u.researchGroup IS NOT NULL AND u.userId IN :userIds")
-    List<UUID> findAssignedUserIdsIn(@Param("userIds") List<UUID> userIds);
+    @Query(
+        """
+            SELECT u.userId FROM User u
+            WHERE :researchGroupId IS NOT NULL
+              AND EXISTS (
+                SELECT 1 FROM UserResearchGroupRole r
+                WHERE r.user = u
+                  AND r.researchGroup.researchGroupId = :researchGroupId
+                  AND (r.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+                       OR r.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
+              )
+              AND u.userId IN :userIds
+        """
+    )
+    List<UUID> findAssignedUserIdsIn(@Param("userIds") List<UUID> userIds, @Param("researchGroupId") UUID researchGroupId);
 
     @Query(
         """
@@ -251,41 +308,21 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     List<UUID> findInactiveNonAdminUserIdsForWarning(@Param("warningDate") LocalDateTime warningDate);
 
     /**
-     * Finds users for the admin "Manage Users" listing. Optional filters for role
-     * and research-group; search matches firstName, lastName, email, or universityId.
+     * Pages the ids of users matching the admin "Manage Users" filters. Optional filters for role and
+     * research-group; search matches firstName, lastName, email, or universityId. The per-row primary role
+     * and primary research group are assembled in the service from the eagerly-loaded role graph, since a
+     * user may now belong to multiple research groups.
      *
      * @param roles            optional list of roles to include (matches if user has at least one of these)
      * @param researchGroupIds optional list of research-group ids to include (matches via the user's roles)
      * @param searchQuery      optional search string
      * @param pageable         pagination configuration
-     * @return a page of matching users as {@link de.tum.cit.aet.usermanagement.dto.AdminUserOverviewDTO}
+     * @return a page of matching user ids
      */
     @Query(
         """
-          SELECT new de.tum.cit.aet.usermanagement.dto.AdminUserOverviewDTO(
-            u.userId,
-            u.firstName,
-            u.lastName,
-            u.email,
-            u.avatar,
-            u.universityId,
-            CASE
-              WHEN EXISTS (SELECT 1 FROM UserResearchGroupRole rp WHERE rp.user.userId = u.userId AND rp.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN)
-                THEN de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
-              WHEN EXISTS (SELECT 1 FROM UserResearchGroupRole rp WHERE rp.user.userId = u.userId AND rp.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR)
-                THEN de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
-              WHEN EXISTS (SELECT 1 FROM UserResearchGroupRole rp WHERE rp.user.userId = u.userId AND rp.role = de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE)
-                THEN de.tum.cit.aet.usermanagement.constants.UserRole.EMPLOYEE
-              WHEN EXISTS (SELECT 1 FROM UserResearchGroupRole rp WHERE rp.user.userId = u.userId AND rp.role = de.tum.cit.aet.usermanagement.constants.UserRole.APPLICANT)
-                THEN de.tum.cit.aet.usermanagement.constants.UserRole.APPLICANT
-              ELSE NULL
-            END,
-            rg.researchGroupId,
-            rg.name,
-            u.lastActivityAt
-          )
+          SELECT u.userId
           FROM User u
-          LEFT JOIN u.researchGroup rg
           WHERE
             (:roles IS NULL OR EXISTS (
               SELECT 1 FROM UserResearchGroupRole r WHERE r.user.userId = u.userId AND r.role IN :roles
@@ -301,10 +338,46 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
             )
         """
     )
-    Page<de.tum.cit.aet.usermanagement.dto.AdminUserOverviewDTO> findAllUsersForAdmin(
+    Page<UUID> findUserIdsForAdmin(
         @Param("roles") List<de.tum.cit.aet.usermanagement.constants.UserRole> roles,
         @Param("researchGroupIds") List<UUID> researchGroupIds,
         @Param("searchQuery") String searchQuery,
         Pageable pageable
     );
+
+    /**
+     * Loads the given users with their research-group roles and each role's research group eagerly fetched,
+     * so the admin overview can derive the primary role and primary group without lazy loading (OSIV is off).
+     *
+     * @param userIds the user ids to load
+     * @return the matching users with roles and groups initialised
+     */
+    @Query(
+        """
+            SELECT DISTINCT u FROM User u
+            LEFT JOIN FETCH u.researchGroupRoles rgr
+            LEFT JOIN FETCH rgr.researchGroup
+            WHERE u.userId IN :userIds
+        """
+    )
+    List<User> findUsersWithRolesAndGroupsByIds(@Param("userIds") List<UUID> userIds);
+
+    /**
+     * Finds every user holding a PROFESSOR role in any research group, with roles eagerly loaded.
+     *
+     * @return distinct list of users with at least one PROFESSOR role, ordered by first then last name
+     */
+    @Query(
+        """
+            SELECT DISTINCT u FROM User u
+            LEFT JOIN FETCH u.researchGroupRoles
+            WHERE EXISTS (
+                SELECT 1 FROM UserResearchGroupRole urgr
+                WHERE urgr.user = u
+                  AND urgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.PROFESSOR
+            )
+            ORDER BY u.firstName, u.lastName
+        """
+    )
+    List<User> findAllProfessors();
 }
