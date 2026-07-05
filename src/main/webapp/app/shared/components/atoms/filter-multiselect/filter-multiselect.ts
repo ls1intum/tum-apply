@@ -56,6 +56,9 @@ export class FilterMultiselect {
   filterOptions = input<string[]>([]);
   shouldTranslateOptions = input<boolean>(false);
   selectedValuesInput = input<string[] | undefined>(undefined);
+  // Set to false when the consumer renders its own chip list outside the trigger
+  // (e.g. subject-area subscription selector) and the in-trigger chips would be redundant.
+  showChipsInTrigger = input<boolean>(true);
   focusedIndexOptionList = signal<number>(-1);
 
   selectedValues = signal<string[]>([]);

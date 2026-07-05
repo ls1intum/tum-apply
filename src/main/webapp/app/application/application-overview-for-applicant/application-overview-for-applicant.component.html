@@ -25,7 +25,7 @@
 
 <div class="page-container">
   <header class="page-header">
-    <h1 jhiTranslate="entity.application_overview.applicant.header" class="h1-text"></h1>
+    <h1 jhiTranslate="entity.application_overview.applicant.header"></h1>
   </header>
 
   @if (total() > 0 || loading()) {
@@ -55,7 +55,7 @@
   }
 
   <ng-template #stateTemplate let-row>
-    <jhi-application-state-for-applicants [state]="row.applicationState" />
+    <jhi-application-state-for-applicants [state]="row.applicationState" [recommendationMissing]="row.recommendationMissing" />
   </ng-template>
 
   <ng-template #actionTemplate let-row>

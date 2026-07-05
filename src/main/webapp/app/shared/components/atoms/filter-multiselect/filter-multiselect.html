@@ -9,7 +9,7 @@
     (keydown)="onTriggerKeydown($event)"
   >
     <div>
-      @if (!hasSelectedItems()) {
+      @if (!hasSelectedItems() || !showChipsInTrigger()) {
         <span class="mr-4 max-md:flex-1 max-md:overflow-hidden max-md:mr-2 max-md:text-ellipsis max-md:whitespace-nowrap">{{
           displayFilterLabel()
         }}</span>

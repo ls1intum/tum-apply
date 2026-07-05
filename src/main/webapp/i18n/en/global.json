@@ -11,12 +11,14 @@
         "creation": "TUMApply - Job Creation",
         "edit": "TUMApply - Job Edit",
         "overview": "TUMApply - Job Overview",
-        "myPositions": "TUMApply - My Positions"
+        "myPositions": "TUMApply - My Positions",
+        "allPositions": "TUMApply - All Positions"
       },
       "application": {
         "creation": "TUMApply - Application Creation",
         "overview": "TUMApply - Application Overview",
-        "detail": "TUMApply - Application Detail"
+        "detail": "TUMApply - Application Detail",
+        "allApplications": "TUMApply - All Applications"
       },
       "evaluation": {
         "overview": "TUMApply - Evaluation Overview",
@@ -219,15 +221,15 @@
         },
         "upload_failed": {
           "summary": "Upload Failed",
-          "detail": "Failed to upload document. Please try again."
+          "detail": "Check your connection and try again. Contact us if it keeps failing."
         },
         "delete_failed": {
           "summary": "Delete Failed",
-          "detail": "Failed to delete document. Please try again."
+          "detail": "Please try again. Contact us if it keeps failing."
         },
         "rename_failed": {
           "summary": "Rename Failed",
-          "detail": "Failed to rename document. Please try again."
+          "detail": "Please try again. Contact us if it keeps failing."
         }
       }
     },
@@ -255,8 +257,12 @@
         "added": "(added)",
         "requested": "(requested)",
         "submitted": "(submitted)",
-        "expired": "(expired)"
+        "expired": "(expired)",
+        "declined": "(declined)"
       },
+      "reference_deadline": "Deadline",
+      "reference_confidential": "Confidential - only the supervisor can view the submitted letters.",
+      "reference_shared": "Not confidential - you can also view the submitted letters.",
       "not_found": "Application not found"
     },
     "applicationSteps": {
@@ -284,7 +290,7 @@
       "loading": "Extracting...",
       "aiExtractionFailed": {
         "summary": "Extraction Failed",
-        "detail": "Could not extract the data. Please try again."
+        "detail": "Make sure the file is a clear, readable PDF, or fill the fields in manually."
       }
     },
     "applicationPage1": {
@@ -401,6 +407,7 @@
       "button": {
         "add": "Add"
       },
+      "confidentialWaiver": "I waive my right to access the submitted recommendations. Only the supervisor can read them.",
       "toast": {
         "loadFailed": {
           "summary": "Could not load referees",
@@ -432,10 +439,11 @@
     },
     "applicationOverview": {
       "header": "Your Applications",
+      "recommendationMissing": "Recommendation missing",
+      "recommendationMissingTooltip": "Some required recommendation letters are still missing.",
       "state": {
         "draft": "Draft",
         "submitted": "Submitted",
-        "pending": "Pending",
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",
@@ -463,6 +471,56 @@
         "browsePositions": "Browse Positions"
       }
     },
+    "allApplicationsPage": {
+      "header": {
+        "title": "All Applications"
+      },
+      "searchFilterSortBar": {
+        "searchText": "Search by applicant name or job title",
+        "filterOptions": {
+          "stateSearchPlaceholder": "Search states",
+          "researchGroupSearchPlaceholder": "Search research groups",
+          "professorSearchPlaceholder": "Search professors",
+          "jobSearchPlaceholder": "Search jobs"
+        }
+      },
+      "tableColumn": {
+        "applicant": "Applicant",
+        "job": "Job",
+        "researchGroup": "Research Group",
+        "supervisingProfessor": "Supervising Professor",
+        "status": "Status",
+        "created": "Created"
+      },
+      "filters": {
+        "statusLabel": "Status",
+        "researchGroupLabel": "Research Group",
+        "professorLabel": "Supervising Professor",
+        "jobLabel": "Job"
+      },
+      "confirmDialog": {
+        "deleteHeader": "Delete Application",
+        "deleteMessage": "Are you sure you want to delete this application?",
+        "withdrawHeader": "Withdraw Application",
+        "withdrawMessage": "Are you sure you want to withdraw this application?"
+      },
+      "errors": {
+        "loadJobs": {
+          "summary": "Could not load applications",
+          "detail": ""
+        },
+        "loadFilters": {
+          "summary": "Could not load filter options",
+          "detail": ""
+        }
+      },
+      "toastMessages": {
+        "deleteSuccess": "Application deleted.",
+        "deleteFailed": "Could not delete application: {detail}",
+        "withdrawSuccess": "Application withdrawn.",
+        "withdrawFailed": "Could not withdraw application: {detail}"
+      }
+    },
     "applicationDetail": {
       "motivation": "Motivation",
       "skills": "Skills",
@@ -482,64 +540,64 @@
           "detail": "Thank you for your application."
         },
         "invalidJobId": {
-          "summary": "Error",
-          "detail": "This is not a valid jobId."
+          "summary": "Invalid job link",
+          "detail": "The link may be broken or the position removed. Try browsing available positions."
         },
         "invalidApplicationId": {
-          "summary": "Error",
-          "detail": "This is not a valid applicationId."
+          "summary": "Invalid application link",
+          "detail": "Open the application from your applications overview instead."
         },
         "errorApplicationId": {
-          "summary": "Error",
-          "detail": "There is an error with the applicationId."
+          "summary": "Could not open application",
+          "detail": "Reload the page, or open it from your applications overview."
         },
         "invalidPageLink": {
-          "summary": "Error",
-          "detail": "This is not a valid application page link."
+          "summary": "Invalid application page link",
+          "detail": "Open the application from your applications overview."
         },
         "saveFailedWithStatus": {
-          "summary": "Submission failed",
-          "detail": "Failed to submit application: {status}"
+          "summary": "Could not submit application",
+          "detail": "Submission failed ({status}). Please try again or contact us."
         },
         "fetchApplicationFailed": {
-          "summary": "Application not loaded",
-          "detail": "The application could not be loaded. Please try again, or contact us if the problem persists."
+          "summary": "Could not load application",
+          "detail": "Reload the page, or contact us if it keeps failing."
         },
         "fetchDocumentIdsFailed": {
-          "summary": "Error",
-          "detail": "Failed to fetch document IDs for this application. Please try again, or contact us if the problem persists."
+          "summary": "Documents not loaded",
+          "detail": "Reload the page, or contact us if it keeps failing."
         },
         "notEditable": {
-          "summary": "Error",
-          "detail": "This application cannot be edited as it has already been submitted or is in a non-draft state."
+          "summary": "Application no longer editable",
+          "detail": "It has already been submitted. You can still view it from your overview."
         },
         "authRequired": {
-          "summary": "Error",
-          "detail": "Cannot submit application: User authentication required."
+          "summary": "Sign in to submit",
+          "detail": "Please sign in and try again."
         },
         "saveFailed": {
-          "summary": "Error",
-          "detail": "Failed to save application. Please try again, or contact us if the problem persists."
+          "summary": "Could not save application",
+          "detail": "Check your connection and try again, or contact us."
         },
         "loadFailed": {
-          "summary": "Error",
-          "detail": "Failed to load application. Please try again, or contact us if the problem persists."
+          "summary": "Could not load application",
+          "detail": "Reload the page, or contact us if it keeps failing."
         },
         "initLoadFailed": {
-          "summary": "Error",
-          "detail": "Failed to load application. Please try again, or contact us if the problem persists."
+          "summary": "Could not load application",
+          "detail": "Reload the page, or contact us if it keeps failing."
         },
         "missingJobIdUnauthenticated": {
-          "summary": "Error",
-          "detail": "Job ID must be provided when not authenticated."
+          "summary": "Sign in or open via a job link",
+          "detail": "Sign in, or open this page from a job link."
         },
         "applicationDeleted": {
           "summary": "Application deleted",
           "detail": "The application was deleted successfully."
         },
         "errorDeletingApplication": {
-          "summary": "Delete failed",
-          "detail": "The application could not be deleted. Please try again, or contact us if the problem persists."
+          "summary": "Could not delete application",
+          "detail": "Please try again. Contact us if it keeps failing."
         },
         "applicationWithdrawn": {
           "summary": "Application withdrawn",
@@ -547,31 +605,31 @@
         },
         "errorWithdrawingApplication": {
           "summary": "Withdrawal failed",
-          "detail": "The application could not be withdrawn. Please try again, or contact us if the problem persists."
+          "detail": "Please try again. Contact us if it keeps failing."
         },
         "jobIdNotAvailable": {
-          "summary": "Error",
-          "detail": "Job ID is not available for this application."
+          "summary": "Job reference missing",
+          "detail": "Open it from your applications overview, or contact us."
         },
         "invalidEmail": {
-          "summary": "Error",
-          "detail": "Please provide a valid email address."
+          "summary": "Email required",
+          "detail": "Please enter a valid email address before continuing."
         },
         "invalidFirstName": {
-          "summary": "Error",
-          "detail": "Please provide a valid first name."
+          "summary": "First name required",
+          "detail": "Please enter a valid first name before continuing."
         },
         "invalidLastName": {
-          "summary": "Error",
-          "detail": "Please provide a valid last name."
+          "summary": "Last name required",
+          "detail": "Please enter a valid last name before continuing."
         },
         "migrationFailed": {
-          "summary": "Error",
-          "detail": "Failed to save local draft. Try again, reload the page or check your connection."
+          "summary": "Could not save draft",
+          "detail": "Please try again, reload the page, or check your connection."
         },
         "otpVerificationFailed": {
-          "summary": "Error",
-          "detail": "Email verification failed. Please try again."
+          "summary": "Email verification failed",
+          "detail": "Your code may be expired or incorrect. Request a new code and try again."
         }
       },
       "applicationOverview": {
@@ -582,7 +640,7 @@
           },
           "error": {
             "summary": "Delete failed",
-            "detail": "The draft could not be deleted. Please try again."
+            "detail": "Please try again. Contact us if it keeps failing."
           }
         },
         "withdraw": {
@@ -618,6 +676,18 @@
     "upload": {
       "confirm": "Confirm"
     },
+    "confidentialNote": "The applicant has waived their right to access this letter. Only the supervising professor will be able to read it.",
+    "sharedNote": "The applicant will also be able to view your submitted letter.",
+    "decline": {
+      "button": "Decline",
+      "confirmHeader": "Decline request",
+      "confirmMessage": "Are you sure you do not want to provide a recommendation letter? This cannot be undone.",
+      "failed": "The request could not be declined. Please try again."
+    },
+    "declined": {
+      "title": "Request declined",
+      "message": "You have declined to provide a recommendation letter. You may close this page."
+    },
     "summary": {
       "title": "Summary",
       "applicant": "Applicant",
@@ -642,7 +712,7 @@
     },
     "uploadFailed": {
       "summary": "Upload failed",
-      "detail": "We could not save your letter. Please try again."
+      "detail": "Please try again, or contact us using the support email."
     }
   },
   "imageUpload": {
@@ -665,7 +735,7 @@
       },
       "uploadFailed": {
         "summary": "Upload Failed",
-        "detail": "Failed to upload image. Please try again"
+        "detail": "Check your connection and try again, or contact us."
       }
     }
   }

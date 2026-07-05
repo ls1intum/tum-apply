@@ -74,6 +74,11 @@ public class UserExportZipWriter {
 
             List<Document> uploadedDocuments = documentRepository.findByUploadedByUserId(userId);
             for (Document document : uploadedDocuments) {
+                // Reference letters are stored with the applicant as uploader for audit, but a confidential
+                // letter must stay hidden from the applicant — including in their own data export.
+                if (documentRepository.findReferenceLetterConfidentialByDocumentId(document.getDocumentId()).orElse(false)) {
+                    continue;
+                }
                 String entryName = "documents/uploaded/" + document.getDocumentId();
                 addDocumentToZip(zipOut, document, entryName);
             }
@@ -369,10 +374,22 @@ public class UserExportZipWriter {
         List<List<String>> intervieweeRows = applicantData
             .interviewees()
             .stream()
-            .map(interviewee -> List.of(toCsvValue(interviewee.jobTitle()), toCsvValue(interviewee.lastInvited())))
+            .map(interviewee ->
+                List.of(
+                    toCsvValue(interviewee.jobTitle()),
+                    toCsvValue(interviewee.lastInvited()),
+                    toCsvValue(interviewee.rating()),
+                    toCsvValue(interviewee.assessmentNotes())
+                )
+            )
             .toList();
 
-        addCsvFileToZip(zipOut, "data/applicant_interviewees.csv", List.of("job_title", "last_invited"), intervieweeRows);
+        addCsvFileToZip(
+            zipOut,
+            "data/applicant_interviewees.csv",
+            List.of("job_title", "last_invited", "interview_rating", "interview_notes"),
+            intervieweeRows
+        );
     }
 
     private void writeApplicantSubjectAreaSubscriptionsCsv(ZipOutputStream zipOut, ApplicantDataExportDTO applicantData) {
