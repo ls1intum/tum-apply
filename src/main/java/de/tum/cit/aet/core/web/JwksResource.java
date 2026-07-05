@@ -7,6 +7,7 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * future token consumers can validate TUMApply's tokens. The resource server itself verifies app tokens
  * in-process via the {@code appJwtDecoder} bean and does not call this endpoint.
  */
+@Slf4j
 @RestController
 public class JwksResource {
 
@@ -30,6 +32,7 @@ public class JwksResource {
      */
     @GetMapping("/.well-known/jwks.json")
     public Map<String, Object> jwks() throws KeySourceException {
+        log.info("GET /.well-known/jwks.json - Publishing app JWK set");
         JWKSet publicKeys = new JWKSet(appJwkSource.get(new JWKSelector(new JWKMatcher.Builder().build()), null));
         return publicKeys.toJSONObject(); // public parameters only
     }

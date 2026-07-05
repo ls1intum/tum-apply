@@ -1,11 +1,13 @@
 package de.tum.cit.aet.core.web;
 
 import de.tum.cit.aet.core.dto.PublicConfigDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/public")
 public class PublicConfigResource {
@@ -23,6 +25,7 @@ public class PublicConfigResource {
      */
     @GetMapping("/config")
     public PublicConfigDTO config() {
+        log.info("GET /api/public/config - Retrieving public configuration");
         PublicConfigDTO.KeycloakConfig keycloak = new PublicConfigDTO.KeycloakConfig(
             env.getProperty("keycloak.url"),
             env.getProperty("keycloak.tum-login-realm"),
