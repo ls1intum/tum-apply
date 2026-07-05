@@ -116,7 +116,7 @@
           [required]="true"
           [translateItems]="true"
           [items]="relationshipOptions"
-          [selected]="selectedOption('relationship', relationshipOptions)"
+          [selected]="selectedOptions()['relationship']"
           (selectedChange)="onAnswerSelected('relationship', $event)"
         />
         <jhi-select
@@ -124,7 +124,7 @@
           [required]="true"
           [translateItems]="true"
           [items]="durationOptions"
-          [selected]="selectedOption('acquaintanceDuration', durationOptions)"
+          [selected]="selectedOptions()['acquaintanceDuration']"
           (selectedChange)="onAnswerSelected('acquaintanceDuration', $event)"
         />
         <jhi-select
@@ -132,7 +132,7 @@
           [required]="true"
           [translateItems]="true"
           [items]="depthOptions"
-          [selected]="selectedOption('acquaintanceDepth', depthOptions)"
+          [selected]="selectedOptions()['acquaintanceDepth']"
           (selectedChange)="onAnswerSelected('acquaintanceDepth', $event)"
         />
       </div>
@@ -151,7 +151,7 @@
             [required]="true"
             [translateItems]="true"
             [items]="ratingOptions"
-            [selected]="selectedOption(row.key, ratingOptions)"
+            [selected]="selectedOptions()[row.key]"
             (selectedChange)="onAnswerSelected(row.key, $event)"
           />
         }
@@ -164,7 +164,7 @@
           [required]="true"
           [translateItems]="true"
           [items]="overallOptions"
-          [selected]="selectedOption('overallRecommendation', overallOptions)"
+          [selected]="selectedOptions()['overallRecommendation']"
           (selectedChange)="onAnswerSelected('overallRecommendation', $event)"
         />
       </div>

@@ -62,6 +62,19 @@ export class ReferenceLetterUploadComponent {
 
   protected readonly answers = signal<Record<string, string | undefined>>({});
 
+  protected readonly selectedOptions = computed(() => {
+    const a = this.answers();
+    const resolve = (key: string, options: SelectOption[]): SelectOption | undefined => options.find(option => option.value === a[key]);
+    const map: Record<string, SelectOption | undefined> = {
+      relationship: resolve('relationship', this.relationshipOptions),
+      acquaintanceDuration: resolve('acquaintanceDuration', this.durationOptions),
+      acquaintanceDepth: resolve('acquaintanceDepth', this.depthOptions),
+      overallRecommendation: resolve('overallRecommendation', this.overallOptions),
+    };
+    this.ratingRows.forEach(row => (map[row.key] = resolve(row.key, this.ratingOptions)));
+    return map;
+  });
+
   protected readonly allAnswered = computed(() => {
     const a = this.answers();
     return this.requiredKeys.every(key => a[key] !== undefined);
@@ -131,18 +144,6 @@ export class ReferenceLetterUploadComponent {
       next[key] = option?.value as string | undefined;
       return next;
     });
-  }
-
-  /**
-   * Resolves the currently selected option for a question so the dropdown can render it.
-   *
-   * @param key     the answer key
-   * @param options the option list the question is drawn from
-   * @returns the matching option, or undefined when unanswered
-   */
-  protected selectedOption(key: string, options: SelectOption[]): SelectOption | undefined {
-    const value = this.answers()[key];
-    return options.find(option => option.value === value);
   }
 
   /**

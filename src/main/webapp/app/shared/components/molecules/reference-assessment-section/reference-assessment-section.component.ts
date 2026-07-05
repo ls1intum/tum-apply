@@ -27,49 +27,29 @@ import {
 export class ReferenceAssessmentSectionComponent {
   readonly assessments = input<ReferenceRequestDTO[]>([]);
 
-  protected readonly ratingRows = RATING_ROWS;
+  protected readonly cards = computed(() =>
+    this.assessments()
+      .filter(reference => !!reference.overallRecommendation)
+      .map(reference => ({
+        id: reference.referenceRequestId,
+        name: this.refereeName(reference),
+        overallKey: assessmentLabelKey(OVERALL_OPTIONS, reference.overallRecommendation),
+        overallClass: this.overallSeverityClass(reference),
+        relationshipKey: assessmentLabelKey(RELATIONSHIP_OPTIONS, reference.relationship),
+        durationKey: assessmentLabelKey(DURATION_OPTIONS, reference.acquaintanceDuration),
+        depthKey: assessmentLabelKey(DEPTH_OPTIONS, reference.acquaintanceDepth),
+        ratings: RATING_ROWS.map(row => ({
+          labelKey: row.labelKey,
+          valueKey: assessmentLabelKey(RATING_OPTIONS, (reference as unknown as Record<string, string | undefined>)[row.key]),
+        })),
+      })),
+  );
 
-  protected readonly submitted = computed(() => this.assessments().filter(reference => !!reference.overallRecommendation));
-
-  /**
-   * @param reference the referee's reference request
-   * @returns the referee's display name (title, first and last name)
-   */
-  protected refereeName(reference: ReferenceRequestDTO): string {
+  private refereeName(reference: ReferenceRequestDTO): string {
     return [reference.title, reference.firstName, reference.lastName].filter(part => !!part).join(' ');
   }
 
-  protected relationshipLabelKey(reference: ReferenceRequestDTO): string | undefined {
-    return assessmentLabelKey(RELATIONSHIP_OPTIONS, reference.relationship);
-  }
-
-  protected durationLabelKey(reference: ReferenceRequestDTO): string | undefined {
-    return assessmentLabelKey(DURATION_OPTIONS, reference.acquaintanceDuration);
-  }
-
-  protected depthLabelKey(reference: ReferenceRequestDTO): string | undefined {
-    return assessmentLabelKey(DEPTH_OPTIONS, reference.acquaintanceDepth);
-  }
-
-  protected overallLabelKey(reference: ReferenceRequestDTO): string | undefined {
-    return assessmentLabelKey(OVERALL_OPTIONS, reference.overallRecommendation);
-  }
-
-  /**
-   * @param reference the referee's reference request
-   * @param key the rating field name (one of {@link RATING_ROWS})
-   * @returns the i18n label key for that rating's value
-   */
-  protected ratingLabelKey(reference: ReferenceRequestDTO, key: string): string | undefined {
-    const value = (reference as unknown as Record<string, string | undefined>)[key];
-    return assessmentLabelKey(RATING_OPTIONS, value);
-  }
-
-  /**
-   * @param reference the referee's reference request
-   * @returns a text colour class conveying the strength of the overall recommendation
-   */
-  protected overallSeverityClass(reference: ReferenceRequestDTO): string {
+  private overallSeverityClass(reference: ReferenceRequestDTO): string {
     switch (reference.overallRecommendation) {
       case OverallRecommendation.HighestEnthusiasm:
       case OverallRecommendation.StronglyRecommend:
