@@ -1,6 +1,5 @@
 import { vi } from 'vitest';
 import { KeycloakPasskeyManager } from 'app/core/auth/keycloak-passkey-manager';
-import { KeycloakRealmKind } from 'app/core/auth/keycloak-authentication.utils';
 
 class MockPublicKeyCredential {
   constructor(
@@ -54,7 +53,6 @@ describe('KeycloakPasskeyManager', () => {
     };
 
     deps = {
-      pendingRealmStorageKey: 'auth.pendingKeycloakRealm',
       keycloakUrl: 'http://mock-keycloak',
       tumRealmName: 'tumidpldap',
       clientId: 'mock-client',
@@ -101,7 +99,7 @@ describe('KeycloakPasskeyManager', () => {
         status: 204,
       });
 
-    await manager.loginWithPasskey(KeycloakRealmKind.Tum);
+    await manager.loginWithPasskey();
 
     const credentialRequest = credentialsGet.mock.calls[0][0] as CredentialRequestOptions;
     expect(credentialRequest.publicKey?.userVerification).toBe('required');
@@ -143,7 +141,7 @@ describe('KeycloakPasskeyManager', () => {
       json: vi.fn().mockResolvedValue({ challenge: 'AQID' }),
     });
 
-    await expect(manager.loginWithPasskey(KeycloakRealmKind.Tum)).rejects.toThrow('Passkey did not return a user handle');
+    await expect(manager.loginWithPasskey()).rejects.toThrow('Passkey did not return a user handle');
 
     expect(fetchMock).toHaveBeenCalledOnce();
   });

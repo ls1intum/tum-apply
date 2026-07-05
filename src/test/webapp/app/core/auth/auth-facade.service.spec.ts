@@ -4,7 +4,6 @@ import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { ServerAuthenticationService } from 'app/core/auth/server-authentication.service';
 import { IdpProvider, KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
-import { KeycloakRealmKind } from 'app/core/auth/keycloak-authentication.utils';
 import { DocumentCacheService } from 'app/service/document-cache.service';
 import { createKeycloakMock, provideKeycloakMock } from 'util/keycloak.mock';
 import { vi } from 'vitest';
@@ -217,10 +216,10 @@ describe('AuthFacadeService', () => {
       account.loadUser.mockResolvedValue(undefined);
       const authSuccessSpy = vi.spyOn(orchestrator, 'authSuccess');
 
-      await facade.loginWithPasskey(KeycloakRealmKind.External, '/jobs/123');
+      await facade.loginWithPasskey('/jobs/123');
 
       expect(orchestrator.redirectUri()).toBe('/jobs/123');
-      expect(keycloak.loginWithPasskey).toHaveBeenCalledWith(KeycloakRealmKind.External, '/jobs/123');
+      expect(keycloak.loginWithPasskey).toHaveBeenCalledWith('/jobs/123');
       expect(keycloak.loginWithPasskey).toHaveBeenCalledOnce();
       expect(account.loadUser).toHaveBeenCalledOnce();
       expect(authSuccessSpy).toHaveBeenCalledOnce();
@@ -233,9 +232,9 @@ describe('AuthFacadeService', () => {
       const authSuccessSpy = vi.spyOn(orchestrator, 'authSuccess');
       orchestrator.redirectUri.set('/dashboard');
 
-      await facade.loginWithPasskey(KeycloakRealmKind.External);
+      await facade.loginWithPasskey();
 
-      expect(keycloak.loginWithPasskey).toHaveBeenCalledWith(KeycloakRealmKind.External, '/dashboard');
+      expect(keycloak.loginWithPasskey).toHaveBeenCalledWith('/dashboard');
       expect(account.loadUser).toHaveBeenCalledOnce();
       expect(authSuccessSpy).toHaveBeenCalledOnce();
     });

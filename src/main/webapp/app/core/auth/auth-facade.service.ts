@@ -10,7 +10,6 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { ServerAuthenticationService } from './server-authentication.service';
 import { IdpProvider, KeycloakAuthenticationService } from './keycloak-authentication.service';
-import { KeycloakRealmKind } from './keycloak-authentication.utils';
 import { AccountService } from './account.service';
 import { AuthOrchestratorService } from './auth-orchestrator.service';
 import { WebAuthnService } from './webauthn.service';
@@ -224,16 +223,15 @@ export class AuthFacadeService {
   /**
    * Logs in via WebAuthn passkey on Keycloak.
    * Note: This passkey flow needs a custom Keycloak SPI endpoint and won't work with a standard Keycloak setup out-of-the-box.
-   * @param realmKind target keycloak realm for passkey authentication
    * @param redirectUri optional post-login redirect URI to be set before initiating the flow
    */
-  async loginWithPasskey(realmKind: KeycloakRealmKind, redirectUri?: string): Promise<void> {
+  async loginWithPasskey(redirectUri?: string): Promise<void> {
     if (redirectUri !== undefined && redirectUri.trim() !== '') {
       this.authOrchestrator.redirectUri.set(redirectUri);
     }
     return this.runAuthAction(
       async () => {
-        await this.keycloakAuthenticationService.loginWithPasskey(realmKind, this.authOrchestrator.redirectUri() ?? undefined);
+        await this.keycloakAuthenticationService.loginWithPasskey(this.authOrchestrator.redirectUri() ?? undefined);
         this.authMethod = 'keycloak';
         await this.accountService.loadUser();
         this.authOrchestrator.authSuccess();
