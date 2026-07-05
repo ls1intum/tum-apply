@@ -87,6 +87,9 @@ export default class ApplicationDetailForApplicantComponent {
     return this.application()?.references ?? [];
   });
 
+  /** The application's setting for whether reference letters should be confidential. */
+  readonly referenceLettersConfidential = computed(() => this.application()?.referenceLettersConfidential ?? true);
+
   /**
    * Reference requests with an uploaded letter, mapped to a viewer-friendly shape.
    * Drives the per-letter preview cards on the detail page.

@@ -283,7 +283,7 @@ describe('JobCreationFormComponent', () => {
         },
         expectations: () => {
           expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('toast.published');
-          expect(mockRouter.navigate).toHaveBeenCalledWith(['/my-positions']);
+          expect(mockLocation.back).toHaveBeenCalledOnce();
         },
       },
       {
