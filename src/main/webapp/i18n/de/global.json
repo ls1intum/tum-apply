@@ -252,8 +252,8 @@
       "personal_statements": "Persönliche Angaben",
       "personal_information": "Persönliche Informationen",
       "personal_documents": "Persönliche Dokumente",
-      "recommendations": "Empfehlungsschreiben",
-      "recommendation_requests": "Anfragen",
+      "references": "Empfehlungsschreiben",
+      "reference_requests": "Anfragen",
       "reference_status": {
         "added": "(hinzugefügt)",
         "requested": "(angefragt)",

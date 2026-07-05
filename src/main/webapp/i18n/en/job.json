@@ -506,7 +506,7 @@
       "contractDuration": "Contract Duration",
       "fundingType": "Funding Type",
       "tvlGrade": "TV-L Grade",
-      "recommendationLetters": "Required Recommendations",
+      "referenceLetters": "Required Recommendations",
       "startDate": "Start Date",
       "applicationEndDate": "Application End Date"
     },
