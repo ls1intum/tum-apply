@@ -127,6 +127,29 @@ export class AuthFacadeService {
     }
   }
 
+  /**
+   * Silently refreshes the currently active session so an expired access token can be recovered without
+   * logging the user out. Delegates to the mechanism matching the active method: the server refresh endpoint
+   * for cookie sessions, or a Keycloak token update for SSO sessions.
+   *
+   * @return true if a valid session remains after the refresh, false otherwise
+   */
+  async refreshSession(): Promise<boolean> {
+    if (this.authMethod === 'server') {
+      // Suppress the refresh-failure toast; on failure the caller logs out, which surfaces a single message.
+      return this.serverAuthenticationService.refreshTokens(true);
+    }
+    if (this.authMethod === 'keycloak') {
+      try {
+        await this.keycloakAuthenticationService.ensureFreshToken();
+        return this.keycloakAuthenticationService.isLoggedIn();
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  }
+
   // --------------- Email/Password ---------------
   /**
    * Logs in via email/password on the server.

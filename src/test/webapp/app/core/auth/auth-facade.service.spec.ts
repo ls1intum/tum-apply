@@ -26,6 +26,7 @@ function setup() {
     isLoggedIn: vi.fn(function (this: { authenticated: boolean }) {
       return this.authenticated;
     }),
+    ensureFreshToken: vi.fn(),
     loginWithProvider: vi.fn(),
     loginWithPasskey: vi.fn(),
     registerPasskey: vi.fn(),
@@ -140,6 +141,54 @@ describe('AuthFacadeService', () => {
       resolveKeycloakInit(true);
       await initPromise;
       expect((facade as unknown as AuthFacadeInternals).authMethod).toBe('server');
+    });
+  });
+
+  describe('refreshSession', () => {
+    it('should refresh via the server refresh endpoint for a server session', async () => {
+      const { facade, server, keycloak } = setup();
+      (facade as unknown as AuthFacadeInternals).authMethod = 'server';
+      server.refreshTokens.mockResolvedValue(true);
+
+      const result = await facade.refreshSession();
+
+      expect(result).toBe(true);
+      expect(server.refreshTokens).toHaveBeenCalledWith(true);
+      expect(keycloak.ensureFreshToken).not.toHaveBeenCalled();
+    });
+
+    it('should refresh the Keycloak token and report the session validity for a keycloak session', async () => {
+      const { facade, server, keycloak } = setup();
+      (facade as unknown as AuthFacadeInternals).authMethod = 'keycloak';
+      keycloak.authenticated = true;
+      keycloak.ensureFreshToken.mockResolvedValue(undefined);
+
+      const result = await facade.refreshSession();
+
+      expect(result).toBe(true);
+      expect(keycloak.ensureFreshToken).toHaveBeenCalledOnce();
+      expect(server.refreshTokens).not.toHaveBeenCalled();
+    });
+
+    it('should return false when the Keycloak refresh throws', async () => {
+      const { facade, keycloak } = setup();
+      (facade as unknown as AuthFacadeInternals).authMethod = 'keycloak';
+      keycloak.ensureFreshToken.mockRejectedValue(new Error('expired'));
+
+      const result = await facade.refreshSession();
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false without refreshing when no session is active', async () => {
+      const { facade, server, keycloak } = setup();
+      (facade as unknown as AuthFacadeInternals).authMethod = 'none';
+
+      const result = await facade.refreshSession();
+
+      expect(result).toBe(false);
+      expect(server.refreshTokens).not.toHaveBeenCalled();
+      expect(keycloak.ensureFreshToken).not.toHaveBeenCalled();
     });
   });
 
