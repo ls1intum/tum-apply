@@ -80,7 +80,6 @@ model/cancel-interview-dto.ts
 model/compliance-issue.ts
 model/conflict-data-dto.ts
 model/counts.ts
-model/create-reference-request-dto.ts
 model/create-slots-dto.ts
 model/created-job-dto.ts
 model/data-export-status-dto.ts
@@ -141,6 +140,7 @@ model/professor-dto.ts
 model/public-config-dto.ts
 model/rating-dto.ts
 model/rating-overview-dto.ts
+model/referee-contact-dto.ts
 model/reference-letter-upload-context-dto.ts
 model/reference-request-dto.ts
 model/reject-dto.ts

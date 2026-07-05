@@ -394,10 +394,11 @@
     },
     "applicationReferences": {
       "description": "Bitte gib unten deine Referenzpersonen an. Nach dem Absenden erhalten diese einen sicheren Link per E-Mail, um ihr Empfehlungsschreiben hochzuladen.",
+      "manageDescription": "Bearbeite, ergänze oder entferne deine Referenzpersonen unten bis zur Bewerbungsfrist. Das Ändern der E-Mail-Adresse einer Referenzperson führt zum Versand einer neuen Einladung an die neue Adresse. Referenzpersonen, die ihr Schreiben bereits eingereicht haben, können nicht mehr geändert werden.",
       "requiredCount": "Benötigt: {count} · Hinzugefügt: ",
       "empty": "Noch keine Referenzpersonen hinzugefügt.",
       "section": {
-        "required": "Benötigte Referenzpersonen"
+        "required": "Referenzpersonen"
       },
       "label": {
         "title": "Titel",
@@ -421,6 +422,10 @@
         "removeFailed": {
           "summary": "Referenzperson konnte nicht entfernt werden",
           "detail": "Der Referenzperson konnte nicht entfernt werden. Bitte versuche es erneut."
+        },
+        "updateFailed": {
+          "summary": "Referenzperson konnte nicht aktualisiert werden",
+          "detail": "Bitte prüfe die eingegebenen Daten und versuche es erneut."
         }
       }
     },
