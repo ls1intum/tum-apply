@@ -65,3 +65,11 @@
     }
   </ul>
 }
+
+<div class="mt-4">
+  <jhi-checkbox
+    [control]="confidentialControl"
+    label="entity.applicationReferences.confidentialWaiver"
+    (modelChange)="onConfidentialChange($event)"
+  />
+</div>
