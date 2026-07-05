@@ -468,6 +468,7 @@ jobs:
           export APP_TOKEN_RSA_PUBLIC_KEY="$(cat /tmp/app_token_pub.pem)"
           export OTP_HMAC_SECRET="$(openssl rand -base64 32)"
           export APP_WEBAUTHN_RP_ID="tumapply.local"
+          export KEYCLOAK_ADMIN_TUM_CLIENT_SECRET="$(openssl rand -base64 32)"
 
           ./gradlew -Pprod bootRun > server.log 2>&1 &
           echo "SERVER_PID=$!" >> $GITHUB_ENV

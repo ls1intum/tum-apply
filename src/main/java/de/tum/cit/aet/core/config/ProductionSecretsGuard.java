@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * development defaults, mirroring the RSA-key guard in {@code AppTokenKeyConfiguration}. It rejects a default
  * OTP HMAC secret (which also signs the OAuth2 authorization-request cookie, so a shared default would let an
  * attacker forge it), a {@code localhost} WebAuthn relying-party id (which silently breaks passkeys), and the
- * built-in Keycloak admin credentials (which would leave the admin API reachable with well-known defaults).
+ * built-in Keycloak admin client secret (which would leave the staff-lookup admin API on a well-known default).
  */
 @Component
 public class ProductionSecretsGuard {
@@ -27,15 +27,11 @@ public class ProductionSecretsGuard {
     /** Committed default {@code keycloak.admin.tum.client-secret} that must be overridden in production. */
     private static final String DEFAULT_KEYCLOAK_ADMIN_CLIENT_SECRET = "tumapply-admin-api-secret";
 
-    /** Committed default {@code keycloak.users.admin.password} that must be overridden in production. */
-    private static final String DEFAULT_KEYCLOAK_USERS_ADMIN_PASSWORD = "admin";
-
     public ProductionSecretsGuard(
         Environment environment,
         @Value("${security.otp.hmac-secret:}") String otpHmacSecret,
         @Value("${app.webauthn.rp-id:localhost}") String webAuthnRpId,
-        @Value("${keycloak.admin.tum.client-secret:}") String keycloakAdminClientSecret,
-        @Value("${keycloak.users.admin.password:}") String keycloakUsersAdminPassword
+        @Value("${keycloak.admin.tum.client-secret:}") String keycloakAdminClientSecret
     ) {
         if (!environment.acceptsProfiles(Profiles.of("prod"))) {
             return;
@@ -49,9 +45,6 @@ public class ProductionSecretsGuard {
         }
         if (keycloakAdminClientSecret.isBlank() || DEFAULT_KEYCLOAK_ADMIN_CLIENT_SECRET.equals(keycloakAdminClientSecret)) {
             problems.add("KEYCLOAK_ADMIN_TUM_CLIENT_SECRET must be set to a unique value (not the built-in default)");
-        }
-        if (keycloakUsersAdminPassword.isBlank() || DEFAULT_KEYCLOAK_USERS_ADMIN_PASSWORD.equals(keycloakUsersAdminPassword)) {
-            problems.add("KEYCLOAK_USERS_ADMIN_PASSWORD must be set to a unique value (not the built-in default)");
         }
         if (!problems.isEmpty()) {
             throw new IllegalStateException("Invalid production security configuration: " + String.join("; ", problems));
