@@ -34,7 +34,7 @@
     "users": {
       "users": "Users",
       "manageusers": "Manage Users",
-      "file": "Applications"
+      "applications": "Applications"
     },
     "system": {
       "system": "System",

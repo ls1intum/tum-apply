@@ -27,7 +27,6 @@
     },
     "statusBadge": {
       "SENT": "Ungelesen",
-      "PENDING": "Ausstehend",
       "ACCEPTED": "Angenommen",
       "REJECTED": "Abgelehnt",
       "IN_REVIEW": "In Bearbeitung",
@@ -35,7 +34,6 @@
       "JOB_CLOSED": "Stelle geschlossen",
       "tooltips": {
         "SENT": "Die Bewerbung wurde noch nicht geöffnet",
-        "PENDING": "Es fehlen noch erforderliche Empfehlungsschreiben",
         "ACCEPTED": "Die Bewerbung wurde angenommen",
         "REJECTED": "Die Bewerbung wurde abgelehnt",
         "IN_REVIEW": "Die Bewerbung wurde geöffnet",
@@ -106,13 +104,15 @@
       "referenceStatus": {
         "requested": "(angefragt)",
         "submitted": "(eingereicht)",
-        "expired": "(abgelaufen)"
+        "expired": "(abgelaufen)",
+        "declined": "(abgelehnt)"
       },
+      "referenceConfidential": "Vertraulich - Empfehlungen für die bewerbende Person nicht sichtbar",
+      "referenceShared": "Nicht vertraulich - Empfehlungen für die bewerbende Person sichtbar",
       "documentNoUploads": "Keine Dokumente hochgeladen",
-      "documentView": "Anzeigen",
+      "documentView": "Alle anzeigen",
       "documentDownloadAll": "Alle herunterladen",
-      "moreDocument": "+1 weiteres Dokument",
-      "moreDocuments": "+{count} weitere Dokumente",
+      "furtherDocuments": "Weitere Dokumente",
       "ratingTitle": "Bewertungen",
       "ratingDescription": "Bewerte die Bewerbung und sieh dir an, wie andere sie bewertet haben.",
       "ratingYourRating": "Deine Bewertung",
