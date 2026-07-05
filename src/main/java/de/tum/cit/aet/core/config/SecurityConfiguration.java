@@ -1,17 +1,8 @@
 package de.tum.cit.aet.core.config;
 
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.JWTParser;
 import de.tum.cit.aet.core.security.CustomJwtAuthenticationConverter;
 import de.tum.cit.aet.core.security.SpaWebFilter;
-import de.tum.cit.aet.core.util.CookieUtils;
-import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
-import de.tum.cit.aet.usermanagement.service.TokenRefreshDispatcher;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import java.text.ParseException;
-import java.util.Set;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -26,10 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.WebUtils;
 
 @Configuration
@@ -38,21 +26,10 @@ public class SecurityConfiguration {
 
     private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
     private final CorsFilter corsFilter;
-    private final TokenRefreshDispatcher tokenRefreshDispatcher;
-    private final Set<String> trustedIssuers;
 
-    public SecurityConfiguration(
-        CustomJwtAuthenticationConverter customJwtAuthenticationConverter,
-        CorsFilter corsFilter,
-        TokenRefreshDispatcher tokenRefreshDispatcher,
-        @Value("${keycloak.url}") String keycloakUrl,
-        @Value("${keycloak.tum-login-realm}") String tumLoginRealm,
-        @Value("${app.token.issuer}") String appIssuer
-    ) {
+    public SecurityConfiguration(CustomJwtAuthenticationConverter customJwtAuthenticationConverter, CorsFilter corsFilter) {
         this.customJwtAuthenticationConverter = customJwtAuthenticationConverter;
         this.corsFilter = corsFilter;
-        this.tokenRefreshDispatcher = tokenRefreshDispatcher;
-        this.trustedIssuers = Set.of(realmIssuer(keycloakUrl, tumLoginRealm), appIssuer);
     }
 
     /**
@@ -188,12 +165,10 @@ public class SecurityConfiguration {
             )
             .oauth2ResourceServer(oauth2 ->
                 oauth2
-                    .authenticationEntryPoint((request, response, authException) -> {
-                        if (WebUtils.getCookie(request, "access_token") != null || WebUtils.getCookie(request, "refresh_token") != null) {
-                            CookieUtils.setAuthCookies(response, null);
-                        }
-                        new BearerTokenAuthenticationEntryPoint().commence(request, response, authException);
-                    })
+                    // A 401 must not clear the auth cookies: an expired access token is recoverable via the
+                    // refresh cookie at POST /api/auth/refresh. Clearing them here would destroy a still-valid
+                    // session on any transient 401. Cookie lifecycle lives solely in the auth endpoints.
+                    .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                     .bearerTokenResolver(bearerTokenResolver())
                     .jwt(jwt -> jwt.jwtAuthenticationConverter(customJwtAuthenticationConverter))
             );
@@ -201,62 +176,24 @@ public class SecurityConfiguration {
     }
 
     /**
-     * Extracts the bearer token from the 'access_token' cookie, falling back to the
-     * Authorization header.
+     * Resolves the bearer token read-only: it returns the 'access_token' cookie value (app-issued applicant
+     * sessions) and otherwise falls back to the Authorization header (TUM staff Keycloak tokens).
+     * <p>
+     * It intentionally never refreshes here. Refresh-token rotation is single-use with replay detection, so
+     * performing it during request resolution races the concurrent requests a page reload fires and trips
+     * replay detection, revoking the whole session. Refreshing an expired app session is handled solely by
+     * POST /api/auth/refresh.
      *
-     * @return a BearerTokenResolver that reads from cookie and refreshes tokens as
-     *         needed
+     * @return a read-only BearerTokenResolver
      */
     private BearerTokenResolver bearerTokenResolver() {
         DefaultBearerTokenResolver defaultResolver = new DefaultBearerTokenResolver();
         return request -> {
             Cookie accessCookie = WebUtils.getCookie(request, "access_token");
-            Cookie refreshCookie = WebUtils.getCookie(request, "refresh_token");
             if (accessCookie != null && accessCookie.getValue() != null && !accessCookie.getValue().isBlank()) {
-                if (
-                    refreshCookie != null &&
-                    refreshCookie.getValue() != null &&
-                    !refreshCookie.getValue().isBlank() &&
-                    hasUntrustedIssuer(accessCookie.getValue())
-                ) {
-                    AuthResponseDTO tokens = tokenRefreshDispatcher.refresh(accessCookie.getValue(), refreshCookie.getValue());
-                    writeAuthCookies(tokens);
-                    return tokens.accessToken();
-                }
                 return accessCookie.getValue();
-            } else if (
-                (accessCookie == null || accessCookie.getValue() == null || accessCookie.getValue().isBlank()) && refreshCookie != null
-            ) {
-                AuthResponseDTO tokens = tokenRefreshDispatcher.refresh(null, refreshCookie.getValue());
-                writeAuthCookies(tokens);
-                return tokens.accessToken();
             }
             return defaultResolver.resolve(request);
         };
-    }
-
-    private void writeAuthCookies(AuthResponseDTO tokens) {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attributes == null) {
-            return;
-        }
-        HttpServletResponse response = attributes.getResponse();
-        if (response != null) {
-            CookieUtils.setAuthCookies(response, tokens);
-        }
-    }
-
-    private boolean hasUntrustedIssuer(String token) {
-        try {
-            JWTClaimsSet claims = JWTParser.parse(token).getJWTClaimsSet();
-            String issuer = claims.getIssuer();
-            return issuer == null || issuer.isBlank() || !trustedIssuers.contains(issuer);
-        } catch (ParseException e) {
-            return true;
-        }
-    }
-
-    private String realmIssuer(String keycloakUrl, String realm) {
-        return UriComponentsBuilder.fromUriString(keycloakUrl).pathSegment("realms", realm).build().toUriString();
     }
 }
