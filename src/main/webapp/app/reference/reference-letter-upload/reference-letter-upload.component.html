@@ -108,73 +108,73 @@
       </div>
 
       @if (evaluationRequired()) {
-      <!-- Structured assessment -->
-      <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
-        <div class="text-sm text-text-secondary uppercase font-semibold" jhiTranslate="reference.questions.relationship.title">
-          Your relationship to the applicant
+        <!-- Structured assessment -->
+        <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
+          <div class="text-sm text-text-secondary uppercase font-semibold" jhiTranslate="reference.questions.relationship.title">
+            Your relationship to the applicant
+          </div>
+          <jhi-select
+            label="reference.questions.relationship.capacity.label"
+            [required]="true"
+            [translateItems]="true"
+            [items]="relationshipOptions"
+            [selected]="selectedOptions()['relationship']"
+            (selectedChange)="onAnswerSelected('relationship', $event)"
+            [inline]="true"
+            [size]="'small'"
+          />
+          <jhi-select
+            label="reference.questions.relationship.duration.label"
+            [required]="true"
+            [translateItems]="true"
+            [items]="durationOptions"
+            [selected]="selectedOptions()['acquaintanceDuration']"
+            (selectedChange)="onAnswerSelected('acquaintanceDuration', $event)"
+            [inline]="true"
+            [size]="'small'"
+          />
+          <jhi-select
+            label="reference.questions.relationship.depth.label"
+            [required]="true"
+            [translateItems]="true"
+            [items]="depthOptions"
+            [selected]="selectedOptions()['acquaintanceDepth']"
+            (selectedChange)="onAnswerSelected('acquaintanceDepth', $event)"
+            [inline]="true"
+            [size]="'small'"
+          />
         </div>
-        <jhi-select
-          label="reference.questions.relationship.capacity.label"
-          [required]="true"
-          [translateItems]="true"
-          [items]="relationshipOptions"
-          [selected]="selectedOptions()['relationship']"
-          (selectedChange)="onAnswerSelected('relationship', $event)"
-          [inline]="true"
-          [size]="'small'"
-        />
-        <jhi-select
-          label="reference.questions.relationship.duration.label"
-          [required]="true"
-          [translateItems]="true"
-          [items]="durationOptions"
-          [selected]="selectedOptions()['acquaintanceDuration']"
-          (selectedChange)="onAnswerSelected('acquaintanceDuration', $event)"
-          [inline]="true"
-          [size]="'small'"
-        />
-        <jhi-select
-          label="reference.questions.relationship.depth.label"
-          [required]="true"
-          [translateItems]="true"
-          [items]="depthOptions"
-          [selected]="selectedOptions()['acquaintanceDepth']"
-          (selectedChange)="onAnswerSelected('acquaintanceDepth', $event)"
-          [inline]="true"
-          [size]="'small'"
-        />
-      </div>
 
-      <!-- Peer-group rating grid -->
-      <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
-        <div class="text-sm text-text-secondary uppercase font-semibold" jhiTranslate="reference.questions.rating.title">
-          Assessment compared to peer group
+        <!-- Peer-group rating grid -->
+        <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
+          <div class="text-sm text-text-secondary uppercase font-semibold" jhiTranslate="reference.questions.rating.title">
+            Assessment compared to peer group
+          </div>
+          <p class="text-sm text-text-secondary" jhiTranslate="reference.questions.rating.description">
+            Compared to others in a similar peer group, how do you rate the applicant?
+          </p>
+          <jhi-rating-grid
+            [rows]="ratingRows"
+            [options]="ratingOptions"
+            [selected]="selectedOptions()"
+            [required]="true"
+            (selectedChange)="onAnswerSelected($event.key, $event.option)"
+          />
         </div>
-        <p class="text-sm text-text-secondary" jhiTranslate="reference.questions.rating.description">
-          Compared to others in a similar peer group, how do you rate the applicant?
-        </p>
-        <jhi-rating-grid
-          [rows]="ratingRows"
-          [options]="ratingOptions"
-          [selected]="selectedOptions()"
-          [required]="true"
-          (selectedChange)="onAnswerSelected($event.key, $event.option)"
-        />
-      </div>
 
-      <!-- Overall recommendation -->
-      <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
-        <jhi-select
-          label="reference.questions.overall.label"
-          [required]="true"
-          [translateItems]="true"
-          [items]="overallOptions"
-          [selected]="selectedOptions()['overallRecommendation']"
-          (selectedChange)="onAnswerSelected('overallRecommendation', $event)"
-          [inline]="true"
-          [size]="'small'"
-        />
-      </div>
+        <!-- Overall recommendation -->
+        <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
+          <jhi-select
+            label="reference.questions.overall.label"
+            [required]="true"
+            [translateItems]="true"
+            [items]="overallOptions"
+            [selected]="selectedOptions()['overallRecommendation']"
+            (selectedChange)="onAnswerSelected('overallRecommendation', $event)"
+            [inline]="true"
+            [size]="'small'"
+          />
+        </div>
       }
 
       @if (letterRequired()) {
