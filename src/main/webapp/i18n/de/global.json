@@ -411,6 +411,10 @@
       },
       "confidentialWaiver": "Ich verzichte darauf, die eingereichten Empfehlungen einzusehen. Nur die betreuende Person kann sie lesen.",
       "toast": {
+        "emailSent": {
+          "summary": "Einladung versendet",
+          "detail": "Eine Einladung zur Einreichung einer Empfehlung wurde an die Referenzperson gesendet."
+        },
         "loadFailed": {
           "summary": "Referenzperson konnten nicht geladen werden",
           "detail": "Die Liste der Referenzpersonen konnte nicht geladen werden. Bitte lade die Seite neu."

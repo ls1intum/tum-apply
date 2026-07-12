@@ -411,6 +411,10 @@
       },
       "confidentialWaiver": "I waive my right to access the submitted recommendations. Only the supervisor can read them.",
       "toast": {
+        "emailSent": {
+          "summary": "Invitation sent",
+          "detail": "An invitation to submit a recommendation has been sent to the recommender."
+        },
         "loadFailed": {
           "summary": "Could not load recommenders",
           "detail": "Failed to load the list of recommenders. Please reload the page."
