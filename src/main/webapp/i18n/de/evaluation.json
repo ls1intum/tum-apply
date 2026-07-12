@@ -99,7 +99,7 @@
       "documentTypeMaster": "Masterzeugnis",
       "documentTypeCV": "Lebenslauf",
       "documentTypeReference": "Referenzschreiben",
-      "documentTypeReferenceLetter": "Empfehlungsschreiben - {name}",
+      "documentTypeReferenceLetter": "Empfehlungs&shy;schreiben &ndash; {name}",
       "referenceLetterStatus": "Status der Empfehlungsschreiben",
       "referenceStatus": {
         "requested": "(angefragt)",
