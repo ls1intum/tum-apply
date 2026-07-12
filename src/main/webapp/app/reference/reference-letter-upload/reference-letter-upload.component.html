@@ -1,5 +1,5 @@
 <div class="flex flex-col items-center px-4 py-12">
-  <div class="w-full max-w-xl">
+  <div class="w-full" [class.max-w-xl]="!showUploadView()" [class.max-w-5xl]="showUploadView()">
     @if (loading()) {
       <div class="text-center text-text-secondary" jhiTranslate="reference.loading">Loading...</div>
     } @else if (errorKey(); as key) {
@@ -62,6 +62,7 @@
       <!-- Upload view -->
       <div class="text-center mb-8">
         <h1 class="text-2xl font-bold text-text-primary" jhiTranslate="reference.title">Upload your recommendation letter</h1>
+        <p class="mb-4 text-xs text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
       </div>
 
       <!-- Context card -->
@@ -98,7 +99,7 @@
 
       <!-- Confidentiality note -->
       <div class="flex items-start gap-2 mb-6 text-sm text-text-secondary">
-        <fa-icon [icon]="confidential() ? 'lock' : 'circle-info'" class="text-primary mt-0.5 w-4" />
+        <fa-icon [icon]="confidential() ? 'lock' : 'circle-info'" class="text-primary w-4" />
         @if (confidential()) {
           <span jhiTranslate="reference.confidentialNote"></span>
         } @else {
@@ -118,6 +119,8 @@
           [items]="relationshipOptions"
           [selected]="selectedOptions()['relationship']"
           (selectedChange)="onAnswerSelected('relationship', $event)"
+          [inline]="true"
+          [size]="'small'"
         />
         <jhi-select
           label="reference.questions.relationship.duration.label"
@@ -126,6 +129,8 @@
           [items]="durationOptions"
           [selected]="selectedOptions()['acquaintanceDuration']"
           (selectedChange)="onAnswerSelected('acquaintanceDuration', $event)"
+          [inline]="true"
+          [size]="'small'"
         />
         <jhi-select
           label="reference.questions.relationship.depth.label"
@@ -134,6 +139,8 @@
           [items]="depthOptions"
           [selected]="selectedOptions()['acquaintanceDepth']"
           (selectedChange)="onAnswerSelected('acquaintanceDepth', $event)"
+          [inline]="true"
+          [size]="'small'"
         />
       </div>
 
@@ -145,16 +152,13 @@
         <p class="text-sm text-text-secondary" jhiTranslate="reference.questions.rating.description">
           Compared to others in a similar peer group, how do you rate the applicant?
         </p>
-        @for (row of ratingRows; track row.key) {
-          <jhi-select
-            [label]="row.labelKey"
-            [required]="true"
-            [translateItems]="true"
-            [items]="ratingOptions"
-            [selected]="selectedOptions()[row.key]"
-            (selectedChange)="onAnswerSelected(row.key, $event)"
-          />
-        }
+        <jhi-rating-grid
+          [rows]="ratingRows"
+          [options]="ratingOptions"
+          [selected]="selectedOptions()"
+          [required]="true"
+          (selectedChange)="onAnswerSelected($event.key, $event.option)"
+        />
       </div>
 
       <!-- Overall recommendation -->
@@ -166,6 +170,8 @@
           [items]="overallOptions"
           [selected]="selectedOptions()['overallRecommendation']"
           (selectedChange)="onAnswerSelected('overallRecommendation', $event)"
+          [inline]="true"
+          [size]="'small'"
         />
       </div>
 

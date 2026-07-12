@@ -1,4 +1,5 @@
 import { SelectOption } from 'app/shared/components/atoms/select/select.component';
+import { RatingGridRow } from 'app/shared/components/atoms/rating-grid/rating-grid.component';
 import { RefereeRelationship } from 'app/generated/model/referee-relationship';
 import { AcquaintanceDuration } from 'app/generated/model/acquaintance-duration';
 import { AcquaintanceDepth } from 'app/generated/model/acquaintance-depth';
@@ -56,7 +57,7 @@ export const OVERALL_OPTIONS: SelectOption[] = [
  * The six peer-group rating dimensions, in display order. {@code key} is both the upload form's answer
  * key and the matching {@code ReferenceRequestDTO} field name.
  */
-export const RATING_ROWS: { key: string; labelKey: string }[] = [
+export const RATING_ROWS: RatingGridRow[] = [
   { key: 'ratingIntellectualAbility', labelKey: 'reference.questions.rating.rows.intellectualAbility' },
   { key: 'ratingResearchPotential', labelKey: 'reference.questions.rating.rows.researchPotential' },
   { key: 'ratingMotivation', labelKey: 'reference.questions.rating.rows.motivation' },

@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
+import { RatingGridComponent } from 'app/shared/components/atoms/rating-grid/rating-grid.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
@@ -36,7 +37,15 @@ import {
 @Component({
   selector: 'jhi-reference-letter-upload',
   standalone: true,
-  imports: [FontAwesomeModule, TranslateDirective, ButtonComponent, UploadButtonComponent, SelectComponent, ConfirmDialog],
+  imports: [
+    FontAwesomeModule,
+    TranslateDirective,
+    ButtonComponent,
+    UploadButtonComponent,
+    SelectComponent,
+    RatingGridComponent,
+    ConfirmDialog,
+  ],
   templateUrl: './reference-letter-upload.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -99,6 +108,11 @@ export class ReferenceLetterUploadComponent {
 
   protected readonly alreadySubmitted = computed(
     () => this.context()?.status === ReferenceRequestDTOStatusEnum.Submitted || this.justUploaded(),
+  );
+
+  /** True while the interactive upload form is shown; the template widens the layout for the rating grid. */
+  protected readonly showUploadView = computed(
+    () => !this.loading() && this.errorKey() === undefined && !this.declined() && !this.alreadySubmitted() && !this.expired(),
   );
 
   private readonly requiredKeys = [
