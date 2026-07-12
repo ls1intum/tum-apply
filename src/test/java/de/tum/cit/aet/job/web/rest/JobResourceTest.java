@@ -206,7 +206,7 @@ class JobResourceTest extends AbstractResourceTest {
                 12,
                 FundingType.FULLY_FUNDED,
                 TvlGrade.E13,
-                0,
+                2,
                 RecommendationType.LETTER_AND_EVALUATION,
                 "Build ML pipelines",
                 "ML Pipeline erstellen",
@@ -260,7 +260,7 @@ class JobResourceTest extends AbstractResourceTest {
                     "Build ML pipelines",
                     "ML Pipeline erstellen",
                     JobState.PUBLISHED,
-                    0,
+                    2,
                     RecommendationType.LETTER_AND_EVALUATION
                 );
         }
@@ -300,6 +300,44 @@ class JobResourceTest extends AbstractResourceTest {
 
             Job saved = jobRepository.findById(returned.jobId()).orElseThrow();
             assertThat(saved.getRecommendationType()).isEqualTo(RecommendationType.LETTER_AND_EVALUATION);
+        }
+
+        @Test
+        void createJobClearsRecommendationTypeWhenNoReferencesRequired() {
+            Job job = jobRepository.findAll().getFirst();
+            JobFormDTO base = createJobFormDTO(job, "No References Position", null);
+            JobFormDTO payload = new JobFormDTO(
+                null,
+                base.title(),
+                base.researchArea(),
+                base.subjectArea(),
+                base.supervisingProfessor(),
+                base.location(),
+                base.startDate(),
+                base.endDate(),
+                base.workload(),
+                base.contractDuration(),
+                base.fundingType(),
+                base.tvlGrade(),
+                0,
+                RecommendationType.EVALUATION_ONLY,
+                base.jobDescriptionEN(),
+                base.jobDescriptionDE(),
+                JobState.DRAFT,
+                null,
+                base.suitableForDisabled(),
+                base.startDateByArrangement(),
+                null,
+                null
+            );
+
+            JobFormDTO returned = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/jobs/create", payload, JobFormDTO.class, 200);
+
+            Job saved = jobRepository.findById(returned.jobId()).orElseThrow();
+            assertThat(saved.getRecommendationType()).isNull();
+            assertThat(returned.recommendationType()).isNull();
         }
 
         @Test
@@ -384,7 +422,7 @@ class JobResourceTest extends AbstractResourceTest {
                 6,
                 FundingType.PARTIALLY_FUNDED,
                 TvlGrade.E15,
-                0,
+                2,
                 RecommendationType.EVALUATION_ONLY,
                 "Updated Description",
                 "Neue Beschreibung",

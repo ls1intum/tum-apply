@@ -451,8 +451,13 @@ public class JobService {
         job.setState(dto.state());
         job.setSuitableForDisabled(dto.suitableForDisabled());
         job.setStartDateByArrangement(Boolean.TRUE.equals(dto.startDateByArrangement()));
-        job.setReferenceLettersRequired(Objects.requireNonNullElse(dto.referenceLettersRequired(), 0));
-        job.setRecommendationType(Objects.requireNonNullElse(dto.recommendationType(), RecommendationType.LETTER_AND_EVALUATION));
+        int referenceLettersRequired = Objects.requireNonNullElse(dto.referenceLettersRequired(), 0);
+        job.setReferenceLettersRequired(referenceLettersRequired);
+        job.setRecommendationType(
+            referenceLettersRequired > 0
+                ? Objects.requireNonNullElse(dto.recommendationType(), RecommendationType.LETTER_AND_EVALUATION)
+                : null
+        );
 
         // Capture old image before any modifications
         Image oldImage = job.getImage();

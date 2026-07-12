@@ -6,9 +6,7 @@
 
   <changeSet id="049_add_recommendation_type_to_jobs" author="Cathy">
     <addColumn tableName="jobs">
-      <column name="recommendation_type" type="VARCHAR(32)" defaultValue="LETTER_AND_EVALUATION">
-        <constraints nullable="false"/>
-      </column>
+      <column name="recommendation_type" type="VARCHAR(32)"/>
     </addColumn>
   </changeSet>
 

@@ -103,6 +103,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
             LocalDate.of(2026, 9, 1)
         );
         jobWithReferences.setReferenceLettersRequired(1);
+        jobWithReferences.setRecommendationType(RecommendationType.LETTER_AND_EVALUATION);
         jobWithReferences = jobRepository.save(jobWithReferences);
 
         application = ApplicationTestData.saved(applicationRepository, jobWithReferences, applicant, ApplicationState.SENT);

@@ -102,8 +102,8 @@ public class Job extends AbstractAuditingEntity {
     private Integer referenceLettersRequired = 0;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "recommendation_type", nullable = false)
-    private RecommendationType recommendationType = RecommendationType.LETTER_AND_EVALUATION;
+    @Column(name = "recommendation_type")
+    private RecommendationType recommendationType;
 
     // Contains all the Applications that are submitted to this Job
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
