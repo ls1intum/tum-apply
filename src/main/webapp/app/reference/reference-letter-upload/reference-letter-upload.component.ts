@@ -15,6 +15,7 @@ import {
   DocumentInformationHolderDTODocumentTypeEnum,
 } from 'app/generated/model/document-information-holder-dto';
 import { ReferenceRequestDTOStatusEnum } from 'app/generated/model/reference-request-dto';
+import { RecommendationType } from 'app/generated/model/recommendation-type';
 import { RefereeRelationship } from 'app/generated/model/referee-relationship';
 import { AcquaintanceDuration } from 'app/generated/model/acquaintance-duration';
 import { AcquaintanceDepth } from 'app/generated/model/acquaintance-depth';
@@ -80,7 +81,22 @@ export class ReferenceLetterUploadComponent {
     return this.requiredKeys.every(key => a[key] !== undefined);
   });
 
-  protected readonly canSubmit = computed(() => this.hasQueuedFile() && this.allAnswered() && !this.uploading());
+  /** What the job asks recommenders to provide; defaults to both parts until the context is loaded. */
+  protected readonly recommendationType = computed(() => this.context()?.recommendationType ?? RecommendationType.LetterAndEvaluation);
+
+  /** True when the job asks for a letter upload. */
+  protected readonly letterRequired = computed(() => this.recommendationType() !== RecommendationType.EvaluationOnly);
+
+  /** True when the job asks for the structured evaluation questions. */
+  protected readonly evaluationRequired = computed(() => this.recommendationType() !== RecommendationType.LetterOnly);
+
+  protected readonly titleKey = computed(() => `reference.title.${this.recommendationType()}`);
+  protected readonly successTitleKey = computed(() => `reference.success.title.${this.recommendationType()}`);
+  protected readonly successMessageKey = computed(() => `reference.success.message.${this.recommendationType()}`);
+
+  protected readonly canSubmit = computed(
+    () => !this.uploading() && (!this.letterRequired() || this.hasQueuedFile()) && (!this.evaluationRequired() || this.allAnswered()),
+  );
 
   protected readonly expired = computed(() => this.context()?.status === ReferenceRequestDTOStatusEnum.Expired);
 
@@ -147,15 +163,19 @@ export class ReferenceLetterUploadComponent {
   }
 
   /**
-   * Sends the staged file and structured answers to the upload endpoint and switches to the success
-   * view. Stays on the upload view on failure so the referee can retry.
+   * Sends the parts the job asks for — the staged file, the structured answers, or both — to the
+   * upload endpoint and switches to the success view. Stays on the upload view on failure so the
+   * referee can retry.
    */
   protected async confirmUpload(): Promise<void> {
-    const file = this.queuedFile();
-    if (!file || !this.allAnswered()) {
+    const file = this.letterRequired() ? this.queuedFile() : undefined;
+    if (this.letterRequired() && !file) {
       return;
     }
-    const a = this.answers();
+    if (this.evaluationRequired() && !this.allAnswered()) {
+      return;
+    }
+    const a: Record<string, string | undefined> = this.evaluationRequired() ? this.answers() : {};
     this.uploading.set(true);
     try {
       await firstValueFrom(

@@ -58,6 +58,7 @@ import {
 } from 'app/generated/model/job-form-dto';
 import { AiAssistantCardComponent } from 'app/shared/components/molecules/ai-assistant-card/ai-assistant-card.component';
 import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
+import { RecommendationType } from 'app/generated/model/recommendation-type';
 import { ComplianceIssue, ComplianceIssueCategoryEnum } from 'app/generated/model/compliance-issue';
 import { CompliancePopoverComponent } from 'app/shared/components/molecules/ai-compliance-popover/ai-compliance-popover.component';
 
@@ -72,6 +73,10 @@ const REFERENCE_LETTERS_REQUIRED_OPTIONS: { value: number; name: string }[] = [0
   value: n,
   name: String(n),
 }));
+
+const DEFAULT_RECOMMENDATION_TYPE_OPTION =
+  DropdownOptions.recommendationTypes.find(option => option.value === RecommendationType.LetterAndEvaluation) ??
+  DropdownOptions.recommendationTypes[0];
 
 /**
  * JobCreationFormComponent
@@ -523,6 +528,12 @@ export class JobCreationFormComponent {
       .sort((a, b) => a.name.localeCompare(b.name));
   });
 
+  /** Computed: Returns localized recommendation type options (letter / evaluation / both), in fixed order */
+  translatedRecommendationTypes = computed(() => {
+    void this.currentLang();
+    return DropdownOptions.recommendationTypes.map(option => ({ value: option.value, name: this.translate.instant(option.name) }));
+  });
+
   // ═══════════════════════════════════════════════════════════════════════════
   // SUPERVISING PROFESSOR OPTIONS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -542,6 +553,12 @@ export class JobCreationFormComponent {
   /** Signal that emits the current positionDetailsForm values */
   positionDetailsFormValueSignal = toSignal(this.positionDetailsForm.valueChanges, {
     initialValue: this.positionDetailsForm.getRawValue(),
+  });
+
+  /** Computed: whether the job asks for recommendations at all; controls the recommendation type select */
+  readonly recommendationTypeVisible = computed(() => {
+    const required = this.positionDetailsFormValueSignal().referenceLettersRequired as { value?: number } | undefined;
+    return (required?.value ?? 0) > 0;
   });
 
   /** Computed: earliest selectable start date, based on the chosen application deadline */
@@ -1230,6 +1247,7 @@ export class JobCreationFormComponent {
         contractDuration: [undefined],
         suitableForDisabled: [true],
         referenceLettersRequired: [REFERENCE_LETTERS_REQUIRED_OPTIONS[0]],
+        recommendationType: [DEFAULT_RECOMMENDATION_TYPE_OPTION],
       },
       {
         validators: [dateOrderValidator('applicationDeadline', 'startDate')],
@@ -1297,6 +1315,7 @@ export class JobCreationFormComponent {
       imageId: imageValue.imageId ?? null,
       suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       referenceLettersRequired: positionDetailsValue.referenceLettersRequired?.value as number,
+      recommendationType: positionDetailsValue.recommendationType?.value as RecommendationType,
       state,
     } as JobFormDTO;
   }
@@ -1448,6 +1467,8 @@ export class JobCreationFormComponent {
       referenceLettersRequired:
         this.findDropdownOption(this.referenceLettersRequiredOptions, job?.referenceLettersRequired ?? 0) ??
         this.referenceLettersRequiredOptions[0],
+      recommendationType:
+        this.findDropdownOption(DropdownOptions.recommendationTypes, job?.recommendationType) ?? DEFAULT_RECOMMENDATION_TYPE_OPTION,
     });
 
     if (job?.imageId !== undefined && job.imageUrl !== undefined) {

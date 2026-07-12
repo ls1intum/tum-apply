@@ -26,9 +26,9 @@
         <div class="text-positive-default mb-6 inline-flex items-center justify-center">
           <fa-icon icon="check" class="text-5xl" />
         </div>
-        <h2 class="text-2xl font-bold mb-2 text-text-primary" jhiTranslate="reference.success.title">Recommendation letter received!</h2>
-        <p class="text-text-secondary mb-8" jhiTranslate="reference.success.message">
-          Thank you. Your letter has been submitted successfully.
+        <h2 class="text-2xl font-bold mb-2 text-text-primary" [jhiTranslate]="successTitleKey()">Recommendation received!</h2>
+        <p class="text-text-secondary mb-8" [jhiTranslate]="successMessageKey()">
+          Thank you. Your recommendation has been submitted successfully.
         </p>
         <div class="border border-border-default rounded-lg p-6 w-full bg-background-surface text-left">
           <div class="text-sm text-text-secondary uppercase font-semibold mb-3" jhiTranslate="reference.summary.title">Summary</div>
@@ -61,7 +61,7 @@
     } @else {
       <!-- Upload view -->
       <div class="text-center mb-8">
-        <h1 class="text-2xl font-bold text-text-primary" jhiTranslate="reference.title">Upload your recommendation letter</h1>
+        <h1 class="text-2xl font-bold text-text-primary" [jhiTranslate]="titleKey()">Submit your recommendation</h1>
       </div>
 
       <!-- Context card -->
@@ -106,79 +106,83 @@
         }
       </div>
 
-      <!-- Structured assessment -->
-      <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
-        <div class="text-sm text-text-secondary uppercase font-semibold" jhiTranslate="reference.questions.relationship.title">
-          Your relationship to the applicant
-        </div>
-        <jhi-select
-          label="reference.questions.relationship.capacity.label"
-          [required]="true"
-          [translateItems]="true"
-          [items]="relationshipOptions"
-          [selected]="selectedOptions()['relationship']"
-          (selectedChange)="onAnswerSelected('relationship', $event)"
-        />
-        <jhi-select
-          label="reference.questions.relationship.duration.label"
-          [required]="true"
-          [translateItems]="true"
-          [items]="durationOptions"
-          [selected]="selectedOptions()['acquaintanceDuration']"
-          (selectedChange)="onAnswerSelected('acquaintanceDuration', $event)"
-        />
-        <jhi-select
-          label="reference.questions.relationship.depth.label"
-          [required]="true"
-          [translateItems]="true"
-          [items]="depthOptions"
-          [selected]="selectedOptions()['acquaintanceDepth']"
-          (selectedChange)="onAnswerSelected('acquaintanceDepth', $event)"
-        />
-      </div>
-
-      <!-- Peer-group rating grid -->
-      <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
-        <div class="text-sm text-text-secondary uppercase font-semibold" jhiTranslate="reference.questions.rating.title">
-          Assessment compared to peer group
-        </div>
-        <p class="text-sm text-text-secondary" jhiTranslate="reference.questions.rating.description">
-          Compared to others in a similar peer group, how do you rate the applicant?
-        </p>
-        @for (row of ratingRows; track row.key) {
+      @if (evaluationRequired()) {
+        <!-- Structured assessment -->
+        <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
+          <div class="text-sm text-text-secondary uppercase font-semibold" jhiTranslate="reference.questions.relationship.title">
+            Your relationship to the applicant
+          </div>
           <jhi-select
-            [label]="row.labelKey"
+            label="reference.questions.relationship.capacity.label"
             [required]="true"
             [translateItems]="true"
-            [items]="ratingOptions"
-            [selected]="selectedOptions()[row.key]"
-            (selectedChange)="onAnswerSelected(row.key, $event)"
+            [items]="relationshipOptions"
+            [selected]="selectedOptions()['relationship']"
+            (selectedChange)="onAnswerSelected('relationship', $event)"
           />
-        }
-      </div>
+          <jhi-select
+            label="reference.questions.relationship.duration.label"
+            [required]="true"
+            [translateItems]="true"
+            [items]="durationOptions"
+            [selected]="selectedOptions()['acquaintanceDuration']"
+            (selectedChange)="onAnswerSelected('acquaintanceDuration', $event)"
+          />
+          <jhi-select
+            label="reference.questions.relationship.depth.label"
+            [required]="true"
+            [translateItems]="true"
+            [items]="depthOptions"
+            [selected]="selectedOptions()['acquaintanceDepth']"
+            (selectedChange)="onAnswerSelected('acquaintanceDepth', $event)"
+          />
+        </div>
 
-      <!-- Overall recommendation -->
-      <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
-        <jhi-select
-          label="reference.questions.overall.label"
-          [required]="true"
-          [translateItems]="true"
-          [items]="overallOptions"
-          [selected]="selectedOptions()['overallRecommendation']"
-          (selectedChange)="onAnswerSelected('overallRecommendation', $event)"
-        />
-      </div>
+        <!-- Peer-group rating grid -->
+        <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
+          <div class="text-sm text-text-secondary uppercase font-semibold" jhiTranslate="reference.questions.rating.title">
+            Assessment compared to peer group
+          </div>
+          <p class="text-sm text-text-secondary" jhiTranslate="reference.questions.rating.description">
+            Compared to others in a similar peer group, how do you rate the applicant?
+          </p>
+          @for (row of ratingRows; track row.key) {
+            <jhi-select
+              [label]="row.labelKey"
+              [required]="true"
+              [translateItems]="true"
+              [items]="ratingOptions"
+              [selected]="selectedOptions()[row.key]"
+              (selectedChange)="onAnswerSelected(row.key, $event)"
+            />
+          }
+        </div>
 
-      <!-- Upload control -->
-      <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 bg-background-surface">
-        <jhi-upload-button
-          [documentType]="documentType"
-          [allowMultiple]="false"
-          [deferUpload]="true"
-          [(documentIds)]="uploadedDocuments"
-          (queuedFilesChange)="onQueuedFilesChanged($event)"
-        />
-      </div>
+        <!-- Overall recommendation -->
+        <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 mb-6 bg-background-surface">
+          <jhi-select
+            label="reference.questions.overall.label"
+            [required]="true"
+            [translateItems]="true"
+            [items]="overallOptions"
+            [selected]="selectedOptions()['overallRecommendation']"
+            (selectedChange)="onAnswerSelected('overallRecommendation', $event)"
+          />
+        </div>
+      }
+
+      @if (letterRequired()) {
+        <!-- Upload control -->
+        <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 bg-background-surface">
+          <jhi-upload-button
+            [documentType]="documentType"
+            [allowMultiple]="false"
+            [deferUpload]="true"
+            [(documentIds)]="uploadedDocuments"
+            (queuedFilesChange)="onQueuedFilesChanged($event)"
+          />
+        </div>
+      }
 
       <!-- Actions -->
       <div class="mt-4 flex items-center justify-center gap-3">

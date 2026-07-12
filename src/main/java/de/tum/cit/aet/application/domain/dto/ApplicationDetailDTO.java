@@ -6,6 +6,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.job.constants.Campus;
+import de.tum.cit.aet.job.constants.RecommendationType;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.reference.domain.ReferenceRequest;
 import de.tum.cit.aet.reference.dto.ReferenceRequestDTO;
@@ -33,6 +34,7 @@ public record ApplicationDetailDTO(
     String specialSkills,
     String motivation,
     int referenceLettersRequired,
+    RecommendationType recommendationType,
     boolean referenceLettersConfidential,
     List<ReferenceRequestDTO> references,
     LocalDate jobEndDate
@@ -78,6 +80,7 @@ public record ApplicationDetailDTO(
             HtmlSanitizer.sanitize(application.getSpecialSkills()),
             HtmlSanitizer.sanitize(application.getMotivation()),
             job.getReferenceLettersRequired(),
+            job.getRecommendationType(),
             application.isReferenceLettersConfidential(),
             mapReferences(application.getReferenceRequests(), includeConfidentialReferenceContent),
             job.getEndDate()

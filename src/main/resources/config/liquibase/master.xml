@@ -58,6 +58,7 @@
   <include file="changelog/00000000000046_add_reference_letter_assessment.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000047_internal_user_management.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000048_webauthn_credentials.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000049_add_recommendation_type_to_jobs.xml" relativeToChangelogFile="true"/>
 
   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
   <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints

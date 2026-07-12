@@ -40,14 +40,14 @@
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
             <span
-              ><strong jhiTranslate="jobDetailPage.header.supervisor"></strong>
+            ><strong jhiTranslate="jobDetailPage.header.supervisor"></strong>
               {{ job.supervisingProfessor ? 'Prof. ' + job.supervisingProfessor : '-' }}</span
             >
           </div>
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
             <span
-              ><strong jhiTranslate="jobDetailPage.header.location"></strong>
+            ><strong jhiTranslate="jobDetailPage.header.location"></strong>
               {{ (dropDownOptions.getLocationTranslationKey(job.location) | translate) || '-' }}</span
             >
           </div>
@@ -174,7 +174,12 @@
               @if (job.referenceLettersRequired > 0) {
                 <div class="info-row">
                   <span jhiTranslate="jobDetailPage.labels.referenceLetters"></span>
-                  <span class="value">{{ job.referenceLettersRequired }}</span>
+                  <span class="value">
+                    {{ job.referenceLettersRequired }}
+                    @if (dropDownOptions.getRecommendationTypeTranslationKey(job.recommendationType); as typeKey) {
+                      · {{ typeKey | translate }}
+                    }
+                  </span>
                 </div>
               }
               <div class="info-row">
@@ -267,7 +272,7 @@
                       [title]="job.researchGroupWebsite"
                       target="_blank"
                       rel="noopener noreferrer"
-                      >{{ this.trimWebsiteUrl(job.researchGroupWebsite) }}</a
+                    >{{ this.trimWebsiteUrl(job.researchGroupWebsite) }}</a
                     >
                   </div>
                 }

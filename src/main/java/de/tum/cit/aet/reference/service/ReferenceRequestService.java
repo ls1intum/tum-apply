@@ -7,9 +7,11 @@ import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.documents.domain.ApplicationDocument;
 import de.tum.cit.aet.core.documents.service.DocumentService;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.job.constants.RecommendationType;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.dto.ReferenceLetterContextDTO;
@@ -297,7 +299,8 @@ public class ReferenceRequestService {
             job.getResearchGroup() != null ? job.getResearchGroup().getName() : null,
             entry.getTokenExpiresAt(),
             entry.getStatus(),
-            application.isReferenceLettersConfidential()
+            application.isReferenceLettersConfidential(),
+            job.getRecommendationType()
         );
     }
 
@@ -321,9 +324,9 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Stores the recommendation letter PDF uploaded by an external referee together with the
-     * structured assessment answers, links the document to the reference request and marks the request
-     * {@code SUBMITTED}.
+     * Stores the recommendation an external referee submitted — the letter PDF, the structured
+     * assessment answers, or both, depending on the job's recommendation type — links any uploaded
+     * document to the reference request and marks the request {@code SUBMITTED}.
      *
      * @param rawToken          the plaintext token from the invitation email
      * @param recommendation    the answer the referee submitted
@@ -334,23 +337,57 @@ public class ReferenceRequestService {
         assertReferenceActionAllowed(entry);
 
         Application application = entry.getApplication();
-        User uploaderForAudit = application.getApplicant().getUser();
-        String displayName = "Reference letter — " + entry.getFirstName() + " " + entry.getLastName();
+        RecommendationType recommendationType = application.getJob().getRecommendationType();
+        assertSubmissionMatchesType(recommendationType, recommendation);
 
-        ApplicationDocument document = documentService.uploadApplicationDocument(
-            recommendation.letter(),
-            DocumentType.REFERENCE_LETTER,
-            displayName,
-            application,
-            uploaderForAudit
-        );
+        if (recommendationType != RecommendationType.EVALUATION_ONLY) {
+            User uploaderForAudit = application.getApplicant().getUser();
+            String displayName = "Reference letter — " + entry.getFirstName() + " " + entry.getLastName();
 
-        entry.setDocumentId(document.getDocumentId());
-        applyAssessment(entry, recommendation);
+            ApplicationDocument document = documentService.uploadApplicationDocument(
+                recommendation.letter(),
+                DocumentType.REFERENCE_LETTER,
+                displayName,
+                application,
+                uploaderForAudit
+            );
+            entry.setDocumentId(document.getDocumentId());
+        }
+
+        if (recommendationType != RecommendationType.LETTER_ONLY) {
+            applyAssessment(entry, recommendation);
+        }
         entry.setStatus(ReferenceRequestStatus.SUBMITTED);
         ReferenceRequest saved = referenceRequestRepository.save(entry);
 
         return ReferenceRequestDTO.fromEntity(saved);
+    }
+
+    /**
+     * Verifies that the submission contains exactly the parts the job's recommendation type asks
+     * for: the letter is required unless the job is evaluation-only, the complete assessment is
+     * required unless the job is letter-only, and parts that were not asked for are rejected so
+     * stale clients cannot store data the professor never requested.
+     *
+     * @param recommendationType what the job asks recommenders to provide
+     * @param recommendation     the submission to validate
+     */
+    private void assertSubmissionMatchesType(RecommendationType recommendationType, ReferenceLetterSubmissionDTO recommendation) {
+        boolean letterRequired = recommendationType != RecommendationType.EVALUATION_ONLY;
+        boolean assessmentRequired = recommendationType != RecommendationType.LETTER_ONLY;
+
+        if (letterRequired && !recommendation.hasLetter()) {
+            throw new BadRequestException("A recommendation letter file is required for this job.");
+        }
+        if (!letterRequired && recommendation.hasLetter()) {
+            throw new BadRequestException("This job does not accept a recommendation letter file.");
+        }
+        if (assessmentRequired && !recommendation.hasCompleteAssessment()) {
+            throw new BadRequestException("All structured assessment answers are required for this job.");
+        }
+        if (!assessmentRequired && recommendation.hasAnyAssessmentAnswer()) {
+            throw new BadRequestException("This job does not accept structured assessment answers.");
+        }
     }
 
     /**
@@ -498,10 +535,10 @@ public class ReferenceRequestService {
         String deadline =
             entry.getTokenExpiresAt() != null
                 ? entry
-                      .getTokenExpiresAt()
-                      .atZone(ZoneOffset.systemDefault())
-                      .withZoneSameInstant(ZoneOffset.UTC)
-                      .format(DEADLINE_FORMATTER)
+                .getTokenExpiresAt()
+                .atZone(ZoneOffset.systemDefault())
+                .withZoneSameInstant(ZoneOffset.UTC)
+                .format(DEADLINE_FORMATTER)
                 : "";
 
         ReferenceLetterContextDTO ctx = new ReferenceLetterContextDTO(
@@ -513,7 +550,8 @@ public class ReferenceRequestService {
             job.getTitle(),
             job.getResearchGroup().getName(),
             referenceLink,
-            deadline
+            deadline,
+            job.getRecommendationType()
         );
 
         Email email = Email.builder()

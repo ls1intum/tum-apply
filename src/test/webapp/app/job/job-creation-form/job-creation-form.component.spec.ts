@@ -19,6 +19,7 @@ import { UserShortDTORolesEnum } from 'app/generated/model/user-short-dto';
 import { ImageDTOImageTypeEnum } from 'app/generated/model/image-dto';
 import { JobDTO } from 'app/generated/model/job-dto';
 import { ImageDTO } from 'app/generated/model/image-dto';
+import { RecommendationType } from 'app/generated/model/recommendation-type';
 import * as DropdownOptions from 'app/job/dropdown-options';
 import { unescapeJsonString } from 'app/shared/util/util';
 
@@ -339,6 +340,16 @@ describe('JobCreationFormComponent', () => {
       getPrivate(component).populateForm(undefined);
       expect(component.selectedImage()).toBeUndefined();
     });
+
+    it('should populate the recommendation type from the job and default to letter and evaluation', () => {
+      getPrivate(component).populateForm({ title: 'Job', recommendationType: RecommendationType.LetterOnly } as JobDTO);
+      expect(component.positionDetailsForm.get('recommendationType')?.value).toEqual(DropdownOptions.recommendationTypes[0]);
+
+      getPrivate(component).populateForm(undefined);
+      expect(component.positionDetailsForm.get('recommendationType')?.value).toEqual(
+        DropdownOptions.recommendationTypes.find(option => option.value === RecommendationType.LetterAndEvaluation),
+      );
+    });
   });
 
   describe('Supervising Professor', () => {
@@ -485,6 +496,29 @@ describe('JobCreationFormComponent', () => {
       component.basicInfoForm.patchValue({ supervisingProfessor: undefined });
       const dto = getPrivate(component).createJobDTO(JobFormDTOStateEnum.Draft);
       expect(dto.supervisingProfessor).toBe('prof-1');
+    });
+  });
+
+  describe('Recommendation Type', () => {
+    it('should include the selected recommendation type in the submitted DTO', () => {
+      fillValidJobForm(component);
+      component.positionDetailsForm.patchValue({
+        referenceLettersRequired: { value: 2, name: '2' },
+        recommendationType: DropdownOptions.recommendationTypes.find(option => option.value === RecommendationType.EvaluationOnly),
+      });
+
+      const dto = getPrivate(component).createJobDTO(JobFormDTOStateEnum.Draft);
+      expect(dto.recommendationType).toBe(RecommendationType.EvaluationOnly);
+    });
+
+    it('should show the type select only while recommendations are required', () => {
+      expect(component.recommendationTypeVisible()).toBe(false);
+
+      component.positionDetailsForm.patchValue({ referenceLettersRequired: { value: 1, name: '1' } });
+      expect(component.recommendationTypeVisible()).toBe(true);
+
+      component.positionDetailsForm.patchValue({ referenceLettersRequired: { value: 0, name: '0' } });
+      expect(component.recommendationTypeVisible()).toBe(false);
     });
   });
 

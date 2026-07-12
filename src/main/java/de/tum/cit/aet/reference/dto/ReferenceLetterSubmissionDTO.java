@@ -5,12 +5,12 @@ import de.tum.cit.aet.reference.constants.AcquaintanceDuration;
 import de.tum.cit.aet.reference.constants.OverallRecommendation;
 import de.tum.cit.aet.reference.constants.PeerRating;
 import de.tum.cit.aet.reference.constants.RefereeRelationship;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * The structured assessment a referee submits with the PDF recommendation letter PDF.
- * Every field is mandatory.
+ * The recommendation a referee submits: a letter PDF, a structured assessment, or both.
+ * Which parts are required depends on the job's recommendation type, so every field is optional
+ * at the DTO level and validated in the service against the job's configuration.
  *
  * @param relationship             capacity in which the referee knows the applicant
  * @param acquaintanceDuration     how long the referee has known the applicant
@@ -25,15 +25,64 @@ import org.springframework.web.multipart.MultipartFile;
  * @param letter                   the recommendation letter PDF file
  */
 public record ReferenceLetterSubmissionDTO(
-    @NotNull RefereeRelationship relationship,
-    @NotNull AcquaintanceDuration acquaintanceDuration,
-    @NotNull AcquaintanceDepth acquaintanceDepth,
-    @NotNull PeerRating ratingIntellectualAbility,
-    @NotNull PeerRating ratingResearchPotential,
-    @NotNull PeerRating ratingMotivation,
-    @NotNull PeerRating ratingCommunication,
-    @NotNull PeerRating ratingLeadership,
-    @NotNull PeerRating ratingCollaboration,
-    @NotNull OverallRecommendation overallRecommendation,
-    @NotNull MultipartFile letter
-) {}
+    RefereeRelationship relationship,
+    AcquaintanceDuration acquaintanceDuration,
+    AcquaintanceDepth acquaintanceDepth,
+    PeerRating ratingIntellectualAbility,
+    PeerRating ratingResearchPotential,
+    PeerRating ratingMotivation,
+    PeerRating ratingCommunication,
+    PeerRating ratingLeadership,
+    PeerRating ratingCollaboration,
+    OverallRecommendation overallRecommendation,
+    MultipartFile letter
+) {
+    /**
+     * Returns true when every structured assessment answer is present.
+     *
+     * @return true when all assessment fields are filled in
+     */
+    public boolean hasCompleteAssessment() {
+        return (
+            relationship != null &&
+                acquaintanceDuration != null &&
+                acquaintanceDepth != null &&
+                ratingIntellectualAbility != null &&
+                ratingResearchPotential != null &&
+                ratingMotivation != null &&
+                ratingCommunication != null &&
+                ratingLeadership != null &&
+                ratingCollaboration != null &&
+                overallRecommendation != null
+        );
+    }
+
+    /**
+     * Returns true when at least one structured assessment answer is present.
+     *
+     * @return true when any assessment field is filled in
+     */
+    public boolean hasAnyAssessmentAnswer() {
+        return (
+            relationship != null ||
+                acquaintanceDuration != null ||
+                acquaintanceDepth != null ||
+                ratingIntellectualAbility != null ||
+                ratingResearchPotential != null ||
+                ratingMotivation != null ||
+                ratingCommunication != null ||
+                ratingLeadership != null ||
+                ratingCollaboration != null ||
+                overallRecommendation != null
+        );
+    }
+
+    /**
+     * Returns true when a letter file was uploaded with the submission.
+     *
+     * @return true when a non-empty letter file is present
+     */
+    public boolean hasLetter() {
+        return letter != null && !letter.isEmpty();
+    }
+}

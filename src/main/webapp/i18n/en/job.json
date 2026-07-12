@@ -132,8 +132,17 @@
         "toolTipText": "Indicate the duration of the contract for the doctoral position in years (e.g. 1.5). You can enter up to 6 years."
       },
       "referenceLettersRequired": {
-        "label": "Required Recommendation Letters",
-        "toolTipText": "Number of external recommendation letters applicants must collect for this position. Letters are uploaded by the recommenders themselves through a link directly on TUMApply."
+        "label": "Required Recommendations",
+        "toolTipText": "Number of external recommendations applicants must collect for this position. Recommendations are submitted by the recommenders themselves through a link directly on TUMApply."
+      },
+      "recommendationType": {
+        "label": "What should recommenders provide?",
+        "toolTipText": "Choose whether recommenders upload a recommendation letter, complete a structured evaluation of the applicant, or both."
+      },
+      "recommendationTypes": {
+        "LetterOnly": "Letter only",
+        "EvaluationOnly": "Evaluation questions only",
+        "LetterAndEvaluation": "Letter and evaluation"
       },
       "positionOptions": {
         "title": "Position Options",
