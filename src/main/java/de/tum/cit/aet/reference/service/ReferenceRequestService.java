@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Manages the referee contacts an applicant attaches to an application and dispatches the
@@ -535,10 +534,10 @@ public class ReferenceRequestService {
         String deadline =
             entry.getTokenExpiresAt() != null
                 ? entry
-                .getTokenExpiresAt()
-                .atZone(ZoneOffset.systemDefault())
-                .withZoneSameInstant(ZoneOffset.UTC)
-                .format(DEADLINE_FORMATTER)
+                      .getTokenExpiresAt()
+                      .atZone(ZoneOffset.systemDefault())
+                      .withZoneSameInstant(ZoneOffset.UTC)
+                      .format(DEADLINE_FORMATTER)
                 : "";
 
         ReferenceLetterContextDTO ctx = new ReferenceLetterContextDTO(

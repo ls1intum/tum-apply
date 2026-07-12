@@ -45,15 +45,15 @@ public record ReferenceLetterSubmissionDTO(
     public boolean hasCompleteAssessment() {
         return (
             relationship != null &&
-                acquaintanceDuration != null &&
-                acquaintanceDepth != null &&
-                ratingIntellectualAbility != null &&
-                ratingResearchPotential != null &&
-                ratingMotivation != null &&
-                ratingCommunication != null &&
-                ratingLeadership != null &&
-                ratingCollaboration != null &&
-                overallRecommendation != null
+            acquaintanceDuration != null &&
+            acquaintanceDepth != null &&
+            ratingIntellectualAbility != null &&
+            ratingResearchPotential != null &&
+            ratingMotivation != null &&
+            ratingCommunication != null &&
+            ratingLeadership != null &&
+            ratingCollaboration != null &&
+            overallRecommendation != null
         );
     }
 
@@ -65,15 +65,15 @@ public record ReferenceLetterSubmissionDTO(
     public boolean hasAnyAssessmentAnswer() {
         return (
             relationship != null ||
-                acquaintanceDuration != null ||
-                acquaintanceDepth != null ||
-                ratingIntellectualAbility != null ||
-                ratingResearchPotential != null ||
-                ratingMotivation != null ||
-                ratingCommunication != null ||
-                ratingLeadership != null ||
-                ratingCollaboration != null ||
-                overallRecommendation != null
+            acquaintanceDuration != null ||
+            acquaintanceDepth != null ||
+            ratingIntellectualAbility != null ||
+            ratingResearchPotential != null ||
+            ratingMotivation != null ||
+            ratingCommunication != null ||
+            ratingLeadership != null ||
+            ratingCollaboration != null ||
+            overallRecommendation != null
         );
     }
 
