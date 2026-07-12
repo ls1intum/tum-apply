@@ -99,7 +99,7 @@
       "documentTypeMaster": "Master Transcript",
       "documentTypeCV": "Curriculum Vitae",
       "documentTypeReference": "Recommendation Letter",
-      "documentTypeReferenceLetter": "Recommendation Letter - {name}",
+      "documentTypeReferenceLetter": "Recommendation Letter &ndash; {name}",
       "referenceLetterStatus": "Recommendation Letter Status",
       "referenceStatus": {
         "requested": "(requested)",
