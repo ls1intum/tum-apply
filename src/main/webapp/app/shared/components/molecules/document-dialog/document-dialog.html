@@ -32,9 +32,9 @@
               (keydown.space)="selectDoc(item.document.id); $event.preventDefault()"
             >
               @if (item.shouldTranslateLabel) {
-                <span class="break-words" [jhiTranslate]="item.label" [translateValues]="item.labelParams ?? {}"></span>
+                <span class="break-words hyphens-auto" [jhiTranslate]="item.label" [translateValues]="item.labelParams ?? {}"></span>
               } @else {
-                <span class="break-words">{{ item.label }}</span>
+                <span class="break-words hyphens-auto">{{ item.label }}</span>
               }
             </div>
           </li>
