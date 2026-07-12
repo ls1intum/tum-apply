@@ -46,6 +46,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import tools.jackson.core.type.TypeReference;
@@ -295,27 +297,14 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
             );
         }
 
-        @Test
-        void shouldReject400WhenAssessmentSentForLetterOnlyJob() {
-            setJobRecommendationType(RecommendationType.LETTER_ONLY);
-            savedRequestedEntry("extra-assessment-token");
+        @ParameterizedTest(name = "Should reject 400 when invalid payload is sent for {0} job")
+        @EnumSource(value = RecommendationType.class, names = {"LETTER_ONLY", "EVALUATION_ONLY"})
+        void shouldReject400WhenMismatchPayloadSent(RecommendationType type) {
+            setJobRecommendationType(type);
+            savedRequestedEntry("token");
 
             api.multipartPostAndRead(
-                String.format(CONTEXT_URL, "extra-assessment-token"),
-                List.of(pdf("letter.pdf")),
-                assessmentParams(),
-                new TypeReference<>() {},
-                400
-            );
-        }
-
-        @Test
-        void shouldReject400WhenLetterSentForEvaluationOnlyJob() {
-            setJobRecommendationType(RecommendationType.EVALUATION_ONLY);
-            savedRequestedEntry("extra-letter-token");
-
-            api.multipartPostAndRead(
-                String.format(CONTEXT_URL, "extra-letter-token"),
+                String.format(CONTEXT_URL, "token"),
                 List.of(pdf("letter.pdf")),
                 assessmentParams(),
                 new TypeReference<>() {},
