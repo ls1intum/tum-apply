@@ -393,7 +393,7 @@
       }
     },
     "applicationReferences": {
-      "description": "Please list your recommenders below. Upon submission, they will be emailed a secure link to {type, select, LETTER_ONLY {upload a recommendation letter} EVALUATION_ONLY {complete a short structured evaluation of you} other {submit their recommendation}}.",
+      "description": "Please list your recommenders below. Upon application submission, they will be emailed a secure link to {type, select, LETTER_ONLY {upload a recommendation letter} EVALUATION_ONLY {complete a short structured evaluation of you} other {submit their recommendation}}.",
       "manageDescription": "Edit, add, or remove your recommenders below until the application deadline. Changing a recommender's email sends a fresh invitation to the new address. Recommenders who have already submitted their recommendation can no longer be changed.",
       "requiredCount": "Required: {count} · Added: ",
       "empty": "No recommenders added yet.",
