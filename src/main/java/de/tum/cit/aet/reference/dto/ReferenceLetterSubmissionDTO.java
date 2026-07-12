@@ -5,6 +5,8 @@ import de.tum.cit.aet.reference.constants.AcquaintanceDuration;
 import de.tum.cit.aet.reference.constants.OverallRecommendation;
 import de.tum.cit.aet.reference.constants.PeerRating;
 import de.tum.cit.aet.reference.constants.RefereeRelationship;
+import java.util.Objects;
+import java.util.stream.Stream;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -38,48 +40,42 @@ public record ReferenceLetterSubmissionDTO(
     MultipartFile letter
 ) {
     /**
-     * Returns true when every structured assessment answer is present.
-     *
      * @return true when all assessment fields are filled in
      */
     public boolean hasCompleteAssessment() {
-        return (
-            relationship != null &&
-            acquaintanceDuration != null &&
-            acquaintanceDepth != null &&
-            ratingIntellectualAbility != null &&
-            ratingResearchPotential != null &&
-            ratingMotivation != null &&
-            ratingCommunication != null &&
-            ratingLeadership != null &&
-            ratingCollaboration != null &&
-            overallRecommendation != null
-        );
+        return Stream.of(
+            relationship,
+            acquaintanceDuration,
+            acquaintanceDepth,
+            ratingIntellectualAbility,
+            ratingResearchPotential,
+            ratingMotivation,
+            ratingCommunication,
+            ratingLeadership,
+            ratingCollaboration,
+            overallRecommendation
+        ).allMatch(Objects::nonNull);
     }
 
     /**
-     * Returns true when at least one structured assessment answer is present.
-     *
      * @return true when any assessment field is filled in
      */
     public boolean hasAnyAssessmentAnswer() {
-        return (
-            relationship != null ||
-            acquaintanceDuration != null ||
-            acquaintanceDepth != null ||
-            ratingIntellectualAbility != null ||
-            ratingResearchPotential != null ||
-            ratingMotivation != null ||
-            ratingCommunication != null ||
-            ratingLeadership != null ||
-            ratingCollaboration != null ||
-            overallRecommendation != null
-        );
+        return Stream.of(
+            relationship,
+            acquaintanceDuration,
+            acquaintanceDepth,
+            ratingIntellectualAbility,
+            ratingResearchPotential,
+            ratingMotivation,
+            ratingCommunication,
+            ratingLeadership,
+            ratingCollaboration,
+            overallRecommendation
+        ).anyMatch(Objects::nonNull);
     }
 
     /**
-     * Returns true when a letter file was uploaded with the submission.
-     *
      * @return true when a non-empty letter file is present
      */
     public boolean hasLetter() {
