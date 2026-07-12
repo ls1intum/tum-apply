@@ -128,7 +128,13 @@ export class ReferenceLetterUploadComponent {
 
   /** True while the interactive upload form is shown; the template widens the layout for the rating grid. */
   protected readonly showUploadView = computed(
-    () => !this.loading() && this.errorKey() === undefined && !this.declined() && !this.alreadySubmitted() && !this.expired(),
+    () =>
+      !this.loading() &&
+      this.errorKey() === undefined &&
+      !this.declined() &&
+      !this.alreadySubmitted() &&
+      !this.expired() &&
+      this.recommendationType() !== RecommendationType.LetterOnly,
   );
 
   private readonly requiredKeys = [
