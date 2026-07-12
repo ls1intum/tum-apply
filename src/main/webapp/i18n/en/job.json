@@ -516,6 +516,7 @@
       "fundingType": "Funding Type",
       "tvlGrade": "TV-L Grade",
       "referenceLetters": "Required Recommendations",
+      "recommendationType": "Recommendation Type",
       "startDate": "Start Date",
       "applicationEndDate": "Application End Date"
     },

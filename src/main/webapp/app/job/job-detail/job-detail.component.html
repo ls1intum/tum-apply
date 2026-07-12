@@ -176,10 +176,13 @@
                   <span jhiTranslate="jobDetailPage.labels.referenceLetters"></span>
                   <span class="value">
                     {{ job.referenceLettersRequired }}
-                    @if (dropDownOptions.getRecommendationTypeTranslationKey(job.recommendationType); as typeKey) {
-                      · {{ typeKey | translate }}
-                    }
                   </span>
+                </div>
+                <div class="info-row">
+                  <span jhiTranslate="jobDetailPage.labels.recommendationType"></span>
+                  <span class="value">{{
+                    (dropDownOptions.getRecommendationTypeTranslationKey(job.recommendationType) | translate) || '-'
+                  }}</span>
                 </div>
               }
               <div class="info-row">
