@@ -394,7 +394,7 @@
     },
     "applicationReferences": {
       "description": "Please list your recommenders below. Upon submission, they will be emailed a secure link to upload their recommendation letter.",
-      "manageDescription": "Edit, add, or remove your recommenders below until the application deadline. Changing a recommender's email sends a fresh invitation to the new address. Recommenders who have already submitted their letter can no longer be changed.",
+      "manageDescription": "Edit, add, or remove your recommenders below until the application deadline. Changing a recommender's email sends a fresh invitation to the new address.",
       "requiredCount": "Required: {count} · Added: ",
       "empty": "No recommenders added yet.",
       "section": {
