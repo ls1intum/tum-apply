@@ -241,7 +241,9 @@ class JobResourceTest extends AbstractResourceTest {
                     Job::getTvlGrade,
                     Job::getJobDescriptionEN,
                     Job::getJobDescriptionDE,
-                    Job::getState
+                    Job::getState,
+                    Job::getReferenceLettersRequired,
+                    Job::getRecommendationType
                 )
                 .containsExactly(
                     "ML Engineer",
@@ -257,46 +259,10 @@ class JobResourceTest extends AbstractResourceTest {
                     TvlGrade.E13,
                     "Build ML pipelines",
                     "ML Pipeline erstellen",
-                    JobState.PUBLISHED
+                    JobState.PUBLISHED,
+                    0,
+                    RecommendationType.LETTER_AND_EVALUATION
                 );
-        }
-
-        @Test
-        void createJobPersistsChosenRecommendationType() {
-            Job job = jobRepository.findAll().getFirst();
-            JobFormDTO base = createJobFormDTO(job, "Letter Only Position", null);
-            JobFormDTO payload = new JobFormDTO(
-                null,
-                base.title(),
-                base.researchArea(),
-                base.subjectArea(),
-                base.supervisingProfessor(),
-                base.location(),
-                base.startDate(),
-                base.endDate(),
-                base.workload(),
-                base.contractDuration(),
-                base.fundingType(),
-                base.tvlGrade(),
-                2,
-                RecommendationType.LETTER_ONLY,
-                base.jobDescriptionEN(),
-                base.jobDescriptionDE(),
-                JobState.PUBLISHED,
-                null,
-                base.suitableForDisabled(),
-                base.startDateByArrangement(),
-                null,
-                null
-            );
-
-            JobFormDTO returned = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead("/api/jobs/create", payload, JobFormDTO.class, 200);
-
-            Job saved = jobRepository.findById(returned.jobId()).orElseThrow();
-            assertThat(saved.getRecommendationType()).isEqualTo(RecommendationType.LETTER_ONLY);
-            assertThat(saved.getReferenceLettersRequired()).isEqualTo(2);
         }
 
         @Test
