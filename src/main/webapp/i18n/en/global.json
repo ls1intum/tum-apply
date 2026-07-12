@@ -726,10 +726,10 @@
         },
         "options": {
           "top1to2": "Top 1–2% (truly exceptional)",
-          "top5": "Top 5% (outstanding)",
-          "top10": "Top 10% (excellent)",
-          "top25": "Top 25% (very good)",
-          "top50": "Top 50% (good)",
+          "top5": "Top 5% <wbr>(outstanding)",
+          "top10": "Top 10% <wbr>(excellent)",
+          "top25": "Top 25% <wbr>(very good)",
+          "top50": "Top 50% <wbr>(good)",
           "belowAverage": "Below average",
           "cannotJudge": "Cannot judge"
         }

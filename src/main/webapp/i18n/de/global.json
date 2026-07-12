@@ -725,19 +725,19 @@
           "collaboration": "Teamfähigkeit"
         },
         "options": {
-          "top1to2": "Top 1–2 % (herausragend)",
-          "top5": "Top 5 % (außergewöhnlich)",
-          "top10": "Top 10 % (exzellent)",
-          "top25": "Top 25 % (sehr gut)",
-          "top50": "Top 50 % (gut)",
-          "belowAverage": "Unterdurchschnittlich",
-          "cannotJudge": "Keine Einschätzung möglich"
+          "top1to2": "Top 1–2% <wbr>(einzigartig)",
+          "top5": "Top 5% <wbr>(herausragend)",
+          "top10": "Top 10% <wbr>(exzellent)",
+          "top25": "Top 25% <wbr>(sehr gut)",
+          "top50": "Top 50% <wbr>(gut)",
+          "belowAverage": "Unterdurch&shy;schnittlich",
+          "cannotJudge": "Einschätzung nicht möglich"
         }
       },
       "overall": {
         "label": "Gesamtempfehlung",
         "options": {
-          "highestEnthusiasm": "Empfehlung mit höchstem Nachdruck",
+          "highestEnthusiasm": "Empfehlung mit größter Begeisterung",
           "stronglyRecommend": "Nachdrückliche Empfehlung",
           "recommend": "Empfehlung",
           "recommendWithReservations": "Empfehlung mit Vorbehalten",
