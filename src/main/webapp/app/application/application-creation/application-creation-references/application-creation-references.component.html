@@ -1,63 +1,65 @@
 <p class="mb-2" [jhiTranslate]="descriptionKey()"></p>
 <p class="mb-4 text-xs text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
 
-<form [formGroup]="addForm" class="flex flex-wrap items-center gap-3 w-full" (ngSubmit)="onSubmit()">
-  <div class="grid grid-cols-1 md:gap-3 w-full max-w-4xl lg:grid-cols-16">
-    <jhi-select
-      label="entity.applicationReferences.label.title"
-      [items]="titleOptions"
-      [selected]="selectedTitleOption()"
-      [showClear]="true"
-      (selectedChange)="onTitleSelected($event)"
-      class="mb-6 lg:col-span-3"
-    />
-
-    <jhi-string-input
-      label="entity.applicationReferences.label.firstName"
-      [control]="addForm.controls.firstName"
-      [required]="true"
-      width="100%"
-      class="lg:col-span-4"
-    />
-
-    <jhi-string-input
-      label="entity.applicationReferences.label.lastName"
-      [control]="addForm.controls.lastName"
-      [required]="true"
-      width="100%"
-      class="lg:col-span-4"
-    />
-
-    <jhi-string-input
-      label="entity.applicationReferences.label.email"
-      [control]="addForm.controls.email"
-      [required]="true"
-      width="100%"
-      class="lg:col-span-5"
-    />
-  </div>
-
-  <div class="flex gap-2 flex-grow justify-end 2xl:justify-start">
-    @if (editingId()) {
-      <jhi-button
-        type="button"
-        severity="primary"
-        variant="outlined"
-        icon="xmark"
-        [disabled]="loading()"
-        label="button.cancel"
-        [shouldTranslate]="true"
-        (click)="onCancelEdit()"
+<form [formGroup]="addForm" class="@container" (ngSubmit)="onSubmit()">
+  <div class="flex flex-col gap-3 @6xl:flex-row @6xl:items-center">
+    <div class="grid grid-cols-1 md:gap-3 w-full @6xl:max-w-4xl lg:grid-cols-16">
+      <jhi-select
+        label="entity.applicationReferences.label.title"
+        [items]="titleOptions"
+        [selected]="selectedTitleOption()"
+        [showClear]="true"
+        (selectedChange)="onTitleSelected($event)"
+        class="mb-6 lg:col-span-3"
       />
-    }
-    <jhi-button
-      type="submit"
-      severity="primary"
-      [icon]="editingId() ? 'check' : applicationCreation() ? 'plus' : 'paper-plane'"
-      [disabled]="addForm.invalid || loading()"
-      [label]="editingId() ? 'button.save' : applicationCreation() ? 'entity.applicationReferences.button.add' : 'button.request'"
-      [shouldTranslate]="true"
-    />
+
+      <jhi-string-input
+        label="entity.applicationReferences.label.firstName"
+        [control]="addForm.controls.firstName"
+        [required]="true"
+        width="100%"
+        class="lg:col-span-4"
+      />
+
+      <jhi-string-input
+        label="entity.applicationReferences.label.lastName"
+        [control]="addForm.controls.lastName"
+        [required]="true"
+        width="100%"
+        class="lg:col-span-4"
+      />
+
+      <jhi-string-input
+        label="entity.applicationReferences.label.email"
+        [control]="addForm.controls.email"
+        [required]="true"
+        width="100%"
+        class="lg:col-span-5"
+      />
+    </div>
+
+    <div class="flex gap-2 self-end @6xl:self-auto">
+      @if (editingId()) {
+        <jhi-button
+          type="button"
+          severity="primary"
+          variant="outlined"
+          icon="xmark"
+          [disabled]="loading()"
+          label="button.cancel"
+          [shouldTranslate]="true"
+          (click)="onCancelEdit()"
+        />
+      }
+      <jhi-button
+        type="submit"
+        severity="primary"
+        [icon]="editingId() ? 'check' : applicationCreation() ? 'plus' : 'paper-plane'"
+        [disabled]="addForm.invalid || loading()"
+        [label]="editingId() ? 'button.save' : applicationCreation() ? 'entity.applicationReferences.button.add' : 'button.request'"
+        [shouldTranslate]="true"
+      />
+    </div>
   </div>
 </form>
 
