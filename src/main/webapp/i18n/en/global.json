@@ -671,6 +671,7 @@
     }
   },
   "reference": {
+    "referenceLetter": "Recommendation Letter",
     "title": {
       "LETTER_ONLY": "Upload your recommendation letter",
       "EVALUATION_ONLY": "Evaluate the applicant",

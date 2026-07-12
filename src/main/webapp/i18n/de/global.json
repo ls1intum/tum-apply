@@ -671,6 +671,7 @@
     }
   },
   "reference": {
+    "referenceLetter": "Empfehlungsschreiben",
     "title": {
       "LETTER_ONLY": "Empfehlungsschreiben hochladen",
       "EVALUATION_ONLY": "Bewerbende Person einschätzen",

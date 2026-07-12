@@ -180,6 +180,10 @@
       @if (letterRequired()) {
         <!-- Upload control -->
         <div class="flex flex-col gap-4 border border-border-default rounded-lg p-6 bg-background-surface">
+          <div class="text-sm text-text-secondary uppercase font-semibold">
+            <span jhiTranslate="reference.referenceLetter">Recommendation Letter</span>
+            <span class="required ml-0.5">*</span>
+          </div>
           <jhi-upload-button
             [documentType]="documentType"
             [allowMultiple]="false"
