@@ -53,9 +53,9 @@
     <jhi-button
       type="submit"
       severity="primary"
-      [icon]="editingId() ? 'check' : 'plus'"
+      [icon]="editingId() ? 'check' : applicationCreation() ? 'plus' : 'paper-plane'"
       [disabled]="addForm.invalid || loading()"
-      [label]="editingId() ? 'button.save' : 'entity.applicationReferences.button.add'"
+      [label]="editingId() ? 'button.save' : applicationCreation() ? 'entity.applicationReferences.button.add' : 'button.request'"
       [shouldTranslate]="true"
     />
   </div>
