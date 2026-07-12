@@ -136,7 +136,9 @@ export default class ApplicationCreationReferencesComponent {
     try {
       const created = await firstValueFrom(this.referenceApi.add(this.applicationId(), this.buildPayload()));
       this.references.update(list => list.concat(created));
-      this.toastService.showSuccessKey(`${TOAST_PREFIX}.toast.emailSent`);
+      if (!this.applicationCreation()) {
+        this.toastService.showSuccessKey(`${TOAST_PREFIX}.toast.emailSent`);
+      }
       this.referencesChanged.emit(this.references());
       this.resetForm();
     } catch {

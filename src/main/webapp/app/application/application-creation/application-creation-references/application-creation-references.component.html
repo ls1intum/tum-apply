@@ -95,12 +95,14 @@
             }
             @case ('REQUESTED') {
               <span class="text-text-secondary" jhiTranslate="entity.application_detail.reference_status.requested">Requested</span>
-              <jhi-button severity="primary" variant="text" icon="pencil" [disabled]="loading()" (click)="onEdit(reference)" />
-              <jhi-button severity="danger" variant="text" icon="trash" [disabled]="loading()" (click)="onRemove(reference)" />
             }
             @case ('DECLINED') {
               <span class="text-negative-default" jhiTranslate="entity.application_detail.reference_status.declined">Declined</span>
             }
+          }
+          @if (reference.status === 'REQUESTED' || reference.status === 'ADDED') {
+            <jhi-button severity="primary" variant="text" icon="pencil" [disabled]="loading()" (click)="onEdit(reference)" />
+            <jhi-button severity="danger" variant="text" icon="trash" [disabled]="loading()" (click)="onRemove(reference)" />
           }
         </div>
       </li>
