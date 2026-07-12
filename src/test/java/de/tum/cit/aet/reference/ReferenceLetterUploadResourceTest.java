@@ -298,7 +298,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
         }
 
         @ParameterizedTest(name = "Should reject 400 when invalid payload is sent for {0} job")
-        @EnumSource(value = RecommendationType.class, names = {"LETTER_ONLY", "EVALUATION_ONLY"})
+        @EnumSource(value = RecommendationType.class, names = { "LETTER_ONLY", "EVALUATION_ONLY" })
         void shouldReject400WhenMismatchPayloadSent(RecommendationType type) {
             setJobRecommendationType(type);
             savedRequestedEntry("token");

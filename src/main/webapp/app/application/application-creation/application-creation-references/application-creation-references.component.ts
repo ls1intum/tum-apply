@@ -63,10 +63,9 @@ export default class ApplicationCreationReferencesComponent {
   loading = signal<boolean>(false);
   readonly editingId = signal<string | undefined>(undefined);
 
-  /** Translation key describing what the recommenders will be asked to provide, or undefined when the type is unknown. */
-  readonly expectationKey = computed(() => {
+  readonly descriptionParams = computed(() => {
     const type = this.recommendationType();
-    return type ? `entity.applicationReferences.expectation.${type}` : undefined;
+    return { type: type ?? 'other' };
   });
 
   readonly titleOptions: SelectOption[] = TITLE_OPTIONS.map(value => ({ name: value, value }));
