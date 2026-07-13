@@ -254,6 +254,7 @@
       "personal_documents": "Personal Documents",
       "references": "Recommendation Letters",
       "reference_requests": "Requests",
+      "reference_requests_missing": "{count} of {required} requested",
       "reference_status": {
         "added": "(added)",
         "requested": "(requested)",
@@ -394,7 +395,7 @@
     },
     "applicationReferences": {
       "description": "Please list your recommenders below. Upon application submission, they will be emailed a secure link to {type, select, LETTER_ONLY {upload a recommendation letter} EVALUATION_ONLY {complete a short structured evaluation of you} other {submit their recommendation}}.",
-      "manageDescription": "Edit, add, or remove your recommenders below until the application deadline. Changing a recommender's email sends a fresh invitation to the new address. Recommenders who have already submitted their recommendation can no longer be changed.",
+      "manageDescription": "Edit, add, or remove your recommenders below until the application deadline. Changing a recommender's email sends a fresh invitation to the new address.",
       "requiredCount": "Required: {count} · Added: ",
       "empty": "No recommenders added yet.",
       "section": {
@@ -411,6 +412,10 @@
       },
       "confidentialWaiver": "I waive my right to access the submitted recommendations. Only the supervisor can read them.",
       "toast": {
+        "emailSent": {
+          "summary": "Invitation sent",
+          "detail": "An invitation to submit a recommendation has been sent to the recommender."
+        },
         "loadFailed": {
           "summary": "Could not load recommenders",
           "detail": "Failed to load the list of recommenders. Please reload the page."

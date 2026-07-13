@@ -254,6 +254,7 @@
       "personal_documents": "Persönliche Dokumente",
       "references": "Empfehlungsschreiben",
       "reference_requests": "Anfragen",
+      "reference_requests_missing": "{count} von {required} angefragt",
       "reference_status": {
         "added": "(hinzugefügt)",
         "requested": "(angefragt)",
@@ -394,7 +395,7 @@
     },
     "applicationReferences": {
       "description": "Bitte gib unten deine Referenzpersonen an. Nach Einreichen der Bewerbung erhalten diese einen sicheren Link per E-Mail, um {type, select, LETTER_ONLY {ein Empfehlungsschreiben hochzuladen} EVALUATION_ONLY {eine kurze strukturierte Einschätzung zu dir abzugeben} other {ihre Empfehlung einzureichen}}.",
-      "manageDescription": "Bearbeite, ergänze oder entferne deine Referenzpersonen unten bis zur Bewerbungsfrist. Das Ändern der E-Mail-Adresse einer Referenzperson führt zum Versand einer neuen Einladung an die neue Adresse. Referenzpersonen, die ihre Empfehlung bereits eingereicht haben, können nicht mehr geändert werden.",
+      "manageDescription": "Bearbeite, ergänze oder entferne deine Referenzpersonen unten bis zur Bewerbungsfrist. Das Ändern der E-Mail-Adresse einer Referenzperson führt zum Versand einer neuen Einladung an die neue Adresse.",
       "requiredCount": "Benötigt: {count} · Hinzugefügt: ",
       "empty": "Noch keine Referenzpersonen hinzugefügt.",
       "section": {
@@ -411,6 +412,10 @@
       },
       "confidentialWaiver": "Ich verzichte auf Einsicht in die eingereichten Empfehlungen. Nur die betreuende Person kann sie lesen.",
       "toast": {
+        "emailSent": {
+          "summary": "Einladung versendet",
+          "detail": "Eine Einladung zur Einreichung einer Empfehlung wurde an die Referenzperson gesendet."
+        },
         "loadFailed": {
           "summary": "Referenzperson konnten nicht geladen werden",
           "detail": "Die Liste der Referenzpersonen konnte nicht geladen werden. Bitte lade die Seite neu."

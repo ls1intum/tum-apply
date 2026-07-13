@@ -275,6 +275,15 @@
           <div class="section-card-header">
             <fa-icon [icon]="['fas', 'envelope']" class="icon" />
             <h3 class="section-card-title" jhiTranslate="entity.application_detail.reference_requests"></h3>
+            @if (canManageReferences() && referencesMissing()) {
+              <jhi-tag
+                class="ml-auto"
+                color="warn"
+                [icon]="faExclamationTriangle"
+                text="entity.application_detail.reference_requests_missing"
+                [translationParams]="{ count: requestedOrSubmittedCount(), required: referenceLettersRequired() }"
+              />
+            }
           </div>
           <div class="section-card-body ml-2">
             <p class="flex mb-3">
@@ -296,6 +305,7 @@
                 [preloadedReferences]="application.references ?? []"
                 descriptionKey="entity.applicationReferences.manageDescription"
                 [applicationCreation]="false"
+                (referencesChanged)="onReferencesChanged($event)"
               />
             } @else {
               <ul class="list-disc list-inside marker:text-primary">
