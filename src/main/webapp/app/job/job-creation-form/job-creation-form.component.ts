@@ -192,6 +192,11 @@ export class JobCreationFormComponent {
   /** The target language of the active translation, or undefined if idle */
   translationTargetLang = signal<Language | undefined>(undefined);
 
+  /** Whether the editor currently shows the language being translated (AI-streamed content). */
+  readonly isViewingTranslationTarget = computed(
+    () => this.isTranslating() && this.translationTargetLang() === this.currentDescriptionLanguage(),
+  );
+
   /** AbortController for cancelling active translation streams */
   private translationAbortController: AbortController | undefined;
 
@@ -656,6 +661,27 @@ export class JobCreationFormComponent {
     this.translationTargetLang.set(undefined);
   }
 
+  /**
+   * Clears the transient translation state for a run, but only when it is still
+   * the active one. A newer translation that superseded this run owns the state.
+   *
+   * @param abortController - The AbortController created for this run
+   * @param activeRequest - The dedup descriptor created for this run
+   */
+  private clearTranslationState(
+    abortController: AbortController,
+    activeRequest: { sourceLang: Language; sourceText: string; targetLang: Language },
+  ): void {
+    if (this.translationAbortController === abortController) {
+      this.isTranslating.set(false);
+      this.translationTargetLang.set(undefined);
+      this.translationAbortController = undefined;
+    }
+    if (this.activeTranslationRequest === activeRequest) {
+      this.activeTranslationRequest = undefined;
+    }
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // LANGUAGE SWITCHING METHODS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -670,11 +696,13 @@ export class JobCreationFormComponent {
     const currentLang = this.currentDescriptionLanguage();
     if (newLang === currentLang) return;
 
-    // If a save is pending, flush it immediately so we don't lose text.
-    // syncCurrentEditorIntoLanguageSignals copies the editor HTML into the
-    // language signal, but the languageChangeEffect below sets the form
-    // value with emitEvent:false — so the autosave effect won't re-trigger.
-    void this.autoSave.flush();
+    // Only flush when there are unsaved edits. A pure view switch must not start
+    // a save/translation cycle — otherwise toggling languages re-translates even
+    // though the content never changed. When edits are pending, flushing runs
+    // syncCurrentEditorIntoLanguageSignals to preserve them before the switch.
+    if (this.autoSave.hasPending()) {
+      void this.autoSave.flush();
+    }
 
     this.currentDescriptionLanguage.set(newLang);
   }
@@ -1709,61 +1737,60 @@ export class JobCreationFormComponent {
         abortController.signal,
       );
 
-      if (accumulatedContent) {
-        const finalContent = this.extractTranslatedTextFromStream(accumulatedContent);
+      const finalContent = accumulatedContent ? this.extractTranslatedTextFromStream(accumulatedContent) : undefined;
+      let hasTranslation = false;
 
-        if (finalContent && finalContent.length > 0) {
-          // 5) Update the target language signal and translation baselines
-          if (targetLang === 'en') {
-            this.jobDescriptionEN.set(finalContent);
-            this.lastTranslatedEN.set(finalContent);
-            this.lastTranslatedDE.set(text);
-          } else {
-            this.jobDescriptionDE.set(finalContent);
-            this.lastTranslatedDE.set(finalContent);
-            this.lastTranslatedEN.set(text);
-          }
+      if (finalContent && finalContent.length > 0) {
+        hasTranslation = true;
+        // 5) Update the target language signal and translation baselines
+        if (targetLang === 'en') {
+          this.jobDescriptionEN.set(finalContent);
+          this.lastTranslatedEN.set(finalContent);
+          this.lastTranslatedDE.set(text);
+        } else {
+          this.jobDescriptionDE.set(finalContent);
+          this.lastTranslatedDE.set(finalContent);
+          this.lastTranslatedEN.set(text);
+        }
 
-          // 6) If user is viewing the target language, finalize the editor
-          if (this.currentDescriptionLanguage() === targetLang) {
-            this.basicInfoForm.get('jobDescription')?.setValue(finalContent, { emitEvent: false });
-            this.jobDescriptionSignal.set(finalContent);
-            this.jobDescriptionEditor()?.forceUpdate(finalContent);
-          }
+        // 6) If user is viewing the target language, finalize the editor
+        if (this.currentDescriptionLanguage() === targetLang) {
+          this.basicInfoForm.get('jobDescription')?.setValue(finalContent, { emitEvent: false });
+          this.jobDescriptionSignal.set(finalContent);
+          this.jobDescriptionEditor()?.forceUpdate(finalContent);
+        }
+      }
 
-          // 7) Persist the translated content and run target compliance analysis.
-          //    Set isAnalyzing BEFORE the finally block clears isTranslating,
-          //    so isScoreLoading never drops to false between the two states.
-          const jobId = this.jobId();
-          if (jobId) {
-            try {
-              const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
-              const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
-              this.lastSavedData.set(saved);
-              this.isAnalyzing.set(true);
-              await this.analyzeAndUpdateScore(targetLang);
-            } catch {
-              // Silent save failure — will be caught by next autosave
-            }
-          }
+      // 7) Streaming is done. For the active run, hand off from "translating" to
+      //    "analyzing": pre-set isAnalyzing so the sidebar score keeps loading,
+      //    then clear the translation spinner so the editor shows the finished
+      //    translation immediately instead of waiting for compliance analysis.
+      const jobId = this.jobId();
+      const runAnalysis = this.translationAbortController === abortController && hasTranslation && !!jobId;
+      if (runAnalysis) {
+        this.isAnalyzing.set(true);
+      }
+      this.clearTranslationState(abortController, activeRequest);
+
+      // 8) Persist the translated content and run compliance analysis for the
+      //    freshly translated language, decoupled from the translation spinner.
+      if (runAnalysis) {
+        try {
+          const currentData = this.createJobDTO(JobFormDTOStateEnum.Draft);
+          const saved = await firstValueFrom(this.jobApi.updateJob(jobId, currentData));
+          this.lastSavedData.set(saved);
+          await this.analyzeAndUpdateScore(targetLang);
+        } catch {
+          // Silent save failure — will be caught by next autosave
+          this.isAnalyzing.set(false);
         }
       }
     } catch (e) {
+      this.clearTranslationState(abortController, activeRequest);
       if (e instanceof DOMException && e.name === 'AbortError') {
         return; // Cancelled — silently ignore
       }
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiTranslationFailed');
-    } finally {
-      // 8) Clear translation state only if this is still the active run
-      if (this.translationAbortController === abortController) {
-        this.isTranslating.set(false);
-        this.translationTargetLang.set(undefined);
-        this.translationAbortController = undefined;
-      }
-      // Clear only if this is still the same request.
-      if (this.activeTranslationRequest === activeRequest) {
-        this.activeTranslationRequest = undefined;
-      }
     }
   }
 

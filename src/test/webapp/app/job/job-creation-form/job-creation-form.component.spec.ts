@@ -95,6 +95,8 @@ type ComponentPrivate = {
   extractJobDescriptionFromStream: (content: string) => string | null;
   loadSupervisingProfessors: () => Promise<void>;
   setDefaultSupervisingProfessor: (preselectId?: string) => void;
+  translateAndStoreOtherLanguage: (currentLang: 'en' | 'de', currentText: string) => Promise<void>;
+  analyzeAndUpdateScore: (lang: string) => Promise<void>;
 };
 
 function getPrivate(component: JobCreationFormComponent): ComponentPrivate {
@@ -662,6 +664,72 @@ describe('JobCreationFormComponent', () => {
       mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('fail'));
       await component.generateJobApplicationDraft();
       expect(cancelSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Language switching', () => {
+    it('should not run a save when switching languages with no pending edits', () => {
+      getPrivate(component).autoSaveInitialized = true;
+      component.autoSave.reset();
+      component.currentDescriptionLanguage.set('en');
+      const flushSpy = vi.spyOn(component.autoSave, 'flush');
+
+      component.changeDescriptionLanguage('de');
+
+      expect(flushSpy).not.toHaveBeenCalled();
+      expect(component.currentDescriptionLanguage()).toBe('de');
+    });
+
+    it('should flush pending edits before switching languages', () => {
+      getPrivate(component).autoSaveInitialized = true;
+      component.currentDescriptionLanguage.set('en');
+      component.autoSave.notifyChanged();
+      const flushSpy = vi.spyOn(component.autoSave, 'flush').mockResolvedValue();
+
+      component.changeDescriptionLanguage('de');
+
+      expect(flushSpy).toHaveBeenCalledOnce();
+      expect(component.currentDescriptionLanguage()).toBe('de');
+    });
+  });
+
+  describe('Translation and compliance', () => {
+    it('should clear the translation spinner once streaming ends, before compliance analysis finishes', async () => {
+      component.jobId.set('job1');
+      component.currentDescriptionLanguage.set('en');
+      component.lastTranslatedEN.set('');
+      mockAiStreamingService.translateJobDescriptionStream.mockResolvedValue('{"translatedText":"<p>Hallo</p>"}');
+
+      let resolveAnalysis!: () => void;
+      const analysisDone = new Promise<void>(resolve => {
+        resolveAnalysis = resolve;
+      });
+      const analyzeSpy = vi.spyOn(getPrivate(component), 'analyzeAndUpdateScore').mockImplementation(async () => {
+        await analysisDone;
+        component.isAnalyzing.set(false);
+      });
+
+      const promise = getPrivate(component).translateAndStoreOtherLanguage('en', 'Hello EN');
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(component.isTranslating()).toBe(false);
+      expect(component.isAnalyzing()).toBe(true);
+      expect(analyzeSpy).toHaveBeenCalledWith('de');
+
+      resolveAnalysis();
+      await promise;
+      expect(component.isAnalyzing()).toBe(false);
+    });
+
+    it('should skip translation when the source text matches the last translated baseline', async () => {
+      component.jobId.set('job1');
+      component.currentDescriptionLanguage.set('en');
+      component.lastTranslatedEN.set('Hello EN');
+
+      await getPrivate(component).translateAndStoreOtherLanguage('en', 'Hello EN');
+
+      expect(mockAiStreamingService.translateJobDescriptionStream).not.toHaveBeenCalled();
+      expect(component.isTranslating()).toBe(false);
     });
   });
 });
