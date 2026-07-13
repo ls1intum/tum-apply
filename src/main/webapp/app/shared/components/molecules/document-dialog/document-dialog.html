@@ -29,9 +29,9 @@
               (click)="selectDoc(item.document.id)"
             >
               @if (item.shouldTranslateLabel) {
-                <span class="block truncate" [jhiTranslate]="item.label" [translateValues]="item.labelParams ?? {}"></span>
+                <span class="break-words hyphens-auto" [jhiTranslate]="item.label" [translateValues]="item.labelParams ?? {}"></span>
               } @else {
-                <span class="block truncate">{{ item.label }}</span>
+                <span class="break-words hyphens-auto">{{ item.label }}</span>
               }
             </button>
           </li>
