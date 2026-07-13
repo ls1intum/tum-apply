@@ -148,8 +148,7 @@ describe('EditorComponent', () => {
       vi.spyOn(comp, 'formControl').mockReturnValue(ctrl);
       vi.spyOn(comp as unknown as { hasFormControl: () => boolean }, 'hasFormControl').mockReturnValue(true);
 
-      const highlighted =
-        '<p>Hello <span class="compliance-highlight border-b-2" data-category="CRITICAL_AGG">young</span> world</p>';
+      const highlighted = '<p>Hello <span class="compliance-highlight border-b-2" data-category="CRITICAL_AGG">young</span> world</p>';
       (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(makeEditorEvent(highlighted));
 
       expect(ctrl.value).toBe('<p>Hello young world</p>');
