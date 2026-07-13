@@ -3099,6 +3099,7 @@ components:
         jobTitle: {type: string}
         motivation: {type: string}
         projects: {type: string}
+        recommendationType: {$ref: '#/components/schemas/RecommendationType'}
         referenceLettersConfidential: {type: boolean}
         referenceLettersRequired: {type: integer, format: int32}
         references:
@@ -3579,6 +3580,7 @@ components:
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
         professorName: {type: string}
+        recommendationType: {$ref: '#/components/schemas/RecommendationType'}
         referenceLettersRequired: {type: integer, format: int32}
         relativeTimeEnglish: {type: string}
         relativeTimeGerman: {type: string}
@@ -3621,6 +3623,7 @@ components:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
+        recommendationType: {$ref: '#/components/schemas/RecommendationType'}
         referenceLettersRequired: {type: integer, format: int32}
         researchArea: {type: string}
         startDate: {type: string, format: date}
@@ -3673,6 +3676,7 @@ components:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
+        recommendationType: {$ref: '#/components/schemas/RecommendationType'}
         referenceLettersRequired: {type: integer, format: int32}
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroupSummaryDTO'}
@@ -3745,6 +3749,7 @@ components:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
+        recommendationType: {$ref: '#/components/schemas/RecommendationType'}
         referenceLettersRequired: {type: integer, format: int32}
         researchArea: {type: string}
         startDate: {type: string, format: date}
@@ -4018,6 +4023,9 @@ components:
           type: array
           items: {$ref: '#/components/schemas/RatingDTO'}
           uniqueItems: true
+    RecommendationType:
+      type: string
+      enum: [LETTER_ONLY, EVALUATION_ONLY, LETTER_AND_EVALUATION]
     RefereeContactDTO:
       type: object
       properties:
@@ -4044,9 +4052,6 @@ components:
         ratingMotivation: {$ref: '#/components/schemas/PeerRating'}
         ratingResearchPotential: {$ref: '#/components/schemas/PeerRating'}
         relationship: {$ref: '#/components/schemas/RefereeRelationship'}
-      required: [acquaintanceDepth, acquaintanceDuration, letter, overallRecommendation,
-        ratingCollaboration, ratingCommunication, ratingIntellectualAbility, ratingLeadership,
-        ratingMotivation, ratingResearchPotential, relationship]
     ReferenceLetterUploadContextDTO:
       type: object
       properties:
@@ -4055,6 +4060,7 @@ components:
         confidential: {type: boolean}
         deadline: {type: string, format: date-time}
         jobTitle: {type: string}
+        recommendationType: {$ref: '#/components/schemas/RecommendationType'}
         researchGroupName: {type: string}
         status:
           type: string

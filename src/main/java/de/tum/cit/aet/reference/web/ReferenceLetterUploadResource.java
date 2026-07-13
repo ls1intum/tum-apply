@@ -40,13 +40,13 @@ public class ReferenceLetterUploadResource {
     }
 
     /**
-     * Persists the uploaded PDF together with the referee's structured assessment answers and marks
-     * the request as submitted. Every assessment field is required, so a missing or unknown value
-     * results in a 400. Returns 400 too when the request is no longer accepting uploads (already
-     * submitted or expired).
+     * Persists the referee's submission — the letter PDF, the structured assessment answers, or
+     * both, depending on the job's recommendation type — and marks the request as submitted. A
+     * missing required part or a part the job did not ask for results in a 400. Returns 400 too
+     * when the request is no longer accepting uploads (already submitted or expired).
      *
      * @param token             the raw token from the invitation email
-     * @param recommendation    the DTO containing the  structured assessment and the uploaded PDF file
+     * @param recommendation    the DTO containing the structured assessment and the uploaded PDF file
      * @return the updated reference request DTO
      */
     @Public
@@ -55,11 +55,7 @@ public class ReferenceLetterUploadResource {
         @PathVariable String token,
         @Valid @ModelAttribute ReferenceLetterSubmissionDTO recommendation
     ) {
-        log.info(
-            "POST /api/reference-letters/{} - Submitting recommendation {}",
-            maskToken(token),
-            recommendation.letter().getOriginalFilename()
-        );
+        log.info("POST /api/reference-letters/{} - Submitting recommendation", maskToken(token));
         return ResponseEntity.ok(referenceRequestService.uploadLetter(token, recommendation));
     }
 

@@ -13,6 +13,7 @@ import {
 } from 'util/reference-letter-upload-resource-api.service.mock';
 import { ReferenceLetterUploadComponent } from 'app/reference/reference-letter-upload/reference-letter-upload.component';
 import { ReferenceRequestDTOStatusEnum } from 'app/generated/model/reference-request-dto';
+import { RecommendationType } from 'app/generated/model/recommendation-type';
 
 const TOKEN = 'sample-token';
 
@@ -152,6 +153,60 @@ describe('ReferenceLetterUploadComponent', () => {
 
       expect(toast.showErrorKey).toHaveBeenCalledOnce();
       expect(toast.showErrorKey).toHaveBeenCalledWith('reference.uploadFailed');
+    });
+  });
+
+  describe('recommendation type variants', () => {
+    it('should hide the assessment questions and submit the letter alone for a letter-only job', async () => {
+      await setupFixture(undefined, createMockContext({ recommendationType: RecommendationType.LetterOnly }));
+
+      const root = fixture.nativeElement as HTMLElement;
+      expect(root.textContent).not.toContain('reference.questions.rating.title');
+      expect(root.querySelector('jhi-upload-button')).not.toBeNull();
+
+      internals(component).onQueuedFilesChanged([fakePdf()]);
+      await internals(component).confirmUpload();
+
+      expect(api.upload).toHaveBeenCalledOnce();
+      const call = api.upload.mock.calls[0];
+      expect(call[0]).toBe(TOKEN);
+      expect(call.at(3)).toBeInstanceOf(File);
+      expect(call[1]).toBeUndefined();
+      expect(call.at(11)).toBeUndefined();
+    });
+
+    it('should hide the upload control and submit the answers alone for an evaluation-only job', async () => {
+      await setupFixture(undefined, createMockContext({ recommendationType: RecommendationType.EvaluationOnly }));
+
+      const root = fixture.nativeElement as HTMLElement;
+      expect(root.querySelector('jhi-upload-button')).toBeNull();
+      expect(root.textContent).toContain('reference.questions.rating.title');
+
+      fillAnswers(component);
+      await internals(component).confirmUpload();
+
+      expect(api.upload).toHaveBeenCalledOnce();
+      const call = api.upload.mock.calls[0];
+      expect(call[0]).toBe(TOKEN);
+      expect(call.at(3)).toBeUndefined();
+      expect(call[1]).toBe(REQUIRED_ANSWERS.acquaintanceDepth);
+      expect(call.at(11)).toBe(REQUIRED_ANSWERS.relationship);
+    });
+
+    it('should not submit an evaluation-only recommendation while questions are unanswered', async () => {
+      await setupFixture(undefined, createMockContext({ recommendationType: RecommendationType.EvaluationOnly }));
+
+      await internals(component).confirmUpload();
+
+      expect(api.upload).not.toHaveBeenCalled();
+    });
+
+    it('should render both the questions and the upload control when the job asks for both', async () => {
+      await setupFixture(undefined, createMockContext({ recommendationType: RecommendationType.LetterAndEvaluation }));
+
+      const root = fixture.nativeElement as HTMLElement;
+      expect(root.querySelector('jhi-upload-button')).not.toBeNull();
+      expect(root.textContent).toContain('reference.questions.rating.title');
     });
   });
 

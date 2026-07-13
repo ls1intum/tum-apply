@@ -393,8 +393,8 @@
       }
     },
     "applicationReferences": {
-      "description": "Bitte gib unten deine Referenzpersonen an. Nach dem Absenden erhalten diese einen sicheren Link per E-Mail, um ihr Empfehlungsschreiben hochzuladen.",
-      "manageDescription": "Bearbeite, ergänze oder entferne deine Referenzpersonen unten bis zur Bewerbungsfrist. Das Ändern der E-Mail-Adresse einer Referenzperson führt zum Versand einer neuen Einladung an die neue Adresse. Referenzpersonen, die ihr Schreiben bereits eingereicht haben, können nicht mehr geändert werden.",
+      "description": "Bitte gib unten deine Referenzpersonen an. Nach Einreichen der Bewerbung erhalten diese einen sicheren Link per E-Mail, um {type, select, LETTER_ONLY {ein Empfehlungsschreiben hochzuladen} EVALUATION_ONLY {eine kurze strukturierte Einschätzung zu dir abzugeben} other {ihre Empfehlung einzureichen}}.",
+      "manageDescription": "Bearbeite, ergänze oder entferne deine Referenzpersonen unten bis zur Bewerbungsfrist. Das Ändern der E-Mail-Adresse einer Referenzperson führt zum Versand einer neuen Einladung an die neue Adresse. Referenzpersonen, die ihre Empfehlung bereits eingereicht haben, können nicht mehr geändert werden.",
       "requiredCount": "Benötigt: {count} · Hinzugefügt: ",
       "empty": "Noch keine Referenzpersonen hinzugefügt.",
       "section": {
@@ -409,7 +409,7 @@
       "button": {
         "add": "Hinzufügen"
       },
-      "confidentialWaiver": "Ich verzichte darauf, die eingereichten Empfehlungen einzusehen. Nur die betreuende Person kann sie lesen.",
+      "confidentialWaiver": "Ich verzichte auf Einsicht in die eingereichten Empfehlungen. Nur die betreuende Person kann sie lesen.",
       "toast": {
         "loadFailed": {
           "summary": "Referenzperson konnten nicht geladen werden",
@@ -671,7 +671,13 @@
     }
   },
   "reference": {
-    "title": "Empfehlungsschreiben hochladen",
+    "referenceLetter": "Empfehlungsschreiben",
+    "title": {
+      "LETTER_ONLY": "Empfehlungsschreiben hochladen",
+      "EVALUATION_ONLY": "Bewerbende Person einschätzen",
+      "LETTER_AND_EVALUATION": "Empfehlung einreichen"
+    },
+    "pageTitle": "Empfehlung",
     "assessment": {
       "title": "Bewertungen der Referenzgeber"
     },
@@ -750,17 +756,17 @@
     "upload": {
       "confirm": "Bestätigen"
     },
-    "confidentialNote": "Die bewerbende Person hat auf ihr Recht verzichtet, dieses Schreiben einzusehen. Nur die betreuende Person kann es lesen.",
-    "sharedNote": "Die bewerbende Person kann Ihr eingereichtes Schreiben ebenfalls einsehen.",
+    "confidentialNote": "Die bewerbende Person hat auf ihr Recht verzichtet, diese Empfehlung einzusehen. Nur die betreuende Person kann sie lesen.",
+    "sharedNote": "Die bewerbende Person kann Ihre eingereichte Empfehlung ebenfalls einsehen.",
     "decline": {
       "button": "Ablehnen",
       "confirmHeader": "Anfrage ablehnen",
-      "confirmMessage": "Sind Sie sicher, dass Sie kein Empfehlungsschreiben bereitstellen möchten? Dies kann nicht rückgängig gemacht werden.",
+      "confirmMessage": "Sind Sie sicher, dass Sie keine Empfehlung bereitstellen möchten? Dies kann nicht rückgängig gemacht werden.",
       "failed": "Die Anfrage konnte nicht abgelehnt werden. Bitte versuchen Sie es erneut."
     },
     "declined": {
       "title": "Anfrage abgelehnt",
-      "message": "Sie haben abgelehnt, ein Empfehlungsschreiben bereitzustellen. Sie können diese Seite schließen."
+      "message": "Sie haben abgelehnt, eine Empfehlung bereitzustellen. Sie können diese Seite schließen."
     },
     "summary": {
       "title": "Zusammenfassung",
@@ -769,20 +775,28 @@
       "researchGroup": "Forschungsgruppe"
     },
     "success": {
-      "title": "Empfehlungsschreiben empfangen",
-      "message": "Vielen Dank. Ihr Schreiben wurde erfolgreich übermittelt."
+      "title": {
+        "LETTER_ONLY": "Empfehlungsschreiben empfangen",
+        "EVALUATION_ONLY": "Einschätzung empfangen",
+        "LETTER_AND_EVALUATION": "Empfehlung empfangen"
+      },
+      "message": {
+        "LETTER_ONLY": "Vielen Dank. Ihr Schreiben wurde erfolgreich übermittelt.",
+        "EVALUATION_ONLY": "Vielen Dank. Ihre Einschätzung wurde erfolgreich übermittelt.",
+        "LETTER_AND_EVALUATION": "Vielen Dank. Ihr Schreiben und Ihre Einschätzung wurden erfolgreich übermittelt."
+      }
     },
     "expired": {
       "title": "Frist abgelaufen",
-      "message": "Die Frist für dieses Empfehlungsschreiben ist abgelaufen."
+      "message": "Die Frist für diese Empfehlung ist abgelaufen."
     },
     "error": {
       "title": "Link nicht gültig",
-      "invalidLink": "Dieser Empfehlungsschreiben-Link ist ungültig oder nicht mehr erreichbar."
+      "invalidLink": "Dieser Empfehlungs-Link ist ungültig oder nicht mehr erreichbar."
     },
     "uploadSuccess": {
-      "summary": "Schreiben hochgeladen",
-      "detail": "Ihr Empfehlungsschreiben wurde empfangen."
+      "summary": "Empfehlung eingereicht",
+      "detail": "Ihre Empfehlung wurde empfangen."
     },
     "uploadFailed": {
       "summary": "Upload fehlgeschlagen",

@@ -35,6 +35,7 @@ import { UpdateApplicationDTO } from 'app/generated/model/update-application-dto
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
 import { ExtractedCertificateDataDTO } from 'app/generated/model/extracted-certificate-data-dto';
 import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
+import { RecommendationType } from 'app/generated/model/recommendation-type';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 
 import ApplicationCreationPage2Component, {
@@ -145,6 +146,7 @@ export default class ApplicationCreationFormComponent {
   referenceLettersConfidential = signal<boolean>(true);
   referenceLettersRequired = signal<number>(0);
   referenceLettersEnabled = computed(() => this.referenceLettersRequired() > 0);
+  recommendationType = signal<RecommendationType | undefined>(undefined);
   savingTick = signal<number>(0);
   allPagesValid = computed(() => this.personalInfoDataValid() && this.educationDataValid() && this.applicationDetailsDataValid());
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
@@ -430,6 +432,7 @@ export default class ApplicationCreationFormComponent {
         }
         const required = application.job.referenceLettersRequired ?? 0;
         this.referenceLettersRequired.set(required);
+        this.recommendationType.set(application.job.recommendationType);
 
         this.applicationState.set(application.applicationState);
         this.useLocalStorage.set(false);
@@ -464,6 +467,7 @@ export default class ApplicationCreationFormComponent {
             this.title.set(jobDetails.title);
           }
           this.referenceLettersRequired.set(jobDetails.referenceLettersRequired ?? 0);
+          this.recommendationType.set(jobDetails.recommendationType);
         })
         .catch(() => {
           // Silently ignore errors when fetching job title - this is non-critical for the application flow

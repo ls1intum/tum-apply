@@ -28,7 +28,7 @@
           {{ row.labelKey }}
         }
         @if (required()) {
-          <span class="text-negative-default ml-0.5" aria-hidden="true">*</span>
+          <span class="required ml-0.5" aria-hidden="true">*</span>
         }
       </div>
       @for (option of options(); track option.value) {
