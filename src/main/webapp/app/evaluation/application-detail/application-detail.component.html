@@ -296,10 +296,7 @@
             @if (currentReferenceRequests().length > 0) {
               <jhi-section titleKey="evaluation.details.referenceLetterStatus" icon="envelope">
                 <p class="flex text-sm text-text-secondary mb-2 items-start">
-                  <fa-icon
-                    [icon]="referenceLettersConfidential() ? 'lock' : 'circle-info'"
-                    class="text-primary mt-0.5 w-5 shrink-0 -ml-2 mr-1"
-                  />
+                  <fa-icon [icon]="referenceLettersConfidential() ? 'lock' : 'circle-info'" class="text-primary w-5 shrink-0 -ml-2 mr-1" />
                   <span
                     [jhiTranslate]="
                       referenceLettersConfidential() ? 'evaluation.details.referenceConfidential' : 'evaluation.details.referenceShared'
@@ -329,15 +326,9 @@
             }
 
             <jhi-section titleKey="evaluation.details.documentTitle" icon="file-lines">
-              <jhi-document-section
-                #docSection
-                [idsDTO]="currentDocumentIds()"
-                [applicationId]="currentApplicationId()"
-                [referenceLetters]="currentReferenceRequests()"
-              />
               <ng-container actions>
                 @if (docSection.hasDocuments()) {
-                  <div class="flex flex-wrap ml-auto gap-2">
+                  <div class="flex flex-wrap gap-2">
                     <jhi-button
                       class="whitespace-nowrap"
                       label="evaluation.details.documentView"
@@ -359,10 +350,22 @@
                   </div>
                 }
               </ng-container>
+              <jhi-document-section
+                #docSection
+                [idsDTO]="currentDocumentIds()"
+                [applicationId]="currentApplicationId()"
+                [referenceLetters]="currentReferenceRequests()"
+              />
             </jhi-section>
           </div>
         </div>
         <p-divider />
+        @if (hasReferenceAssessments()) {
+          <jhi-section titleKey="reference.assessment.title" icon="clipboard-check">
+            <jhi-reference-assessment-section [assessments]="currentReferenceRequests()" />
+          </jhi-section>
+          <p-divider />
+        }
         <div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
           <div>
             <jhi-section titleKey="evaluation.details.ratingTitle" icon="star">
