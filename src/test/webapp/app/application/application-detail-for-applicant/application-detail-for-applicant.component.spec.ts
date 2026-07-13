@@ -321,20 +321,20 @@ describe('ApplicationDetailForApplicantComponent', () => {
         description: 'fewer are requested or submitted than required',
         required: 2,
         existing: [reference('REQUESTED')],
-        expected: true
+        expected: true,
       },
       {
         description: 'the requirement is met',
         required: 2,
         existing: [reference('REQUESTED'), reference('SUBMITTED')],
-        expected: false
+        expected: false,
       },
       {
         description: 'the job requires none',
         required: 0,
         existing: [],
-        expected: false
-      }
+        expected: false,
+      },
     ])('should flag appropriately when $description', ({ required, existing, expected }) => {
       const { component } = setupTest(null);
       seedReferences(component, required, existing);
