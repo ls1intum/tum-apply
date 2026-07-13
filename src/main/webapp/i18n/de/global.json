@@ -254,6 +254,7 @@
       "personal_documents": "Persönliche Dokumente",
       "references": "Empfehlungsschreiben",
       "reference_requests": "Anfragen",
+      "reference_requests_missing": "{count} von {required} angefragt",
       "reference_status": {
         "added": "(hinzugefügt)",
         "requested": "(angefragt)",
