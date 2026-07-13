@@ -107,6 +107,7 @@ public record ApplicationForApplicantDTO(
                 job.getEndDate(),
                 job.getContractDuration(),
                 job.getReferenceLettersRequired(),
+                job.getRecommendationType(),
                 job.getImage() != null ? job.getImage().getUrl() : null
             ),
             application.getState(),

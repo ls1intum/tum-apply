@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -13,6 +13,7 @@ import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ReferenceRequestResourceApi } from 'app/generated/api/reference-request-resource-api';
 import { ReferenceRequestDTO } from 'app/generated/model/reference-request-dto';
+import { RecommendationType } from 'app/generated/model/recommendation-type';
 import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 
 const TITLE_OPTIONS: readonly string[] = ['Prof. Dr.', 'Prof.', 'Dr.'];
@@ -49,6 +50,7 @@ export default class ApplicationCreationReferencesComponent {
   descriptionKey = input<string>('entity.applicationReferences.description');
   applicationCreation = input<boolean>(true);
   referenceLettersConfidential = input<boolean>(true);
+  recommendationType = input<RecommendationType | undefined>(undefined);
 
   /** References the parent already loaded (e.g. inlined in the ApplicationDetailDTO on the detail page). */
   preloadedReferences = input<ReferenceRequestDTO[] | undefined>(undefined);
@@ -60,6 +62,11 @@ export default class ApplicationCreationReferencesComponent {
   references = signal<ReferenceRequestDTO[]>([]);
   loading = signal<boolean>(false);
   readonly editingId = signal<string | undefined>(undefined);
+
+  readonly descriptionParams = computed(() => {
+    const type = this.recommendationType();
+    return { type: type ?? 'other' };
+  });
 
   readonly titleOptions: SelectOption[] = TITLE_OPTIONS.map(value => ({ name: value, value }));
   readonly selectedTitleOption = signal<SelectOption | undefined>(undefined);

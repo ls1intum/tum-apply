@@ -66,7 +66,7 @@ export class ReferenceLetterUploadResourceApi {
      * @param ratingResearchPotential 
      * @param relationship 
      */
-    upload(token: string, acquaintanceDepth: AcquaintanceDepth, acquaintanceDuration: AcquaintanceDuration, letter: Blob, overallRecommendation: OverallRecommendation, ratingCollaboration: PeerRating, ratingCommunication: PeerRating, ratingIntellectualAbility: PeerRating, ratingLeadership: PeerRating, ratingMotivation: PeerRating, ratingResearchPotential: PeerRating, relationship: RefereeRelationship): Observable<ReferenceRequestDTO> {
+    upload(token: string, acquaintanceDepth?: AcquaintanceDepth, acquaintanceDuration?: AcquaintanceDuration, letter?: Blob, overallRecommendation?: OverallRecommendation, ratingCollaboration?: PeerRating, ratingCommunication?: PeerRating, ratingIntellectualAbility?: PeerRating, ratingLeadership?: PeerRating, ratingMotivation?: PeerRating, ratingResearchPotential?: PeerRating, relationship?: RefereeRelationship): Observable<ReferenceRequestDTO> {
         const tokenPath = encodeURIComponent(String(token));
         const url = `${this.basePath}/api/reference-letters/${tokenPath}`;
         const formData = new FormData();

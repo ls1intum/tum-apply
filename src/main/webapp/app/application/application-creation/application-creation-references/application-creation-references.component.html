@@ -1,4 +1,4 @@
-<p class="mb-2" [jhiTranslate]="descriptionKey()"></p>
+<p class="mb-2" [jhiTranslate]="descriptionKey()" [translateValues]="descriptionParams()"></p>
 <p class="mb-4 text-xs text-text-secondary" jhiTranslate="global.input.requiredHint"></p>
 
 <form [formGroup]="addForm" class="@container" (ngSubmit)="onSubmit()">

@@ -7,6 +7,7 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.constants.RecommendationType;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.reference.constants.AcquaintanceDepth;
@@ -45,6 +46,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import tools.jackson.core.type.TypeReference;
@@ -100,6 +103,7 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
             LocalDate.of(2026, 9, 1)
         );
         jobWithReferences.setReferenceLettersRequired(1);
+        jobWithReferences.setRecommendationType(RecommendationType.LETTER_AND_EVALUATION);
         jobWithReferences = jobRepository.save(jobWithReferences);
 
         application = ApplicationTestData.saved(applicationRepository, jobWithReferences, applicant, ApplicationState.SENT);
@@ -111,6 +115,11 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
         entry.setTokenExpiresAt(LocalDateTime.now(ZoneOffset.UTC).plusDays(14));
         entry.setStatus(ReferenceRequestStatus.REQUESTED);
         return referenceRequestRepository.save(entry);
+    }
+
+    private void setJobRecommendationType(RecommendationType recommendationType) {
+        jobWithReferences.setRecommendationType(recommendationType);
+        jobWithReferences = jobRepository.save(jobWithReferences);
     }
 
     private static String hashToken(String rawToken) {
@@ -162,6 +171,22 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
             assertThat(context.researchGroupName()).isEqualTo(researchGroup.getName());
             assertThat(context.status()).isEqualTo(ReferenceRequestStatus.REQUESTED);
             assertThat(context.confidential()).isTrue();
+            assertThat(context.recommendationType()).isEqualTo(RecommendationType.LETTER_AND_EVALUATION);
+        }
+
+        @Test
+        void shouldExposeConfiguredRecommendationTypeInContext() {
+            setJobRecommendationType(RecommendationType.EVALUATION_ONLY);
+            savedRequestedEntry("typed-token");
+
+            ReferenceLetterUploadContextDTO context = api.getAndRead(
+                String.format(CONTEXT_URL, "typed-token"),
+                null,
+                new TypeReference<>() {},
+                200
+            );
+
+            assertThat(context.recommendationType()).isEqualTo(RecommendationType.EVALUATION_ONLY);
         }
 
         @Test
@@ -211,6 +236,78 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
                 String.format(CONTEXT_URL, "missing-answers-token"),
                 List.of(pdf("letter.pdf")),
                 incomplete,
+                new TypeReference<>() {},
+                400
+            );
+        }
+
+        @Test
+        void shouldStoreLetterWithoutAssessmentWhenJobIsLetterOnly() {
+            setJobRecommendationType(RecommendationType.LETTER_ONLY);
+            savedRequestedEntry("letter-only-token");
+
+            ReferenceRequestDTO updated = api.multipartPostAndRead(
+                String.format(CONTEXT_URL, "letter-only-token"),
+                List.of(pdf("letter.pdf")),
+                Map.of(),
+                new TypeReference<>() {},
+                200
+            );
+
+            assertThat(updated.status()).isEqualTo(ReferenceRequestStatus.SUBMITTED);
+            assertThat(updated.documentId()).isNotNull();
+
+            ReferenceRequest persisted = referenceRequestRepository.findById(updated.referenceRequestId()).orElseThrow();
+            assertThat(persisted.getDocumentId()).isNotNull();
+            assertThat(persisted.getRelationship()).isNull();
+            assertThat(persisted.getOverallRecommendation()).isNull();
+        }
+
+        @Test
+        void shouldStoreAssessmentWithoutLetterWhenJobIsEvaluationOnly() {
+            setJobRecommendationType(RecommendationType.EVALUATION_ONLY);
+            savedRequestedEntry("evaluation-only-token");
+
+            ReferenceRequestDTO updated = api.multipartPostAndRead(
+                String.format(CONTEXT_URL, "evaluation-only-token"),
+                List.of(),
+                assessmentParams(),
+                new TypeReference<>() {},
+                200
+            );
+
+            assertThat(updated.status()).isEqualTo(ReferenceRequestStatus.SUBMITTED);
+            assertThat(updated.documentId()).isNull();
+
+            ReferenceRequest persisted = referenceRequestRepository.findById(updated.referenceRequestId()).orElseThrow();
+            assertThat(persisted.getDocumentId()).isNull();
+            assertThat(persisted.getRelationship()).isEqualTo(RefereeRelationship.RESEARCH_SUPERVISOR);
+            assertThat(persisted.getOverallRecommendation()).isEqualTo(OverallRecommendation.STRONGLY_RECOMMEND);
+        }
+
+        @Test
+        void shouldReject400WhenLetterMissingForLetterRequiringJob() {
+            savedRequestedEntry("no-letter-token");
+
+            api.multipartPostAndRead(
+                String.format(CONTEXT_URL, "no-letter-token"),
+                List.of(),
+                assessmentParams(),
+                new TypeReference<>() {},
+                400
+            );
+        }
+
+        @ParameterizedTest(name = "Should reject 400 when invalid payload is sent for {0} job")
+        @EnumSource(value = RecommendationType.class, names = { "LETTER_ONLY", "EVALUATION_ONLY" })
+        void shouldReject400WhenMismatchPayloadSent(RecommendationType type) {
+            setJobRecommendationType(type);
+            savedRequestedEntry("token");
+
+            api.multipartPostAndRead(
+                String.format(CONTEXT_URL, "token"),
+                List.of(pdf("letter.pdf")),
+                assessmentParams(),
                 new TypeReference<>() {},
                 400
             );

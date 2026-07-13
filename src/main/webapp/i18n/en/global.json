@@ -394,7 +394,7 @@
       }
     },
     "applicationReferences": {
-      "description": "Please list your recommenders below. Upon submission, they will be emailed a secure link to upload their recommendation letter.",
+      "description": "Please list your recommenders below. Upon application submission, they will be emailed a secure link to {type, select, LETTER_ONLY {upload a recommendation letter} EVALUATION_ONLY {complete a short structured evaluation of you} other {submit their recommendation}}.",
       "manageDescription": "Edit, add, or remove your recommenders below until the application deadline. Changing a recommender's email sends a fresh invitation to the new address.",
       "requiredCount": "Required: {count} · Added: ",
       "empty": "No recommenders added yet.",
@@ -676,7 +676,13 @@
     }
   },
   "reference": {
-    "title": "Upload your recommendation letter",
+    "referenceLetter": "Recommendation Letter",
+    "title": {
+      "LETTER_ONLY": "Upload your recommendation letter",
+      "EVALUATION_ONLY": "Evaluate the applicant",
+      "LETTER_AND_EVALUATION": "Submit your recommendation"
+    },
+    "pageTitle": "Recommendation",
     "assessment": {
       "title": "Recommenders' assessments"
     },
@@ -755,17 +761,17 @@
     "upload": {
       "confirm": "Confirm"
     },
-    "confidentialNote": "The applicant has waived their right to access this letter. Only the supervising professor will be able to read it.",
-    "sharedNote": "The applicant will also be able to view your submitted letter.",
+    "confidentialNote": "The applicant has waived their right to access this recommendation. Only the supervising professor will be able to read it.",
+    "sharedNote": "The applicant will also be able to view your submitted recommendation.",
     "decline": {
       "button": "Decline",
       "confirmHeader": "Decline request",
-      "confirmMessage": "Are you sure you do not want to provide a recommendation letter? This cannot be undone.",
+      "confirmMessage": "Are you sure you do not want to provide a recommendation? This cannot be undone.",
       "failed": "The request could not be declined. Please try again."
     },
     "declined": {
       "title": "Request declined",
-      "message": "You have declined to provide a recommendation letter. You may close this page."
+      "message": "You have declined to provide a recommendation. You may close this page."
     },
     "summary": {
       "title": "Summary",
@@ -774,20 +780,28 @@
       "researchGroup": "Research group"
     },
     "success": {
-      "title": "Recommendation letter received",
-      "message": "Thank you. Your letter has been submitted successfully."
+      "title": {
+        "LETTER_ONLY": "Recommendation letter received",
+        "EVALUATION_ONLY": "Evaluation received",
+        "LETTER_AND_EVALUATION": "Recommendation received"
+      },
+      "message": {
+        "LETTER_ONLY": "Thank you. Your letter has been submitted successfully.",
+        "EVALUATION_ONLY": "Thank you. Your evaluation has been submitted successfully.",
+        "LETTER_AND_EVALUATION": "Thank you. Your letter and evaluation have been submitted successfully."
+      }
     },
     "expired": {
       "title": "Deadline reached",
-      "message": "The deadline for this recommendation letter has passed."
+      "message": "The deadline for this recommendation has passed."
     },
     "error": {
       "title": "Link not valid",
-      "invalidLink": "This recommendation letter link is invalid or no longer accessible."
+      "invalidLink": "This recommendation link is invalid or no longer accessible."
     },
     "uploadSuccess": {
-      "summary": "Letter uploaded",
-      "detail": "Your recommendation letter has been received."
+      "summary": "Recommendation submitted",
+      "detail": "Your recommendation has been received."
     },
     "uploadFailed": {
       "summary": "Upload failed",

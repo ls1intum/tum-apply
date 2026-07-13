@@ -356,7 +356,20 @@
                 [dataKey]="'value'"
               />
             </div>
-            <div class="flex-1"></div>
+            <div class="flex-1">
+              @if (recommendationTypeVisible()) {
+                <jhi-select
+                  label="jobCreationForm.basicInformationSection.recommendationType.label"
+                  [selected]="positionDetailsForm.get('recommendationType')?.value"
+                  (selectedChange)="positionDetailsForm.get('recommendationType')?.setValue($event)"
+                  [items]="translatedRecommendationTypes()"
+                  icon="circle-info"
+                  tooltipText="jobCreationForm.basicInformationSection.recommendationType.toolTipText"
+                  [width]="'100%'"
+                  [dataKey]="'value'"
+                />
+              }
+            </div>
           </div>
 
           <!-- Position Options card -->

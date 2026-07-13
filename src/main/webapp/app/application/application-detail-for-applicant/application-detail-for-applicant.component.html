@@ -300,6 +300,7 @@
               <jhi-application-creation-references
                 [applicationId]="applicationId()"
                 [requiredCount]="application.referenceLettersRequired ?? 0"
+                [recommendationType]="application.recommendationType"
                 [referenceLettersConfidential]="application.referenceLettersConfidential ?? true"
                 [preloadedReferences]="application.references ?? []"
                 descriptionKey="entity.applicationReferences.manageDescription"
