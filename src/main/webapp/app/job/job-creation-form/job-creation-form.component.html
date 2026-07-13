@@ -182,6 +182,7 @@
                   tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
                   [required]="true"
                   [characterLimit]="5000"
+                  [loading]="isViewingTranslationTarget()"
                   [model]="jobDescriptionSignal()"
                   [control]="basicInfoForm.get('jobDescription') ?? undefined"
                   icon="circle-info"
