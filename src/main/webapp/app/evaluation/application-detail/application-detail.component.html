@@ -296,7 +296,10 @@
             @if (currentReferenceRequests().length > 0) {
               <jhi-section titleKey="evaluation.details.referenceLetterStatus" icon="envelope">
                 <p class="flex text-sm text-text-secondary mb-2 items-start">
-                  <fa-icon [icon]="referenceLettersConfidential() ? 'lock' : 'circle-info'" class="text-primary w-5 shrink-0 -ml-2.75 mr-1" />
+                  <fa-icon
+                    [icon]="referenceLettersConfidential() ? 'lock' : 'circle-info'"
+                    class="text-primary w-5 shrink-0 -ml-2.75 mr-1"
+                  />
                   <span
                     [jhiTranslate]="
                       referenceLettersConfidential() ? 'evaluation.details.referenceConfidential' : 'evaluation.details.referenceShared'
