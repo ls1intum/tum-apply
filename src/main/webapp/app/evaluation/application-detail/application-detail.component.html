@@ -315,23 +315,23 @@
                         <span class="text-positive-default ml-1" jhiTranslate="evaluation.details.referenceStatus.submitted"
                           >Submitted</span
                         >
+                        @if (reference.documentId) {
+                          <jhi-button
+                            class="inline-flex align-middle"
+                            classStyling="!w-8"
+                            icon="eye"
+                            variant="text"
+                            size="xs"
+                            ariaLabel="evaluation.details.viewReferenceLetter"
+                            (click)="docSection.openDocument(reference.documentId)"
+                          />
+                        }
                       } @else if (reference.status === 'EXPIRED') {
                         <span class="text-negative-default ml-1" jhiTranslate="evaluation.details.referenceStatus.expired">Expired</span>
                       } @else if (reference.status === 'DECLINED') {
                         <span class="text-negative-default ml-1" jhiTranslate="evaluation.details.referenceStatus.declined">Declined</span>
                       } @else {
                         <span class="text-text-secondary ml-1" jhiTranslate="evaluation.details.referenceStatus.requested">Requested</span>
-                      }
-                      @if (reference.status === 'SUBMITTED' && reference.documentId) {
-                        <jhi-button
-                          class="inline-flex align-middle"
-                          icon="eye"
-                          variant="text"
-                          size="xs"
-                          tooltip="evaluation.details.viewReferenceLetter"
-                          ariaLabel="evaluation.details.viewReferenceLetter"
-                          (click)="docSection.openDocument(reference.documentId)"
-                        />
                       }
                     </li>
                   }
