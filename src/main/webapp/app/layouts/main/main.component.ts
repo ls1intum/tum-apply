@@ -14,7 +14,6 @@ import { OnboardingOrchestratorService } from 'app/service/onboarding-orchestrat
 import { BREAKPOINT_QUERIES } from 'app/shared/constants/breakpoints';
 
 import FooterComponent from '../footer/footer.component';
-import PageRibbonComponent from '../profiles/page-ribbon.component';
 
 @Component({
   selector: 'jhi-main',
@@ -26,7 +25,6 @@ import PageRibbonComponent from '../profiles/page-ribbon.component';
     RouterOutlet,
     SidebarComponent,
     FooterComponent,
-    PageRibbonComponent,
     PasskeyRegistrationPromptComponent,
     DrawerComponent,
   ],
