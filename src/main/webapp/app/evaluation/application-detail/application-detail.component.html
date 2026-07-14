@@ -312,26 +312,26 @@
                       <span class="font-medium ml-1">{{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}</span>
                       <span class="font-normal text-text-secondary text-sm ml-1"> ({{ reference.email }}) </span>
                       @if (reference.status === 'SUBMITTED') {
-                        <span class="inline-flex items-center gap-1 align-middle whitespace-nowrap ml-1">
-                          <span class="text-positive-default" jhiTranslate="evaluation.details.referenceStatus.submitted">Submitted</span>
-                          @if (reference.documentId) {
-                            <jhi-button
-                              classStyling="!w-8"
-                              icon="eye"
-                              variant="text"
-                              size="xs"
-                              ariaLabel="evaluation.details.viewReferenceLetter"
-                              [title]="'evaluation.details.viewReferenceLetter' | translate"
-                              (click)="docSection.openDocument(reference.documentId)"
-                            />
-                          }
-                        </span>
+                        <span class="text-positive-default ml-1" jhiTranslate="evaluation.details.referenceStatus.submitted"
+                          >Submitted</span
+                        >
                       } @else if (reference.status === 'EXPIRED') {
                         <span class="text-negative-default ml-1" jhiTranslate="evaluation.details.referenceStatus.expired">Expired</span>
                       } @else if (reference.status === 'DECLINED') {
                         <span class="text-negative-default ml-1" jhiTranslate="evaluation.details.referenceStatus.declined">Declined</span>
                       } @else {
                         <span class="text-text-secondary ml-1" jhiTranslate="evaluation.details.referenceStatus.requested">Requested</span>
+                      }
+                      @if (reference.status === 'SUBMITTED' && reference.documentId) {
+                        <jhi-button
+                          class="inline-flex align-middle"
+                          icon="eye"
+                          variant="text"
+                          size="xs"
+                          tooltip="evaluation.details.viewReferenceLetter"
+                          ariaLabel="evaluation.details.viewReferenceLetter"
+                          (click)="docSection.openDocument(reference.documentId)"
+                        />
                       }
                     </li>
                   }
