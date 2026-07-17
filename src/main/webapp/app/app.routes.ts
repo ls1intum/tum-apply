@@ -371,7 +371,7 @@ const routes: Routes = [
     path: 'reference/:token',
     loadComponent: () =>
       import('./reference/reference-letter-upload/reference-letter-upload.component').then(m => m.ReferenceLetterUploadComponent),
-    title: 'reference.title',
+    title: 'reference.pageTitle',
   },
 
   // ======================================================================================
