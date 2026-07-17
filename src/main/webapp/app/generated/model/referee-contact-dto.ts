@@ -9,7 +9,7 @@
  */
 
 
-export interface CreateReferenceRequestDTO {
+export interface RefereeContactDTO {
     readonly email: string;
     readonly firstName: string;
     readonly lastName: string;
