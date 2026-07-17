@@ -8,14 +8,29 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
+import type { PeerRating } from './peer-rating';
+import type { RefereeRelationship } from './referee-relationship';
+import type { AcquaintanceDuration } from './acquaintance-duration';
+import type { OverallRecommendation } from './overall-recommendation';
+import type { AcquaintanceDepth } from './acquaintance-depth';
 
 export interface ReferenceRequestDTO {
+    readonly acquaintanceDepth?: AcquaintanceDepth;
+    readonly acquaintanceDuration?: AcquaintanceDuration;
     readonly deadline?: string;
     readonly documentId?: string;
     readonly email?: string;
     readonly firstName?: string;
     readonly lastName?: string;
+    readonly overallRecommendation?: OverallRecommendation;
+    readonly ratingCollaboration?: PeerRating;
+    readonly ratingCommunication?: PeerRating;
+    readonly ratingIntellectualAbility?: PeerRating;
+    readonly ratingLeadership?: PeerRating;
+    readonly ratingMotivation?: PeerRating;
+    readonly ratingResearchPotential?: PeerRating;
     readonly referenceRequestId?: string;
+    readonly relationship?: RefereeRelationship;
     readonly status?: ReferenceRequestDTOStatusEnum;
     readonly title?: string;
 }
