@@ -140,4 +140,15 @@ public interface DocumentRepository extends TumApplyJpaRepository<Document, UUID
      */
     @Query("SELECT a.state FROM ApplicationDocument d JOIN d.application a WHERE d.documentId = :documentId")
     Optional<ApplicationState> findApplicationStateForDocument(@Param("documentId") UUID documentId);
+
+    /**
+     * Returns the owning application's confidentiality waiver for the reference letter linked to the
+     * given document, or empty when no reference request points to it. Used by access checks to hide a
+     * confidential letter from the owning applicant while keeping it visible to the supervising professor.
+     *
+     * @param documentId the id of the application document
+     * @return the confidentiality flag, or empty when the document is not a submitted reference letter
+     */
+    @Query("SELECT r.application.referenceLettersConfidential FROM ReferenceRequest r WHERE r.documentId = :documentId")
+    Optional<Boolean> findReferenceLetterConfidentialByDocumentId(@Param("documentId") UUID documentId);
 }
