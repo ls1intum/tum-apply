@@ -141,6 +141,10 @@
         "summary": "Entfernen fehlgeschlagen",
         "detail": "Der Passkey konnte nicht entfernt werden. Bitte versuche es erneut."
       },
+      "createFailed": {
+        "summary": "Registrierung fehlgeschlagen",
+        "detail": "Der Passkey konnte nicht registriert werden. Bitte versuche es erneut."
+      },
       "loadFailed": {
         "summary": "Laden fehlgeschlagen",
         "detail": "Deine Passkeys konnten nicht geladen werden. Bitte versuche es erneut."

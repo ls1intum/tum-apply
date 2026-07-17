@@ -141,6 +141,10 @@
         "summary": "Removal failed",
         "detail": "Failed to remove the passkey. Please try again."
       },
+      "createFailed": {
+        "summary": "Registration failed",
+        "detail": "Failed to register the passkey. Please try again."
+      },
       "loadFailed": {
         "summary": "Load failed",
         "detail": "Failed to load your passkeys. Please try again."
