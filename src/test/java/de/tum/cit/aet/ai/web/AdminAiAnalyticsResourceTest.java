@@ -54,6 +54,8 @@ class AdminAiAnalyticsResourceTest extends AbstractResourceTest {
         assertThat(result.series()).hasSize(2);
         assertThat(sumCounts(result, AiUsageFeature.JOB_DESCRIPTION_GENERATION)).isEqualTo(3);
         assertThat(sumCounts(result, AiUsageFeature.DOCUMENT_EXTRACTION)).isEqualTo(1);
+        assertThat(sumFailures(result, AiUsageFeature.JOB_DESCRIPTION_GENERATION)).isEqualTo(1);
+        assertThat(sumFailures(result, AiUsageFeature.DOCUMENT_EXTRACTION)).isZero();
     }
 
     @Test
@@ -90,6 +92,16 @@ class AdminAiAnalyticsResourceTest extends AbstractResourceTest {
             .stream()
             .filter(series -> series.feature() == feature)
             .flatMap(series -> series.counts().stream())
+            .mapToLong(Long::longValue)
+            .sum();
+    }
+
+    private long sumFailures(AiUsageAnalyticsDTO dto, AiUsageFeature feature) {
+        return dto
+            .series()
+            .stream()
+            .filter(series -> series.feature() == feature)
+            .flatMap(series -> series.failureCounts().stream())
             .mapToLong(Long::longValue)
             .sum();
     }

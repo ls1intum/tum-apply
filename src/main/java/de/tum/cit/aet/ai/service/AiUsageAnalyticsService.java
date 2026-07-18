@@ -60,17 +60,22 @@ public class AiUsageAnalyticsService {
             indexByBucket.put(bucketStarts.get(i), i);
         }
 
-        // 2) Initialize a zeroed count array per feature.
+        // 2) Initialize a zeroed trigger and failure array per feature.
         Map<AiUsageFeature, long[]> countsByFeature = new EnumMap<>(AiUsageFeature.class);
+        Map<AiUsageFeature, long[]> failuresByFeature = new EnumMap<>(AiUsageFeature.class);
         for (AiUsageFeature feature : AiUsageFeature.values()) {
             countsByFeature.put(feature, new long[bucketStarts.size()]);
+            failuresByFeature.put(feature, new long[bucketStarts.size()]);
         }
 
-        // 3) Drop each event into the bucket its timestamp truncates to.
+        // 3) Drop each event into the bucket its timestamp truncates to, tracking failures separately.
         for (AiUsageEventPoint point : aiUsageEventRepository.findPointsSince(from)) {
             Integer index = indexByBucket.get(truncate(point.createdAt(), granularity));
             if (index != null) {
                 countsByFeature.get(point.feature())[index]++;
+                if (!point.success()) {
+                    failuresByFeature.get(point.feature())[index]++;
+                }
             }
         }
 
@@ -81,12 +86,9 @@ public class AiUsageAnalyticsService {
             .toList();
         List<AiUsageSeriesDTO> series = new ArrayList<>();
         for (AiUsageFeature feature : AiUsageFeature.values()) {
-            long[] counts = countsByFeature.get(feature);
-            List<Long> boxedCounts = new ArrayList<>(counts.length);
-            for (long count : counts) {
-                boxedCounts.add(count);
-            }
-            series.add(new AiUsageSeriesDTO(feature, boxedCounts));
+            series.add(
+                new AiUsageSeriesDTO(feature, toBoxedList(countsByFeature.get(feature)), toBoxedList(failuresByFeature.get(feature)))
+            );
         }
 
         return new AiUsageAnalyticsDTO(range, granularity, labels, series);
@@ -138,6 +140,14 @@ public class AiUsageAnalyticsService {
             case WEEK -> dateTime.plusWeeks(1);
             case MONTH -> dateTime.plusMonths(1);
         };
+    }
+
+    private List<Long> toBoxedList(long[] values) {
+        List<Long> boxed = new ArrayList<>(values.length);
+        for (long value : values) {
+            boxed.add(value);
+        }
+        return boxed;
     }
 
     private String formatLabel(LocalDateTime bucketStart, AiUsageGranularity granularity) {

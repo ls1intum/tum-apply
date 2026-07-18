@@ -9,5 +9,6 @@ import java.time.LocalDateTime;
  *
  * @param feature   the AI feature that was triggered
  * @param createdAt the moment the feature was triggered
+ * @param success   whether the underlying AI call completed successfully
  */
-public record AiUsageEventPoint(AiUsageFeature feature, LocalDateTime createdAt) {}
+public record AiUsageEventPoint(AiUsageFeature feature, LocalDateTime createdAt, boolean success) {}

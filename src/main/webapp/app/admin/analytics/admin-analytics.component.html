@@ -36,7 +36,7 @@
   } @else {
     <jhi-line-chart [labels]="chartLabels()" [datasets]="chartDatasets()" [heightPx]="380" />
 
-    <div class="my-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="my-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
       <div class="bg-background-surface border-border-default rounded-lg border p-5 text-center">
         <div class="text-text-primary text-3xl font-bold">{{ totalTriggers() }}</div>
         <div class="text-text-secondary mt-1 text-sm" jhiTranslate="analytics.stats.totalCalls"></div>
@@ -48,6 +48,16 @@
       <div class="bg-background-surface border-border-default rounded-lg border p-5 text-center">
         <div class="text-text-primary text-3xl font-bold">{{ extractionTotal() }}</div>
         <div class="text-text-secondary mt-1 text-sm" jhiTranslate="analytics.feature.documentExtraction"></div>
+      </div>
+      <div class="bg-background-surface border-border-default rounded-lg border p-5 text-center">
+        <div class="text-positive-default text-3xl font-bold">{{ successRate() | number: '1.0-1' }}%</div>
+        <div class="text-text-secondary mt-1 text-sm" jhiTranslate="analytics.stats.successRate"></div>
+      </div>
+      <div class="bg-background-surface border-border-default rounded-lg border p-5 text-center">
+        <div class="text-3xl font-bold" [class.text-negative-default]="failedCalls()" [class.text-text-primary]="!failedCalls()">
+          {{ failedCalls() }}
+        </div>
+        <div class="text-text-secondary mt-1 text-sm" jhiTranslate="analytics.stats.failedCalls"></div>
       </div>
     </div>
   }

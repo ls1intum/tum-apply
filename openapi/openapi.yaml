@@ -3080,6 +3080,9 @@ components:
         counts:
           type: array
           items: {type: integer, format: int64}
+        failureCounts:
+          type: array
+          items: {type: integer, format: int64}
         feature: {$ref: '#/components/schemas/AiUsageFeature'}
     AiUsageTimeRange:
       type: string

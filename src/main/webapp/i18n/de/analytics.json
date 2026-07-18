@@ -11,14 +11,16 @@
       "allTime": "Gesamter Zeitraum"
     },
     "feature": {
-      "jobDescriptionGeneration": "Mit TUMApply schreiben",
-      "documentExtraction": "Bewerber-Extraktion"
+      "jobDescriptionGeneration": "Stellenbeschreibung Generierung",
+      "documentExtraction": "Dokument Extraktion"
     },
     "chart": {
       "triggers": "Auslösungen"
     },
     "stats": {
-      "totalCalls": "KI-Aufrufe gesamt"
+      "totalCalls": "KI-Aufrufe gesamt",
+      "successRate": "Erfolgsquote",
+      "failedCalls": "Fehlgeschlagen"
     },
     "empty": "Es wurde noch keine KI-Nutzung erfasst.",
     "toast": {

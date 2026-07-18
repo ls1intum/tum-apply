@@ -11,14 +11,16 @@
       "allTime": "All time"
     },
     "feature": {
-      "jobDescriptionGeneration": "Write with TUMApply",
-      "documentExtraction": "Applicant Extraction"
+      "jobDescriptionGeneration": "Job Description Generation",
+      "documentExtraction": "Document Extraction"
     },
     "chart": {
       "triggers": "Triggers"
     },
     "stats": {
-      "totalCalls": "Total AI calls"
+      "totalCalls": "Total AI calls",
+      "successRate": "Success rate",
+      "failedCalls": "Failed calls"
     },
     "empty": "No AI usage has been recorded yet.",
     "toast": {

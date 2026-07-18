@@ -21,7 +21,7 @@ public interface AiUsageEventRepository extends JpaRepository<AiUsageEvent, UUID
      * @return the matching event points ordered by creation time ascending
      */
     @Query(
-        "SELECT new de.tum.cit.aet.ai.dto.AiUsageEventPoint(e.feature, e.createdAt) " +
+        "SELECT new de.tum.cit.aet.ai.dto.AiUsageEventPoint(e.feature, e.createdAt, e.success) " +
             "FROM AiUsageEvent e WHERE e.createdAt >= :from ORDER BY e.createdAt ASC"
     )
     List<AiUsageEventPoint> findPointsSince(@Param("from") LocalDateTime from);

@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
@@ -24,7 +25,15 @@ type FeatureOption = { label: string; value: AiUsageFeature };
 @Component({
   selector: 'jhi-admin-analytics',
   standalone: true,
-  imports: [TranslateDirective, TranslateModule, SegmentButtonComponent, SelectComponent, ProgressSpinnerComponent, LineChartComponent],
+  imports: [
+    DecimalPipe,
+    TranslateDirective,
+    TranslateModule,
+    SegmentButtonComponent,
+    SelectComponent,
+    ProgressSpinnerComponent,
+    LineChartComponent,
+  ],
   templateUrl: './admin-analytics.component.html',
 })
 export class AdminAnalyticsComponent {
@@ -77,6 +86,17 @@ export class AdminAnalyticsComponent {
 
   /** Total applicant extractions in the selected range. */
   readonly extractionTotal = computed(() => this.featureTotal(AiUsageFeature.DocumentExtraction));
+
+  /** Total failed triggers across all features in the selected range. */
+  readonly failedCalls = computed(() =>
+    (this.analytics()?.series ?? []).reduce((sum, entry) => sum + (entry.failureCounts ?? []).reduce((acc, count) => acc + count, 0), 0),
+  );
+
+  /** Share of successful triggers in the selected range, as a percentage (100 when there are no calls). */
+  readonly successRate = computed(() => {
+    const total = this.totalTriggers();
+    return total > 0 ? (100 * (total - this.failedCalls())) / total : 100;
+  });
 
   private readonly analyticsApi = inject(AdminAiAnalyticsResourceApi);
   private readonly toastService = inject(ToastService);
