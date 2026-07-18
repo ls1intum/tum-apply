@@ -11,7 +11,7 @@ paths:
       - name: range
         in: query
         required: false
-        schema: {$ref: '#/components/schemas/AiUsageTimeRange', default: LAST_DAY}
+        schema: {$ref: '#/components/schemas/AiUsageTimeRange', default: LAST_MONTH}
       responses:
         '200':
           description: OK
