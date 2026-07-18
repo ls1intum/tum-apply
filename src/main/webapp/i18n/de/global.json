@@ -40,6 +40,7 @@
         "info": "TUMApply - Meine Gruppe"
       },
       "admin": {
+        "analytics": "TUMApply - KI-Analyse",
         "dependencies": "TUMApply - Abhängigkeiten",
         "exports": "TUMApply - Admin-Exporte",
         "systemSettings": "TUMApply - Systemeinstellungen"
@@ -328,9 +329,10 @@
       }
     },
     "applicationPage2": {
-      "description": "Füge deinen Bildungsweg hinzu.",
+      "description": "Füge deine Ausbildung hinzu.",
       "section": {
-        "education": "Bildung"
+        "bachelor": "Bachelor Studium",
+        "master": "Master Studium"
       },
       "label": {
         "gradeUpperLimit": "Höchstmögliche Note",

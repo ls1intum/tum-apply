@@ -2,6 +2,7 @@ package de.tum.cit.aet.ai.service;
 
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
+import de.tum.cit.aet.ai.constants.AiUsageFeature;
 import de.tum.cit.aet.ai.domain.ComplianceIssue;
 import de.tum.cit.aet.ai.dto.ExtractedApplicationDataDTO;
 import de.tum.cit.aet.ai.dto.ExtractedCertificateDataDTO;
@@ -80,6 +81,8 @@ public class AiService {
 
     private final AiFeatureToggleService aiFeatureToggleService;
 
+    private final AiUsageEventService aiUsageEventService;
+
     public AiService(
         ChatClient.Builder chatClientBuilder,
         JobService jobService,
@@ -88,7 +91,8 @@ public class AiService {
         CurrentUserService currentUserService,
         GenderBiasAnalysisService genderBiasAnalysisService,
         ComplianceScoreService complianceScoreService,
-        AiFeatureToggleService aiFeatureToggleService
+        AiFeatureToggleService aiFeatureToggleService,
+        AiUsageEventService aiUsageEventService
     ) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
@@ -98,6 +102,23 @@ public class AiService {
         this.genderBiasAnalysisService = genderBiasAnalysisService;
         this.complianceScoreService = complianceScoreService;
         this.aiFeatureToggleService = aiFeatureToggleService;
+        this.aiUsageEventService = aiUsageEventService;
+    }
+
+    /**
+     * Records a usage event for the analytics dashboard without ever disrupting the AI feature
+     * itself: any persistence failure is swallowed and logged.
+     *
+     * @param feature the AI feature that was triggered
+     * @param success whether the underlying AI call completed successfully
+     * @param userId  the triggering user, or {@code null} if it could not be resolved
+     */
+    private void recordAiUsageSafely(AiUsageFeature feature, boolean success, UUID userId) {
+        try {
+            aiUsageEventService.record(feature, success, userId);
+        } catch (Exception e) {
+            log.warn("Failed to record AI usage event for feature {}", feature, e);
+        }
     }
 
     /**
@@ -110,6 +131,10 @@ public class AiService {
      * @return Flux of content chunks as they are generated
      */
     public Flux<String> generateJobApplicationDraftStream(JobFormDTO jobFormDTO, String descriptionLanguage) {
+        // Resolve the triggering user on the request thread; the stream hooks below run on reactor
+        // threads where the request-scoped security context is no longer available.
+        UUID triggeredBy = currentUserService.getUserIdIfAvailable().orElse(null);
+
         String input = "de".equals(descriptionLanguage) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
 
         Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
@@ -135,8 +160,14 @@ public class AiService {
             )
             .stream()
             .content()
-            .doOnComplete(() -> aiFeatureToggleService.recordSuccess())
-            .doOnError(e -> aiFeatureToggleService.recordFailure())
+            .doOnComplete(() -> {
+                aiFeatureToggleService.recordSuccess();
+                recordAiUsageSafely(AiUsageFeature.JOB_DESCRIPTION_GENERATION, true, triggeredBy);
+            })
+            .doOnError(e -> {
+                aiFeatureToggleService.recordFailure();
+                recordAiUsageSafely(AiUsageFeature.JOB_DESCRIPTION_GENERATION, false, triggeredBy);
+            })
             .delayElements(Duration.ofMillis(35));
     }
 
@@ -179,6 +210,7 @@ public class AiService {
      * @return the extracted data as a structured DTO
      */
     private ExtractedApplicationDataDTO extractPdfData(List<Resource> pdfFiles, boolean isCv) {
+        UUID triggeredBy = currentUserService.getUserIdIfAvailable().orElse(null);
         List<ByteArrayResource> pageImages = new ArrayList<>();
 
         Resource prompt = isCv ? cVExtractionResource : certificateExtractionResource;
@@ -216,8 +248,10 @@ public class AiService {
                     .call()
                     .entity(targetClass);
                 aiFeatureToggleService.recordSuccess();
+                recordAiUsageSafely(AiUsageFeature.DOCUMENT_EXTRACTION, true, triggeredBy);
             } catch (Exception e) {
                 aiFeatureToggleService.recordFailure();
+                recordAiUsageSafely(AiUsageFeature.DOCUMENT_EXTRACTION, false, triggeredBy);
                 throw e;
             }
 

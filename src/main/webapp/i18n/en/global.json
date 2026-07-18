@@ -40,6 +40,7 @@
         "info": "TUMApply - My Group"
       },
       "admin": {
+        "analytics": "TUMApply - AI Analytics",
         "dependencies": "TUMApply - Dependencies",
         "exports": "TUMApply - Admin Exports",
         "systemSettings": "TUMApply - System Settings"
@@ -330,7 +331,8 @@
     "applicationPage2": {
       "description": "Add your academic background.",
       "section": {
-        "education": "Education"
+        "bachelor": "Bachelor's Degree",
+        "master": "Master's Degree"
       },
       "label": {
         "gradeUpperLimit": "Highest Achievable Grade",

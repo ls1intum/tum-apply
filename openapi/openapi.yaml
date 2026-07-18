@@ -3,6 +3,21 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
+  /api/admin/analytics/ai-usage:
+    get:
+      tags: [admin-ai-analytics-resource]
+      operationId: getAiUsage
+      parameters:
+      - name: range
+        in: query
+        required: false
+        schema: {$ref: '#/components/schemas/AiUsageTimeRange', default: LAST_DAY}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AiUsageAnalyticsDTO'}
   /api/admin/dependencies:
     get:
       tags: [admin-dependency-resource]
@@ -3042,6 +3057,33 @@ components:
         coolDownSeconds: {type: integer, format: int64}
         manuallyDisabled: {type: boolean}
         openedAt: {type: integer, format: int64}
+    AiUsageAnalyticsDTO:
+      type: object
+      properties:
+        granularity: {$ref: '#/components/schemas/AiUsageGranularity'}
+        labels:
+          type: array
+          items: {type: string}
+        range: {$ref: '#/components/schemas/AiUsageTimeRange'}
+        series:
+          type: array
+          items: {$ref: '#/components/schemas/AiUsageSeriesDTO'}
+    AiUsageFeature:
+      type: string
+      enum: [JOB_DESCRIPTION_GENERATION, DOCUMENT_EXTRACTION]
+    AiUsageGranularity:
+      type: string
+      enum: [HOUR, DAY, WEEK, MONTH]
+    AiUsageSeriesDTO:
+      type: object
+      properties:
+        counts:
+          type: array
+          items: {type: integer, format: int64}
+        feature: {$ref: '#/components/schemas/AiUsageFeature'}
+    AiUsageTimeRange:
+      type: string
+      enum: [LAST_DAY, LAST_WEEK, LAST_MONTH, LAST_THREE_MONTHS, ALL_TIME]
     ApplicantDTO:
       type: object
       properties:

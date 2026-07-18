@@ -1,0 +1,31 @@
+{
+  "analytics": {
+    "title": "KI-Analyse",
+    "description": "Wie oft die KI-Funktionen im Zeitverlauf ausgelöst werden.",
+    "range": {
+      "label": "Zeitraum",
+      "lastDay": "Letzter Tag",
+      "lastWeek": "Letzte Woche",
+      "lastMonth": "Letzter Monat",
+      "lastThreeMonths": "Letzte 3 Monate",
+      "allTime": "Gesamter Zeitraum"
+    },
+    "feature": {
+      "jobDescriptionGeneration": "Mit TUMApply schreiben",
+      "documentExtraction": "Bewerber-Extraktion"
+    },
+    "chart": {
+      "triggers": "Auslösungen"
+    },
+    "stats": {
+      "totalCalls": "KI-Aufrufe gesamt"
+    },
+    "empty": "Es wurde noch keine KI-Nutzung erfasst.",
+    "toast": {
+      "loadError": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "KI-Analyse konnte nicht geladen werden."
+      }
+    }
+  }
+}

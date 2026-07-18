@@ -1,0 +1,31 @@
+{
+  "analytics": {
+    "title": "AI Analytics",
+    "description": "How often the AI features are triggered over time.",
+    "range": {
+      "label": "Time range",
+      "lastDay": "Last day",
+      "lastWeek": "Last week",
+      "lastMonth": "Last month",
+      "lastThreeMonths": "Last 3 months",
+      "allTime": "All time"
+    },
+    "feature": {
+      "jobDescriptionGeneration": "Write with TUMApply",
+      "documentExtraction": "Applicant Extraction"
+    },
+    "chart": {
+      "triggers": "Triggers"
+    },
+    "stats": {
+      "totalCalls": "Total AI calls"
+    },
+    "empty": "No AI usage has been recorded yet.",
+    "toast": {
+      "loadError": {
+        "summary": "Load failed",
+        "detail": "Failed to load AI usage analytics."
+      }
+    }
+  }
+}
