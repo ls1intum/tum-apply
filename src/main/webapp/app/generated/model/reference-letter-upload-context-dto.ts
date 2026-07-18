@@ -8,6 +8,7 @@
  * NOTE: This file is auto-generated. Do not edit manually.
  */
 
+import type { RecommendationType } from './recommendation-type';
 
 export interface ReferenceLetterUploadContextDTO {
     readonly applicantFirstName?: string;
@@ -15,6 +16,7 @@ export interface ReferenceLetterUploadContextDTO {
     readonly confidential?: boolean;
     readonly deadline?: string;
     readonly jobTitle?: string;
+    readonly recommendationType?: RecommendationType;
     readonly researchGroupName?: string;
     readonly status?: ReferenceLetterUploadContextDTOStatusEnum;
 }
