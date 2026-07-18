@@ -74,11 +74,6 @@ public class UserExportZipWriter {
 
             List<Document> uploadedDocuments = documentRepository.findByUploadedByUserId(userId);
             for (Document document : uploadedDocuments) {
-                // Reference letters are stored with the applicant as uploader for audit, but a confidential
-                // letter must stay hidden from the applicant — including in their own data export.
-                if (documentRepository.findReferenceLetterConfidentialByDocumentId(document.getDocumentId()).orElse(false)) {
-                    continue;
-                }
                 String entryName = "documents/uploaded/" + document.getDocumentId();
                 addDocumentToZip(zipOut, document, entryName);
             }
