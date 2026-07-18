@@ -21,11 +21,11 @@
     "stats": {
       "totalCalls": "KI-Aufrufe gesamt",
       "successRate": "Erfolgsquote",
-      "failedCalls": "Fehlgeschlagen",
+      "failedCalls": "Fehlgeschlagene Aufrufe",
       "tokensUsed": "Verbrauchte Tokens",
       "estimatedCost": "Geschätzte Kosten"
     },
-    "empty": "Es wurde noch keine KI-Nutzung erfasst.",
+    "empty": "Es wurde keine KI-Nutzung für diesen Zeitraum erfasst.",
     "toast": {
       "loadError": {
         "summary": "Laden fehlgeschlagen",

@@ -25,7 +25,7 @@
       "tokensUsed": "Tokens used",
       "estimatedCost": "Estimated cost"
     },
-    "empty": "No AI usage has been recorded yet.",
+    "empty": "No AI usage has been recorded for this time range.",
     "toast": {
       "loadError": {
         "summary": "Load failed",

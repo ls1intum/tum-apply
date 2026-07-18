@@ -29,12 +29,12 @@ public class AdminAiAnalyticsResource {
     /**
      * Returns AI feature trigger counts bucketed over time for the given range.
      *
-     * @param range the time window to report on; defaults to the last day
+     * @param range the time window to report on; defaults to the last month
      * @return the usage analytics payload with one series per AI feature
      */
     @GetMapping("/ai-usage")
     public ResponseEntity<AiUsageAnalyticsDTO> getAiUsage(
-        @RequestParam(value = "range", defaultValue = "LAST_DAY") AiUsageTimeRange range
+        @RequestParam(value = "range", defaultValue = "LAST_MONTH") AiUsageTimeRange range
     ) {
         log.info("GET /api/admin/analytics/ai-usage - range={}", range);
         return ResponseEntity.ok(aiUsageAnalyticsService.getUsage(range));

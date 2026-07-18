@@ -38,7 +38,7 @@ type FeatureOption = { label: string; value: AiUsageFeature };
 })
 export class AdminAnalyticsComponent {
   /** Currently selected time window. */
-  readonly range = signal<AiUsageTimeRange>(AiUsageTimeRange.LastDay);
+  readonly range = signal<AiUsageTimeRange>(AiUsageTimeRange.LastMonth);
 
   /** Feature whose series is currently plotted. */
   readonly selectedFeature = signal<AiUsageFeature>(AiUsageFeature.JobDescriptionGeneration);
