@@ -123,7 +123,7 @@ public class AiService {
          * @return the captured metrics, or {@link #EMPTY} when no usage is available
          */
         static AiUsageMetrics from(ChatResponse response) {
-            Usage usage = response != null && response.getMetadata() != null ? response.getMetadata().getUsage() : null;
+            Usage usage = response != null ? response.getMetadata().getUsage() : null;
             if (usage == null) {
                 return EMPTY;
             }
@@ -162,19 +162,17 @@ public class AiService {
         AtomicReference<ChatResponse> usageResponse = new AtomicReference<>();
         return responses
             .doOnNext(response -> {
-                Usage usage = response.getMetadata() != null ? response.getMetadata().getUsage() : null;
-                if (usage != null && usage.getTotalTokens() != null && usage.getTotalTokens() > 0) {
+                Usage usage = response.getMetadata().getUsage();
+                if (usage.getTotalTokens() > 0) {
                     usageResponse.set(response);
                 }
             })
-            .mapNotNull(response ->
-                response.getResult() != null && response.getResult().getOutput() != null ? response.getResult().getOutput().getText() : null
-            )
+            .mapNotNull(response -> response.getResult() != null ? response.getResult().getOutput().getText() : null)
             .doOnComplete(() -> {
                 aiFeatureToggleService.recordSuccess();
                 recordAiUsageSafely(feature, true, userId, AiUsageMetrics.from(usageResponse.get()));
             })
-            .doOnError(e -> {
+            .doOnError(_ -> {
                 aiFeatureToggleService.recordFailure();
                 recordAiUsageSafely(feature, false, userId, AiUsageMetrics.from(usageResponse.get()));
             })
