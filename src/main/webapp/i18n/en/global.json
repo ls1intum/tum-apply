@@ -330,8 +330,7 @@
     "applicationPage2": {
       "description": "Add your academic background.",
       "section": {
-        "bachelor": "Bachelor's Degree",
-        "master": "Master's Degree"
+        "education": "Education"
       },
       "label": {
         "gradeUpperLimit": "Highest Achievable Grade",

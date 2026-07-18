@@ -328,10 +328,9 @@
       }
     },
     "applicationPage2": {
-      "description": "Füge deine Ausbildung hinzu.",
+      "description": "Füge deinen Bildungsweg hinzu.",
       "section": {
-        "bachelor": "Bachelor Studium",
-        "master": "Master Studium"
+        "education": "Bildung"
       },
       "label": {
         "gradeUpperLimit": "Höchstmögliche Note",
