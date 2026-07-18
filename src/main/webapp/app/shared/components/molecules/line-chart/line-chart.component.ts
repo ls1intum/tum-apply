@@ -1,6 +1,7 @@
 import { Component, PLATFORM_ID, computed, inject, input } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
+import { ThemeService } from 'app/service/theme.service';
 
 /** A single line series rendered by {@link LineChartComponent}. */
 export type LineChartDataset = {
@@ -8,14 +9,19 @@ export type LineChartDataset = {
   label: string;
   /** Y-values, one per x-axis label. */
   data: number[];
-  /** Optional PrimeNG CSS variable name for the line color (e.g. '--p-primary-500'). */
+  /** Optional theme color token (CSS custom property, e.g. '--color-accent-default'); defaults to a palette token. */
   colorVar?: string;
 };
 
+/** App theme color tokens used, in order, for the line palette. All adapt across the four themes. */
+const LINE_COLOR_TOKENS = ['--color-primary-default', '--color-accent-default', '--color-positive-default', '--color-warning-default'];
+
 /**
  * Thin, reusable wrapper around PrimeNG's line chart. Takes plain labels/datasets inputs and
- * derives the Chart.js data and options, pulling colors from the active PrimeNG theme so the
- * chart follows light/dark mode. Rendering is guarded to the browser for SSR safety.
+ * derives the Chart.js data and options, resolving line, text and grid colors from the app's own
+ * theme tokens so the chart matches all themes. The derivations depend on the theme signal,
+ * so the chart recolors immediately when the theme changes.
+ * Rendering is guarded to the browser for SSR safety.
  */
 @Component({
   selector: 'jhi-line-chart',
@@ -39,44 +45,46 @@ export class LineChartComponent {
    */
   yMax = input<number | undefined>(undefined);
 
-  /** Chart.js data object built from the component inputs and the current theme colors. */
+  /** Chart.js data object built from the component inputs and the active theme's line colors. */
   readonly data = computed(() => {
-    const style = this.themeStyle();
-    const fallbackColorVars = ['--p-primary-500', '--p-cyan-500', '--p-orange-500', '--p-gray-500'];
     return {
       labels: this.labels(),
       datasets: this.datasets().map((dataset, index) => {
-        const color = this.readCssColor(style, dataset.colorVar ?? fallbackColorVars[index % fallbackColorVars.length]);
+        const color = this.resolveToken(dataset.colorVar ?? LINE_COLOR_TOKENS[index % LINE_COLOR_TOKENS.length]);
         return {
           label: dataset.label,
           data: dataset.data,
           fill: false,
           borderColor: color,
           backgroundColor: color,
+          pointBackgroundColor: color,
+          borderWidth: 2,
           tension: 0.4,
         };
       }),
     };
   });
 
-  /** Chart.js options themed from the current CSS variables. */
+  /** Chart.js options with axis text and grid colors resolved from the active theme tokens. */
   readonly options = computed(() => {
-    const style = this.themeStyle();
+    const textColor = this.resolveToken('--color-text-primary');
+    const mutedColor = this.resolveToken('--color-text-secondary');
+    const gridColor = this.resolveToken('--color-border-default');
     return {
       maintainAspectRatio: false,
       plugins: {
-        legend: { labels: { color: this.readCssColor(style, '--p-text-color') } },
+        legend: { labels: { color: textColor } },
       },
       scales: {
         x: {
-          ticks: { color: this.readCssColor(style, '--p-text-muted-color') },
-          grid: { color: this.readCssColor(style, '--p-content-border-color') },
+          ticks: { color: mutedColor },
+          grid: { color: gridColor },
         },
         y: {
           beginAtZero: true,
           max: this.yMax() ?? this.niceCeil(this.maxDataValue()),
-          ticks: { color: this.readCssColor(style, '--p-text-muted-color'), precision: 0 },
-          grid: { color: this.readCssColor(style, '--p-content-border-color') },
+          ticks: { color: mutedColor, precision: 0 },
+          grid: { color: gridColor },
         },
       },
     };
@@ -84,15 +92,27 @@ export class LineChartComponent {
 
   protected readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /** Root element style in the browser, or undefined during server-side rendering. */
-  private themeStyle(): CSSStyleDeclaration | undefined {
-    return this.isBrowser ? getComputedStyle(document.documentElement) : undefined;
-  }
+  private readonly themeService = inject(ThemeService);
 
-  /** Reads a CSS custom property, returning undefined when unset so Chart.js falls back to its defaults. */
-  private readCssColor(style: CSSStyleDeclaration | undefined, cssVar: string): string | undefined {
-    const value = style?.getPropertyValue(cssVar).trim();
-    return value !== undefined && value !== '' ? value : undefined;
+  /**
+   * Resolves an app theme color token to a concrete color for the currently active theme. Reads the
+   * theme signal so the enclosing computed re-runs on theme changes, then resolves the token through
+   * a hidden probe element so nested {@code var()} chains collapse to a usable color value.
+   *
+   * @param token the CSS custom property name, e.g. '--color-primary-default'
+   * @returns the resolved color, or undefined during server-side rendering
+   */
+  private resolveToken(token: string): string | undefined {
+    this.themeService.theme();
+    if (!this.isBrowser) {
+      return undefined;
+    }
+    const probe = document.createElement('span');
+    probe.style.color = `var(${token})`;
+    document.body.appendChild(probe);
+    const resolved = getComputedStyle(probe).color;
+    probe.remove();
+    return resolved || undefined;
   }
 
   /** The largest value across all datasets, or 0 when there is no data. */
