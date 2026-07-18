@@ -23,9 +23,9 @@ import lombok.Setter;
  * an AI feature (both on success and failure), which the admin analytics dashboard aggregates
  * into usage-over-time charts.
  *
- * <p>The trigger timestamp is the inherited {@code createdAt} column. The referencing user is
+ * The trigger timestamp is the inherited {@code createdAt} column. The referencing user is
  * kept for potential future per-user / per-role breakdowns; the foreign key is nullable and set
- * to {@code null} on user deletion so historical analytics survive.</p>
+ * to {@code null} on user deletion so historical analytics survive.
  */
 @Entity
 @Getter
