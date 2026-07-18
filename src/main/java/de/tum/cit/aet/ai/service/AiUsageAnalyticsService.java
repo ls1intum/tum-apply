@@ -11,7 +11,6 @@ import de.tum.cit.aet.ai.dto.AiUsageSeriesDTO;
 import de.tum.cit.aet.ai.repository.AiUsageEventRepository;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -53,7 +52,7 @@ public class AiUsageAnalyticsService {
      */
     @Transactional(readOnly = true)
     public AiUsageAnalyticsDTO getUsage(AiUsageTimeRange range) {
-        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now();
         AiUsageGranularity granularity = granularityFor(range);
         LocalDateTime from = resolveWindowStart(range, now, granularity);
 
