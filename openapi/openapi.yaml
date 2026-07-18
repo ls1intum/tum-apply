@@ -3060,6 +3060,7 @@ components:
     AiUsageAnalyticsDTO:
       type: object
       properties:
+        cost: {$ref: '#/components/schemas/AiUsageCostSummaryDTO'}
         granularity: {$ref: '#/components/schemas/AiUsageGranularity'}
         labels:
           type: array
@@ -3068,9 +3069,17 @@ components:
         series:
           type: array
           items: {$ref: '#/components/schemas/AiUsageSeriesDTO'}
+    AiUsageCostSummaryDTO:
+      type: object
+      properties:
+        currency: {type: string}
+        estimatedCost: {type: number, format: double}
+        inputTokens: {type: integer, format: int64}
+        outputTokens: {type: integer, format: int64}
+        totalTokens: {type: integer, format: int64}
     AiUsageFeature:
       type: string
-      enum: [JOB_DESCRIPTION_GENERATION, DOCUMENT_EXTRACTION]
+      enum: [JOB_DESCRIPTION_GENERATION, TRANSLATION, DOCUMENT_EXTRACTION]
     AiUsageGranularity:
       type: string
       enum: [HOUR, DAY, WEEK, MONTH]

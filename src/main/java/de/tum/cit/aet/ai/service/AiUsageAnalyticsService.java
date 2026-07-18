@@ -1,9 +1,11 @@
 package de.tum.cit.aet.ai.service;
 
+import de.tum.cit.aet.ai.config.AiPricingProperties;
 import de.tum.cit.aet.ai.constants.AiUsageFeature;
 import de.tum.cit.aet.ai.constants.AiUsageGranularity;
 import de.tum.cit.aet.ai.constants.AiUsageTimeRange;
 import de.tum.cit.aet.ai.dto.AiUsageAnalyticsDTO;
+import de.tum.cit.aet.ai.dto.AiUsageCostSummaryDTO;
 import de.tum.cit.aet.ai.dto.AiUsageEventPoint;
 import de.tum.cit.aet.ai.dto.AiUsageSeriesDTO;
 import de.tum.cit.aet.ai.repository.AiUsageEventRepository;
@@ -36,9 +38,11 @@ public class AiUsageAnalyticsService {
     private static final DateTimeFormatter MONTH_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM");
 
     private final AiUsageEventRepository aiUsageEventRepository;
+    private final AiPricingProperties aiPricingProperties;
 
-    public AiUsageAnalyticsService(AiUsageEventRepository aiUsageEventRepository) {
+    public AiUsageAnalyticsService(AiUsageEventRepository aiUsageEventRepository, AiPricingProperties aiPricingProperties) {
         this.aiUsageEventRepository = aiUsageEventRepository;
+        this.aiPricingProperties = aiPricingProperties;
     }
 
     /**
@@ -68,7 +72,10 @@ public class AiUsageAnalyticsService {
             failuresByFeature.put(feature, new long[bucketStarts.size()]);
         }
 
-        // 3) Drop each event into the bucket its timestamp truncates to, tracking failures separately.
+        // 3) Drop each event into its bucket, tracking failures, token totals and estimated cost.
+        long totalInputTokens = 0;
+        long totalOutputTokens = 0;
+        double totalCost = 0;
         for (AiUsageEventPoint point : aiUsageEventRepository.findPointsSince(from)) {
             Integer index = indexByBucket.get(truncate(point.createdAt(), granularity));
             if (index != null) {
@@ -76,6 +83,13 @@ public class AiUsageAnalyticsService {
                 if (!point.success()) {
                     failuresByFeature.get(point.feature())[index]++;
                 }
+                if (point.inputTokens() != null) {
+                    totalInputTokens += point.inputTokens();
+                }
+                if (point.outputTokens() != null) {
+                    totalOutputTokens += point.outputTokens();
+                }
+                totalCost += aiPricingProperties.estimateCost(point.inputTokens(), point.outputTokens());
             }
         }
 
@@ -91,7 +105,15 @@ public class AiUsageAnalyticsService {
             );
         }
 
-        return new AiUsageAnalyticsDTO(range, granularity, labels, series);
+        AiUsageCostSummaryDTO cost = new AiUsageCostSummaryDTO(
+            totalInputTokens,
+            totalOutputTokens,
+            totalInputTokens + totalOutputTokens,
+            totalCost,
+            aiPricingProperties.getCurrency()
+        );
+
+        return new AiUsageAnalyticsDTO(range, granularity, labels, series, cost);
     }
 
     private AiUsageGranularity granularityFor(AiUsageTimeRange range) {

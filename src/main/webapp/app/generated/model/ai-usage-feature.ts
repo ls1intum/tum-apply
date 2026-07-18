@@ -9,11 +9,12 @@
  */
 
 
-export type AiUsageFeature = 'JOB_DESCRIPTION_GENERATION' | 'DOCUMENT_EXTRACTION';
+export type AiUsageFeature = 'JOB_DESCRIPTION_GENERATION' | 'TRANSLATION' | 'DOCUMENT_EXTRACTION';
 
 export const AiUsageFeature = {
     JobDescriptionGeneration: 'JOB_DESCRIPTION_GENERATION' as const,
+    Translation: 'TRANSLATION' as const,
     DocumentExtraction: 'DOCUMENT_EXTRACTION' as const,
 } as const;
 
-export const AiUsageFeatureValues = ['JOB_DESCRIPTION_GENERATION', 'DOCUMENT_EXTRACTION'] as const;
+export const AiUsageFeatureValues = ['JOB_DESCRIPTION_GENERATION', 'TRANSLATION', 'DOCUMENT_EXTRACTION'] as const;

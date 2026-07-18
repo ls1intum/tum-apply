@@ -12,10 +12,12 @@ import java.util.List;
  * @param granularity the bucket size used along the label axis
  * @param labels      the ordered time-bucket labels forming the x-axis
  * @param series      one trigger-count series per AI feature
+ * @param cost        aggregate token consumption and estimated cost over the range
  */
 public record AiUsageAnalyticsDTO(
     AiUsageTimeRange range,
     AiUsageGranularity granularity,
     List<String> labels,
-    List<AiUsageSeriesDTO> series
+    List<AiUsageSeriesDTO> series,
+    AiUsageCostSummaryDTO cost
 ) {}

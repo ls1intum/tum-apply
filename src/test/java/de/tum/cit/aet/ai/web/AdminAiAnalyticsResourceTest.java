@@ -51,7 +51,7 @@ class AdminAiAnalyticsResourceTest extends AbstractResourceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.labels()).isNotEmpty();
-        assertThat(result.series()).hasSize(2);
+        assertThat(result.series()).hasSize(3);
         assertThat(sumCounts(result, AiUsageFeature.JOB_DESCRIPTION_GENERATION)).isEqualTo(3);
         assertThat(sumCounts(result, AiUsageFeature.DOCUMENT_EXTRACTION)).isEqualTo(1);
         assertThat(sumFailures(result, AiUsageFeature.JOB_DESCRIPTION_GENERATION)).isEqualTo(1);
@@ -64,9 +64,26 @@ class AdminAiAnalyticsResourceTest extends AbstractResourceTest {
             .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
             .getAndRead(BASE_URL, Map.of("range", "ALL_TIME"), AiUsageAnalyticsDTO.class, 200);
 
-        assertThat(result.series()).hasSize(2);
+        assertThat(result.series()).hasSize(3);
         assertThat(sumCounts(result, AiUsageFeature.JOB_DESCRIPTION_GENERATION)).isZero();
         assertThat(sumCounts(result, AiUsageFeature.DOCUMENT_EXTRACTION)).isZero();
+    }
+
+    @Test
+    void shouldSumTokensAndEstimateCostWhenAdmin() {
+        saveEvent(AiUsageFeature.JOB_DESCRIPTION_GENERATION, true, 100, 200);
+        saveEvent(AiUsageFeature.TRANSLATION, true, 50, 30);
+
+        AiUsageAnalyticsDTO result = api
+            .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
+            .getAndRead(BASE_URL, Map.of("range", "LAST_WEEK"), AiUsageAnalyticsDTO.class, 200);
+
+        assertThat(result.cost()).isNotNull();
+        assertThat(result.cost().inputTokens()).isEqualTo(150);
+        assertThat(result.cost().outputTokens()).isEqualTo(230);
+        assertThat(result.cost().totalTokens()).isEqualTo(380);
+        assertThat(result.cost().currency()).isEqualTo("EUR");
+        assertThat(result.cost().estimatedCost()).isGreaterThan(0);
     }
 
     @Test
@@ -80,9 +97,15 @@ class AdminAiAnalyticsResourceTest extends AbstractResourceTest {
     }
 
     private void saveEvent(AiUsageFeature feature, boolean success) {
+        saveEvent(feature, success, null, null);
+    }
+
+    private void saveEvent(AiUsageFeature feature, boolean success, Integer inputTokens, Integer outputTokens) {
         AiUsageEvent event = new AiUsageEvent();
         event.setFeature(feature);
         event.setSuccess(success);
+        event.setInputTokens(inputTokens);
+        event.setOutputTokens(outputTokens);
         aiUsageEventRepository.save(event);
     }
 

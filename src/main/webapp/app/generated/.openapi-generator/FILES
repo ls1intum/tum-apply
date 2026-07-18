@@ -66,6 +66,7 @@ model/admin-created-job-dto.ts
 model/admin-export-task-dto.ts
 model/ai-feature-status-dto.ts
 model/ai-usage-analytics-dto.ts
+model/ai-usage-cost-summary-dto.ts
 model/ai-usage-feature.ts
 model/ai-usage-granularity.ts
 model/ai-usage-series-dto.ts

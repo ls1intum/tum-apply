@@ -12,6 +12,7 @@
     },
     "feature": {
       "jobDescriptionGeneration": "Stellenbeschreibung Generierung",
+      "translation": "Übersetzung",
       "documentExtraction": "Dokument Extraktion"
     },
     "chart": {
@@ -20,7 +21,9 @@
     "stats": {
       "totalCalls": "KI-Aufrufe gesamt",
       "successRate": "Erfolgsquote",
-      "failedCalls": "Fehlgeschlagen"
+      "failedCalls": "Fehlgeschlagen",
+      "tokensUsed": "Verbrauchte Tokens",
+      "estimatedCost": "Geschätzte Kosten"
     },
     "empty": "Es wurde noch keine KI-Nutzung erfasst.",
     "toast": {

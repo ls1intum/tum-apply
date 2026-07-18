@@ -61,6 +61,7 @@ export class AdminAnalyticsComponent {
   /** Feature toggle options. */
   readonly featureOptions: FeatureOption[] = [
     { label: 'analytics.feature.jobDescriptionGeneration', value: AiUsageFeature.JobDescriptionGeneration },
+    { label: 'analytics.feature.translation', value: AiUsageFeature.Translation },
     { label: 'analytics.feature.documentExtraction', value: AiUsageFeature.DocumentExtraction },
   ];
 
@@ -84,8 +85,14 @@ export class AdminAnalyticsComponent {
   /** Total "Write with TUMApply" generations in the selected range. */
   readonly generationTotal = computed(() => this.featureTotal(AiUsageFeature.JobDescriptionGeneration));
 
+  /** Total AI translations in the selected range. */
+  readonly translationTotal = computed(() => this.featureTotal(AiUsageFeature.Translation));
+
   /** Total applicant extractions in the selected range. */
   readonly extractionTotal = computed(() => this.featureTotal(AiUsageFeature.DocumentExtraction));
+
+  /** Aggregate token consumption and estimated cost for the selected range. */
+  readonly cost = computed(() => this.analytics()?.cost);
 
   /** Total failed triggers across all features in the selected range. */
   readonly failedCalls = computed(() =>

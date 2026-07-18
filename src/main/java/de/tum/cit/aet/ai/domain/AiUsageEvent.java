@@ -46,6 +46,12 @@ public class AiUsageEvent extends AbstractAuditingEntity {
     @Column(name = "success", nullable = false)
     private boolean success;
 
+    @Column(name = "input_tokens")
+    private Integer inputTokens;
+
+    @Column(name = "output_tokens")
+    private Integer outputTokens;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

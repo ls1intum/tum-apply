@@ -9,10 +9,12 @@
  */
 
 import type { AiUsageTimeRange } from './ai-usage-time-range';
+import type { AiUsageCostSummaryDTO } from './ai-usage-cost-summary-dto';
 import type { AiUsageGranularity } from './ai-usage-granularity';
 import type { AiUsageSeriesDTO } from './ai-usage-series-dto';
 
 export interface AiUsageAnalyticsDTO {
+    readonly cost?: AiUsageCostSummaryDTO;
     readonly granularity?: AiUsageGranularity;
     readonly labels?: Array<string>;
     readonly range?: AiUsageTimeRange;

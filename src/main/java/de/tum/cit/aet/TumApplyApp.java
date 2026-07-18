@@ -1,5 +1,6 @@
 package de.tum.cit.aet;
 
+import de.tum.cit.aet.ai.config.AiPricingProperties;
 import de.tum.cit.aet.core.config.ApplicantRetentionProperties;
 import de.tum.cit.aet.core.config.ApplicationProperties;
 import de.tum.cit.aet.core.config.CRLFLogConverter;
@@ -30,6 +31,7 @@ import tech.jhipster.config.JHipsterConstants;
         UserRetentionProperties.class,
         ApplicantRetentionProperties.class,
         KeycloakProperties.class,
+        AiPricingProperties.class,
     }
 )
 public class TumApplyApp {
@@ -103,7 +105,7 @@ public class TumApplyApp {
         Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
         if (
             activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT) &&
-            activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_PRODUCTION)
+                activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_PRODUCTION)
         ) {
             LOG.error(
                 "You have misconfigured your application! It should not run " + "with both the 'dev' and 'prod' profiles at the same time."
@@ -111,7 +113,7 @@ public class TumApplyApp {
         }
         if (
             activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT) &&
-            activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_CLOUD)
+                activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_CLOUD)
         ) {
             LOG.error(
                 "You have misconfigured your application! It should not " + "run with both the 'dev' and 'cloud' profiles at the same time."

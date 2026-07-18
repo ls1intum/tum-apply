@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
@@ -33,6 +34,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.jsoup.Jsoup;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.ResponseEntity;
+import org.springframework.ai.chat.metadata.Usage;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
@@ -106,19 +110,75 @@ public class AiService {
     }
 
     /**
+     * Token usage captured from a chat response, used for cost analytics. Fields may be {@code null}
+     * when the provider does not report usage (e.g. some streaming models).
+     */
+    private record AiUsageMetrics(Integer inputTokens, Integer outputTokens) {
+        private static final AiUsageMetrics EMPTY = new AiUsageMetrics(null, null);
+
+        /**
+         * Extracts token usage from a chat response.
+         *
+         * @param response the chat response, possibly {@code null}
+         * @return the captured metrics, or {@link #EMPTY} when no usage is available
+         */
+        static AiUsageMetrics from(ChatResponse response) {
+            Usage usage = response != null && response.getMetadata() != null ? response.getMetadata().getUsage() : null;
+            if (usage == null) {
+                return EMPTY;
+            }
+            return new AiUsageMetrics(usage.getPromptTokens(), usage.getCompletionTokens());
+        }
+    }
+
+    /**
      * Records a usage event for the analytics dashboard without ever disrupting the AI feature
      * itself: any persistence failure is swallowed and logged.
      *
      * @param feature the AI feature that was triggered
      * @param success whether the underlying AI call completed successfully
      * @param userId  the triggering user, or {@code null} if it could not be resolved
+     * @param metrics token usage captured from the AI response
      */
-    private void recordAiUsageSafely(AiUsageFeature feature, boolean success, UUID userId) {
+    private void recordAiUsageSafely(AiUsageFeature feature, boolean success, UUID userId, AiUsageMetrics metrics) {
         try {
-            aiUsageEventService.record(feature, success, userId);
+            aiUsageEventService.record(feature, success, userId, metrics.inputTokens(), metrics.outputTokens());
         } catch (Exception e) {
             log.warn("Failed to record AI usage event for feature {}", feature, e);
         }
+    }
+
+    /**
+     * Wires token-usage capture and analytics recording onto a streaming chat response, exposing only
+     * the generated text chunks to the caller. Usage typically arrives in the final streamed chunk, so
+     * the last response carrying token counts is retained and recorded on completion (or on error).
+     *
+     * @param responses the streamed chat responses
+     * @param feature   the AI feature being recorded
+     * @param userId    the triggering user, captured on the request thread; may be {@code null}
+     * @return a Flux of generated text chunks
+     */
+    private Flux<String> recordAndStream(Flux<ChatResponse> responses, AiUsageFeature feature, UUID userId) {
+        AtomicReference<ChatResponse> usageResponse = new AtomicReference<>();
+        return responses
+            .doOnNext(response -> {
+                Usage usage = response.getMetadata() != null ? response.getMetadata().getUsage() : null;
+                if (usage != null && usage.getTotalTokens() != null && usage.getTotalTokens() > 0) {
+                    usageResponse.set(response);
+                }
+            })
+            .mapNotNull(response ->
+                response.getResult() != null && response.getResult().getOutput() != null ? response.getResult().getOutput().getText() : null
+            )
+            .doOnComplete(() -> {
+                aiFeatureToggleService.recordSuccess();
+                recordAiUsageSafely(feature, true, userId, AiUsageMetrics.from(usageResponse.get()));
+            })
+            .doOnError(e -> {
+                aiFeatureToggleService.recordFailure();
+                recordAiUsageSafely(feature, false, userId, AiUsageMetrics.from(usageResponse.get()));
+            })
+            .delayElements(Duration.ofMillis(35));
     }
 
     /**
@@ -141,7 +201,7 @@ public class AiService {
         Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
         final String locationText = jobFormDTO.location() != null ? jobFormDTO.location().correctLanguageValue(descriptionLanguage) : "";
 
-        return chatClient
+        Flux<ChatResponse> responses = chatClient
             .prompt()
             .user(u ->
                 u
@@ -159,16 +219,9 @@ public class AiService {
                     .param("nonInclusiveWords", String.join(", ", nonInclusive))
             )
             .stream()
-            .content()
-            .doOnComplete(() -> {
-                aiFeatureToggleService.recordSuccess();
-                recordAiUsageSafely(AiUsageFeature.JOB_DESCRIPTION_GENERATION, true, triggeredBy);
-            })
-            .doOnError(e -> {
-                aiFeatureToggleService.recordFailure();
-                recordAiUsageSafely(AiUsageFeature.JOB_DESCRIPTION_GENERATION, false, triggeredBy);
-            })
-            .delayElements(Duration.ofMillis(35));
+            .chatResponse();
+
+        return recordAndStream(responses, AiUsageFeature.JOB_DESCRIPTION_GENERATION, triggeredBy);
     }
 
     /**
@@ -180,10 +233,13 @@ public class AiService {
      * @return Flux of content chunks as they are generated
      */
     public Flux<String> translateTextStream(String text, String toLang) {
+        // Resolve the triggering user on the request thread; the stream hooks run on reactor threads.
+        UUID triggeredBy = currentUserService.getUserIdIfAvailable().orElse(null);
+
         Set<String> inclusive = "de".equals(toLang) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
         Set<String> nonInclusive = "de".equals(toLang) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
 
-        return chatClient
+        Flux<ChatResponse> responses = chatClient
             .prompt()
             .user(u ->
                 u
@@ -194,10 +250,9 @@ public class AiService {
                     .param("nonInclusiveWords", String.join(", ", nonInclusive))
             )
             .stream()
-            .content()
-            .doOnComplete(() -> aiFeatureToggleService.recordSuccess())
-            .doOnError(e -> aiFeatureToggleService.recordFailure())
-            .delayElements(Duration.ofMillis(35));
+            .chatResponse();
+
+        return recordAndStream(responses, AiUsageFeature.TRANSLATION, triggeredBy);
     }
 
     /**
@@ -234,10 +289,10 @@ public class AiService {
                 }
             }
 
-            // 2) Send the images to the LLM with the extraction prompt
+            // 2) Send the images to the LLM with the extraction prompt, capturing token usage alongside the result
             Object result;
             try {
-                result = chatClient
+                ResponseEntity<ChatResponse, ?> responseEntity = chatClient
                     .prompt()
                     .user(u -> {
                         u.text(prompt);
@@ -246,12 +301,13 @@ public class AiService {
                         }
                     })
                     .call()
-                    .entity(targetClass);
+                    .responseEntity(targetClass);
+                result = responseEntity.entity();
                 aiFeatureToggleService.recordSuccess();
-                recordAiUsageSafely(AiUsageFeature.DOCUMENT_EXTRACTION, true, triggeredBy);
+                recordAiUsageSafely(AiUsageFeature.DOCUMENT_EXTRACTION, true, triggeredBy, AiUsageMetrics.from(responseEntity.response()));
             } catch (Exception e) {
                 aiFeatureToggleService.recordFailure();
-                recordAiUsageSafely(AiUsageFeature.DOCUMENT_EXTRACTION, false, triggeredBy);
+                recordAiUsageSafely(AiUsageFeature.DOCUMENT_EXTRACTION, false, triggeredBy, AiUsageMetrics.EMPTY);
                 throw e;
             }
 
