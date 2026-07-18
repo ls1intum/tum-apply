@@ -161,7 +161,8 @@ describe('ProgressStepperComponent', () => {
       vi.useFakeTimers();
       try {
         // Build a scrollable ancestor around the stepper host element.
-        const stepperHost = fixture.debugElement.query(de => de.componentInstance instanceof ProgressStepperComponent).nativeElement as HTMLElement;
+        const stepperHost = fixture.debugElement.query(de => de.componentInstance instanceof ProgressStepperComponent)
+          .nativeElement as HTMLElement;
         const scrollable = document.createElement('div');
         scrollable.style.overflowY = 'auto';
         Object.defineProperty(scrollable, 'scrollHeight', { configurable: true, value: 1000 });
