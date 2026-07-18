@@ -4,14 +4,14 @@ import { ChartModule } from 'primeng/chart';
 import { ThemeService } from 'app/service/theme.service';
 
 /** A single line series rendered by {@link LineChartComponent}. */
-export type LineChartDataset = {
+export interface LineChartDataset {
   /** Legend label for the series. */
   label: string;
   /** Y-values, one per x-axis label. */
   data: number[];
   /** Optional theme color token (CSS custom property, e.g. '--color-accent-default'); defaults to a palette token. */
   colorVar?: string;
-};
+}
 
 /** App theme color tokens used, in order, for the line palette. All adapt across the four themes. */
 const LINE_COLOR_TOKENS = ['--color-primary-default', '--color-accent-default', '--color-positive-default', '--color-warning-default'];

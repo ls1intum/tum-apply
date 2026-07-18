@@ -14,7 +14,10 @@ import { AiUsageTimeRange } from 'app/generated/model/ai-usage-time-range';
 import { AiUsageFeature } from 'app/generated/model/ai-usage-feature';
 
 /** A selectable AI feature paired with its i18n label for the graph toggle. */
-type FeatureOption = { label: string; value: AiUsageFeature };
+interface FeatureOption {
+  label: string;
+  value: AiUsageFeature;
+}
 
 /**
  * Admin dashboard visualizing how often each AI feature is triggered over time.

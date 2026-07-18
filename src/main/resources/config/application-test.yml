@@ -125,5 +125,5 @@ aet:
   ai:
     pricing:
       currency: EUR
-      input-per-million: 1.0
+      input-per-million: 0.25
       output-per-million: 2.0
