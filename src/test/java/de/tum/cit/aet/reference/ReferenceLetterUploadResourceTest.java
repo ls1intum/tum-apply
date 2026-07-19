@@ -6,6 +6,8 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.documents.domain.Document;
+import de.tum.cit.aet.core.documents.repository.DocumentRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.constants.RecommendationType;
 import de.tum.cit.aet.job.domain.Job;
@@ -74,6 +76,9 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
 
     @Autowired
     ReferenceRequestRepository referenceRequestRepository;
+
+    @Autowired
+    DocumentRepository documentRepository;
 
     @Autowired
     DatabaseCleaner databaseCleaner;
@@ -212,6 +217,8 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
 
             assertThat(updated.status()).isEqualTo(ReferenceRequestStatus.SUBMITTED);
             assertThat(updated.documentId()).isNotNull();
+            Document doc = documentRepository.findById(updated.documentId()).orElseThrow();
+            assertThat(doc.getUploadedBy()).isEqualTo(null);
             assertThat(updated.relationship()).isEqualTo(RefereeRelationship.RESEARCH_SUPERVISOR);
             assertThat(updated.ratingIntellectualAbility()).isEqualTo(PeerRating.TOP_FIVE_PERCENT);
             assertThat(updated.overallRecommendation()).isEqualTo(OverallRecommendation.STRONGLY_RECOMMEND);
