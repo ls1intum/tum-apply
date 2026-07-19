@@ -403,6 +403,32 @@ public class ReferenceRequestService {
     }
 
     /**
+     * Cancels every still-pending reference request on a withdrawn application and notifies the referee
+     * that their recommendation is no longer needed. Only {@code REQUESTED} entries are affected; once
+     * cancelled the invitation link stops accepting uploads (see {@link #assertReferenceActionAllowed}).
+     * Already submitted, declined or expired requests are left untouched.
+     *
+     * @param application the application that was just withdrawn
+     * @return the number of reference requests that were cancelled
+     */
+    public int cancelPendingForWithdrawnApplication(Application application) {
+        List<ReferenceRequest> entries = referenceRequestRepository.findByApplicationApplicationIdOrderByCreatedAtAsc(
+            application.getApplicationId()
+        );
+        int cancelled = 0;
+        for (ReferenceRequest entry : entries) {
+            if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
+                continue;
+            }
+            entry.setStatus(ReferenceRequestStatus.CANCELLED);
+            referenceRequestRepository.save(entry);
+            sendCancellationEmail(application, entry);
+            cancelled++;
+        }
+        return cancelled;
+    }
+
+    /**
      * Flips every {@code REQUESTED} entry whose token has already lapsed to {@code EXPIRED}.
      *
      * @return the number of rows that were transitioned to EXPIRED
@@ -557,6 +583,46 @@ public class ReferenceRequestService {
             .to(refereeStub)
             .language(Language.ENGLISH)
             .emailType(emailType)
+            .content(ctx)
+            .researchGroup(job.getResearchGroup())
+            .sendAlways(true)
+            .build();
+
+        emailSender.sendAsync(email);
+    }
+
+    /**
+     * Notifies a referee that a pending request was cancelled because the applicant withdrew their
+     * application. Mirrors {@link #sendRefereeEmail} but carries no upload link or deadline — there is no
+     * action left for the referee to take.
+     *
+     * @param application the withdrawn application the referee was attached to
+     * @param entry       the reference request that was cancelled
+     */
+    private void sendCancellationEmail(Application application, ReferenceRequest entry) {
+        Job job = application.getJob();
+        User refereeStub = new User();
+        refereeStub.setEmail(entry.getEmail());
+        refereeStub.setFirstName(entry.getFirstName());
+        refereeStub.setLastName(entry.getLastName());
+
+        ReferenceLetterContextDTO ctx = new ReferenceLetterContextDTO(
+            entry.getTitle(),
+            entry.getFirstName(),
+            entry.getLastName(),
+            application.getApplicantFirstName(),
+            application.getApplicantLastName(),
+            job.getTitle(),
+            job.getResearchGroup().getName(),
+            "",
+            "",
+            job.getRecommendationType()
+        );
+
+        Email email = Email.builder()
+            .to(refereeStub)
+            .language(Language.ENGLISH)
+            .emailType(EmailType.REFERENCE_LETTER_CANCELLED)
             .content(ctx)
             .researchGroup(job.getResearchGroup())
             .sendAlways(true)

@@ -342,6 +342,21 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
                 400
             );
         }
+
+        @Test
+        void shouldReject400WhenReferenceWasCancelled() {
+            ReferenceRequest entry = savedRequestedEntry("cancelled-token");
+            entry.setStatus(ReferenceRequestStatus.CANCELLED);
+            referenceRequestRepository.save(entry);
+
+            api.multipartPostAndRead(
+                String.format(CONTEXT_URL, "cancelled-token"),
+                List.of(pdf("letter.pdf")),
+                assessmentParams(),
+                new TypeReference<>() {},
+                400
+            );
+        }
     }
 
     @Nested
