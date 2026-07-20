@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -327,26 +326,32 @@ class ReferenceLetterUploadResourceTest extends AbstractResourceTest {
         private static Stream<Arguments> invalidRequestScenarios() {
             return Stream.of(
                 // Token & Status Checks
-                Arguments.of("token already submitted",
+                Arguments.of(
+                    "token already submitted",
                     (BiConsumer<ReferenceLetterUploadResourceTest, ReferenceRequest>) (_, entry) ->
-                        entry.setStatus(ReferenceRequestStatus.SUBMITTED)),
-
-                Arguments.of("token is expired",
+                        entry.setStatus(ReferenceRequestStatus.SUBMITTED)
+                ),
+                Arguments.of(
+                    "token is expired",
                     (BiConsumer<ReferenceLetterUploadResourceTest, ReferenceRequest>) (_, entry) ->
-                        entry.setTokenExpiresAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(1))),
-
-                Arguments.of("reference was cancelled",
+                        entry.setTokenExpiresAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(1))
+                ),
+                Arguments.of(
+                    "reference was cancelled",
                     (BiConsumer<ReferenceLetterUploadResourceTest, ReferenceRequest>) (_, entry) ->
-                        entry.setStatus(ReferenceRequestStatus.CANCELLED)),
-
+                        entry.setStatus(ReferenceRequestStatus.CANCELLED)
+                ),
                 // Recommendation Type Mismatches
-                Arguments.of("invalid payload sent for EVALUATION_ONLY job",
+                Arguments.of(
+                    "invalid payload sent for EVALUATION_ONLY job",
                     (BiConsumer<ReferenceLetterUploadResourceTest, ReferenceRequest>) (test, _) ->
-                        test.setJobRecommendationType(RecommendationType.EVALUATION_ONLY)),
-
-                Arguments.of("invalid payload sent for LETTER_ONLY job",
+                        test.setJobRecommendationType(RecommendationType.EVALUATION_ONLY)
+                ),
+                Arguments.of(
+                    "invalid payload sent for LETTER_ONLY job",
                     (BiConsumer<ReferenceLetterUploadResourceTest, ReferenceRequest>) (test, _) ->
-                        test.setJobRecommendationType(RecommendationType.LETTER_ONLY))
+                        test.setJobRecommendationType(RecommendationType.LETTER_ONLY)
+                )
             );
         }
     }
