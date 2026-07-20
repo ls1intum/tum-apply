@@ -404,18 +404,15 @@ public class ReferenceRequestService {
 
     /**
      * Cancels every still-pending reference request on a withdrawn application and notifies the referee
-     * that their recommendation is no longer needed. Only {@code REQUESTED} entries are affected; once
-     * cancelled the invitation link stops accepting uploads (see {@link #assertReferenceActionAllowed}).
+     * that their recommendation is no longer needed. Only {@code REQUESTED} entries are affected.
      * Already submitted, declined or expired requests are left untouched.
      *
      * @param application the application that was just withdrawn
-     * @return the number of reference requests that were cancelled
      */
-    public int cancelPendingForWithdrawnApplication(Application application) {
+    public void cancelPendingForWithdrawnApplication(Application application) {
         List<ReferenceRequest> entries = referenceRequestRepository.findByApplicationApplicationIdOrderByCreatedAtAsc(
             application.getApplicationId()
         );
-        int cancelled = 0;
         for (ReferenceRequest entry : entries) {
             if (entry.getStatus() != ReferenceRequestStatus.REQUESTED) {
                 continue;
@@ -423,9 +420,7 @@ public class ReferenceRequestService {
             entry.setStatus(ReferenceRequestStatus.CANCELLED);
             referenceRequestRepository.save(entry);
             sendCancellationEmail(application, entry);
-            cancelled++;
         }
-        return cancelled;
     }
 
     /**
@@ -592,9 +587,7 @@ public class ReferenceRequestService {
     }
 
     /**
-     * Notifies a referee that a pending request was cancelled because the applicant withdrew their
-     * application. Mirrors {@link #sendRefereeEmail} but carries no upload link or deadline — there is no
-     * action left for the referee to take.
+     * Notifies a referee that a request was cancelled because the applicant withdrew their application.
      *
      * @param application the withdrawn application the referee was attached to
      * @param entry       the reference request that was cancelled
