@@ -85,7 +85,7 @@ VALUES
         ('11111111-0000-0000-0000-000000000030', 'noor.ahmed@tumapply.local', NULL, 'Noor', 'Ahmed', 'female', 'fr', '1995-02-02', '+92 42 1234567', 'https://noorahmed.pk', 'https://linkedin.com/in/noorahmed123', 'en', NULL);
 
 -- Applicant credentials for internal (non-Keycloak) authentication.
--- Applicant sign-in moved out of Keycloak's external-login realm into TUM Apply's own user
+-- Applicant sign-in moved out of Keycloak's external-login realm into DocApply's own user
 -- management, so applicant accounts need a local BCrypt password hash and a verified email.
 -- The hash corresponds to the password 'applicant' (matches the Lighthouse TEST_PASSWORD).
 -- TUM staff (admins/professors/employees) keep authenticating via Keycloak and need no password.

@@ -97,7 +97,7 @@ management:
 
 spring:
   application:
-    name: TUMApply
+    name: DocApply
   docker:
     compose:
       enabled: true
@@ -177,13 +177,13 @@ spring:
       max-request-size: 25MB
   task:
     execution:
-      thread-name-prefix: tum-apply-task-
+      thread-name-prefix: docapply-task-
       pool:
         core-size: 2
         max-size: 50
         queue-capacity: 10000
     scheduling:
-      thread-name-prefix: tum-apply-scheduling-
+      thread-name-prefix: docapply-scheduling-
       pool:
         size: 2
   thymeleaf:
@@ -223,7 +223,7 @@ info:
 
 jhipster:
   clientApp:
-    name: 'tumApplyApp'
+    name: 'docApplyApp'
   # By default CORS is disabled. Uncomment to enable.
   # cors:
   #   allowed-origins: "http://localhost:8100,http://localhost:9000"
@@ -233,12 +233,12 @@ jhipster:
   #   allow-credentials: true
   #   max-age: 1800
   mail:
-    from: TUMApply@localhost
+    from: DocApply@localhost
   api-docs:
     default-include-pattern: /api/**
     management-include-pattern: /management/**
-    title: TUM Apply API
-    description: TUM Apply API documentation
+    title: DocApply API
+    description: DocApply API documentation
     version: 0.0.1
     terms-of-service-url:
     contact-name:
@@ -277,7 +277,7 @@ aet:
   email:
     enabled: ${AET_EMAIL_ENABLED:false}
     from: ${AET_EMAIL_FROM:tum-apply.aet@xcit.tum.de}
-    from-name: ${AET_EMAIL_FROM_NAME:TUMApply}
+    from-name: ${AET_EMAIL_FROM_NAME:DocApply}
   data-export:
     root: /tmp/tum-apply-exports
     expires-days: 1
@@ -369,7 +369,7 @@ security:
 
 # ===================================================================
 # Application-issued JWTs (internal user management for applicants)
-# - TUMApply signs its own access/refresh tokens for applicants; Keycloak is only used for TUM staff.
+# - DocApply signs its own access/refresh tokens for applicants; Keycloak is only used for TUM staff.
 # - issuer: stable issuer URI embedded in app tokens and trusted by the resource server
 # - kid: key id placed in the JWT header (enables future key rotation)
 # - access/refresh-ttl-seconds: token lifetimes
@@ -389,7 +389,7 @@ app:
   # allowed-origins must list every front-end origin (comma-separated).
   webauthn:
     rp-id: ${APP_WEBAUTHN_RP_ID:localhost}
-    rp-name: ${APP_WEBAUTHN_RP_NAME:TUM Apply}
+    rp-name: ${APP_WEBAUTHN_RP_NAME:DocApply}
     allowed-origins: ${APP_WEBAUTHN_ALLOWED_ORIGINS:http://localhost:4200,http://localhost:8080}
 
 

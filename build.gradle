@@ -117,7 +117,7 @@ idea {
 defaultTasks "bootRun"
 
 springBoot {
-  mainClass = "de.tum.cit.aet.TumApplyApp"
+  mainClass = "de.tum.cit.aet.DocApplyApp"
 }
 
 // Netty's NativeLibraryUtil calls System.loadLibrary at startup, which JDK 24+

@@ -1,6 +1,24 @@
 {
   "systemSettings": {
     "title": "Systemeinstellungen",
+    "general": {
+      "title": "Allgemein",
+      "siteName": {
+        "label": "Seitenname",
+        "description": "Der Name, der überall angezeigt wird, wo die Plattform sich selbst nennt — Kopfzeile, Seitentitel, E-Mails und exportierte Dokumente.",
+        "save": "Speichern",
+        "confirm": {
+          "header": "Seitennamen ändern?",
+          "message": "Der Seitenname wird auf \"{newName}\" geändert und auf der gesamten Seite übernommen — Kopfzeile, Seitentitel, E-Mails und exportierte Dokumente. Die Seite wird neu geladen, um die Änderung zu übernehmen."
+        },
+        "toast": {
+          "error": {
+            "summary": "Speichern fehlgeschlagen",
+            "detail": "Der Seitenname konnte nicht aktualisiert werden."
+          }
+        }
+      }
+    },
     "ai": {
       "title": "KI-Funktionen",
       "toggle": {

@@ -32,13 +32,13 @@ import tech.jhipster.config.JHipsterConstants;
         KeycloakProperties.class,
     }
 )
-public class TumApplyApp {
+public class DocApplyApp {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TumApplyApp.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DocApplyApp.class);
 
     private final Environment env;
 
-    public TumApplyApp(Environment env) {
+    public DocApplyApp(Environment env) {
         this.env = env;
     }
 
@@ -48,7 +48,7 @@ public class TumApplyApp {
      * @param args the command line arguments.
      */
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(TumApplyApp.class);
+        SpringApplication app = new SpringApplication(DocApplyApp.class);
         DefaultProfileUtil.addDefaultProfile(app);
         Environment env = app.run(args).getEnvironment();
         logApplicationStartup(env);
@@ -92,7 +92,7 @@ public class TumApplyApp {
     }
 
     /**
-     * Initializes TUMApply.
+     * Initializes DocApply.
      * <p>
      * Spring profiles can be configured with a program argument --spring.profiles.active=your-active-profile
      * <p>

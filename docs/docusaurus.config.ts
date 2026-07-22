@@ -5,9 +5,9 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'TUMApply',
+  title: 'DocApply',
   tagline: 'Documentation for Users',
-  favicon: 'img/tum-apply-logo.svg',
+  favicon: 'img/docapply-logo.svg',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -126,10 +126,10 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'TUMApply Docs',
+      title: 'DocApply Docs',
       logo: {
-        alt: 'TUMApply Logo',
-        src: 'img/tum-apply-logo.svg'
+        alt: 'DocApply Logo',
+        src: 'img/docapply-logo.svg'
       },
       items: [
         {
@@ -162,7 +162,7 @@ const config: Config = {
     footer: {
       style: 'dark',
       links: [],
-      copyright: `© 2026 Technische Universität München – Built with ❤️ by the TUMApply Team at Applied Education Technologies (AET)`
+      copyright: `© 2026 Technische Universität München – Built with ❤️ by the DocApply Team at Applied Education Technologies (AET)`
     },
     prism: {
       theme: prismThemes.github,

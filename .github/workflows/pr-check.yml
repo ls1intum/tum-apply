@@ -369,7 +369,7 @@ jobs:
             username: 'applicant2@tumapply.local'
             password: 'applicant'
             auth_method: 'server'
-            # Applicants authenticate via TUM Apply's internal user management (POST /api/auth/login),
+            # Applicants authenticate via DocApply's internal user management (POST /api/auth/login),
             # not Keycloak; this realm is unused for the 'server' auth method.
             keycloak_realm: ''
             paths: |
@@ -480,7 +480,7 @@ jobs:
               break
             fi
 
-            if grep -q "Application 'TUMApply' is running!" server.log; then
+            if grep -q "Application 'DocApply' is running!" server.log; then
               echo "✅ Server started successfully!"
               break
             fi
@@ -489,7 +489,7 @@ jobs:
             sleep 3
           done
 
-          if ! curl -sSf http://localhost:8080/actuator/health >/dev/null 2>&1 && ! grep -q "Application 'TUMApply' is running!" server.log; then
+          if ! curl -sSf http://localhost:8080/actuator/health >/dev/null 2>&1 && ! grep -q "Application 'DocApply' is running!" server.log; then
             echo "❌ Server failed to start!"
             cat server.log
             exit 1

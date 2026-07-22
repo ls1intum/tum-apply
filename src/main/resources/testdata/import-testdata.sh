@@ -2,7 +2,7 @@
 export MSYS_NO_PATHCONV=1
 
 ###############################################################################
-# 🧪 TumApply Test Data Import Script
+# 🧪 DocApply Test Data Import Script
 #
 # This script imports all SQL files located in:
 #   src/main/resources/testdata/ and its subdirectories, sorted alphabetically.

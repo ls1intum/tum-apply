@@ -1,7 +1,7 @@
 {
   "realm": "tumidpldap",
   "enabled": true,
-  "displayName": "TUMApply TUM Login Realm",
+  "displayName": "DocApply TUM Login Realm",
   "webAuthnPolicyPasswordlessPasskeysEnabled": true,
   "users": [
     {
@@ -523,7 +523,7 @@
   "clients": [
     {
       "clientId": "tumapply-client",
-      "name": "TUMApply Client",
+      "name": "DocApply Client",
       "enabled": true,
       "publicClient": true,
       "protocol": "openid-connect",
@@ -552,7 +552,7 @@
     },
     {
       "clientId": "tumapply-server-client",
-      "name": "TUMApply Server Service",
+      "name": "DocApply Server Service",
       "enabled": true,
       "publicClient": false,
       "protocol": "openid-connect",
@@ -583,7 +583,7 @@
     },
     {
       "clientId": "tumapply-admin-api",
-      "name": "TUMApply Admin API",
+      "name": "DocApply Admin API",
       "enabled": true,
       "publicClient": false,
       "protocol": "openid-connect",

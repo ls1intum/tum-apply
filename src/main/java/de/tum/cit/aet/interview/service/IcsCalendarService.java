@@ -31,7 +31,7 @@ public class IcsCalendarService {
         StringBuilder ics = new StringBuilder();
         ics.append("BEGIN:VCALENDAR\r\n");
         ics.append("VERSION:2.0\r\n");
-        ics.append("PRODID:-//TUMApply//Interview//EN\r\n");
+        ics.append("PRODID:-//DocApply//Interview//EN\r\n");
         ics.append("CALSCALE:GREGORIAN\r\n");
         ics.append("METHOD:PUBLISH\r\n");
         ics.append("BEGIN:VEVENT\r\n");

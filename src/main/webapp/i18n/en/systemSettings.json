@@ -1,6 +1,24 @@
 {
   "systemSettings": {
     "title": "System Settings",
+    "general": {
+      "title": "General",
+      "siteName": {
+        "label": "Site Name",
+        "description": "The name shown everywhere the platform refers to itself — header, page titles, emails, and exported documents.",
+        "save": "Save",
+        "confirm": {
+          "header": "Change Site Name?",
+          "message": "This changes the site name to \"{newName}\" across the whole page — header, page titles, emails, and exported documents. The page will reload to apply the change."
+        },
+        "toast": {
+          "error": {
+            "summary": "Save Failed",
+            "detail": "Could not update the site name."
+          }
+        }
+      }
+    },
     "ai": {
       "title": "AI Features",
       "toggle": {

@@ -37,7 +37,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.util.StringUtils;
 
 /**
- * Wires the signing material that lets TUMApply mint its own JWTs for applicants.
+ * Wires the signing material that lets DocApply mint its own JWTs for applicants.
  *
  * The RSA keypair is loaded from configuration (PEM via environment/secret). When the keypair is not fully
  * configured an ephemeral keypair is generated at startup — acceptable for local development only; the
@@ -81,7 +81,7 @@ public class AppTokenKeyConfiguration {
      *
      * @param tokenIssuer       issuer URI embedded in app tokens and trusted by the resource server
      * @param tokenKid          key id placed in the JWT header (enables future key rotation)
-     * @param azp               authorized-party claim identifying the TUMApply client
+     * @param azp               authorized-party claim identifying the DocApply client
      * @param accessTtlSeconds  access-token lifetime in seconds
      * @param refreshTtlSeconds refresh-token lifetime in seconds
      * @return the resolved app-token properties

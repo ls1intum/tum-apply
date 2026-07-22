@@ -4,25 +4,25 @@ sidebar_label: Production Infrastructure
 
 # Production Infrastructure
 
-This guide covers how TUMApply is deployed to the testserver and production environments.
+This guide covers how DocApply is deployed to the testserver and production environments.
 
 ---
 
 ## Docker Setup
 
-TUMApply uses Docker Compose for server deployments. The configuration files are located in the `docker/` directory:
+DocApply uses Docker Compose for server deployments. The configuration files are located in the `docker/` directory:
 
 | **File** | **Purpose** |
 |---|---|
-| `docker/compose.yaml` | Testserver deployment (MySQL + TUMApply + Nginx) |
-| `docker/compose-prod.yaml` | Production deployment (MySQL + TUMApply + Nginx) |
+| `docker/compose.yaml` | Testserver deployment (MySQL + DocApply + Nginx) |
+| `docker/compose-prod.yaml` | Production deployment (MySQL + DocApply + Nginx) |
 | `docker/mysql.env` | MySQL environment variables (local defaults) |
-| `docker/tumapply.env` | TUMApply environment variables (local defaults) |
+| `docker/tumapply.env` | DocApply environment variables (local defaults) |
 
 Both compose files run the full stack:
 
 - **MySQL** — database with UTF-8 support
-- **TUMApply** — the application image pulled from `ghcr.io/ls1intum/tum-apply`
+- **DocApply** — the application image pulled from `ghcr.io/ls1intum/tum-apply`
 - **Nginx** — reverse proxy with SSL termination using TUM certificates
 
 ---

@@ -22,9 +22,10 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 import { PublicConfigResourceApi } from 'app/generated/api/public-config-resource-api';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { SiteConfigService } from 'app/core/config/site-config.service';
 import { initializeAppConfig } from 'app/core/config/runtime-config.loader';
 
-import { TUMApplyPreset } from '../content/theming/tumapplypreset';
+import { DocApplyPreset } from '../content/theming/docapplypreset';
 
 import { I18N_HASH } from './environments/environment';
 import { httpInterceptors } from './core/interceptor';
@@ -44,9 +45,10 @@ import { PrimengTranslationService } from './shared/language/primeng-translation
 export async function initializeApp(): Promise<void> {
   const api = inject(PublicConfigResourceApi);
   const appConfigService = inject(ApplicationConfigService);
+  const siteConfigService = inject(SiteConfigService);
   const authFacade = inject(AuthFacadeService);
 
-  await initializeAppConfig(api, appConfigService)();
+  await initializeAppConfig(api, appConfigService, siteConfigService)();
   await authFacade.initAuth();
 }
 
@@ -64,9 +66,9 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     providePrimeNG({
       theme: {
-        preset: TUMApplyPreset,
+        preset: DocApplyPreset,
         options: {
-          darkModeSelector: '.tum-apply-dark-mode',
+          darkModeSelector: '.docapply-dark-mode',
           cssLayer: { name: 'primeng', order: 'theme, base, primeng' },
         },
       },

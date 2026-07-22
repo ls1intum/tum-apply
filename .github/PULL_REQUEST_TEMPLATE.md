@@ -1,4 +1,4 @@
-<!-- Thanks for contributing to TUMApply! Before you submit your pull request, please make sure to check all tasks by putting an x in the [ ] (don't: [x ], [ x], do: [x]). Remove not applicable tasks and do not leave them unchecked -->
+<!-- Thanks for contributing to DocApply! Before you submit your pull request, please make sure to check all tasks by putting an x in the [ ] (don't: [x ], [ x], do: [x]). Remove not applicable tasks and do not leave them unchecked -->
 <!-- If your pull request is not ready for review yet, create a draft pull request! -->
 
 ### Checklist
@@ -45,7 +45,7 @@
 
 Prerequisites:
 
-1. Log in to TUMApply
+1. Log in to DocApply
 2.
 
 ### Review Progress
