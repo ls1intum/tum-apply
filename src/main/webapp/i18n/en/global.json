@@ -298,7 +298,7 @@
       },
       "aiExtractionSuccess": {
         "summary": "Extraction Complete",
-        "detail": "Details found in your document(s) have been automatically filled. Please review them for accuracy."
+        "detail": "Details found in your documents have been automatically filled. Please review them for accuracy."
       }
     },
     "applicationPage1": {
