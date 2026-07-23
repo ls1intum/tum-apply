@@ -260,7 +260,8 @@
         "requested": "(requested)",
         "submitted": "(submitted)",
         "expired": "(expired)",
-        "declined": "(declined)"
+        "declined": "(declined)",
+        "cancelled": "(cancelled)"
       },
       "reference_deadline": "Deadline",
       "reference_confidential": "Confidential - only the supervisor can view the submitted recommendations.",
@@ -771,6 +772,10 @@
     "declined": {
       "title": "Request declined",
       "message": "You have declined to provide a recommendation. You may close this page."
+    },
+    "cancelled": {
+      "title": "Request cancelled",
+      "message": "The applicant has withdrawn their application, so this recommendation is no longer needed. You may close this page."
     },
     "summary": {
       "title": "Summary",
