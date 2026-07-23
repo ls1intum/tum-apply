@@ -288,7 +288,7 @@
       "helperCv": "Save time by letting our AI automatically fill your details from your CV.",
       "helperCertificates": "Save time by letting our AI automatically fill your degree information from your certificates.",
       "checkInfo": "Please check the extracted information for completeness and accuracy.",
-      "inputsLockedNote": "Your inputs are locked while the extraction is running.",
+      "inputsLockedNote": "Manual entry is disabled while extraction is running.",
       "consentInfo": "AI consent information",
       "button": "AI Extraction",
       "loading": "Extracting...",
@@ -298,7 +298,7 @@
       },
       "aiExtractionSuccess": {
         "summary": "Extraction Complete",
-        "detail": "We've filled in the details we could read from your document. Please review them for accuracy."
+        "detail": "Details found in your document(s) have been automatically filled. Please review them for accuracy."
       }
     },
     "applicationPage1": {
