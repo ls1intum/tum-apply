@@ -288,7 +288,7 @@
       "helperCv": "Spare Zeit und lass unsere KI deine Daten automatisch aus deinem Lebenslauf ausfüllen.",
       "helperCertificates": "Spare Zeit und lass unsere KI deine Studiendaten automatisch aus deinen Zeugnissen ausfüllen.",
       "checkInfo": "Bitte überprüfe die extrahierten Informationen auf Vollständigkeit und Richtigkeit.",
-      "inputsLockedNote": "Die manuelle Eingabe ist bei laufender Extraktion deaktiviert.",
+      "inputsLockedNote": "Manuelle Eingabe ist bei laufender Extraktion deaktiviert.",
       "consentInfo": "Informationen zur KI-Zustimmung",
       "button": "KI-Extraktion",
       "loading": "Extrahiert...",
