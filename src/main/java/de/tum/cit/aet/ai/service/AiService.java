@@ -45,6 +45,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 @Slf4j
@@ -53,6 +55,9 @@ public class AiService {
     // Document & page limit for AI extraction
     private static final int MAX_DOCS = 5;
     private static final int MAX_PAGES_PER_DOC = 5;
+
+    // Upper bound for a single blocking extraction call to the AI provider
+    private static final Duration EXTRACTION_AI_CALL_TIMEOUT = Duration.ofSeconds(60);
 
     @Value("classpath:prompts/JobDescriptionGeneration.st")
     private Resource jobGenerationResource;
@@ -290,16 +295,21 @@ public class AiService {
             // 2) Send the images to the LLM with the extraction prompt, capturing token usage alongside the result
             Object result;
             try {
-                ResponseEntity<ChatResponse, ?> responseEntity = chatClient
-                    .prompt()
-                    .user(u -> {
-                        u.text(prompt);
-                        for (ByteArrayResource pageImage : pageImages) {
-                            u.media(MediaType.IMAGE_PNG, pageImage);
-                        }
-                    })
-                    .call()
-                    .responseEntity(targetClass);
+                ResponseEntity<ChatResponse, ?> responseEntity = Mono.fromCallable(() ->
+                    chatClient
+                        .prompt()
+                        .user(u -> {
+                            u.text(prompt);
+                            for (ByteArrayResource pageImage : pageImages) {
+                                u.media(MediaType.IMAGE_PNG, pageImage);
+                            }
+                        })
+                        .call()
+                        .responseEntity(targetClass)
+                )
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .timeout(EXTRACTION_AI_CALL_TIMEOUT)
+                    .block();
                 result = responseEntity.entity();
                 aiFeatureToggleService.recordSuccess();
                 recordAiUsageSafely(AiUsageFeature.DOCUMENT_EXTRACTION, true, triggeredBy, AiUsageMetrics.from(responseEntity.response()));

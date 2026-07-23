@@ -289,12 +289,17 @@
       "helperCv": "Save time by letting our AI automatically fill your details from your CV.",
       "helperCertificates": "Save time by letting our AI automatically fill your degree information from your certificates.",
       "checkInfo": "Please check the extracted information for completeness and accuracy.",
+      "inputsLockedNote": "Manual entry is disabled while extraction is running.",
       "consentInfo": "AI consent information",
       "button": "AI Extraction",
       "loading": "Extracting...",
       "aiExtractionFailed": {
         "summary": "Extraction Failed",
         "detail": "Make sure the file is a clear, readable PDF, or fill the fields in manually."
+      },
+      "aiExtractionSuccess": {
+        "summary": "Extraction Complete",
+        "detail": "Details found in your documents have been automatically filled. Please review them for accuracy."
       }
     },
     "applicationPage1": {
