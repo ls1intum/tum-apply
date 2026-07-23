@@ -40,6 +40,7 @@
         "info": "TUMApply - Meine Gruppe"
       },
       "admin": {
+        "analytics": "TUMApply - KI-Analyse",
         "dependencies": "TUMApply - Abhängigkeiten",
         "exports": "TUMApply - Admin-Exporte",
         "systemSettings": "TUMApply - Systemeinstellungen"
@@ -260,7 +261,8 @@
         "requested": "(angefragt)",
         "submitted": "(eingereicht)",
         "expired": "(abgelaufen)",
-        "declined": "(abgelehnt)"
+        "declined": "(abgelehnt)",
+        "cancelled": "(zurückgezogen)"
       },
       "reference_deadline": "Frist",
       "reference_confidential": "Vertraulich - nur die betreuende Person kann die eingereichten Empfehlungen einsehen.",
@@ -771,6 +773,10 @@
     "declined": {
       "title": "Anfrage abgelehnt",
       "message": "Sie haben abgelehnt, eine Empfehlung bereitzustellen. Sie können diese Seite schließen."
+    },
+    "cancelled": {
+      "title": "Anfrage zurückgezogen",
+      "message": "Die bewerbende Person hat ihre Bewerbung zurückgezogen, daher wird die Empfehlung nicht mehr benötigt. Sie können diese Seite schließen."
     },
     "summary": {
       "title": "Zusammenfassung",
