@@ -6,8 +6,6 @@ import de.tum.cit.aet.ai.repository.AiUsageEventRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Persists AI feature usage events for the admin analytics dashboard.
@@ -24,9 +22,7 @@ public class AiUsageEventService {
     }
 
     /**
-     * Persists a single AI usage event in its own transaction, keeping recording isolated from the
-     * surrounding AI request. The request may run outside any transaction (for example on a reactive
-     * streaming thread after the controller has already returned), so a new transaction is started here.
+     * Persists a single AI usage event for the analytics dashboard.
      *
      * @param feature      the AI feature that was triggered
      * @param success      whether the underlying AI call completed successfully
@@ -34,7 +30,6 @@ public class AiUsageEventService {
      * @param inputTokens  prompt tokens consumed, or {@code null} if the provider did not report usage
      * @param outputTokens completion tokens produced, or {@code null} if the provider did not report usage
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void record(AiUsageFeature feature, boolean success, UUID userId, Integer inputTokens, Integer outputTokens) {
         AiUsageEvent event = new AiUsageEvent();
         event.setFeature(feature);

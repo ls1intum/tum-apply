@@ -1,5 +1,6 @@
 package de.tum.cit.aet.ai.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.ai.constants.AiUsageFeature;
 import java.util.List;
 
@@ -11,4 +12,5 @@ import java.util.List;
  * @param counts        the number of triggers per time bucket, in label order
  * @param failureCounts the number of failed triggers per time bucket, in label order (a subset of {@code counts})
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record AiUsageSeriesDTO(AiUsageFeature feature, List<Long> counts, List<Long> failureCounts) {}
