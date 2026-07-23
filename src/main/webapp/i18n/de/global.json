@@ -40,6 +40,7 @@
         "info": "TUMApply - Meine Gruppe"
       },
       "admin": {
+        "analytics": "TUMApply - KI-Analyse",
         "dependencies": "TUMApply - Abhängigkeiten",
         "exports": "TUMApply - Admin-Exporte",
         "systemSettings": "TUMApply - Systemeinstellungen"
