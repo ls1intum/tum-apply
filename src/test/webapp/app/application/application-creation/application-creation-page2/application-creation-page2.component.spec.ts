@@ -151,8 +151,8 @@ describe('ApplicationPage2Component', () => {
     await new Promise(resolve => setTimeout(resolve, 150));
     fixture.detectChanges();
 
-    expect(componentInstance.data().bachelorDegreeName).toBe('BSc Repro');
-    expect(componentInstance.data().masterDegreeName).toBe('MSc Repro');
+    expect(componentInstance.data()?.bachelorDegreeName).toBe('BSc Repro');
+    expect(componentInstance.data()?.masterDegreeName).toBe('MSc Repro');
   });
 
   it('should show warning text when grade is unusual', async () => {
