@@ -288,12 +288,17 @@
       "helperCv": "Spare Zeit und lass unsere KI deine Daten automatisch aus deinem Lebenslauf ausfüllen.",
       "helperCertificates": "Spare Zeit und lass unsere KI deine Studiendaten automatisch aus deinen Zeugnissen ausfüllen.",
       "checkInfo": "Bitte überprüfe die extrahierten Informationen auf Vollständigkeit und Richtigkeit.",
+      "inputsLockedNote": "Deine Eingaben sind während der laufenden Extraktion gesperrt.",
       "consentInfo": "Informationen zur KI-Zustimmung",
       "button": "KI-Extraktion",
       "loading": "Extrahiert...",
       "aiExtractionFailed": {
         "summary": "Extraktion fehlgeschlagen",
         "detail": "Stelle sicher, dass die Datei eine klar lesbare PDF ist, oder fülle die Felder manuell aus."
+      },
+      "aiExtractionSuccess": {
+        "summary": "Extraktion abgeschlossen",
+        "detail": "Wir haben die Angaben ausgefüllt, die wir aus deinem Dokument lesen konnten. Bitte überprüfe sie auf Richtigkeit."
       }
     },
     "applicationPage1": {
