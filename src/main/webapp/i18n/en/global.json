@@ -40,6 +40,7 @@
         "info": "TUMApply - My Group"
       },
       "admin": {
+        "analytics": "TUMApply - AI Analytics",
         "dependencies": "TUMApply - Dependencies",
         "exports": "TUMApply - Admin Exports",
         "systemSettings": "TUMApply - System Settings"
