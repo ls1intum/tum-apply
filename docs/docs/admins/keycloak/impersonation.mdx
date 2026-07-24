@@ -28,7 +28,7 @@ The flow proceeds as follows:
 1. The user submits their email and OTP to the DocApply server.
 2. The server verifies the OTP against its database.
 3. After verification, the server calls the Keycloak `/protocol/openid-connect/token` endpoint using the
-   `tumapply-admin-api` client credentials.
+   `docapply-admin-api` client credentials.
 4. The request uses `grant_type=urn:ietf:params:oauth:grant-type:token-exchange`, the clientId as audience and includes
    the `requested_subject` parameter, which is the user ID or username of the user to be impersonated.
 5. Keycloak returns a valid access token and refresh token for the impersonated user.

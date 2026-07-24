@@ -19,9 +19,9 @@ services:
     volumes:
       - ./mysql_data:/var/lib/mysql
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:3306"
   docapply:
-    image: "ghcr.io/ls1intum/tum-apply:${IMAGE_TAG}"
+    image: "ghcr.io/ls1intum/docapply:${IMAGE_TAG}"
     env_file:
       - .env
     expose:

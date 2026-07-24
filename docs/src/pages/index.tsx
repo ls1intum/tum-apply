@@ -63,11 +63,11 @@ const faqItems = [
     question: 'How do I log in?',
     answer: (
       <>
-        <strong>Applicants:</strong> Go to <a href="https://tumapply.aet.cit.tum.de/">DocApply</a> and click <strong>Login</strong> in the
+        <strong>Applicants:</strong> Go to <a href="https://docapply.aet.cit.tum.de/">DocApply</a> and click <strong>Login</strong> in the
         top-right corner. Choose email + verification code, Google, or Apple.
         <br />
         <br />
-        <strong>Professors:</strong> Go to <a href="https://tumapply.aet.cit.tum.de/professor">DocApply Professor</a> and click{' '}
+        <strong>Professors:</strong> Go to <a href="https://docapply.aet.cit.tum.de/professor">DocApply Professor</a> and click{' '}
         <strong>Login</strong>. Sign in with your TUM ID and password. No separate registration is required.
       </>
     ),

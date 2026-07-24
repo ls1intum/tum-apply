@@ -46,7 +46,7 @@
     "faq": {
       "headline": "Häufig gestellte Fragen",
       "subheadline": "Finde Antworten auf häufige Fragen zur Nutzung von {siteName}",
-      "sub-subheadline": "Bei weiteren Fragen wende dich bitte an die <a href='https://ls1intum.github.io/tum-apply' class='external-link'><strong>Dokumentation</strong></a>",
+      "sub-subheadline": "Bei weiteren Fragen wende dich bitte an die <a href='https://ls1intum.github.io/docapply' class='external-link'><strong>Dokumentation</strong></a>",
       "questions": {
         "registration": {
           "title": "Wie kann ich mich als Mitarbeiter:in oder Professor:in registrieren?",

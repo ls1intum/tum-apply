@@ -144,7 +144,7 @@ spring:
         implicit-strategy: org.springframework.boot.hibernate.SpringImplicitNamingStrategy
   datasource:
     # JDBC URL for the main datasource connection
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/docapply?useUnicode=true&characterEncoding=utf8&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true}
     # Username for connecting to MySQL
     username: ${SPRING_DATASOURCE_USERNAME:root}
     # Password for connecting to MySQL
@@ -160,7 +160,7 @@ spring:
         useServerPrepStmts: true
   liquibase:
     # JDBC URL used by Liquibase for database migrations
-    url: ${SPRING_LIQUIBASE_URL:jdbc:mysql://localhost:3306/tumapply?useUnicode=true&characterEncoding=utf8&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    url: ${SPRING_LIQUIBASE_URL:jdbc:mysql://localhost:3306/docapply?useUnicode=true&characterEncoding=utf8&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true}
     user: ${SPRING_LIQUIBASE_USERNAME:${SPRING_DATASOURCE_USERNAME:root}}
     password: ${SPRING_LIQUIBASE_PASSWORD:${SPRING_DATASOURCE_PASSWORD:}}
   messages:
@@ -276,10 +276,10 @@ jhipster:
 aet:
   email:
     enabled: ${AET_EMAIL_ENABLED:false}
-    from: ${AET_EMAIL_FROM:tum-apply.aet@xcit.tum.de}
+    from: ${AET_EMAIL_FROM:docapply.aet@xcit.tum.de}
     from-name: ${AET_EMAIL_FROM_NAME:DocApply}
   data-export:
-    root: /tmp/tum-apply-exports
+    root: /tmp/docapply-exports
     expires-days: 1
     cron: '*/15 * * * * *'
   storage:
@@ -310,7 +310,7 @@ keycloak:
   # Applicant authentication (registration, email/password, OTP, Google/Apple, passkeys) is handled internally.
   tum-login-realm: ${KEYCLOAK_TUM_LOGIN_REALM:tumidpldap}
   # Client ID used by the browser/client application to authenticate with Keycloak
-  client-id: ${KEYCLOAK_CLIENT_ID:tumapply-client}
+  client-id: ${KEYCLOAK_CLIENT_ID:docapply-client}
   # WebAuthn relying party ID used for TUM passkey registration; leave empty to fall back to the current hostname
   relying-party-id: ${KEYCLOAK_RELYING_PARTY_ID:}
   # Admin user to create initial users in Keycloak
@@ -322,9 +322,9 @@ keycloak:
     tum:
       # TUM realm (`keycloak.tum-login-realm`) admin service-account client used by server Admin API calls
       # (e.g., user lookup/search in Keycloak)
-      client-id: ${KEYCLOAK_ADMIN_TUM_CLIENT_ID:tumapply-admin-api}
+      client-id: ${KEYCLOAK_ADMIN_TUM_CLIENT_ID:docapply-admin-api}
       # Secret for the TUM realm admin client above
-      client-secret: ${KEYCLOAK_ADMIN_TUM_CLIENT_SECRET:tumapply-admin-api-secret}
+      client-secret: ${KEYCLOAK_ADMIN_TUM_CLIENT_SECRET:docapply-admin-api-secret}
 
 user:
   retention:
@@ -378,9 +378,9 @@ security:
 # ===================================================================
 app:
   token:
-    issuer: ${APP_TOKEN_ISSUER:https://tumapply.aet.cit.tum.de}
-    kid: ${APP_TOKEN_KID:tumapply}
-    azp: ${APP_TOKEN_AZP:tumapply-internal}
+    issuer: ${APP_TOKEN_ISSUER:https://docapply.aet.cit.tum.de}
+    kid: ${APP_TOKEN_KID:docapply}
+    azp: ${APP_TOKEN_AZP:docapply-internal}
     access-ttl-seconds: ${APP_TOKEN_ACCESS_TTL_SECONDS:300}
     refresh-ttl-seconds: ${APP_TOKEN_REFRESH_TTL_SECONDS:2592000}
     rsa-private-key: ${APP_TOKEN_RSA_PRIVATE_KEY:}

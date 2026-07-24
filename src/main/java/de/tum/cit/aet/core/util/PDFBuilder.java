@@ -54,7 +54,7 @@ public class PDFBuilder {
     private String pageLabelOf;
     private byte[] bannerImageBytes;
 
-    private static final String SITE_URL = "https://tumapply.aet.cit.tum.de";
+    private static final String SITE_URL = "https://docapply.aet.cit.tum.de";
 
     private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0x18, 0x72, 0xDD);
     private static final DeviceRgb METADATA_COLOR = new DeviceRgb(0x8d, 0x8d, 0x8f);

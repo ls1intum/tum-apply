@@ -179,7 +179,7 @@ Only fetch required fields instead of full entities:
 
 ```java
 @Query("""
-    SELECT new tumapply.dto.JobPostingPreviewDTO(jp.id, jp.title, jp.deadline)
+    SELECT new docapply.dto.JobPostingPreviewDTO(jp.id, jp.title, jp.deadline)
     FROM JobPosting jp
     WHERE jp.active = true
     """)

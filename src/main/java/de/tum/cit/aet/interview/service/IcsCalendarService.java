@@ -26,7 +26,7 @@ public class IcsCalendarService {
     public String generateIcsContent(InterviewSlot slot, Job job) {
         ZonedDateTime startTime = slot.getStartDateTime().atZone(CET_TIMEZONE);
         ZonedDateTime endTime = slot.getEndDateTime().atZone(CET_TIMEZONE);
-        String uid = "interview-" + slot.getId() + "@tumapply.tum.de";
+        String uid = "interview-" + slot.getId() + "@docapply.tum.de";
 
         StringBuilder ics = new StringBuilder();
         ics.append("BEGIN:VCALENDAR\r\n");

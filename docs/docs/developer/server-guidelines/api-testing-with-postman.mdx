@@ -32,7 +32,7 @@ All DocApply API endpoints require authentication via a JWT token from Keycloak.
    | **Key** | **Value** |
    |---|---|
    | `grant_type` | `password` |
-   | `client_id` | `tumapply-client` |
+   | `client_id` | `docapply-client` |
    | `username` | `admin1` |
    | `password` | `admin` |
 
@@ -85,7 +85,7 @@ You should receive a response with the authenticated user's data:
 ```json
 {
   "userId": "fcf4722e-757f-427f-bae1-1c960b0dd531",
-  "email": "admin1@tumapply.local",
+  "email": "admin1@docapply.local",
   "firstName": "Admin",
   "lastName": "One",
   "roles": ["ADMIN"]
@@ -108,7 +108,7 @@ Instead of manually copying the token each time, you can configure Postman to ha
    | Token Name | `DocApply Local` |
    | Grant Type | `Password Credentials` |
    | Access Token URL | `http://localhost:9080/realms/tumidpldap/protocol/openid-connect/token` |
-   | Client ID | `tumapply-client` |
+   | Client ID | `docapply-client` |
    | Username | `admin1` |
    | Password | `admin` |
 

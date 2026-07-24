@@ -57,7 +57,7 @@ public class AppTokenKeyConfiguration {
     public AppTokenKeyConfiguration(
         @Value("${app.token.rsa-private-key:}") String privateKeyPem,
         @Value("${app.token.rsa-public-key:}") String publicKeyPem,
-        @Value("${app.token.kid:tumapply}") String kid,
+        @Value("${app.token.kid:docapply}") String kid,
         @Value("${app.token.issuer}") String issuer,
         Environment environment
     ) {
@@ -89,8 +89,8 @@ public class AppTokenKeyConfiguration {
     @Bean
     public AppTokenProperties appTokenProperties(
         @Value("${app.token.issuer}") String tokenIssuer,
-        @Value("${app.token.kid:tumapply}") String tokenKid,
-        @Value("${app.token.azp:tumapply-internal}") String azp,
+        @Value("${app.token.kid:docapply}") String tokenKid,
+        @Value("${app.token.azp:docapply-internal}") String azp,
         @Value("${app.token.access-ttl-seconds:300}") long accessTtlSeconds,
         @Value("${app.token.refresh-ttl-seconds:2592000}") long refreshTtlSeconds
     ) {

@@ -34,7 +34,7 @@ scalable, secure, and transparent recruitment processes.
 
 ## How to Get Started
 
-1. Visit the portal: [DocApply](https://tumapply.aet.cit.tum.de/)
+1. Visit the portal: [DocApply](https://docapply.aet.cit.tum.de/)
 2. Browse available doctoral positions
 3. Register/Log in with your preferred account
 4. Start applying or managing applications
@@ -90,13 +90,9 @@ architecture for now, clear service boundaries allow for potential migration to 
 | Proxy & Load Balancing    | Nginx setup for secure request routing                      |
 | CI/CD Pipeline            | Automated builds, tests, and deployments via GitHub Actions |
 
-### UML Diagram
-
-![DocApply Project Architecture UML Diagram](docs/static/img/docapply-project-architecture.svg)
-
 ## Documentation
 
-Full documentation is available on the [DocApply Docs](https://ls1intum.github.io/tum-apply/) site.
+Full documentation is available on the [DocApply Docs](https://ls1intum.github.io/docapply/) site.
 
 ---
 

@@ -103,15 +103,15 @@ aet:
 keycloak:
   url: http://localhost:9080
   tum-login-realm: tumidpldap
-  client-id: tumapply-client
+  client-id: docapply-client
   users:
     admin:
       username: admin
       password: admin
   admin:
     tum:
-      client-id: tumapply-admin-api
-      client-secret: tumapply-admin-api-secret
+      client-id: docapply-admin-api
+      client-secret: docapply-admin-api-secret
 
 security:
   otp:
@@ -123,9 +123,9 @@ security:
 
 app:
   token:
-    issuer: https://tumapply.test
-    kid: tumapply-test
-    azp: tumapply-internal
+    issuer: https://docapply.test
+    kid: docapply-test
+    azp: docapply-internal
     access-ttl-seconds: 300
     refresh-ttl-seconds: 2592000
     rsa-private-key:

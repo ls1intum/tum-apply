@@ -31,14 +31,14 @@ or [Professors – Account Creation](./docs/docs/professors/account-creation)
 <details>
 <summary>**How do I log in?**</summary>
 
-**Applicants**: To log in, go to the **[DocApply](https://tumapply.aet.cit.tum.de/)** page and click on the **Login**
+**Applicants**: To log in, go to the **[DocApply](https://docapply.aet.cit.tum.de/)** page and click on the **Login**
 button in the top-right corner. You can then choose one of three options – email + verification code, Google or Apple.
 
 For more details, see [Applicants – Login](./docs/docs/applicants/login).
 
 ---
 
-**Professors**: To log in, go to the **[DocApply Professor](https://tumapply.aet.cit.tum.de/professor)** page and click
+**Professors**: To log in, go to the **[DocApply Professor](https://docapply.aet.cit.tum.de/professor)** page and click
 on the **Login** button in the top-right corner. Use your TUM ID and TUM password to sign in via the TUM Login system.
 These are the same credentials you normally use for other TUM services (e.g., email, campus portal). No separate
 registration is required – your account is created automatically. 
