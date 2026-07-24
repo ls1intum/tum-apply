@@ -143,12 +143,6 @@ describe('AdminSystemSettingsComponent', () => {
   });
 
   describe('Site Name', () => {
-    const stubReload = (): ReturnType<typeof vi.fn> => {
-      const reloadSpy = vi.fn();
-      vi.spyOn(component as unknown as { reloadPage: () => void }, 'reloadPage').mockImplementation(reloadSpy);
-      return reloadSpy;
-    };
-
     it('should only allow saving a non-blank site name that differs from the active one', () => {
       expect(component.canSaveSiteName()).toBe(false);
 
@@ -159,8 +153,7 @@ describe('AdminSystemSettingsComponent', () => {
       expect(component.canSaveSiteName()).toBe(true);
     });
 
-    it('should save the trimmed site name, update the site config, and reload the page', async () => {
-      const reloadSpy = stubReload();
+    it('should save the trimmed site name, update the site config live, and show a success toast', async () => {
       mockSiteSettingApi.updateSiteName.mockReturnValue(of({ siteName: 'New Portal' }));
       component.siteNameInput.set('  New Portal  ');
 
@@ -168,18 +161,19 @@ describe('AdminSystemSettingsComponent', () => {
 
       expect(mockSiteSettingApi.updateSiteName).toHaveBeenCalledWith({ siteName: 'New Portal' });
       expect(siteConfigService.siteName()).toBe('New Portal');
-      expect(reloadSpy).toHaveBeenCalledOnce();
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('systemSettings.general.siteName.toast.success', {
+        newName: 'New Portal',
+      });
+      expect(component.isSavingSiteName()).toBe(false);
     });
 
-    it('should show error toast and skip the reload when saving fails', async () => {
-      const reloadSpy = stubReload();
+    it('should show an error toast and keep the current site name when saving fails', async () => {
       mockSiteSettingApi.updateSiteName.mockReturnValue(throwError(() => new Error('API error')));
       component.siteNameInput.set('New Portal');
 
       await component.onSiteNameConfirmed();
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('systemSettings.general.siteName.toast.error');
-      expect(reloadSpy).not.toHaveBeenCalled();
       expect(component.isSavingSiteName()).toBe(false);
     });
   });

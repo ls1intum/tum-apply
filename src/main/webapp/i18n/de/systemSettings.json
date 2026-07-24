@@ -9,9 +9,13 @@
         "save": "Speichern",
         "confirm": {
           "header": "Seitennamen ändern?",
-          "message": "Der Seitenname wird auf \"{newName}\" geändert und auf der gesamten Seite übernommen — Kopfzeile, Seitentitel, E-Mails und exportierte Dokumente. Die Seite wird neu geladen, um die Änderung zu übernehmen."
+          "message": "Der Seitenname wird auf \"{newName}\" geändert und auf der gesamten Seite übernommen — Kopfzeile, Seitentitel, E-Mails und exportierte Dokumente. Die Änderung wird sofort übernommen."
         },
         "toast": {
+          "success": {
+            "summary": "Seitenname aktualisiert",
+            "detail": "Der Seitenname ist jetzt \"{newName}\"."
+          },
           "error": {
             "summary": "Speichern fehlgeschlagen",
             "detail": "Der Seitenname konnte nicht aktualisiert werden."

@@ -36,6 +36,7 @@ import { missingTranslationHandler } from './config/translation.config';
 import { AuthFacadeService } from './core/auth/auth-facade.service';
 import { IcuTranslateCompiler } from './shared/language/icu-translate-compiler';
 import { PrimengTranslationService } from './shared/language/primeng-translation.service';
+import { SiteNameTranslationSync } from './shared/language/site-name-translation-sync.service';
 
 /**
  * Application initializer that enforces strict order:
@@ -56,11 +57,16 @@ export function initializePrimeNgI18n(): void {
   inject(PrimengTranslationService);
 }
 
+export function initializeSiteNameSync(): void {
+  inject(SiteNameTranslationSync);
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     MessageService,
     provideAppInitializer(initializeApp),
     provideAppInitializer(initializePrimeNgI18n),
+    provideAppInitializer(initializeSiteNameSync),
     provideZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
     provideAnimations(),

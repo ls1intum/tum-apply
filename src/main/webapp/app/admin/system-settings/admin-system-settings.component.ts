@@ -107,17 +107,19 @@ export class AdminSystemSettingsComponent {
   }
 
   /**
-   * Persists the new site name after confirmation and reloads the page so the
-   * name is applied everywhere (header, titles, translations, meta data).
+   * Persists the new site name after confirmation. The change applies live
+   * across the app — the header, page titles, and translated texts all react to
+   * the updated site-name signal, so no page reload is needed.
    */
   async onSiteNameConfirmed(): Promise<void> {
     this.isSavingSiteName.set(true);
     try {
       const result = await firstValueFrom(this.siteSettingApi.updateSiteName({ siteName: this.trimmedSiteName() }));
       this.siteConfigService.siteName.set(result.siteName);
-      this.reloadPage();
+      this.toastService.showSuccessKey('systemSettings.general.siteName.toast.success', { newName: result.siteName });
     } catch {
       this.toastService.showErrorKey('systemSettings.general.siteName.toast.error');
+    } finally {
       this.isSavingSiteName.set(false);
     }
   }
@@ -156,10 +158,5 @@ export class AdminSystemSettingsComponent {
     } finally {
       this.isUpdating.set(false);
     }
-  }
-
-  /** Reloads the browser tab; extracted so tests can stub the reload. */
-  protected reloadPage(): void {
-    window.location.reload();
   }
 }
