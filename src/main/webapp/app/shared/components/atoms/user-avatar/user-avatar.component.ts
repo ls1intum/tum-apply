@@ -18,7 +18,7 @@ export class UserAvatarComponent {
   // Accessibility label mirrors the visible identity when available.
   ariaLabel = computed(() => {
     const fullName = this.fullName()?.trim();
-    return !fullName || fullName === '' ? 'User avatar' : `Avatar of ${fullName}`;
+    return fullName === undefined || fullName === '' ? 'User avatar' : `Avatar of ${fullName}`;
   });
 
   backgroundColor = computed(() => {

@@ -115,7 +115,7 @@ export class ResearchGroupAdminView {
 
     for (const group of this.researchGroups()) {
       const groupId = group.id;
-      if (!groupId) {
+      if (groupId === undefined || groupId === '') {
         continue;
       }
       const items: JhiMenuItem[] = [];
@@ -193,7 +193,8 @@ export class ResearchGroupAdminView {
 
   readonly getMenuItems = computed(() => {
     const menuMap = this.actionMenuItems();
-    return (group: ResearchGroupAdminDTO): JhiMenuItem[] => (group.id ? (menuMap.get(group.id) ?? []) : []);
+    return (group: ResearchGroupAdminDTO): JhiMenuItem[] =>
+      group.id !== undefined && group.id !== '' ? (menuMap.get(group.id) ?? []) : [];
   });
 
   private toastService = inject(ToastService);
@@ -250,19 +251,19 @@ export class ResearchGroupAdminView {
       modal: true,
     });
 
-    dialogRef?.onClose.subscribe(result => {
-      if (result) {
+    dialogRef?.onClose.subscribe((result: unknown) => {
+      if (result !== undefined && result !== null && result !== false) {
         void this.loadResearchGroups();
       }
     });
   }
 
   onManageMembers(researchGroupId: string): void {
-    this.router.navigate(['/research-group', researchGroupId, 'members']);
+    void this.router.navigate(['/research-group', researchGroupId, 'members']);
   }
 
   onManageImages(researchGroupId: string, researchGroupName?: string): void {
-    this.router.navigate(['/research-group/admin-view/images'], {
+    void this.router.navigate(['/research-group/admin-view/images'], {
       queryParams: { researchGroupId, researchGroupName: researchGroupName ?? '' },
     });
   }
@@ -299,21 +300,21 @@ export class ResearchGroupAdminView {
 
   onConfirmApprove(): void {
     const researchGroupId = this.currentResearchGroupId();
-    if (researchGroupId) {
+    if (researchGroupId !== undefined && researchGroupId !== '') {
       void this.onApproveResearchGroup(researchGroupId);
     }
   }
 
   onConfirmDeny(): void {
     const researchGroupId = this.currentResearchGroupId();
-    if (researchGroupId) {
+    if (researchGroupId !== undefined && researchGroupId !== '') {
       void this.onDenyResearchGroup(researchGroupId);
     }
   }
 
   onConfirmWithdraw(): void {
     const researchGroupId = this.currentResearchGroupId();
-    if (researchGroupId) {
+    if (researchGroupId !== undefined && researchGroupId !== '') {
       void this.onWithdrawResearchGroup(researchGroupId);
     }
   }

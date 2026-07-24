@@ -72,9 +72,11 @@ export class DocumentSection {
     );
 
     letters
-      .filter((letter): letter is ReferenceRequestDTO & { documentId: string } => !!letter.documentId)
+      .filter(
+        (letter): letter is ReferenceRequestDTO & { documentId: string } => letter.documentId !== undefined && letter.documentId !== '',
+      )
       .forEach(letter => {
-        const refereeName = [letter.title, letter.firstName, letter.lastName].filter(part => !!part).join(' ');
+        const refereeName = [letter.title, letter.firstName, letter.lastName].filter(part => part !== undefined && part !== '').join(' ');
         result.push({
           label: 'evaluation.details.documentTypeReferenceLetter',
           labelParams: { name: refereeName },

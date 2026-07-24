@@ -24,7 +24,7 @@ export class GenderBiasAnalysisDialogComponent {
 
   readonly codingTranslationKey = computed(() => {
     const coding = this.result()?.coding;
-    if (!coding) return 'genderDecoder.formulationTexts.neutral';
+    if (coding === undefined || coding === '') return 'genderDecoder.formulationTexts.neutral';
 
     switch (coding) {
       case 'non-inclusive-coded':
@@ -41,7 +41,7 @@ export class GenderBiasAnalysisDialogComponent {
 
   readonly explanationTranslationKey = computed(() => {
     const coding = this.result()?.coding;
-    if (!coding) return 'genderDecoder.explanations.neutral';
+    if (coding === undefined || coding === '') return 'genderDecoder.explanations.neutral';
 
     switch (coding) {
       case 'non-inclusive-coded':
@@ -89,7 +89,7 @@ export class GenderBiasAnalysisDialogComponent {
   private getWordCounts(words: BiasedWordDTO[]): Map<string, number> {
     const counts = new Map<string, number>();
     words.forEach(word => {
-      if (word.word) {
+      if (word.word !== undefined && word.word !== '') {
         const current = counts.get(word.word) ?? 0;
         counts.set(word.word, current + 1);
       }

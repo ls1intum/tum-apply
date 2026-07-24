@@ -122,7 +122,7 @@ export class ReferenceLetterUploadComponent {
     if (!ctx) {
       return '';
     }
-    return [ctx.applicantFirstName, ctx.applicantLastName].filter(part => !!part).join(' ');
+    return [ctx.applicantFirstName, ctx.applicantLastName].filter(part => part !== undefined && part !== '').join(' ');
   });
 
   protected readonly alreadySubmitted = computed(

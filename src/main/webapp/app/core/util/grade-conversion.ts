@@ -254,7 +254,7 @@ export function formatGradeWithTranslation(
     return { displayValue: '', wasConverted: false };
   }
 
-  if (!upperLimit || !lowerLimit) {
+  if (upperLimit === undefined || upperLimit === '' || lowerLimit === undefined || lowerLimit === '') {
     const tooltipText = translateService.instant('evaluation.details.conversionFailedTooltip');
     return { displayValue: originalGrade, wasConverted: false, tooltipText };
   }

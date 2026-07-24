@@ -51,7 +51,7 @@ export class AlertService {
   addAlert(alertToAdd: Omit<Alert, 'id'>, extAlerts?: Alert[]): Alert {
     const alert: Alert = { ...alertToAdd, id: this.alertId++ };
 
-    if (alert.translationKey) {
+    if (alert.translationKey !== undefined && alert.translationKey !== '') {
       const translatedMessage = this.translateService.instant(alert.translationKey, alert.translationParams);
       // if translation key exists
       if (translatedMessage !== `${translationNotFoundMessage}[${alert.translationKey}]`) {

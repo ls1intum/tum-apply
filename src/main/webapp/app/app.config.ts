@@ -61,6 +61,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(initializePrimeNgI18n),
     provideZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- migration to animate.enter/animate.leave deferred, see follow-up
     provideAnimations(),
     providePrimeNG({
       theme: {

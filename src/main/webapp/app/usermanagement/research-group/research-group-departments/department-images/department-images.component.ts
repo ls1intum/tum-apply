@@ -117,7 +117,7 @@ export class DepartmentImages {
   }
 
   async onDeleteImage(imageId: string | undefined): Promise<void> {
-    if (!imageId) {
+    if (imageId === undefined || imageId === '') {
       return;
     }
 

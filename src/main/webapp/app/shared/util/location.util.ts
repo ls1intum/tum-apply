@@ -4,7 +4,7 @@
  * @returns true if the location appears to be a URL or a common video conferencing tool.
  */
 export function isVirtualLocation(location: string | undefined | null): boolean {
-  if (!location || location.trim() === '') return false;
+  if (location === undefined || location === null || location.trim() === '') return false;
   const trimmed = location.trim().toLowerCase();
 
   // Regex to detect URLs (http, https, www, or domains with dots/slashes)

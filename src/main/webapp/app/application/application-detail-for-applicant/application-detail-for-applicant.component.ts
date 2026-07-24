@@ -145,10 +145,10 @@ export default class ApplicationDetailForApplicantComponent {
    */
   submittedReferenceLetters = computed(() =>
     this.references()
-      .filter(reference => !!reference.documentId)
+      .filter(reference => reference.documentId !== undefined && reference.documentId !== '')
       .map(reference => ({
         documentId: reference.documentId,
-        refereeName: [reference.firstName, reference.lastName].filter(part => !!part).join(' '),
+        refereeName: [reference.firstName, reference.lastName].filter(part => part !== undefined && part !== '').join(' '),
         viewerInput: {
           id: reference.documentId as string,
           name: `${reference.firstName ?? ''} ${reference.lastName ?? ''}`.trim(),
@@ -238,10 +238,11 @@ export default class ApplicationDetailForApplicantComponent {
     this.currentLang();
     const applicant = this.application()?.applicant;
     const grade = applicant?.bachelorGrade;
-    if (!grade) return '-';
+    if (applicant === undefined || grade === undefined || grade === '') return '-';
 
     const limits = { upperLimit: applicant.bachelorGradeUpperLimit, lowerLimit: applicant.bachelorGradeLowerLimit };
-    if (!limits.upperLimit || !limits.lowerLimit) return grade;
+    if (limits.upperLimit === undefined || limits.upperLimit === '' || limits.lowerLimit === undefined || limits.lowerLimit === '')
+      return grade;
 
     const scale =
       '(' +
@@ -258,10 +259,11 @@ export default class ApplicationDetailForApplicantComponent {
     this.currentLang();
     const applicant = this.application()?.applicant;
     const grade = applicant?.masterGrade;
-    if (!grade) return '-';
+    if (applicant === undefined || grade === undefined || grade === '') return '-';
 
     const limits = { upperLimit: applicant.masterGradeUpperLimit, lowerLimit: applicant.masterGradeLowerLimit };
-    if (!limits.upperLimit || !limits.lowerLimit) return grade;
+    if (limits.upperLimit === undefined || limits.upperLimit === '' || limits.lowerLimit === undefined || limits.lowerLimit === '')
+      return grade;
 
     const scale =
       '(' +
