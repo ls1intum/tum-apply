@@ -28,12 +28,18 @@ import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -235,6 +241,50 @@ class PDFExportResourceTest extends AbstractResourceTest {
         }
     }
 
+    /**
+     * Collects the distinct font families referenced by every page of a PDF.
+     * The base font name is reduced to its family by stripping the subset prefix
+     * (e.g. {@code ABCDEF+}) and the style suffix (e.g. {@code -Bold}), so that
+     * {@code Helvetica}, {@code Helvetica-Bold} and {@code ABCDEF+Helvetica} all
+     * collapse to {@code Helvetica}.
+     *
+     * @param pdfBytes the raw PDF bytes
+     * @return the set of distinct font families used in the document
+     */
+    private Set<String> extractFontFamiliesFromPdf(byte[] pdfBytes) {
+        Set<String> families = new HashSet<>();
+        try (PDDocument doc = Loader.loadPDF(new RandomAccessReadBuffer(pdfBytes))) {
+            for (PDPage page : doc.getPages()) {
+                PDResources resources = page.getResources();
+                if (resources == null) {
+                    continue;
+                }
+                for (COSName fontName : resources.getFontNames()) {
+                    PDFont font = resources.getFont(fontName);
+                    if (font != null && font.getName() != null) {
+                        families.add(toFontFamily(font.getName()));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to extract fonts from PDF", e);
+        }
+        return families;
+    }
+
+    private String toFontFamily(String baseFontName) {
+        String family = baseFontName;
+        int subsetSeparator = family.indexOf('+');
+        if (subsetSeparator >= 0) {
+            family = family.substring(subsetSeparator + 1);
+        }
+        int styleSeparator = family.indexOf('-');
+        if (styleSeparator >= 0) {
+            family = family.substring(0, styleSeparator);
+        }
+        return family;
+    }
+
     @Nested
     class ExportApplicationToPDF {
 
@@ -404,6 +454,51 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 // none present -> expect '-'
                 Arguments.of(null, null, null, "-")
             );
+        }
+    }
+
+    @Nested
+    class FontConsistency {
+
+        @Test
+        void shouldUseSingleFontFamilyWhenJobDescriptionContainsRichHtml() {
+            String htmlDescription =
+                "<h2>Project Description</h2>" +
+                "<p>We invite applications for a <strong>Doctoral Researcher</strong> position " +
+                "focusing on <em>robust algorithms</em>.</p>" +
+                "<ul><li>Design and implement algorithms</li><li>Publish findings</li></ul>";
+
+            Job richTextJob = JobTestData.savedAll(
+                jobRepository,
+                "Rich Text Job",
+                "AI",
+                SubjectArea.COMPUTER_SCIENCE,
+                professor,
+                group,
+                Campus.GARCHING,
+                LocalDate.now(),
+                LocalDate.now(),
+                20,
+                3,
+                FundingType.FULLY_FUNDED,
+                TvlGrade.E13,
+                htmlDescription,
+                htmlDescription,
+                JobState.PUBLISHED
+            );
+
+            byte[] pdf = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(
+                    BASE_URL + "/job/" + richTextJob.getJobId() + "/pdf",
+                    createCompleteLabelsMap(),
+                    200,
+                    MediaType.APPLICATION_PDF
+                );
+
+            assertValidPdf(pdf);
+            Set<String> fontFamilies = extractFontFamiliesFromPdf(pdf);
+            assertThat(fontFamilies).containsExactly("Helvetica");
         }
     }
 
