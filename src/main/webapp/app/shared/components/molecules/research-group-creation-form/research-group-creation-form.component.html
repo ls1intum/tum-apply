@@ -154,25 +154,24 @@
 
             @if (showCandidatesList()) {
               @for (user of adminProfessorCandidates(); track user.id) {
-                <div
-                  class="flex items-center gap-3 p-3 cursor-pointer transition-colors"
+                <button
+                  type="button"
+                  class="btn-bare w-full text-left flex items-center gap-3 p-3 cursor-pointer transition-colors"
                   [class.bg-background-surface-alt]="selectedAdminProfessor()?.id === user.id"
                   [class.hover:bg-background-surface]="selectedAdminProfessor()?.id !== user.id"
                   (click)="selectAdminProfessor(user)"
-                  role="button"
-                  tabindex="0"
                 >
-                  <div
+                  <span
                     class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-default flex items-center justify-center text-text-on-primary font-semibold"
                   >
                     {{ user.firstName ? user.firstName.charAt(0) : '' }}{{ user.lastName ? user.lastName.charAt(0) : '' }}
-                  </div>
-                  <div class="flex-1">
-                    <div class="font-medium text-text-primary">{{ user.firstName }} {{ user.lastName }}</div>
-                    <div class="text-sm text-text-secondary">{{ user.email }}</div>
-                    <div class="text-sm text-text-secondary">{{ user.universityId }}</div>
-                  </div>
-                </div>
+                  </span>
+                  <span class="flex-1">
+                    <span class="block font-medium text-text-primary">{{ user.firstName }} {{ user.lastName }}</span>
+                    <span class="block text-sm text-text-secondary">{{ user.email }}</span>
+                    <span class="block text-sm text-text-secondary">{{ user.universityId }}</span>
+                  </span>
+                </button>
               }
 
               @if (hasMoreAdminProfessorCandidates()) {

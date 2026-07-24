@@ -54,7 +54,7 @@
             [class.bg-background-surface-alt]="isUserSelected(user)"
             [class.hover:bg-background-surface-alt]="isUserSelected(user)"
             [class.hover:bg-background-surface]="!isUserSelected(user)"
-            role="button"
+            jhiClickable
             tabindex="0"
             (click)="toggleUserSelection(user)"
           >

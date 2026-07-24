@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ChipModule } from 'primeng/chip';
+import { ClickableDirective } from 'app/shared/directives/clickable.directive';
 import { injectTranslator } from 'app/shared/util/translate-signal.util';
 
 // Interface for filter options which can be passed to the filter component
@@ -29,7 +30,7 @@ interface RenderedOption {
 
 @Component({
   selector: 'jhi-filter-multiselect',
-  imports: [FormsModule, DividerModule, CommonModule, FontAwesomeModule, CheckboxModule, ChipModule],
+  imports: [FormsModule, DividerModule, CommonModule, FontAwesomeModule, CheckboxModule, ChipModule, ClickableDirective],
   templateUrl: './filter-multiselect.html',
   styleUrl: './filter-multiselect.scss',
   encapsulation: ViewEncapsulation.None,
