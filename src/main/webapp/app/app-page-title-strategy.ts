@@ -11,15 +11,14 @@ export class AppPageTitleStrategy extends TitleStrategy {
   /** Title key of the active route, remembered so it can be re-resolved on demand. */
   private currentTitleKey = 'global.title';
 
-  constructor() {
-    super();
-    // Re-apply the tab title when the admin changes the site name, so titles
-    // built from `{siteName}` (e.g. `global.title`) update live without navigation.
-    effect(() => {
-      this.siteConfigService.siteName();
-      this.applyTitle();
-    });
-  }
+  /**
+   * Re-applies the tab title when the admin changes the site name, so titles
+   * built from `{siteName}` (e.g. `global.title`) update live without navigation.
+   */
+  private readonly reapplyOnSiteNameChange = effect(() => {
+    this.siteConfigService.siteName();
+    this.applyTitle();
+  });
 
   override updateTitle(routerState: RouterStateSnapshot): void {
     this.currentTitleKey = this.buildTitle(routerState) ?? 'global.title';

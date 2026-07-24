@@ -21,14 +21,16 @@ export class SiteNameTranslationSync {
   private readonly translateService = inject(TranslateService);
   private readonly siteConfigService = inject(SiteConfigService);
 
-  constructor() {
-    effect(() => {
-      // Track the site name so this re-runs whenever an admin changes it.
-      this.siteConfigService.siteName();
-      const lang = this.translateService.getCurrentLang();
-      if (lang) {
-        this.translateService.setTranslation(lang, {}, true);
-      }
-    });
-  }
+  /**
+   * Re-emits the current language's translations whenever the site name changes,
+   * so every `{siteName}` pipe/directive re-renders live.
+   */
+  private readonly refreshOnSiteNameChange = effect(() => {
+    // Track the site name so this re-runs whenever an admin changes it.
+    this.siteConfigService.siteName();
+    const lang = this.translateService.getCurrentLang();
+    if (lang) {
+      this.translateService.setTranslation(lang, {}, true);
+    }
+  });
 }
