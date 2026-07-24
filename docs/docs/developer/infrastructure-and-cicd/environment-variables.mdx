@@ -23,7 +23,7 @@ There are two types:
 
 ## How Are They Used?
 
-During GitHub Actions workflow runs, all environment variables and secrets are injected dynamically into the deployment process. They override any default values from the Docker `.env` files (`docker/mysql.env`, `docker/tumapply.env`).
+During GitHub Actions workflow runs, all environment variables and secrets are injected dynamically into the deployment process. They override any default values from the Docker `.env` files (`docker/mysql.env`, `docker/docapply.env`).
 
 :::danger[Security]
 Production and test secrets **must only live in GitHub Secrets** — never commit secrets to the repository.
