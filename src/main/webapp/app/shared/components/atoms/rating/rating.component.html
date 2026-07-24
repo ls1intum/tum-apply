@@ -1,15 +1,16 @@
-<div class="flex gap-[2%] w-full max-w-[21rem] h-4 rounded-pill overflow-hidden">
-  @for (item of likertValues; track $index) {
-    <div
-      class="flex-1 transition-colors"
-      [class]="selectable() ? 'cursor-pointer hover:brightness-75' : ''"
-      [style.background-color]="getSectionColor($index)"
-      [pTooltip]="tooltipTexts()[$index]"
-      tooltipPosition="top"
-      tabindex="0"
-      role="button"
-      (click)="onSectionClick($index)"
-      (keydown.enter)="onSectionClick($index)"
-    ></div>
-  }
-</div>
+@if (selectable()) {
+  <div class="flex flex-wrap gap-1.5">
+    @for (state of buttonStates(); track state.entry.value) {
+      <button
+        type="button"
+        class="px-3 py-1 rounded-full text-sm font-medium transition-colors border border-divider-default outline-none focus-visible:ring-3 focus-visible:ring-primary whitespace-nowrap cursor-pointer"
+        [class]="state.classes"
+        (click)="onSectionClick(state.index)"
+      >
+        {{ state.label }}
+      </button>
+    }
+  </div>
+} @else if (selectedBadge(); as badge) {
+  <span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium" [class]="badge.classes">{{ badge.label }} </span>
+}
