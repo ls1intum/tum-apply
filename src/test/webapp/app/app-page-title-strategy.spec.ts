@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { describe, it, expect } from 'vitest';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -14,7 +14,7 @@ describe('AppPageTitleStrategy', () => {
         AppPageTitleStrategy,
         { provide: SiteConfigService, useValue: siteConfig },
         // `global.title` is `{siteName}`, so the resolved title mirrors the current site name.
-        { provide: TranslateService, useValue: { get: (): ReturnType<typeof of> => of(siteConfig.siteName()) } },
+        { provide: TranslateService, useValue: { get: (): Observable<string> => of(siteConfig.siteName()) } },
       ],
     });
     TestBed.inject(AppPageTitleStrategy);
