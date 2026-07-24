@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, input, model, output, signal } fro
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 import { deepEqual } from 'app/core/util/deepequal-util';
 import { DialogService } from 'primeng/dynamicdialog';
 import { DividerModule } from 'primeng/divider';
@@ -121,17 +121,20 @@ export default class ApplicationCreationPage2Component {
     return getGradeWarningText(this.translateService, grade);
   });
 
-  private formValue = toSignal(this.page2Form.valueChanges.pipe(debounceTime(100), distinctUntilChanged(deepEqual)), {
-    initialValue: this.page2Form.value,
-  });
+  private formValue = toSignal(
+    this.page2Form.valueChanges.pipe(
+      debounceTime(100),
+      map(() => this.page2Form.getRawValue()),
+      distinctUntilChanged(deepEqual),
+    ),
+    {
+      initialValue: this.page2Form.getRawValue(),
+    },
+  );
 
   private bachelorGradeValue = toSignal(this.page2Form.controls.bachelorGrade.valueChanges.pipe(debounceTime(500), distinctUntilChanged()));
 
   private masterGradeValue = toSignal(this.page2Form.controls.masterGrade.valueChanges.pipe(debounceTime(500), distinctUntilChanged()));
-
-  private formStatus = toSignal(this.page2Form.statusChanges, {
-    initialValue: this.page2Form.status,
-  });
 
   private initializeFormEffect = effect(() => {
     if (this.hasInitialized()) return;
