@@ -211,7 +211,7 @@
         </div>
       </div>
       <div class="w-full">
-        <div class="grid xl:gap-16 grid-cols-1 xl:grid-cols-[7fr_3fr]">
+        <div class="grid xl:gap-16 grid-cols-1 xl:grid-cols-[14fr_7fr]">
           <div>
             <!-- Education -->
             <jhi-section titleKey="evaluation.education.title" icon="graduation-cap">
@@ -296,26 +296,42 @@
             @if (currentReferenceRequests().length > 0) {
               <jhi-section titleKey="evaluation.details.referenceLetterStatus" icon="envelope">
                 <p class="flex text-sm text-text-secondary mb-2 items-start">
-                  <fa-icon [icon]="referenceLettersConfidential() ? 'lock' : 'circle-info'" class="text-primary w-5 shrink-0 -ml-2 mr-1" />
+                  <fa-icon
+                    [icon]="referenceLettersConfidential() ? 'lock' : 'circle-info'"
+                    class="text-primary w-5 shrink-0 -ml-2.75 mr-1"
+                  />
                   <span
                     [jhiTranslate]="
                       referenceLettersConfidential() ? 'evaluation.details.referenceConfidential' : 'evaluation.details.referenceShared'
                     "
                   ></span>
                 </p>
-                <ul class="list-disc list-inside marker:text-primary text-sm">
+                <ul class="list-disc marker:text-primary text-sm ml-3">
                   @for (reference of currentReferenceRequests(); track reference.referenceRequestId) {
                     <li class="py-1">
-                      <span class="font-medium">{{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}</span>
+                      <span class="font-medium ml-1">{{ reference.title }} {{ reference.firstName }} {{ reference.lastName }}</span>
                       <span class="font-normal text-text-secondary text-sm ml-1"> ({{ reference.email }}) </span>
                       @if (reference.status === 'SUBMITTED') {
                         <span class="text-positive-default ml-1" jhiTranslate="evaluation.details.referenceStatus.submitted"
                           >Submitted</span
                         >
+                        @if (reference.documentId) {
+                          <jhi-button
+                            class="inline-flex align-middle"
+                            classStyling="!w-8"
+                            icon="eye"
+                            variant="text"
+                            size="xs"
+                            ariaLabel="evaluation.details.viewReferenceLetter"
+                            (click)="docSection.openDocument(reference.documentId)"
+                          />
+                        }
                       } @else if (reference.status === 'EXPIRED') {
                         <span class="text-negative-default ml-1" jhiTranslate="evaluation.details.referenceStatus.expired">Expired</span>
                       } @else if (reference.status === 'DECLINED') {
                         <span class="text-negative-default ml-1" jhiTranslate="evaluation.details.referenceStatus.declined">Declined</span>
+                      } @else if (reference.status === 'CANCELLED') {
+                        <span class="text-text-secondary ml-1" jhiTranslate="evaluation.details.referenceStatus.cancelled">Cancelled</span>
                       } @else {
                         <span class="text-text-secondary ml-1" jhiTranslate="evaluation.details.referenceStatus.requested">Requested</span>
                       }
