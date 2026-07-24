@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TemplateProcessingService {
 
-    private static final String DOCUMENTATION_URL = "https://ls1intum.github.io/docapply/";
+    private static final String DOCUMENTATION_URL = "https://ls1intum.github.io/doc-apply/";
     private static final String EMAIL_COMPONENTS_IMPORT = "<#import \"base/email-components.ftl\" as ui>" + System.lineSeparator();
     private final Configuration freemarkerConfig;
     private final SiteSettingService siteSettingService;

@@ -83,7 +83,7 @@
     "faq": {
       "headline": "Häufig gestellte Fragen",
       "subheadline": "Hier findest du schnelle Antworten zu {siteName}",
-      "sub-subheadline": "Bei weiteren Fragen wende dich bitte an die <a href='https://ls1intum.github.io/docapply' class='external-link'><strong>Dokumentation</strong></a>",
+      "sub-subheadline": "Bei weiteren Fragen wende dich bitte an die <a href='https://ls1intum.github.io/doc-apply' class='external-link'><strong>Dokumentation</strong></a>",
       "questions": {
         "login": {
           "title": "Wie melde ich mich bei {siteName} an?",

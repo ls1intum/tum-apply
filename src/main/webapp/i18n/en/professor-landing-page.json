@@ -46,7 +46,7 @@
     "faq": {
       "headline": "Frequently Asked Questions",
       "subheadline": "Find answers to common questions about using {siteName}",
-      "sub-subheadline": "For further questions, please refer to the <a href='https://ls1intum.github.io/docapply' class='external-link'><strong>documentation</strong>",
+      "sub-subheadline": "For further questions, please refer to the <a href='https://ls1intum.github.io/doc-apply' class='external-link'><strong>documentation</strong>",
       "questions": {
         "registration": {
           "title": "How do I register as a staff member or professor?",

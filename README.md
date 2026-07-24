@@ -92,7 +92,7 @@ architecture for now, clear service boundaries allow for potential migration to 
 
 ## Documentation
 
-Full documentation is available on the [DocApply Docs](https://ls1intum.github.io/docapply/) site.
+Full documentation is available on the [DocApply Docs](https://ls1intum.github.io/doc-apply/) site.
 
 ---
 

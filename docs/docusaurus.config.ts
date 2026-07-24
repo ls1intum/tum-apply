@@ -18,12 +18,12 @@ const config: Config = {
   url: 'https://ls1intum.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/docapply/',
+  baseUrl: '/doc-apply/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'ls1intum', // Usually your GitHub org/user name.
-  projectName: 'docapply', // Usually your repo name.
+  projectName: 'doc-apply', // Usually your repo name.
 
   onBrokenLinks: 'throw',
 
@@ -54,7 +54,7 @@ const config: Config = {
           },
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/ls1intum/docapply/tree/main/docs',
+            'https://github.com/ls1intum/doc-apply/tree/main/docs',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -75,7 +75,7 @@ const config: Config = {
         path: 'docs/applicants',
         routeBasePath: 'applicants',
         sidebarPath: './sidebar-applicants.ts',
-        editUrl: 'https://github.com/ls1intum/docapply/tree/main/docs',
+        editUrl: 'https://github.com/ls1intum/doc-apply/tree/main/docs',
       },
     ],
     [
@@ -85,7 +85,7 @@ const config: Config = {
         path: 'docs/professors-and-employees',
         routeBasePath: 'professors',
         sidebarPath: './sidebar-professors.ts',
-        editUrl: 'https://github.com/ls1intum/docapply/tree/main/docs',
+        editUrl: 'https://github.com/ls1intum/doc-apply/tree/main/docs',
       },
     ],
     [
@@ -95,7 +95,7 @@ const config: Config = {
         path: 'docs/developer',
         routeBasePath: 'developer',
         sidebarPath: './sidebar-developer.ts',
-        editUrl: 'https://github.com/ls1intum/docapply/tree/main/docs',
+        editUrl: 'https://github.com/ls1intum/doc-apply/tree/main/docs',
       },
     ],
     [
@@ -105,7 +105,7 @@ const config: Config = {
         path: 'docs/admins',
         routeBasePath: 'admin',
         sidebarPath: './sidebar-admin.ts',
-        editUrl: 'https://github.com/ls1intum/docapply/tree/main/docs',
+        editUrl: 'https://github.com/ls1intum/doc-apply/tree/main/docs',
       },
     ],
     [
@@ -153,7 +153,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          href: 'https://github.com/ls1intum/docapply',
+          href: 'https://github.com/ls1intum/doc-apply',
           label: 'GitHub',
           position: 'right'
         }
