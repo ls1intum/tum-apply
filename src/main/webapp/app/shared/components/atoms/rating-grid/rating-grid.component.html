@@ -3,7 +3,7 @@
   <div class="hidden lg:grid lg:items-end lg:gap-x-2 lg:px-2 lg:pb-2" [style.grid-template-columns]="gridTemplateColumns()">
     <div></div>
     @for (option of options(); track option.value) {
-      <div class="px-1 text-center text-xs font-medium break-words hyphens-auto text-text-secondary">
+      <div class="px-1 text-center text-xs font-medium break-words text-text-secondary">
         @if (shouldTranslate()) {
           <span [jhiTranslate]="option.name"></span>
         } @else {
